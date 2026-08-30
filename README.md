@@ -4,7 +4,6 @@ Serverless crypto volatility & sentiment engine with:
 
 - Free tier: CoinGecko + Reddit + Hacker News
 - Pro tier: CoinGecko + Kraken + Reddit + Hacker News
-- Acurast compute (updates outputs and pushes to GitHub)
 - GitHub Pages hosting for dashboards
 - Telegram bot (VolatiAI) for JSON delivery
 - Key-based Pro access
