@@ -2,8 +2,8 @@ name: VolatiAI Engine
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # run every 5 minutes
-  workflow_dispatch:        # allow manual runs
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 jobs:
   run-engine:
