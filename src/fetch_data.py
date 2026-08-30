@@ -16,24 +16,16 @@ def fetch_top_market_data(vs_currency="usd"):
     return r.json()
 
 def fetch_reddit_titles():
-    url = "https://www.reddit.com/r/CryptoCurrency/hot.json?limit=50"
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
-    }
-
+    url = "https://api.pushshift.io/reddit/search/submission/?subreddit=CryptoCurrency&sort=desc&size=50"
     try:
-        r = requests.get(url, headers=headers, timeout=10)
+        r = requests.get(url, timeout=10)
         if r.status_code != 200:
-            return []  # fallback so your engine NEVER crashes
-
-        data = r.json()
-        return [p["data"]["title"] for p in data["data"]["children"]]
-
+            return []
+        data = r.json().get("data", [])
+        return [p.get("title", "") for p in data]
     except Exception:
-        return []  # final fallback
+        return []
+
 
 
 def fetch_hn_titles():
