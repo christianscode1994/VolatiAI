@@ -17,10 +17,24 @@ def fetch_top_market_data(vs_currency="usd"):
 
 def fetch_reddit_titles():
     url = "https://www.reddit.com/r/CryptoCurrency/hot.json?limit=50"
-    r = requests.get(url, headers={"User-Agent": "VolatiAI/1.0"}, timeout=10)
-    r.raise_for_status()
-    data = r.json()
-    return [p["data"]["title"] for p in data["data"]["children"]]
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+    }
+
+    try:
+        r = requests.get(url, headers=headers, timeout=10)
+        if r.status_code != 200:
+            return []  # fallback so your engine NEVER crashes
+
+        data = r.json()
+        return [p["data"]["title"] for p in data["data"]["children"]]
+
+    except Exception:
+        return []  # final fallback
+
 
 def fetch_hn_titles():
     url = "https://hn.algolia.com/api/v1/search?tags=front_page"
