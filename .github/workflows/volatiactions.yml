@@ -26,12 +26,17 @@ jobs:
       - name: Run VolatiAI engine
         run: python -m src.main
 
-      - name: Commit updated JSON + HTML
+      - name: Copy output to docs
+        run: |
+          cp public/latest.json docs/latest.json
+          cp public/summary.html docs/summary.html
+
+      - name: Commit updated docs
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add public/*.json public/*.html private/*.json private/*.html
-          git commit -m "Update VolatiAI data" || echo "No changes to commit"
+          git add docs/latest.json docs/summary.html
+          git commit -m "Update public dashboard & API" || echo "No changes"
 
       - name: Push changes
         run: git push
