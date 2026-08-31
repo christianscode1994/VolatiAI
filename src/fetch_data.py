@@ -34,3 +34,32 @@ def fetch_hn_titles():
     r.raise_for_status()
     hits = r.json()["hits"]
     return [h["title"] for h in hits]
+
+def fetch_cryptopanic():
+    url = "https://cryptopanic.com/api/v1/posts/"
+    params = {
+        "auth_token": CRYPTOPANIC_TOKEN,
+        "filter": "important",
+        "kind": "news"
+    }
+    try:
+        r = requests.get(url, params=params, timeout=10)
+        if r.status_code != 200:
+            return []
+
+        results = r.json().get("results", [])
+        parsed = []
+
+        for p in results:
+            parsed.append({
+                "title": p.get("title", ""),
+                "source": p.get("source", {}).get("title", ""),
+                "published_at": p.get("published_at", ""),
+                "sentiment": p.get("votes", {}),
+                "tags": p.get("tags", [])
+            })
+
+        return parsed
+
+    except Exception:
+        return []
