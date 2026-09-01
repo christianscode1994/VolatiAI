@@ -2,8 +2,20 @@ import json
 from datetime import datetime
 from .compute_sentiment import sentiment_label
 
-def build_payload(coins_vol, sentiment_reddit, sentiment_hn, tier: str, kraken_data=None):
+def build_payload(
+    coins_vol,
+    sentiment_reddit,
+    sentiment_hn,
+    tier: str,
+    kraken_data=None,
+    binance_data=None,
+    coinbase_data=None,
+    crypto_com_data=None,
+    bybit_data=None,
+    okx_data=None,
+):
     now = datetime.utcnow().isoformat() + "Z"
+
     payload = {
         "timestamp": now,
         "tier": tier,
@@ -22,21 +34,30 @@ def build_payload(coins_vol, sentiment_reddit, sentiment_hn, tier: str, kraken_d
                 "label": sentiment_label(sentiment_hn["avg"]),
             },
         },
+        "exchanges": {
+            "kraken": kraken_data,
+            "binance": binance_data,
+            "coinbase": coinbase_data,
+            "crypto_com": crypto_com_data,
+            "bybit": bybit_data,
+            "okx": okx_data,
+        },
     }
-    if kraken_data is not None:
-        payload["kraken"] = kraken_data
+
     return payload
+
 
 def write_json(path, payload):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
+
 
 def write_html(path, payload):
     ts = payload["timestamp"]
     tier = payload["tier"]
     coins = payload["top_by_volatility"]
     sent = payload["sentiment"]
-    kraken = payload.get("kraken")
+    exchanges = payload["exchanges"]
 
     html = f"""<!DOCTYPE html>
 <html>
@@ -61,15 +82,16 @@ def write_html(path, payload):
   <p><span class="label">Hacker News:</span> {sent['hn']['label']} (avg {sent['hn']['avg']:.2f}, n={sent['hn']['count']})</p>
 """
 
-    if kraken:
-        html += f"""
-  <h2>Kraken (Pro)</h2>
-  <p><span class="label">Pair:</span> {kraken.get('pair', 'XXBTZUSD')}</p>
-  <p><span class="label">Last price:</span> {kraken['ticker']['c'][0]}</p>
-  <p><span class="label">24h high:</span> {kraken['ticker']['h'][1]} | <span class="label">24h low:</span> {kraken['ticker']['l'][1]}</p>
-  <p><span class="label">Orderbook depth:</span> {len(kraken['depth'].get('asks', []))} asks / {len(kraken['depth'].get('bids', []))} bids</p>
+    # Exchange sections
+    for name, data in exchanges.items():
+        if data:
+            html += f"""
+  <h2>{name.capitalize()} (Pro)</h2>
+  <p><span class="label">Ticker:</span> {data.get('ticker')}</p>
+  <p><span class="label">Depth:</span> {data.get('depth')}</p>
 """
 
+    # Volatility table
     html += """
   <h2>Top by volatility</h2>
   <table>
@@ -104,5 +126,6 @@ def write_html(path, payload):
 </body>
 </html>
 """
+
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
