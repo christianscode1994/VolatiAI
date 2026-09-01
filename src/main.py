@@ -100,6 +100,12 @@ def run_once(tier: str):
             "okx": okx_data,
         }
         whales = compute_whale_pressure(exchanges)
+        spoofing = compute_spoofing_for_exchanges(exchanges)
+        liquidity = compute_liquidity_snapshot(exchanges)
+        arbitrage = compute_arbitrage_deltas(exchanges)
+        depth_heatmaps = compute_depth_heatmaps(exchanges)
+
+        
 
     # --- Build payload ---
     payload = build_payload(
