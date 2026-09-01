@@ -10,6 +10,10 @@ from .config import KRAKEN_PAIR
 from .fetch_github import github_repo_activity, github_trending_python
 from .compute_dev_sentiment import compute_dev_sentiment
 from .compute_narratives import detect_narratives
+from .fetch_binance import binance_depth, binance_ticker, binance_klines
+from .fetch_coinbase import coinbase_depth, coinbase_ticker, coinbase_trades
+from .fetch_crypto_com import crypto_com_depth, crypto_com_ticker, crypto_com_candles
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +31,12 @@ def run_once(tier: str):
     sent_hn = compute_sentiment(hn_titles)
 
     kraken_data = None
+    binance_data = None
+    coinbase_data = None
+    crypto_com_data = None
+
     if tier == "pro":
+        # Kraken
         ticker = kraken_ticker(KRAKEN_PAIR)
         depth = kraken_depth(KRAKEN_PAIR, count=20)
         ohlc = kraken_ohlc(KRAKEN_PAIR, interval=15)
@@ -38,7 +47,37 @@ def run_once(tier: str):
             "ohlc": ohlc,
         }
 
-    payload = build_payload(coins_vol, sent_reddit, sent_hn, tier=tier, kraken_data=kraken_data)
+        # Binance
+        binance_data = {
+            "ticker": binance_ticker("BTCUSDT"),
+            "depth": binance_depth("BTCUSDT", limit=50),
+            "klines": binance_klines("BTCUSDT", interval="15m", limit=100),
+        }
+
+        # Coinbase
+        coinbase_data = {
+            "ticker": coinbase_ticker("BTC-USD"),
+            "depth": coinbase_depth("BTC-USD", level=2),
+            "trades": coinbase_trades("BTC-USD"),
+        }
+
+        # Crypto.com
+        crypto_com_data = {
+            "ticker": crypto_com_ticker("BTC_USDT"),
+            "depth": crypto_com_depth("BTC_USDT"),
+            "candles": crypto_com_candles("BTC_USDT", interval="15m"),
+        }
+
+    payload = build_payload(
+        coins_vol,
+        sent_reddit,
+        sent_hn,
+        tier=tier,
+        kraken_data=kraken_data,
+        binance_data=binance_data,
+        coinbase_data=coinbase_data,
+        crypto_com_data=crypto_com_data,
+    )
 
     if tier == "free":
         json_path = PUBLIC_DIR / "free.json"
@@ -49,6 +88,7 @@ def run_once(tier: str):
 
     write_json(json_path, payload)
     write_html(html_path, payload)
+
 
 def main():
     parser = argparse.ArgumentParser()
