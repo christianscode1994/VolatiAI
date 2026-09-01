@@ -13,7 +13,8 @@ from .compute_narratives import detect_narratives
 from .fetch_binance import binance_depth, binance_ticker, binance_klines
 from .fetch_coinbase import coinbase_depth, coinbase_ticker, coinbase_trades
 from .fetch_crypto_com import crypto_com_depth, crypto_com_ticker, crypto_com_candles
-
+from .fetch_bybit import bybit_depth, bybit_ticker
+from .fetch_okx import okx_depth, okx_ticker
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,6 +35,9 @@ def run_once(tier: str):
     binance_data = None
     coinbase_data = None
     crypto_com_data = None
+
+    bybit_data = None
+    okx_data = None    
 
     if tier == "pro":
         # Kraken
@@ -68,16 +72,31 @@ def run_once(tier: str):
             "candles": crypto_com_candles("BTC_USDT", interval="15m"),
         }
 
+         # Bybit
+        bybit_data = {
+            "ticker": bybit_ticker("BTCUSDT"),
+            "depth": bybit_depth("BTCUSDT", limit=50),
+        }
+
+        # OKX
+        okx_data = {
+            "ticker": okx_ticker("BTC-USDT"),
+            "depth": okx_depth("BTC-USDT", limit=50),
+        }
+
     payload = build_payload(
-        coins_vol,
-        sent_reddit,
-        sent_hn,
-        tier=tier,
-        kraken_data=kraken_data,
-        binance_data=binance_data,
-        coinbase_data=coinbase_data,
-        crypto_com_data=crypto_com_data,
-    )
+    coins_vol,
+    sent_reddit,
+    sent_hn,
+    tier=tier,
+    kraken_data=kraken_data,
+    binance_data=binance_data,
+    coinbase_data=coinbase_data,
+    crypto_com_data=crypto_com_data,
+    bybit_data=bybit_data,
+    okx_data=okx_data,
+)
+
 
     if tier == "free":
         json_path = PUBLIC_DIR / "free.json"
