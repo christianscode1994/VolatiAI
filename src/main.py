@@ -9,6 +9,8 @@ from .generate_output import build_payload, write_json, write_html
 from .config import KRAKEN_PAIR
 from .fetch_github import github_repo_activity, github_trending_python
 from .compute_dev_sentiment import compute_dev_sentiment
+from .compute_narratives import detect_narratives
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
