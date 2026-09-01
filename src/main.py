@@ -1,4 +1,6 @@
 from pathlib import Path
+import argparse
+
 from .fetch_data import fetch_top_market_data, fetch_reddit_titles, fetch_hn_titles
 from .fetch_kraken import kraken_ticker, kraken_depth, kraken_ohlc
 from .compute_volatility import compute_volatility_summary
@@ -45,10 +47,18 @@ def run_once(tier: str):
     write_html(html_path, payload)
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tier", choices=["free", "pro"], default=None)
+    args = parser.parse_args()
+
     PUBLIC_DIR.mkdir(exist_ok=True)
     PRIVATE_DIR.mkdir(exist_ok=True)
-    run_once("free")
-    run_once("pro")
+
+    if args.tier:
+        run_once(args.tier)
+    else:
+        run_once("free")
+        run_once("pro")
 
 if __name__ == "__main__":
     main()
