@@ -8,7 +8,7 @@ from .compute_sentiment import compute_sentiment
 from .generate_output import build_payload, write_json, write_html
 from .config import KRAKEN_PAIR
 from .fetch_github import github_repo_activity, github_trending_python
-
+from .compute_dev_sentiment import compute_dev_sentiment
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
