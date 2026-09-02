@@ -1,7 +1,7 @@
 # VolatiAI
 
 VolatiAI is a serverless crypto intelligence engine combining **market volatility**,  
-**social sentiment**, **exchange depth**, and now **developer activity signals**  
+**social sentiment**, **exchange depth**, and **developer activity signals**  
 to detect early trends and narrative formation.
 
 ## Tiers
@@ -19,6 +19,12 @@ Outputs:
 ### Pro Tier
 Includes everything in Free **plus**:
 - Kraken ticker, depth, OHLC
+- Multi‑exchange depth (Binance, Coinbase, Crypto.com, Bybit, OKX)
+- Whale Pressure Index
+- Spoofing detection
+- Liquidity migration
+- Arbitrage deltas
+- Depth heatmaps
 - GitHub developer‑activity signals
 - Developer Sentiment Index (0–100)
 
@@ -31,8 +37,12 @@ Outputs:
 - Market volatility scoring  
 - Social sentiment scoring  
 - Developer Sentiment Index (DSI)  
-- Kraken depth analysis  
-- GitHub repo activity + trending repos  
+- Multi‑exchange depth analysis  
+- Whale pressure engine  
+- Spoofing detector  
+- Liquidity migration tracking  
+- Arbitrage delta computation  
+- Depth heatmap generation  
 - Free + Pro tier separation  
 - GitHub Pages hosting for dashboards  
 - Telegram bot (VolatiAI) for JSON delivery  
@@ -74,4 +84,5 @@ GitHub Pages (public):
 
 ```bash
 pip install -r requirements.txt
-python -m src.main
+python -m src.main --tier free
+python -m src.main --tier pro
