@@ -26,6 +26,9 @@ jobs:
       - name: Run VolatiAI engine
         run: python -m src.main
 
+      - name: Run alerts
+        run: python -m src.alerts
+
       - name: Copy output to docs
         run: |
           cp public/latest.json docs/latest.json
