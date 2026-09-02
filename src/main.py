@@ -20,6 +20,8 @@ from .compute_liquidity import compute_liquidity_snapshot
 from .compute_arbitrage import compute_arbitrage_deltas
 from .compute_depth_heatmap import compute_depth_heatmaps
 
+# NEW: historical storage
+from .history import write_snapshot
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -150,16 +152,25 @@ def run_once(tier: str):
         depth_heatmaps=depth_heatmaps,
     )
 
+    # --- Historical snapshots ---
+    write_snapshot("whales", whales)
+    write_snapshot("spoofing", spoofing)
+    write_snapshot("liquidity", liquidity)
+    write_snapshot("arbitrage", arbitrage)
+    write_snapshot("volatility", coins_vol)
+    write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
+    write_snapshot("developer", {})  # placeholder until dev module added
+
     # --- Output ---
+    PUBLIC_DIR.mkdir(exist_ok=True)
+    PRIVATE_DIR.mkdir(exist_ok=True)
+
     if tier == "free":
         json_path = PUBLIC_DIR / "free.json"
         html_path = PUBLIC_DIR / "free.html"
     else:
         json_path = PRIVATE_DIR / "pro.json"
         html_path = PRIVATE_DIR / "pro.html"
-
-    PUBLIC_DIR.mkdir(exist_ok=True)
-    PRIVATE_DIR.mkdir(exist_ok=True)
 
     write_json(json_path, payload)
     write_html(html_path, payload)
