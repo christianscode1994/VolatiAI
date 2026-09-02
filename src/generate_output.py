@@ -58,6 +58,7 @@ def build_payload(
     return payload
 
 
+
 def write_json(path, payload):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
