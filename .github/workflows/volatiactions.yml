@@ -34,12 +34,12 @@ jobs:
           cp public/latest.json docs/latest.json
           cp public/summary.html docs/summary.html
 
-      - name: Commit updated docs
+      - name: Commit updated docs & history
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add docs/latest.json docs/summary.html
-          git commit -m "Update public dashboard & API" || echo "No changes"
+          git add docs/latest.json docs/summary.html history
+          git commit -m "Update dashboard, API & history snapshots" || echo "No changes"
 
       - name: Push changes
         run: git push
