@@ -11,7 +11,7 @@ from dashboard import build_dashboard
 
 app = FastAPI(
     title="VolatiAI API",
-    description="Unified analytics API for whales, spoofing, liquidity, sentiment, volatility.",
+    description="Unified analytics API for whales, spoofing, liquidity, sentiment, volatility, and DeFi health.",
     version="1.0.0",
 )
 
@@ -34,7 +34,7 @@ def root():
     }
 
 
-# --- DASHBOARD ---
+# --- DASHBOARD (INTEGRATED ROUTER LOGIC) ---
 
 @app.get("/dashboard")
 def api_dashboard(days: int = 7):
