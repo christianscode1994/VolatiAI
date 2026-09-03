@@ -1,4 +1,3 @@
-
 # volatiai/src/defi_addresses.py
 
 # -----------------------------
@@ -15,7 +14,6 @@ SUSHI_USDC_WETH = "0x397FF1542f962076d0BFE58eA045FfA2d347ACa"  # USDC/WETH
 # Curve Mainnet Pools
 # -----------------------------
 CURVE_STETH_ETH = "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022"  # stETH/ETH pool
-CURVE_3POOL = "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022"     # placeholder if needed
 
 # -----------------------------
 # Aave Mainnet
