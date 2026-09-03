@@ -23,6 +23,10 @@ from .compute_depth_heatmap import compute_depth_heatmaps
 # NEW: historical storage
 from .history import write_snapshot
 
+# NEW: dashboard + metrics
+from .dashboard import print_dashboard
+from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
 PRIVATE_DIR = BASE_DIR / "private"
@@ -83,9 +87,7 @@ def run_once(tier: str):
         try:
             coinbase_data = {
                 "ticker": coinbase_ticker("BTC-USD"),
-                "depth": coinbase_depth("BTC-USD", level=2),
-                "trades": coinbase_trades("BTC-USD"),
-            }
+            ...
         except Exception as e:
             coinbase_data = {"error": str(e)}
 
@@ -159,7 +161,7 @@ def run_once(tier: str):
     write_snapshot("arbitrage", arbitrage)
     write_snapshot("volatility", coins_vol)
     write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
-    write_snapshot("developer", {})  # placeholder until dev module added
+    write_snapshot("developer", {})  # placeholder
 
     # --- Output ---
     PUBLIC_DIR.mkdir(exist_ok=True)
@@ -174,6 +176,23 @@ def run_once(tier: str):
 
     write_json(json_path, payload)
     write_html(html_path, payload)
+
+    # --- NEW: Dashboard + Alerts ---
+    print("\n=== VolatiAI Dashboard ===")
+    print_dashboard(days=7)
+
+    # Compute aggregated metrics for alerts + composite score
+    aggregated = aggregate_all_metrics(__import__("src.history"), days=7)
+    score = volatai_score(aggregated)
+    alerts = detect_alerts(aggregated)
+
+    print(f"\nComposite Score: {score:.4f}")
+    if alerts:
+        print("Alerts:")
+        for a in alerts:
+            print(f" - {a}")
+    else:
+        print("No alerts detected.")
 
 
 def main():
