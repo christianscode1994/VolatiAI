@@ -1,5 +1,9 @@
 from pathlib import Path
 import argparse
+import logging
+import cProfile
+import pstats
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .fetch_data import fetch_top_market_data, fetch_reddit_titles, fetch_hn_titles
 from .fetch_kraken import kraken_ticker, kraken_depth, kraken_ohlc
@@ -20,30 +24,112 @@ from .compute_liquidity import compute_liquidity_snapshot
 from .compute_arbitrage import compute_arbitrage_deltas
 from .compute_depth_heatmap import compute_depth_heatmaps
 
-# NEW: historical storage
 from .history import write_snapshot
-
-# NEW: dashboard + metrics
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
+from .api import app  # for --api mode
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
 PRIVATE_DIR = BASE_DIR / "private"
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger("volatai")
 
-def run_once(tier: str):
-    # --- Market & sentiment ---
-    coins = fetch_top_market_data()
-    coins_vol = compute_volatility_summary(coins)
 
-    reddit_titles = fetch_reddit_titles()
-    hn_titles = fetch_hn_titles()
+def _fetch_kraken():
+    try:
+        ticker = kraken_ticker(KRAKEN_PAIR)
+        depth = kraken_depth(KRAKEN_PAIR, count=20)
+        ohlc = kraken_ohlc(KRAKEN_PAIR, interval=15)
+        return {
+            "pair": KRAKEN_PAIR,
+            "ticker": ticker,
+            "depth": depth,
+            "ohlc": ohlc,
+        }
+    except Exception as e:
+        logger.error("Kraken fetch failed: %s", e)
+        return {"error": str(e)}
 
-    sent_reddit = compute_sentiment(reddit_titles)
-    sent_hn = compute_sentiment(hn_titles)
 
-    # --- Exchange data placeholders ---
+def _fetch_binance():
+    try:
+        return {
+            "ticker": binance_ticker("BTCUSDT"),
+            "depth": binance_depth("BTCUSDT", limit=50),
+            "klines": binance_klines("BTCUSDT", interval="15m", limit=100),
+        }
+    except Exception as e:
+        logger.error("Binance fetch failed: %s", e)
+        return {"error": str(e)}
+
+
+def _fetch_coinbase():
+    try:
+        return {
+            "ticker": coinbase_ticker("BTC-USD"),
+            "depth": coinbase_depth("BTC-USD", level=2),
+            "trades": coinbase_trades("BTC-USD"),
+        }
+    except Exception as e:
+        logger.error("Coinbase fetch failed: %s", e)
+        return {"error": str(e)}
+
+
+def _fetch_crypto_com():
+    try:
+        return {
+            "ticker": crypto_com_ticker("BTC_USDT"),
+            "depth": crypto_com_depth("BTC_USDT"),
+            "candles": crypto_com_candles("BTC_USDT", interval="15m"),
+        }
+    except Exception as e:
+        logger.error("Crypto.com fetch failed: %s", e)
+        return {"error": str(e)}
+
+
+def _fetch_bybit():
+    try:
+        return {
+            "ticker": bybit_ticker("BTCUSDT"),
+            "depth": bybit_depth("BTCUSDT", limit=50),
+        }
+    except Exception as e:
+        logger.error("Bybit fetch failed: %s", e)
+        return {"error": str(e)}
+
+
+def _fetch_okx():
+    try:
+        return {
+            "ticker": okx_ticker("BTC-USDT"),
+            "depth": okx_depth("BTC-USDT", limit=50),
+        }
+    except Exception as e:
+        logger.error("OKX fetch failed: %s", e)
+        return {"error": str(e)}
+
+
+def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
+    logger.info("Running tier=%s", tier)
+
+    try:
+        coins = fetch_top_market_data()
+        coins_vol = compute_volatility_summary(coins)
+
+        reddit_titles = fetch_reddit_titles()
+        hn_titles = fetch_hn_titles()
+
+        sent_reddit = compute_sentiment(reddit_titles)
+        sent_hn = compute_sentiment(hn_titles)
+    except Exception as e:
+        logger.error("Market/sentiment pipeline failed: %s", e)
+        return
+
     kraken_data = None
     binance_data = None
     coinbase_data = None
@@ -58,68 +144,29 @@ def run_once(tier: str):
     depth_heatmaps = None
 
     if tier == "pro":
+        # parallel exchange fetches
+        tasks = {
+            "kraken": _fetch_kraken,
+            "binance": _fetch_binance,
+            "coinbase": _fetch_coinbase,
+            "crypto_com": _fetch_crypto_com,
+            "bybit": _fetch_bybit,
+            "okx": _fetch_okx,
+        }
+        results = {}
+        with ThreadPoolExecutor(max_workers=len(tasks)) as ex:
+            futures = {ex.submit(fn): name for name, fn in tasks.items()}
+            for fut in as_completed(futures):
+                name = futures[fut]
+                results[name] = fut.result()
 
-        # Kraken
-        try:
-            ticker = kraken_ticker(KRAKEN_PAIR)
-            depth = kraken_depth(KRAKEN_PAIR, count=20)
-            ohlc = kraken_ohlc(KRAKEN_PAIR, interval=15)
-            kraken_data = {
-                "pair": KRAKEN_PAIR,
-                "ticker": ticker,
-                "depth": depth,
-                "ohlc": ohlc,
-            }
-        except Exception as e:
-            kraken_data = {"error": str(e)}
+        kraken_data = results["kraken"]
+        binance_data = results["binance"]
+        coinbase_data = results["coinbase"]
+        crypto_com_data = results["crypto_com"]
+        bybit_data = results["bybit"]
+        okx_data = results["okx"]
 
-        # Binance
-        try:
-            binance_data = {
-                "ticker": binance_ticker("BTCUSDT"),
-                "depth": binance_depth("BTCUSDT", limit=50),
-                "klines": binance_klines("BTCUSDT", interval="15m", limit=100),
-            }
-        except Exception as e:
-            binance_data = {"error": str(e)}
-
-        # Coinbase
-        try:
-            coinbase_data = {
-                "ticker": coinbase_ticker("BTC-USD"),
-            ...
-        except Exception as e:
-            coinbase_data = {"error": str(e)}
-
-        # Crypto.com
-        try:
-            crypto_com_data = {
-                "ticker": crypto_com_ticker("BTC_USDT"),
-                "depth": crypto_com_depth("BTC_USDT"),
-                "candles": crypto_com_candles("BTC_USDT", interval="15m"),
-            }
-        except Exception as e:
-            crypto_com_data = {"error": str(e)}
-
-        # Bybit
-        try:
-            bybit_data = {
-                "ticker": bybit_ticker("BTCUSDT"),
-                "depth": bybit_depth("BTCUSDT", limit=50),
-            }
-        except Exception as e:
-            bybit_data = {"error": str(e)}
-
-        # OKX
-        try:
-            okx_data = {
-                "ticker": okx_ticker("BTC-USDT"),
-                "depth": okx_depth("BTC-USDT", limit=50),
-            }
-        except Exception as e:
-            okx_data = {"error": str(e)}
-
-        # Whale Intelligence
         exchanges = {
             "kraken": kraken_data,
             "binance": binance_data,
@@ -129,13 +176,15 @@ def run_once(tier: str):
             "okx": okx_data,
         }
 
-        whales = compute_whale_pressure(exchanges)
-        spoofing = compute_spoofing_for_exchanges(exchanges)
-        liquidity = compute_liquidity_snapshot(exchanges)
-        arbitrage = compute_arbitrage_deltas(exchanges)
-        depth_heatmaps = compute_depth_heatmaps(exchanges)
+        try:
+            whales = compute_whale_pressure(exchanges)
+            spoofing = compute_spoofing_for_exchanges(exchanges)
+            liquidity = compute_liquidity_snapshot(exchanges)
+            arbitrage = compute_arbitrage_deltas(exchanges)
+            depth_heatmaps = compute_depth_heatmaps(exchanges)
+        except Exception as e:
+            logger.error("Metric computation failed: %s", e)
 
-    # --- Build payload ---
     payload = build_payload(
         coins_vol,
         sent_reddit,
@@ -154,16 +203,18 @@ def run_once(tier: str):
         depth_heatmaps=depth_heatmaps,
     )
 
-    # --- Historical snapshots ---
-    write_snapshot("whales", whales)
-    write_snapshot("spoofing", spoofing)
-    write_snapshot("liquidity", liquidity)
-    write_snapshot("arbitrage", arbitrage)
-    write_snapshot("volatility", coins_vol)
-    write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
-    write_snapshot("developer", {})  # placeholder
+    if write_snaps:
+        try:
+            write_snapshot("whales", whales)
+            write_snapshot("spoofing", spoofing)
+            write_snapshot("liquidity", liquidity)
+            write_snapshot("arbitrage", arbitrage)
+            write_snapshot("volatility", coins_vol)
+            write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
+            write_snapshot("developer", {})
+        except Exception as e:
+            logger.error("Snapshot writing failed: %s", e)
 
-    # --- Output ---
     PUBLIC_DIR.mkdir(exist_ok=True)
     PRIVATE_DIR.mkdir(exist_ok=True)
 
@@ -174,37 +225,54 @@ def run_once(tier: str):
         json_path = PRIVATE_DIR / "pro.json"
         html_path = PRIVATE_DIR / "pro.html"
 
-    write_json(json_path, payload)
-    write_html(html_path, payload)
+    try:
+        write_json(json_path, payload)
+        write_html(html_path, payload)
+    except Exception as e:
+        logger.error("Output writing failed: %s", e)
 
-    # --- NEW: Dashboard + Alerts ---
-    print("\n=== VolatiAI Dashboard ===")
-    print_dashboard(days=7)
-
-    # Compute aggregated metrics for alerts + composite score
-    aggregated = aggregate_all_metrics(__import__("src.history"), days=7)
-    score = volatai_score(aggregated)
-    alerts = detect_alerts(aggregated)
-
-    print(f"\nComposite Score: {score:.4f}")
-    if alerts:
-        print("Alerts:")
-        for a in alerts:
-            print(f" - {a}")
-    else:
-        print("No alerts detected.")
+    if show_dashboard:
+        print_dashboard(days=7)
+        aggregated = aggregate_all_metrics(__import__("volatiai.src.history"), days=7)
+        score = volatai_score(aggregated)
+        alerts = detect_alerts(aggregated)
+        logger.info("Composite score: %.4f", score)
+        if alerts:
+            for a in alerts:
+                logger.warning("Alert: %s", a)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tier", choices=["free", "pro"], default=None)
+    parser.add_argument("--dashboard", action="store_true")
+    parser.add_argument("--api", action="store_true")
+    parser.add_argument("--no-snapshots", action="store_true")
+    parser.add_argument("--profile", action="store_true")
     args = parser.parse_args()
 
-    if args.tier:
-        run_once(args.tier)
+    if args.api:
+        # run API server (you’ll start uvicorn externally)
+        logger.info("API mode selected. Use: uvicorn volatiai.src.api:app")
+        return
+
+    def _run():
+        if args.tier:
+            run_once(args.tier, write_snaps=not args.no_snapshots, show_dashboard=args.dashboard)
+        else:
+            run_once("free", write_snaps=not args.no_snapshots, show_dashboard=args.dashboard)
+            run_once("pro", write_snaps=not args.no_snapshots, show_dashboard=args.dashboard)
+
+    if args.profile:
+        logger.info("Profiling enabled")
+        profiler = cProfile.Profile()
+        profiler.enable()
+        _run()
+        profiler.disable()
+        stats = pstats.Stats(profiler).sort_stats(pstats.SortKey.TIME)
+        stats.print_stats(30)
     else:
-        run_once("free")
-        run_once("pro")
+        _run()
 
 
 if __name__ == "__main__":
