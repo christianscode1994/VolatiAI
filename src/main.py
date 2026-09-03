@@ -201,7 +201,11 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
             uniswap_data = fetch_v2_reserves("<UNISWAP_PAIR>")
             sushiswap_data = fetch_v2_reserves("<SUSHISWAP_PAIR>")
             curve_data = curve_get_dy("<CURVE_POOL>", 0, 1, 10**18)
-            aave_data = aave_get_reserve_data("<AAVE_POOL>", "<ASSET>")
+            aave_data = aave_get_reserve_data(
+    "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9",
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+)
+
             maker_data = maker_dai_stats()
 
             defi_health = compute_defi_health(
