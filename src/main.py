@@ -5,6 +5,11 @@ import cProfile
 import pstats
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import os
+INFURA_URL = os.getenv("INFURA_URL")
+ALCHEMY_URL = os.getenv("ALCHEMY_URL")
+PUBLIC_RPC = "https://ethereum.publicnode.com"
+
 from .fetch_data import fetch_top_market_data, fetch_reddit_titles, fetch_hn_titles
 from .fetch_kraken import kraken_ticker, kraken_depth, kraken_ohlc
 from .compute_volatility import compute_volatility_summary
