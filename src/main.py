@@ -29,6 +29,12 @@ from .compute_liquidity import compute_liquidity_snapshot
 from .compute_arbitrage import compute_arbitrage_deltas
 from .compute_depth_heatmap import compute_depth_heatmaps
 
+from .dex_uniswap_sushi import fetch_v2_reserves
+from .dex_curve import curve_get_dy
+from .dex_aave import aave_get_reserve_data
+from .dex_maker_api import maker_dai_stats
+from .compute_defi_health import compute_defi_health
+
 from .history import write_snapshot
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
@@ -147,9 +153,9 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     liquidity = None
     arbitrage = None
     depth_heatmaps = None
+    defi_health = None
 
     if tier == "pro":
-        # parallel exchange fetches
         tasks = {
             "kraken": _fetch_kraken,
             "binance": _fetch_binance,
@@ -190,6 +196,25 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
         except Exception as e:
             logger.error("Metric computation failed: %s", e)
 
+        try:
+            # TODO: plug real addresses here
+            uniswap_data = fetch_v2_reserves("<UNISWAP_PAIR>")
+            sushiswap_data = fetch_v2_reserves("<SUSHISWAP_PAIR>")
+            curve_data = curve_get_dy("<CURVE_POOL>", 0, 1, 10**18)
+            aave_data = aave_get_reserve_data("<AAVE_POOL>", "<ASSET>")
+            maker_data = maker_dai_stats()
+
+            defi_health = compute_defi_health(
+                uniswap_data,
+                sushiswap_data,
+                curve_data,
+                aave_data,
+                maker_data,
+            )
+        except Exception as e:
+            logger.error("DeFi layer failed: %s", e)
+            defi_health = None
+
     payload = build_payload(
         coins_vol,
         sent_reddit,
@@ -206,6 +231,7 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
         liquidity=liquidity,
         arbitrage=arbitrage,
         depth_heatmaps=depth_heatmaps,
+        defi_health=defi_health,
     )
 
     if write_snaps:
@@ -217,6 +243,7 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
             write_snapshot("volatility", coins_vol)
             write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
             write_snapshot("developer", {})
+            write_snapshot("defi_health", defi_health)
         except Exception as e:
             logger.error("Snapshot writing failed: %s", e)
 
@@ -257,7 +284,6 @@ def main():
     args = parser.parse_args()
 
     if args.api:
-        # run API server (you’ll start uvicorn externally)
         logger.info("API mode selected. Use: uvicorn volatiai.src.api:app")
         return
 
