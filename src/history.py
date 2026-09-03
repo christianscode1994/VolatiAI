@@ -15,7 +15,13 @@ def write_snapshot(metric: str, data: dict) -> str:
     """
     ts = current_ts()
     path = Path(f"history/{metric}/{ts}.json")
-    path.parent.mkdir(parents=True, exist_ok=True)
+    parent = path.parent
+
+    # --- FIX: GitHub Actions sometimes creates folders as files/symlinks ---
+    if not parent.exists():
+        parent.mkdir(parents=True, exist_ok=True)
+    elif not parent.is_dir():
+        raise NotADirectoryError(f"{parent} exists but is not a directory")
 
     with path.open("w") as f:
         json.dump(data, f, separators=(",", ":"), sort_keys=True)
