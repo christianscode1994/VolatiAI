@@ -528,7 +528,170 @@ def api_defi_peg_forecast(days: int = 7):
         },
     }
 
-    
+    # ============================================================
+# =======================  TIER 4 ANALYTICS  ==================
+# ============================================================
+
+@app.get("/defi/systemic-risk")
+def api_defi_systemic_risk(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    # Compute volatility of the DeFi score
+    scores = [
+        score_defi(
+            s.get("uniswap_liquidity", 0),
+            s.get("sushiswap_liquidity", 0),
+            s.get("curve_stability", 0),
+            s.get("aave_utilization", 0),
+            s.get("dai_peg_deviation", 0),
+        )
+        for s in snaps
+    ]
+
+    if len(scores) < 2:
+        vol = 0.0
+    else:
+        mean = sum(scores) / len(scores)
+        var = sum((x - mean) ** 2 for x in scores) / len(scores)
+        vol = var ** 0.5
+
+    latest = snaps[-1]
+    peg = abs(latest.get("dai_peg_deviation", 0))
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    systemic_risk = (
+        peg * 2.0 +
+        util * 1.5 +
+        (1 - curve) * 1.2 +
+        vol * 1.0
+    )
+
+    return {
+        "days": days,
+        "systemic_risk_score": round(systemic_risk, 4),
+        "components": {
+            "peg_stress": peg,
+            "utilization_stress": util,
+            "curve_stress": (1 - curve),
+            "volatility_stress": vol,
+        },
+    }
+
+
+@app.get("/defi/correlation")
+def api_defi_correlation(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    series = {
+        "uniswap_liquidity": [s.get("uniswap_liquidity", 0) for s in snaps],
+        "sushiswap_liquidity": [s.get("sushiswap_liquidity", 0) for s in snaps],
+        "curve_stability": [s.get("curve_stability", 0) for s in snaps],
+        "aave_utilization": [s.get("aave_utilization", 0) for s in snaps],
+        "dai_peg_deviation": [s.get("dai_peg_deviation", 0) for s in snaps],
+    }
+
+    def corr(x, y):
+        n = len(x)
+        if n < 2:
+            return 0.0
+        mx = sum(x) / n
+        my = sum(y) / n
+        num = sum((xi - mx) * (yi - my) for xi, yi in zip(x, y))
+        denx = sum((xi - mx) ** 2 for xi in x)
+        deny = sum((yi - my) ** 2 for yi in y)
+        if denx == 0 or deny == 0:
+            return 0.0
+        return num / ((denx ** 0.5) * (deny ** 0.5))
+
+    keys = list(series.keys())
+    matrix = {}
+    for i in range(len(keys)):
+        for j in range(i + 1, len(keys)):
+            k1, k2 = keys[i], keys[j]
+            matrix[f"{k1}__{k2}"] = corr(series[k1], series[k2])
+
+    return {
+        "days": days,
+        "correlation_pairs": matrix,
+    }
+
+
+@app.get("/defi/liquidations")
+def api_defi_liquidations(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    events = []
+    for s in snaps:
+        score = score_defi(
+            s.get("uniswap_liquidity", 0),
+            s.get("sushiswap_liquidity", 0),
+            s.get("curve_stability", 0),
+            s.get("aave_utilization", 0),
+            s.get("dai_peg_deviation", 0),
+        )
+        util = s.get("aave_utilization", 0)
+        peg = abs(s.get("dai_peg_deviation", 0))
+
+        intensity = max(0.0, util * 0.5 + peg * 10 - score * 0.2)
+        if intensity <= 0:
+            continue
+
+        events.append({
+            "timestamp": s.get("timestamp", None),
+            "simulated_liquidation_intensity": round(intensity, 4),
+            "aave_utilization": util,
+            "dai_peg_deviation": s.get("dai_peg_deviation", 0),
+            "defi_score": score,
+        })
+
+    return {
+        "days": days,
+        "simulated_liquidations": events,
+        "note": "Synthetic events derived from DeFi metrics; no real user or chain data.",
+    }
+
+
+@app.get("/defi/swaps")
+def api_defi_swaps(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps or len(snaps) < 2:
+        raise HTTPException(status_code=404, detail="Not enough DeFi snapshots")
+
+    events = []
+    for i in range(1, len(snaps)):
+        prev = snaps[i - 1]
+        curr = snaps[i]
+
+        d_uni = curr.get("uniswap_liquidity", 0) - prev.get("uniswap_liquidity", 0)
+        d_sushi = curr.get("sushiswap_liquidity", 0) - prev.get("sushiswap_liquidity", 0)
+        curve = curr.get("curve_stability", 0)
+
+        pressure = max(0.0, (abs(d_uni) + abs(d_sushi)) * (1 - curve))
+
+        if pressure <= 0:
+            continue
+
+        events.append({
+            "timestamp": curr.get("timestamp", None),
+            "simulated_swap_pressure": round(pressure, 4),
+            "delta_uniswap_liquidity": d_uni,
+            "delta_sushiswap_liquidity": d_sushi,
+            "curve_stability": curve,
+        })
+
+    return {
+        "days": days,
+        "simulated_swaps": events,
+        "note": "Synthetic swap pressure derived from liquidity and curve metrics.",
+    }
+
 
     
     
