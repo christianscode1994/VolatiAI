@@ -8,6 +8,8 @@ from metrics import (
     detect_alerts,
 )
 from dashboard import build_dashboard
+from defi_scoring import score_defi
+from compute_defi_alerts import compute_defi_alerts
 
 app = FastAPI(
     title="VolatiAI API",
@@ -30,11 +32,16 @@ def root():
             "/metric/{name}",
             "/latest/{name}",
             "/snapshots/{name}/{days}",
+            "/defi",
+            "/defi/score",
+            "/defi/alerts",
+            "/defi/history",
+            "/defi/trends",
         ],
     }
 
 
-# --- DASHBOARD (INTEGRATED ROUTER LOGIC) ---
+# --- DASHBOARD ---
 
 @app.get("/dashboard")
 def api_dashboard(days: int = 7):
@@ -94,3 +101,85 @@ def api_snapshots(name: str, days: int):
 
     snaps = read_snapshots(name, days)
     return {"metric": name, "days": days, "snapshots": snaps}
+
+
+# ============================================================
+# =======================  DEFI API  =========================
+# ============================================================
+
+# --- DEFI ROOT ---
+
+@app.get("/defi")
+def api_defi(days: int = 7):
+    d = build_dashboard(days)
+    if not d["defi"]:
+        raise HTTPException(status_code=404, detail="No DeFi data available")
+    return d["defi"]
+
+
+# --- DEFI SCORE ---
+
+@app.get("/defi/score")
+def api_defi_score(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+    score = score_defi(
+        latest.get("uniswap_liquidity", 0),
+        latest.get("sushiswap_liquidity", 0),
+        latest.get("curve_stability", 0),
+        latest.get("aave_utilization", 0),
+        latest.get("dai_peg_deviation", 0),
+    )
+    return {"days": days, "score": score}
+
+
+# --- DEFI ALERTS ---
+
+@app.get("/defi/alerts")
+def api_defi_alerts(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+    alerts = compute_defi_alerts(latest)
+    return {"days": days, "alerts": alerts}
+
+
+# --- DEFI HISTORY ---
+
+@app.get("/defi/history")
+def api_defi_history(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+    return {"days": days, "snapshots": snaps}
+
+
+# --- DEFI TRENDS ---
+
+@app.get("/defi/trends")
+def api_defi_trends(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    scores = [
+        score_defi(
+            s.get("uniswap_liquidity", 0),
+            s.get("sushiswap_liquidity", 0),
+            s.get("curve_stability", 0),
+            s.get("aave_utilization", 0),
+            s.get("dai_peg_deviation", 0),
+        )
+        for s in snaps
+    ]
+
+    return {
+        "days": days,
+        "points": len(scores),
+        "scores": scores,
+    }
