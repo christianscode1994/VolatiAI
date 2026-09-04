@@ -442,6 +442,96 @@ def api_defi_forecast(days: int = 7):
     if not snaps:
         raise HTTPException(status_code=404, detail="No DeFi snapshots found")
 
+
+@app.get("/defi/anomalies")
+def api_defi_anomalies(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    anomalies = []
+    for s in snaps:
+        if abs(s.get("dai_peg_deviation", 0)) > 0.02:
+            anomalies.append({"type": "peg_break", "snapshot": s})
+        if s.get("uniswap_liquidity", 0) < 0.5 * snaps[-1].get("uniswap_liquidity", 1):
+            anomalies.append({"type": "liquidity_drop", "snapshot": s})
+        if s.get("aave_utilization", 0) > 0.9:
+            anomalies.append({"type": "utilization_spike", "snapshot": s})
+        if s.get("curve_stability", 0) < 0.8:
+            anomalies.append({"type": "curve_imbalance", "snapshot": s})
+
+    return {"days": days, "anomalies": anomalies}
+
+
+@app.get("/defi/stability")
+def api_defi_stability(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    peg_var = sum(abs(s.get("dai_peg_deviation", 0)) for s in snaps) / len(snaps)
+    util_var = sum(s.get("aave_utilization", 0) for s in snaps) / len(snaps)
+    curve_var = sum(s.get("curve_stability", 0) for s in snaps) / len(snaps)
+
+    stability = max(0.0, min(1.0, (curve_var * 0.5 + (1 - peg_var) * 0.3 + (1 - util_var) * 0.2)))
+
+@app.get("/defi/liquidity/forecast")
+def api_defi_liquidity_forecast(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    uni = [s.get("uniswap_liquidity", 0) for s in snaps]
+    sushi = [s.get("sushiswap_liquidity", 0) for s in snaps]
+
+    def forecast(series):
+        if len(series) < 3:
+            return series[-1]
+        return sum(series[-3:]) / 3
+
+    return {
+        "days": days,
+        "uniswap_liquidity_forecast": round(forecast(uni), 4),
+        "sushiswap_liquidity_forecast": round(forecast(sushi), 4),
+        "method": "3-point moving average",
+    }
+
+@app.get("/defi/peg/forecast")
+def api_defi_peg_forecast(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    peg = [s.get("dai_peg_deviation", 0) for s in snaps]
+
+    if len(peg) < 3:
+        forecast = peg[-1]
+    else:
+        forecast = sum(peg[-3:]) / 3
+
+    return {
+        "days": days,
+        "peg_forecast": round(forecast, 6),
+        "method": "3-point moving average",
+    }
+
+    
+
+    
+    return {
+        "days": days,
+        "stability_score": round(stability, 4),
+        "components": {
+            "peg_stability": round(1 - peg_var, 4),
+            "utilization_stability": round(1 - util_var, 4),
+            "curve_stability": round(curve_var, 4),
+        },
+    }
+
+    
+
+    
+    
     scores = [
         score_defi(
             s.get("uniswap_liquidity", 0),
