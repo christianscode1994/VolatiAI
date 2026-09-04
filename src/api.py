@@ -686,13 +686,295 @@ def api_defi_swaps(days: int = 7):
             "curve_stability": curve,
         })
 
+@app.get("/defi/stress-test")
+def api_defi_stress_test(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+
+    peg = latest.get("dai_peg_deviation", 0)
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    stress_peg = peg * 3.0
+    stress_util = util * 1.8
+    stress_curve = max(0.0, curve - 0.25)
+
+    stress_score = (
+        abs(stress_peg) * 2.0 +
+        stress_util * 1.5 +
+        (1 - stress_curve) * 1.2
+    )
+
+    return {
+        "days": days,
+        "stress_score": round(stress_score, 4),
+        "shock_scenario": {
+            "peg_break": round(stress_peg, 4),
+            "utilization_spike": round(stress_util, 4),
+            "curve_imbalance": round(1 - stress_curve, 4),
+        },
+    }
+
+@app.get("/defi/risk-zones")
+def api_defi_risk_zones(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+
+    peg = abs(latest.get("dai_peg_deviation", 0))
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    score = peg * 2 + util * 1.5 + (1 - curve)
+
+    if score < 0.5:
+        zone = "green"
+    elif score < 1.5:
+        zone = "yellow"
+    elif score < 3.0:
+        zone = "orange"
+    else:
+        zone = "red"
+
+    return {
+        "days": days,
+        "risk_zone": zone,
+        "risk_score": round(score, 4),
+    }
+
+@app.get("/defi/narrative")
+def api_defi_narrative(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+
+    peg = latest.get("dai_peg_deviation", 0)
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    narrative = []
+
+    if abs(peg) < 0.005:
+        narrative.append("DAI peg remains stable.")
+    else:
+        narrative.append("DAI peg shows mild deviation.")
+
+    if util < 0.4:
+        narrative.append("Aave utilization is healthy.")
+    elif util < 0.7:
+        narrative.append("Aave utilization is elevated.")
+    else:
+        narrative.append("Aave utilization is under stress.")
+
+    if curve > 0.9:
+        narrative.append("Curve pools are well‑balanced.")
+    else:
+        narrative.append("Curve pools show imbalance pressure.")
+
+    return {
+        "days": days,
+        "narrative": " ".join(narrative),
+    }
+@app.get("/defi/fusion")
+def api_defi_fusion(days: int = 7):
+    sys = api_defi_systemic_risk(days)
+    stress = api_defi_stress_test(days)
+    zones = api_defi_risk_zones(days)
+
+    fusion_score = (
+        sys["systemic_risk_score"] * 0.5 +
+        stress["stress_score"] * 0.3 +
+        zones["risk_score"] * 0.2
+    )
+
+    return {
+        "days": days,
+        "fusion_score": round(fusion_score, 4),
+        "components": {
+            "systemic_risk": sys["systemic_risk_score"],
+            "stress_test": stress["stress_score"],
+            "risk_zone_score": zones["risk_score"],
+        },
+    }
+
+@app.get("/defi/macro-sensitivity")
+def api_defi_macro_sensitivity(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+
+    peg = abs(latest.get("dai_peg_deviation", 0))
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    sensitivity = (
+        peg * 1.5 +
+        util * 1.2 +
+        (1 - curve) * 1.3
+    )
+
+    return {
+        "days": days,
+        "macro_sensitivity": round(sensitivity, 4),
+        "note": "Synthetic macro sensitivity derived from DeFi metrics only.",
+    }
+
+    
+    
+    
+
+
+    
     return {
         "days": days,
         "simulated_swaps": events,
         "note": "Synthetic swap pressure derived from liquidity and curve metrics.",
     }
 
+@app.get("/defi/regime")
+def api_defi_regime(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
 
+    scores = [
+        score_defi(
+            s.get("uniswap_liquidity", 0),
+            s.get("sushiswap_liquidity", 0),
+            s.get("curve_stability", 0),
+            s.get("aave_utilization", 0),
+            s.get("dai_peg_deviation", 0),
+        )
+        for s in snaps
+    ]
+
+    if len(scores) < 2:
+        return {
+            "days": days,
+            "regime": "unknown",
+            "reason": "not enough data",
+        }
+
+    mean = sum(scores) / len(scores)
+    var = sum((x - mean) ** 2 for x in scores) / len(scores)
+    vol = var ** 0.5
+
+    if vol < 0.05:
+        regime = "stable"
+    elif vol < 0.15:
+        regime = "fragile"
+    elif vol < 0.3:
+        regime = "stressed"
+    else:
+        regime = "chaotic"
+
+    return {
+        "days": days,
+        "regime": regime,
+        "volatility": round(vol, 4),
+        "average_score": round(mean, 4),
+    }
+
+
+@app.get("/defi/early-warning")
+def api_defi_early_warning(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps or len(snaps) < 3:
+        raise HTTPException(status_code=404, detail="Not enough DeFi snapshots")
+
+    latest = snaps[-1]
+    prev = snaps[-2]
+    prev2 = snaps[-3]
+
+    peg_trend = latest.get("dai_peg_deviation", 0) - prev.get("dai_peg_deviation", 0)
+    util_trend = latest.get("aave_utilization", 0) - prev.get("aave_utilization", 0)
+    curve_trend = latest.get("curve_stability", 0) - prev.get("curve_stability", 0)
+
+    warnings = []
+
+    if abs(latest.get("dai_peg_deviation", 0)) > 0.01 and peg_trend > 0:
+        warnings.append("Peg deviation is rising and above threshold.")
+
+    if latest.get("aave_utilization", 0) > 0.7 and util_trend > 0:
+        warnings.append("Aave utilization is high and increasing.")
+
+    if latest.get("curve_stability", 0) < 0.9 and curve_trend < 0:
+        warnings.append("Curve stability is low and deteriorating.")
+
+    regime_info = api_defi_regime(days)
+
+    return {
+        "days": days,
+        "regime": regime_info["regime"],
+        "warnings": warnings,
+        "metrics": {
+            "peg_deviation": latest.get("dai_peg_deviation", 0),
+            "aave_utilization": latest.get("aave_utilization", 0),
+            "curve_stability": latest.get("curve_stability", 0),
+        },
+    }
+
+    @app.get("/defi/intel-report")
+def api_defi_intel_report(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    latest = snaps[-1]
+
+    regime_info = api_defi_regime(days)
+    ew = api_defi_early_warning(days)
+    sys = api_defi_systemic_risk(days)
+
+    lines = []
+
+    lines.append(f"Current DeFi regime is {regime_info['regime']}.")
+    lines.append(f"Systemic risk score is {round(sys['systemic_risk_score'], 4)}.")
+
+    if ew["warnings"]:
+        lines.append("Early‑warning signals detected:")
+        for w in ew["warnings"]:
+            lines.append(f"- {w}")
+    else:
+        lines.append("No major early‑warning signals at this time.")
+
+    peg = latest.get("dai_peg_deviation", 0)
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    if abs(peg) < 0.005:
+        lines.append("DAI peg remains tightly anchored.")
+    else:
+        lines.append("DAI peg shows noticeable deviation from parity.")
+
+    if util < 0.4:
+        lines.append("Aave utilization indicates comfortable lending conditions.")
+    elif util < 0.7:
+        lines.append("Aave utilization suggests elevated demand for leverage.")
+    else:
+        lines.append("Aave utilization is under significant stress.")
+
+    if curve > 0.9:
+        lines.append("Curve pools appear well‑balanced across assets.")
+    else:
+        lines.append("Curve pools exhibit imbalance, increasing routing and slippage risk.")
+
+    return {
+        "days": days,
+        "intel_report": " ".join(lines),
+    }
+
+
+    
     
     
     scores = [
