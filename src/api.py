@@ -37,6 +37,11 @@ def root():
             "/defi/alerts",
             "/defi/history",
             "/defi/trends",
+            "/defi/liquidity",
+            "/defi/peg",
+            "/defi/utilization",
+            "/defi/curve",
+            "/defi/volatility",
         ],
     }
 
@@ -107,6 +112,13 @@ def api_snapshots(name: str, days: int):
 # =======================  DEFI API  =========================
 # ============================================================
 
+def _latest_defi(days: int):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+    return snaps[-1]
+
+
 # --- DEFI ROOT ---
 
 @app.get("/defi")
@@ -121,11 +133,7 @@ def api_defi(days: int = 7):
 
 @app.get("/defi/score")
 def api_defi_score(days: int = 7):
-    snaps = read_snapshots("defi_health", days)
-    if not snaps:
-        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
-
-    latest = snaps[-1]
+    latest = _latest_defi(days)
     score = score_defi(
         latest.get("uniswap_liquidity", 0),
         latest.get("sushiswap_liquidity", 0),
@@ -140,11 +148,7 @@ def api_defi_score(days: int = 7):
 
 @app.get("/defi/alerts")
 def api_defi_alerts(days: int = 7):
-    snaps = read_snapshots("defi_health", days)
-    if not snaps:
-        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
-
-    latest = snaps[-1]
+    latest = _latest_defi(days)
     alerts = compute_defi_alerts(latest)
     return {"days": days, "alerts": alerts}
 
@@ -183,3 +187,71 @@ def api_defi_trends(days: int = 7):
         "points": len(scores),
         "scores": scores,
     }
+
+
+# ============================================================
+# ===================  EXTRA DEFI METRICS  ===================
+# ============================================================
+
+@app.get("/defi/liquidity")
+def api_defi_liquidity(days: int = 7):
+    latest = _latest_defi(days)
+    return {
+        "days": days,
+        "uniswap_liquidity": latest.get("uniswap_liquidity", 0),
+        "sushiswap_liquidity": latest.get("sushiswap_liquidity", 0),
+    }
+
+
+@app.get("/defi/peg")
+def api_defi_peg(days: int = 7):
+    latest = _latest_defi(days)
+    return {
+        "days": days,
+        "dai_peg_deviation": latest.get("dai_peg_deviation", 0),
+    }
+
+
+@app.get("/defi/utilization")
+def api_defi_utilization(days: int = 7):
+    latest = _latest_defi(days)
+    return {
+        "days": days,
+        "aave_utilization": latest.get("aave_utilization", 0),
+    }
+
+
+@app.get("/defi/curve")
+def api_defi_curve(days: int = 7):
+    latest = _latest_defi(days)
+    return {
+        "days": days,
+        "curve_stability": latest.get("curve_stability", 0),
+    }
+
+
+@app.get("/defi/volatility")
+def api_defi_volatility(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    scores = [
+        score_defi(
+            s.get("uniswap_liquidity", 0),
+            s.get("sushiswap_liquidity", 0),
+            s.get("curve_stability", 0),
+            s.get("aave_utilization", 0),
+            s.get("dai_peg_deviation", 0),
+        )
+        for s in snaps
+    ]
+
+    if len(scores) < 2:
+        return {"days": days, "volatility": 0.0}
+
+    mean = sum(scores) / len(scores)
+    variance = sum((x - mean) ** 2 for x in scores) / len(scores)
+    volatility = variance ** 0.5
+
+    return {"days": days, "volatility": volatility}
