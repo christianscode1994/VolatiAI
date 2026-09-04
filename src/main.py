@@ -3,42 +3,25 @@ import argparse
 import logging
 import cProfile
 import pstats
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
-import os
-INFURA_URL = os.getenv("INFURA_URL")
-ALCHEMY_URL = os.getenv("ALCHEMY_URL")
-PUBLIC_RPC = "https://ethereum.publicnode.com"
 
 from .fetch_data import fetch_top_market_data, fetch_reddit_titles, fetch_hn_titles
-from .fetch_kraken import kraken_ticker, kraken_depth, kraken_ohlc
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
 from .generate_output import build_payload, write_json, write_html
-from .config import KRAKEN_PAIR
-
-from .fetch_binance import binance_depth, binance_ticker, binance_klines
-from .fetch_coinbase import coinbase_depth, coinbase_ticker, coinbase_trades
-from .fetch_crypto_com import crypto_com_depth, crypto_com_ticker, crypto_com_candles
-from .fetch_bybit import bybit_depth, bybit_ticker
-from .fetch_okx import okx_depth, okx_ticker
-
-from .compute_whales import compute_whale_pressure
-from .compute_spoofing import compute_spoofing_for_exchanges
-from .compute_liquidity import compute_liquidity_snapshot
-from .compute_arbitrage import compute_arbitrage_deltas
-from .compute_depth_heatmap import compute_depth_heatmaps
-
-from .dex_uniswap_sushi import fetch_v2_reserves
-from .dex_curve import curve_get_dy
-from .dex_aave import aave_get_reserve_data
-from .dex_maker_api import maker_dai_stats
-from .compute_defi_health import compute_defi_health
-
 from .history import write_snapshot
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
 from .api import app  # for --api mode
+
+# Intelligence layers (serverless, snapshot-based)
+from .compute_defi_health import compute_defi_health_from_snapshots
+from .api import (
+    api_market_metrics,
+    api_market_regime,
+    api_market_stress_test,
+    api_market_early_warning,
+    api_market_intel_report,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -51,206 +34,89 @@ logging.basicConfig(
 logger = logging.getLogger("volatai")
 
 
-def _fetch_kraken():
-    try:
-        ticker = kraken_ticker(KRAKEN_PAIR)
-        depth = kraken_depth(KRAKEN_PAIR, count=20)
-        ohlc = kraken_ohlc(KRAKEN_PAIR, interval=15)
-        return {
-            "pair": KRAKEN_PAIR,
-            "ticker": ticker,
-            "depth": depth,
-            "ohlc": ohlc,
-        }
-    except Exception as e:
-        logger.error("Kraken fetch failed: %s", e)
-        return {"error": str(e)}
-
-
-def _fetch_binance():
-    try:
-        return {
-            "ticker": binance_ticker("BTCUSDT"),
-            "depth": binance_depth("BTCUSDT", limit=50),
-            "klines": binance_klines("BTCUSDT", interval="15m", limit=100),
-        }
-    except Exception as e:
-        logger.error("Binance fetch failed: %s", e)
-        return {"error": str(e)}
-
-
-def _fetch_coinbase():
-    try:
-        return {
-            "ticker": coinbase_ticker("BTC-USD"),
-            "depth": coinbase_depth("BTC-USD", level=2),
-            "trades": coinbase_trades("BTC-USD"),
-        }
-    except Exception as e:
-        logger.error("Coinbase fetch failed: %s", e)
-        return {"error": str(e)}
-
-
-def _fetch_crypto_com():
-    try:
-        return {
-            "ticker": crypto_com_ticker("BTC_USDT"),
-            "depth": crypto_com_depth("BTC_USDT"),
-            "candles": crypto_com_candles("BTC_USDT", interval="15m"),
-        }
-    except Exception as e:
-        logger.error("Crypto.com fetch failed: %s", e)
-        return {"error": str(e)}
-
-
-def _fetch_bybit():
-    try:
-        return {
-            "ticker": bybit_ticker("BTCUSDT"),
-            "depth": bybit_depth("BTCUSDT", limit=50),
-        }
-    except Exception as e:
-        logger.error("Bybit fetch failed: %s", e)
-        return {"error": str(e)}
-
-
-def _fetch_okx():
-    try:
-        return {
-            "ticker": okx_ticker("BTC-USDT"),
-            "depth": okx_depth("BTC-USDT", limit=50),
-        }
-    except Exception as e:
-        logger.error("OKX fetch failed: %s", e)
-        return {"error": str(e)}
-
-
 def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     logger.info("Running tier=%s", tier)
 
+    # -----------------------------
+    # 1. MARKET SNAPSHOTS
+    # -----------------------------
     try:
         coins = fetch_top_market_data()
         coins_vol = compute_volatility_summary(coins)
+    except Exception as e:
+        logger.error("Market pipeline failed: %s", e)
+        return
 
+    # -----------------------------
+    # 2. SENTIMENT SNAPSHOTS
+    # -----------------------------
+    try:
         reddit_titles = fetch_reddit_titles()
         hn_titles = fetch_hn_titles()
 
         sent_reddit = compute_sentiment(reddit_titles)
         sent_hn = compute_sentiment(hn_titles)
     except Exception as e:
-        logger.error("Market/sentiment pipeline failed: %s", e)
+        logger.error("Sentiment pipeline failed: %s", e)
         return
 
-    kraken_data = None
-    binance_data = None
-    coinbase_data = None
-    crypto_com_data = None
-    bybit_data = None
-    okx_data = None
+    # -----------------------------
+    # 3. DEFI HEALTH (SNAPSHOT-BASED)
+    # -----------------------------
+    try:
+        defi_health = compute_defi_health_from_snapshots()
+    except Exception as e:
+        logger.error("DeFi health computation failed: %s", e)
+        defi_health = None
 
-    whales = None
-    spoofing = None
-    liquidity = None
-    arbitrage = None
-    depth_heatmaps = None
-    defi_health = None
+    # -----------------------------
+    # 4. MARKET INTELLIGENCE LAYER (M1–M5)
+    # -----------------------------
+    try:
+        market_metrics = api_market_metrics(days=7)
+        market_regime = api_market_regime(days=7)
+        market_stress = api_market_stress_test(days=7)
+        market_ew = api_market_early_warning(days=7)
+        market_report = api_market_intel_report(days=7)
+    except Exception as e:
+        logger.error("Market intelligence failed: %s", e)
+        market_metrics = {}
+        market_regime = {}
+        market_stress = {}
+        market_ew = {}
+        market_report = {}
 
-    if tier == "pro":
-        tasks = {
-            "kraken": _fetch_kraken,
-            "binance": _fetch_binance,
-            "coinbase": _fetch_coinbase,
-            "crypto_com": _fetch_crypto_com,
-            "bybit": _fetch_bybit,
-            "okx": _fetch_okx,
-        }
-        results = {}
-        with ThreadPoolExecutor(max_workers=len(tasks)) as ex:
-            futures = {ex.submit(fn): name for name, fn in tasks.items()}
-            for fut in as_completed(futures):
-                name = futures[fut]
-                results[name] = fut.result()
-
-        kraken_data = results["kraken"]
-        binance_data = results["binance"]
-        coinbase_data = results["coinbase"]
-        crypto_com_data = results["crypto_com"]
-        bybit_data = results["bybit"]
-        okx_data = results["okx"]
-
-        exchanges = {
-            "kraken": kraken_data,
-            "binance": binance_data,
-            "coinbase": coinbase_data,
-            "crypto_com": crypto_com_data,
-            "bybit": bybit_data,
-            "okx": okx_data,
-        }
-
-        try:
-            whales = compute_whale_pressure(exchanges)
-            spoofing = compute_spoofing_for_exchanges(exchanges)
-            liquidity = compute_liquidity_snapshot(exchanges)
-            arbitrage = compute_arbitrage_deltas(exchanges)
-            depth_heatmaps = compute_depth_heatmaps(exchanges)
-        except Exception as e:
-            logger.error("Metric computation failed: %s", e)
-
-        try:
-            # TODO: plug real addresses here
-            uniswap_data = fetch_v2_reserves("<UNISWAP_PAIR>")
-            sushiswap_data = fetch_v2_reserves("<SUSHISWAP_PAIR>")
-            curve_data = curve_get_dy("<CURVE_POOL>", 0, 1, 10**18)
-            aave_data = aave_get_reserve_data(
-    "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9",
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-)
-
-            maker_data = maker_dai_stats()
-
-            defi_health = compute_defi_health(
-                uniswap_data,
-                sushiswap_data,
-                curve_data,
-                aave_data,
-                maker_data,
-            )
-        except Exception as e:
-            logger.error("DeFi layer failed: %s", e)
-            defi_health = None
-
+    # -----------------------------
+    # 5. BUILD PAYLOAD
+    # -----------------------------
     payload = build_payload(
         coins_vol,
         sent_reddit,
         sent_hn,
         tier=tier,
-        kraken_data=kraken_data,
-        binance_data=binance_data,
-        coinbase_data=coinbase_data,
-        crypto_com_data=crypto_com_data,
-        bybit_data=bybit_data,
-        okx_data=okx_data,
-        whales=whales,
-        spoofing=spoofing,
-        liquidity=liquidity,
-        arbitrage=arbitrage,
-        depth_heatmaps=depth_heatmaps,
+        market=market_metrics,
+        market_regime=market_regime,
+        market_stress=market_stress,
+        market_ew=market_ew,
+        market_report=market_report,
         defi_health=defi_health,
     )
 
+    # -----------------------------
+    # 6. WRITE SNAPSHOTS
+    # -----------------------------
     if write_snaps:
         try:
-            write_snapshot("whales", whales)
-            write_snapshot("spoofing", spoofing)
-            write_snapshot("liquidity", liquidity)
-            write_snapshot("arbitrage", arbitrage)
             write_snapshot("volatility", coins_vol)
             write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
-            write_snapshot("developer", {})
+            write_snapshot("market", market_metrics)
             write_snapshot("defi_health", defi_health)
         except Exception as e:
             logger.error("Snapshot writing failed: %s", e)
 
+    # -----------------------------
+    # 7. OUTPUT FILES
+    # -----------------------------
     PUBLIC_DIR.mkdir(exist_ok=True)
     PRIVATE_DIR.mkdir(exist_ok=True)
 
@@ -267,6 +133,9 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     except Exception as e:
         logger.error("Output writing failed: %s", e)
 
+    # -----------------------------
+    # 8. DASHBOARD
+    # -----------------------------
     if show_dashboard:
         print_dashboard(days=7)
         aggregated = aggregate_all_metrics(__import__("volatiai.src.history"), days=7)
