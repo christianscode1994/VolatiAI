@@ -9,7 +9,12 @@ from metrics import (
 )
 from dashboard import build_dashboard
 from defi_scoring import score_defi
-from compute_defi_alerts import compute_defi_alerts
+from compute_defi_alerts import compute_defi_Ealerts
+
+from .compute_defi_health import compute_defi_health_from_snapshots
+from .api import (
+    api_market_metrics,
+    api_market_regime,
 
 app = FastAPI(
     title="VolatiAI API",
@@ -973,7 +978,360 @@ def api_defi_intel_report(days: int = 7):
         "intel_report": " ".join(lines),
     }
 
+# S1 — Sentiment metrics
+@router.get("/sentiment/metrics")
+def api_sentiment_metrics(days: int = 7):
+    snaps = read_snapshots("sentiment", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No sentiment snapshots")
 
+    reddit_scores = [s["reddit"]["score"] for s in snaps if "reddit" in s]
+    hn_scores = [s["hn"]["score"] for s in snaps if "hn" in s]
+
+    def _avg(xs):
+        return sum(xs) / len(xs) if xs else 0.0
+
+    return {
+        "days": days,
+        "reddit_avg": round(_avg(reddit_scores), 6),
+        "hn_avg": round(_avg(hn_scores), 6),
+    }
+
+
+# S2 — Sentiment volatility
+@router.get("/sentiment/volatility")
+def api_sentiment_volatility(days: int = 7):
+    snaps = read_snapshots("sentiment", days)
+    if not snaps or len(snaps) < 2:
+        raise HTTPException(status_code=404, detail="Not enough sentiment snapshots")
+
+    reddit_scores = [s["reddit"]["score"] for s in snaps if "reddit" in s]
+    hn_scores = [s["hn"]["score"] for s in snaps if "hn" in s]
+
+    def _vol(xs):
+        if len(xs) < 2:
+            return 0.0
+        mean = sum(xs) / len(xs)
+        return (sum((x - mean) ** 2 for x in xs) / len(xs)) ** 0.5
+
+    return {
+        "days": days,
+        "reddit_volatility": round(_vol(reddit_scores), 6),
+        "hn_volatility": round(_vol(hn_scores), 6),
+    }
+
+
+# S3 — Sentiment regime
+@router.get("/sentiment/regime")
+def api_sentiment_regime(days: int = 7):
+    metrics = api_sentiment_metrics(days)
+    reddit = metrics["reddit_avg"]
+    hn = metrics["hn_avg"]
+
+    avg = (reddit + hn) / 2.0
+
+    if avg > 0.2:
+        regime = "bullish"
+    elif avg < -0.2:
+        regime = "bearish"
+    else:
+        regime = "neutral"
+
+    return {
+        "days": days,
+        "regime": regime,
+        "reddit_avg": reddit,
+        "hn_avg": hn,
+    }
+
+
+# S4 — Sentiment early-warning
+@router.get("/sentiment/early-warning")
+def api_sentiment_early_warning(days: int = 7):
+    snaps = read_snapshots("sentiment", days)
+    if not snaps or len(snaps) < 3:
+        raise HTTPException(status_code=404, detail="Not enough sentiment snapshots")
+
+    m1 = api_sentiment_metrics(days)
+    m2 = api_sentiment_metrics(days - 1)
+    m3 = api_sentiment_metrics(days - 2)
+
+    warnings = []
+
+    if m1["reddit_avg"] < m2["reddit_avg"] < m3["reddit_avg"]:
+        warnings.append("Reddit sentiment weakening consistently.")
+    if m1["hn_avg"] < m2["hn_avg"] < m3["hn_avg"]:
+        warnings.append("HN sentiment weakening consistently.")
+
+    return {
+        "days": days,
+        "warnings": warnings,
+        "metrics": m1,
+    }
+
+
+# S5 — Sentiment intelligence report
+@router.get("/sentiment/intel-report")
+def api_sentiment_intel_report(days: int = 7):
+    metrics = api_sentiment_metrics(days)
+    regime = api_sentiment_regime(days)
+    ew = api_sentiment_early_warning(days)
+
+    lines = []
+    lines.append(f"Sentiment regime: {regime['regime']}.")
+    lines.append(f"Reddit avg sentiment: {round(metrics['reddit_avg'], 6)}.")
+    lines.append(f"HN avg sentiment: {round(metrics['hn_avg'], 6)}.")
+
+    if ew["warnings"]:
+        lines.append("Early‑warning signals:")
+        for w in ew["warnings"]:
+            lines.append(f"- {w}")
+    else:
+        lines.append("No major sentiment early‑warning signals detected.")
+
+    return {
+        "days": days,
+        "intel_report": " ".join(lines),
+    }    
+
+
+# X1 — Macro metrics
+@router.get("/macro/metrics")
+def api_macro_metrics(days: int = 7):
+    snaps = read_snapshots("macro", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No macro snapshots")
+
+    def _avg_key(key):
+        vals = [s.get(key, 0.0) for s in snaps]
+        return sum(vals) / len(vals) if vals else 0.0
+
+    return {
+        "days": days,
+        "risk_off": round(_avg_key("risk_off"), 6),
+        "liquidity": round(_avg_key("liquidity"), 6),
+        "policy_pressure": round(_avg_key("policy_pressure"), 6),
+    }
+
+
+# X2 — Macro stress test
+@router.get("/macro/stress-test")
+def api_macro_stress_test(days: int = 7):
+    m = api_macro_metrics(days)
+
+    stress_risk_off = m["risk_off"] + 0.3
+    stress_liquidity = max(m["liquidity"] - 0.3, 0.0)
+    stress_policy = m["policy_pressure"] + 0.2
+
+    stress_score = (
+        stress_risk_off * 0.6
+        + (1.0 - stress_liquidity) * 0.3
+        + stress_policy * 0.5
+    )
+
+    return {
+        "days": days,
+        "stress_score": round(stress_score, 6),
+        "shock_scenario": {
+            "risk_off": round(stress_risk_off, 6),
+            "liquidity": round(stress_liquidity, 6),
+            "policy_pressure": round(stress_policy, 6),
+        },
+    }
+
+
+# X3 — Macro regime
+@router.get("/macro/regime")
+def api_macro_regime(days: int = 7):
+    m = api_macro_metrics(days)
+
+    if m["risk_off"] > 0.6 and m["liquidity"] < 0.4:
+        regime = "risk_off"
+    elif m["liquidity"] > 0.6 and m["policy_pressure"] < 0.4:
+        regime = "risk_on"
+    else:
+        regime = "mixed"
+
+    return {
+        "days": days,
+        "regime": regime,
+        "metrics": m,
+    }
+
+
+# X4 — Macro early-warning
+@router.get("/macro/early-warning")
+def api_macro_early_warning(days: int = 7):
+    snaps = read_snapshots("macro", days)
+    if not snaps or len(snaps) < 3:
+        raise HTTPException(status_code=404, detail="Not enough macro snapshots")
+
+    m1 = api_macro_metrics(days)
+    m2 = api_macro_metrics(days - 1)
+    m3 = api_macro_metrics(days - 2)
+
+    warnings = []
+
+    if m1["risk_off"] > m2["risk_off"] > m3["risk_off"]:
+        warnings.append("Risk‑off pressure rising.")
+    if m1["liquidity"] < m2["liquidity"] < m3["liquidity"]:
+        warnings.append("Liquidity deteriorating.")
+    if m1["policy_pressure"] > 0.7:
+        warnings.append("High policy pressure detected.")
+
+    return {
+        "days": days,
+        "warnings": warnings,
+        "metrics": m1,
+    }
+
+
+# X5 — Macro intelligence report
+@router.get("/macro/intel-report")
+def api_macro_intel_report(days: int = 7):
+    m = api_macro_metrics(days)
+    regime = api_macro_regime(days)
+    ew = api_macro_early_warning(days)
+
+    lines = []
+    lines.append(f"Macro regime: {regime['regime']}.")
+    lines.append(f"Risk‑off index: {round(m['risk_off'], 6)}.")
+    lines.append(f"Liquidity index: {round(m['liquidity'], 6)}.")
+    lines.append(f"Policy pressure: {round(m['policy_pressure'], 6)}.")
+
+    if ew["warnings"]:
+        lines.append("Early‑warning signals:")
+        for w in ew["warnings"]:
+            lines.append(f"- {w}")
+    else:
+        lines.append("No major macro early‑warning signals detected.")
+
+    return {
+        "days": days,
+        "intel_report": " ".join(lines),
+    }
+
+
+
+# F1 — Fusion score
+@router.get("/fusion/score")
+def api_fusion_score(days: int = 7):
+    market = api_market_metrics(days)
+    sentiment = api_sentiment_metrics(days)
+    macro = api_macro_metrics(days)
+    defi = compute_defi_health_from_snapshots()
+
+    # Normalize some components
+    vol = market["volatility"]
+    mr = market["avg_return"]
+    sent = (sentiment["reddit_avg"] + sentiment["hn_avg"]) / 2.0
+    risk_off = macro["risk_off"]
+    liq = macro["liquidity"]
+    defi_score = defi.get("health_score", 0.5)  # assume 0–1
+
+    fusion = (
+        (1.0 - min(vol, 0.5)) * 0.2 +
+        max(mr + 0.1, 0.0) * 0.2 +
+        (sent + 0.5) * 0.2 +
+        (1.0 - risk_off) * 0.2 +
+        liq * 0.1 +
+        defi_score * 0.1
+    )
+
+    return {
+        "days": days,
+        "fusion_score": round(fusion, 6),
+        "components": {
+            "volatility": vol,
+            "avg_return": mr,
+            "sentiment": sent,
+            "risk_off": risk_off,
+            "liquidity": liq,
+            "defi_health": defi_score,
+        },
+    }
+
+
+# F2 — Fusion regime
+@router.get("/fusion/regime")
+def api_fusion_regime(days: int = 7):
+    f = api_fusion_score(days)
+    score = f["fusion_score"]
+
+    if score > 0.7:
+        regime = "constructive"
+    elif score < 0.3:
+        regime = "fragile"
+    else:
+        regime = "balanced"
+
+    return {
+        "days": days,
+        "regime": regime,
+        "fusion_score": score,
+    }
+
+
+# F3 — Fusion early-warning
+@router.get("/fusion/early-warning")
+def api_fusion_early_warning(days: int = 7):
+    snaps = read_snapshots("fusion", days)  # optional; or recompute
+    # if you don't store fusion snapshots, we can just use components directly:
+    market = api_market_metrics(days)
+    sentiment = api_sentiment_metrics(days)
+    macro = api_macro_metrics(days)
+    defi = compute_defi_health_from_snapshots()
+
+    warnings = []
+
+    if market["volatility"] > 0.05:
+        warnings.append("High market volatility.")
+    if sentiment["reddit_avg"] < -0.2 and sentiment["hn_avg"] < -0.2:
+        warnings.append("Broadly negative sentiment.")
+    if macro["risk_off"] > 0.6:
+        warnings.append("Macro risk‑off regime.")
+    if defi.get("stress_level", 0.0) > 0.6:
+        warnings.append("DeFi systemic stress elevated.")
+
+    return {
+        "days": days,
+        "warnings": warnings,
+    }
+
+
+# F4 — VolatiAI Intelligence Index
+@router.get("/fusion/index")
+def api_fusion_index(days: int = 7):
+    f = api_fusion_score(days)
+    # Map 0–1 fusion score to 0–100 index
+    index = max(0.0, min(100.0, f["fusion_score"] * 100.0))
+
+    return {
+        "days": days,
+        "volatai_index": round(index, 2),
+        "fusion_score": f["fusion_score"],
+    }
+
+
+# F5 — Full intelligence report
+@router.get("/fusion/intel-report")
+def api_fusion_intel_report(days: int = 7):
+    fscore = api_fusion_score(days)
+    fregime = api_fusion_regime(days)
+    market_reg = api_market_regime(days)
+    sent_reg = api_sentiment_regime(days)
+    macro_reg = api_macro_regime(days)
+
+    lines = []
+    lines.append(f"Fusion regime: {fregime['regime']} (score {round(fscore['fusion_score'], 6)}).")
+    lines.append(f"Market regime: {market_reg['regime']}.")
+    lines.append(f"Sentiment regime: {sent_reg['regime']}.")
+    lines.append(f"Macro regime: {macro_reg['regime']}.")
+
+    return {
+        "days": days,
+        "intel_report": " ".join(lines),
+    }
     
     
     
