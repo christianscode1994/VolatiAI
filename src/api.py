@@ -1333,6 +1333,342 @@ def api_fusion_intel_report(days: int = 7):
         "intel_report": " ".join(lines),
     }
     
+# N1 — Narrative metrics
+@router.get("/narrative/metrics")
+def api_narrative_metrics(days: int = 7):
+    snaps = read_snapshots("narrative", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No narrative snapshots")
+
+    scores = [s.get("score", 0.0) for s in snaps]
+
+    def _avg(xs):
+        return sum(xs) / len(xs) if xs else 0.0
+
+    return {
+        "days": days,
+        "avg_narrative_score": round(_avg(scores), 6),
+    }
+
+
+# N2 — Narrative volatility
+@router.get("/narrative/volatility")
+def api_narrative_volatility(days: int = 7):
+    snaps = read_snapshots("narrative", days)
+    if not snaps or len(snaps) < 2:
+        raise HTTPException(status_code=404, detail="Not enough narrative snapshots")
+
+    scores = [s.get("score", 0.0) for s in snaps]
+
+    def _vol(xs):
+        if len(xs) < 2:
+            return 0.0
+        mean = sum(xs) / len(xs)
+        return (sum((x - mean) ** 2 for x in xs) / len(xs)) ** 0.5
+
+    return {
+        "days": days,
+        "narrative_volatility": round(_vol(scores), 6),
+    }
+
+
+# N3 — Narrative regime
+@router.get("/narrative/regime")
+def api_narrative_regime(days: int = 7):
+    m = api_narrative_metrics(days)
+    score = m["avg_narrative_score"]
+
+    if score > 0.2:
+        regime = "hype"
+    elif score < -0.2:
+        regime = "fear"
+    else:
+        regime = "mixed"
+
+    return {
+        "days": days,
+        "regime": regime,
+        "avg_narrative_score": score,
+    }
+
+
+# N4 — Narrative early-warning
+@router.get("/narrative/early-warning")
+def api_narrative_early_warning(days: int = 7):
+    snaps = read_snapshots("narrative", days)
+    if not snaps or len(snaps) < 3:
+        raise HTTPException(status_code=404, detail="Not enough narrative snapshots")
+
+    m1 = api_narrative_metrics(days)
+    m2 = api_narrative_metrics(days - 1)
+    m3 = api_narrative_metrics(days - 2)
+
+    warnings = []
+
+    if m1["avg_narrative_score"] > m2["avg_narrative_score"] > m3["avg_narrative_score"]:
+        warnings.append("Narrative hype building.")
+    if m1["avg_narrative_score"] < m2["avg_narrative_score"] < m3["avg_narrative_score"]:
+        warnings.append("Narrative fear building.")
+
+    return {
+        "days": days,
+        "warnings": warnings,
+        "metrics": m1,
+    }
+
+
+# N5 — Narrative intelligence report
+@router.get("/narrative/intel-report")
+def api_narrative_intel_report(days: int = 7):
+    m = api_narrative_metrics(days)
+    regime = api_narrative_regime(days)
+    ew = api_narrative_early_warning(days)
+
+    lines = []
+    lines.append(f"Narrative regime: {regime['regime']}.")
+    lines.append(f"Average narrative score: {round(m['avg_narrative_score'], 6)}.")
+
+    if ew["warnings"]:
+        lines.append("Early‑warning signals:")
+        for w in ew["warnings"]:
+            lines.append(f"- {w}")
+    else:
+        lines.append("No major narrative early‑warning signals detected.")
+
+    return {
+        "days": days,
+        "intel_report": " ".join(lines),
+    }
+
+def api_risk_metrics(days: int = 7):
+    snaps = read_snapshots("risk", days)
+    if not snaps:
+        raise HTTPException(404, "No risk snapshots")
+
+    def avg(key):
+        vals = [s.get(key, 0.0) for s in snaps]
+        return sum(vals) / len(vals) if vals else 0.0
+
+    return {
+        "days": days,
+        "market_risk": round(avg("market_risk"), 6),
+        "defi_risk": round(avg("defi_risk"), 6),
+        "liquidity_risk": round(avg("liquidity_risk"), 6),
+        "sentiment_risk": round(avg("sentiment_risk"), 6),
+    }
+
+
+@router.get("/risk/score")
+def api_risk_score(days: int = 7):
+    m = api_risk_metrics(days)
+    score = (
+        m["market_risk"] * 0.3 +
+        m["defi_risk"] * 0.3 +
+        m["liquidity_risk"] * 0.2 +
+        m["sentiment_risk"] * 0.2
+    )
+    return {"days": days, "risk_score": round(score, 6), "components": m}
+
+
+@router.get("/risk/regime")
+def api_risk_regime(days: int = 7):
+    r = api_risk_score(days)
+    s = r["risk_score"]
+    if s > 0.7:
+        regime = "high_risk"
+    elif s < 0.3:
+        regime = "low_risk"
+    else:
+        regime = "moderate_risk"
+    return {"days": days, "regime": regime, "risk_score": s}
+
+
+@router.get("/risk/early-warning")
+def api_risk_early_warning(days: int = 7):
+    snaps = read_snapshots("risk", days)
+    if not snaps or len(snaps) < 3:
+        raise HTTPException(404, "Not enough risk snapshots")
+
+    m1 = api_risk_metrics(days)
+    m2 = api_risk_metrics(days - 1)
+    m3 = api_risk_metrics(days - 2)
+
+    warnings = []
+    if m1["defi_risk"] > m2["defi_risk"] > m3["defi_risk"]:
+        warnings.append("DeFi risk rising.")
+    if m1["liquidity_risk"] > 0.6:
+        warnings.append("Liquidity risk elevated.")
+    if m1["market_risk"] > 0.6:
+        warnings.append("Market risk elevated.")
+
+    return {"days": days, "warnings": warnings, "metrics": m1}
+
+
+@router.get("/risk/intel-report")
+def api_risk_intel_report(days: int = 7):
+    r = api_risk_score(days)
+    reg = api_risk_regime(days)
+    ew = api_risk_early_warning(days)
+
+    lines = []
+    lines.append(f"Risk regime: {reg['regime']} (score {round(r['risk_score'], 6)}).")
+    if ew["warnings"]:
+        lines.append("Early‑warning signals:")
+        for w in ew["warnings"]:
+            lines.append(f"- {w}")
+    else:
+        lines.append("No major risk early‑warning signals detected.")
+
+    return {"days": days, "intel_report": " ".join(lines)}
+
+@router.get("/asset/metrics")
+def api_asset_metrics(symbol: str, days: int = 7):
+    snaps = read_snapshots("asset", days)
+    if not snaps:
+        raise HTTPException(404, "No asset snapshots")
+
+    vals = [s.get(symbol.upper(), {}) for s in snaps]
+    if not any(vals):
+        raise HTTPException(404, f"No data for asset {symbol}")
+
+    def avg_key(key):
+        xs = [v.get(key, 0.0) for v in vals]
+        return sum(xs) / len(xs) if xs else 0.0
+
+    return {
+        "symbol": symbol.upper(),
+        "days": days,
+        "volatility": round(avg_key("volatility"), 6),
+        "return": round(avg_key("return"), 6),
+        "sentiment": round(avg_key("sentiment"), 6),
+        "defi_exposure": round(avg_key("defi_exposure"), 6),
+    }
+
+
+@router.get("/asset/score")
+def api_asset_score(symbol: str, days: int = 7):
+    m = api_asset_metrics(symbol, days)
+    score = (
+        (1.0 - min(m["volatility"], 0.5)) * 0.3 +
+        max(m["return"] + 0.05, 0.0) * 0.3 +
+        (m["sentiment"] + 0.5) * 0.2 +
+        (1.0 - m["defi_exposure"]) * 0.2
+    )
+    return {"symbol": m["symbol"], "days": days, "asset_score": round(score, 6), "metrics": m}
+
+
+@router.get("/asset/regime")
+def api_asset_regime(symbol: str, days: int = 7):
+    s = api_asset_score(symbol, days)
+    sc = s["asset_score"]
+    if sc > 0.7:
+        regime = "constructive"
+    elif sc < 0.3:
+        regime = "fragile"
+    else:
+        regime = "balanced"
+    return {"symbol": s["symbol"], "days": days, "regime": regime, "asset_score": sc}
+
+
+@router.get("/asset/intel-report")
+def api_asset_intel_report(symbol: str, days: int = 7):
+    m = api_asset_metrics(symbol, days)
+    r = api_asset_regime(symbol, days)
+
+    lines = []
+    lines.append(f"Asset {m['symbol']} regime: {r['regime']} (score {round(r['asset_score'], 6)}).")
+    lines.append(f"Volatility: {m['volatility']}, return: {m['return']}, sentiment: {m['sentiment']}, DeFi exposure: {m['defi_exposure']}.")
+
+    return {"symbol": m["symbol"], "days": days, "intel_report": " ".join(lines)}
+
+
+@router.get("/sector/metrics")
+def api_sector_metrics(days: int = 7):
+    snaps = read_snapshots("sector", days)
+    if not snaps:
+        raise HTTPException(404, "No sector snapshots")
+
+    agg = {}
+    for s in snaps:
+        for name, data in s.items():
+            cur = agg.get(name, [])
+            cur.append(data.get("score", 0.0))
+            agg[name] = cur
+
+    out = {name: sum(vals) / len(vals) for name, vals in agg.items()}
+    return {"days": days, "sectors": out}
+
+
+@router.get("/sector/regime")
+def api_sector_regime(days: int = 7):
+    m = api_sector_metrics(days)
+    regimes = {}
+    for name, score in m["sectors"].items():
+        if score > 0.7:
+            regimes[name] = "strong"
+        elif score < 0.3:
+            regimes[name] = "weak"
+        else:
+            regimes[name] = "mixed"
+    return {"days": days, "regimes": regimes}
+
+
+@router.get("/sector/intel-report")
+def api_sector_intel_report(days: int = 7):
+    m = api_sector_metrics(days)
+    reg = api_sector_regime(days)
+
+    lines = []
+    lines.append("Sector regimes:")
+    for name, regime in reg["regimes"].items():
+        score = m["sectors"][name]
+        lines.append(f"- {name}: {regime} (score {round(score, 6)})")
+
+    return {"days": days, "intel_report": " ".join(lines)}
+
+
+@router.get("/global/score")
+def api_global_score(days: int = 7):
+    fusion = api_fusion_score(days)
+    risk = api_risk_score(days)
+    macro = api_macro_metrics(days)
+
+    score = (
+        fusion["fusion_score"] * 0.5 +
+        (1.0 - risk["risk_score"]) * 0.3 +
+        (1.0 - macro["risk_off"]) * 0.2
+    )
+
+    return {"days": days, "global_score": round(score, 6)}
+
+
+@router.get("/global/regime")
+def api_global_regime(days: int = 7):
+    g = api_global_score(days)
+    s = g["global_score"]
+    if s > 0.7:
+        regime = "constructive"
+    elif s < 0.3:
+        regime = "fragile"
+    else:
+        regime = "balanced"
+    return {"days": days, "regime": regime, "global_score": s}
+
+
+@router.get("/global/intel-report")
+def api_global_intel_report(days: int = 7):
+    g = api_global_score(days)
+    reg = api_global_regime(days)
+    fusion_idx = api_fusion_index(days)
+
+    lines = []
+    lines.append(f"Global regime: {reg['regime']} (score {round(g['global_score'], 6)}).")
+    lines.append(f"VolatiAI Intelligence Index: {fusion_idx['volatai_index']}.")
+
+    return {"days": days, "intel_report": " ".join(lines)}
+
+
+    
     
     
     scores = [
