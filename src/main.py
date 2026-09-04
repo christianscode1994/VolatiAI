@@ -103,16 +103,26 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     )
 
     # -----------------------------
-    # 6. WRITE SNAPSHOTS
-    # -----------------------------
-    if write_snaps:
-        try:
-            write_snapshot("volatility", coins_vol)
-            write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
-            write_snapshot("market", market_metrics)
-            write_snapshot("defi_health", defi_health)
-        except Exception as e:
-            logger.error("Snapshot writing failed: %s", e)
+# 6. WRITE SNAPSHOTS
+# -----------------------------
+if write_snaps:
+    try:
+        # Existing snapshots
+        write_snapshot("volatility", coins_vol)
+        write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
+        write_snapshot("market", market_metrics)
+        write_snapshot("defi_health", defi_health)
+
+        # NEW SNAPSHOTS (N, R, A, C, G)
+        write_snapshot("narrative", narrative_data)
+        write_snapshot("risk", risk_data)
+        write_snapshot("asset", asset_data)
+        write_snapshot("sector", sector_data)
+        write_snapshot("global", global_data)
+
+    except Exception as e:
+        logger.error("Snapshot writing failed: %s", e)
+
 
     # -----------------------------
     # 7. OUTPUT FILES
