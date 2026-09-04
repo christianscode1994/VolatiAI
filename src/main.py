@@ -102,7 +102,69 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
         defi_health=defi_health,
     )
 
-    # -----------------------------
+# -----------------------------
+# 5B. BUILD NEW INTELLIGENCE LAYER SNAPSHOT DATA
+# -----------------------------
+
+# --- Narrative Data (N1–N5) ---
+narrative_data = {
+    "topics": reddit_titles[:10],  # or your own top_topics list
+    "intensity": round(sent_reddit["score"] * 0.4 + sent_hn["score"] * 0.3, 6),
+    "dispersion": round(abs(sent_reddit["score"] - sent_hn["score"]), 6),
+    "coherence": round(1.0 - abs(sent_reddit["score"] - sent_hn["score"]), 6),
+}
+
+# --- Risk Data (R1–R5) ---
+risk_data = {
+    "market_risk": round(min(market_metrics.get("volatility", 0.0) * 2.0, 1.0), 6),
+    "defi_risk": round(defi_health.get("stress_level", 0.0), 6),
+    "liquidity_risk": round(1.0 - market_metrics.get("liquidity_score", 0.5), 6),
+    "sentiment_risk": round(1.0 - ((sent_reddit["score"] + sent_hn["score"]) / 2.0 + 0.5), 6),
+}
+
+# --- Asset Data (A1–A5) ---
+asset_data = {}
+for symbol in coins_vol.keys():
+    asset_data[symbol] = {
+        "volatility": round(coins_vol[symbol], 6),
+        "return": round(coins.get(symbol, {}).get("return", 0.0), 6),
+        "sentiment": round((sent_reddit["score"] + sent_hn["score"]) / 2.0, 6),
+        "defi_exposure": round(defi_health.get("exposure_map", {}).get(symbol, 0.1), 6),
+    }
+
+# --- Sector Data (C1–C5) ---
+sector_map = {
+    "L1": ["BTC", "ETH", "SOL", "ADA", "AVAX"],
+    "L2": ["MATIC", "OP", "ARB"],
+    "DEFI": ["UNI", "AAVE", "CRV", "MKR"],
+    "AI": ["FET", "AGIX", "RNDR"],
+    "MEME": ["DOGE", "SHIB", "PEPE"],
+}
+
+sector_data = {}
+for sector, assets in sector_map.items():
+    vals = [asset_data[a]["return"] for a in assets if a in asset_data]
+    score = sum(vals) / len(vals) if vals else 0.0
+    sector_data[sector] = {"score": round(score, 6)}
+
+# --- Global Data (G1–G5) ---
+global_data = {
+    "fusion_score": round(
+        (market_metrics.get("avg_return", 0.0) * 0.3) +
+        ((sent_reddit["score"] + sent_hn["score"]) / 2.0 * 0.2) +
+        (1.0 - risk_data["market_risk"]) * 0.2 +
+        (1.0 - risk_data["defi_risk"]) * 0.2 +
+        (1.0 - risk_data["liquidity_risk"]) * 0.1,
+        6
+    ),
+    "global_regime": "constructive"
+        if (market_metrics.get("avg_return", 0.0) > 0.01 and risk_data["market_risk"] < 0.4)
+        else "fragile"
+        if risk_data["market_risk"] > 0.7
+        else "balanced",
+}
+
+# -----------------------------
 # 6. WRITE SNAPSHOTS
 # -----------------------------
 if write_snaps:
