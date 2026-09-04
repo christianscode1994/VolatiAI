@@ -47,6 +47,10 @@ def root():
             "/defi/curve/trends",
             "/defi/volatility",
             "/defi/volatility/trends",
+            "/defi/risk",
+            "/defi/summary",
+            "/defi/health",
+            "/defi/forecast",
         ],
     }
 
@@ -350,4 +354,112 @@ def api_defi_volatility_trends(days: int = 7):
     return {
         "days": days,
         "volatility_trend": vol,
+    }
+
+
+# ============================================================
+# ===================  ADVANCED DEFI METRICS  =================
+# ============================================================
+
+@app.get("/defi/risk")
+def api_defi_risk(days: int = 7):
+    latest = _latest_defi(days)
+
+    peg = latest.get("dai_peg_deviation", 0)
+    util = latest.get("aave_utilization", 0)
+    curve = latest.get("curve_stability", 0)
+
+    risk = (
+        abs(peg) * 2 +
+        util * 1.5 +
+        (1 - curve) * 1.2
+    )
+
+    return {
+        "days": days,
+        "risk_score": round(risk, 4),
+        "components": {
+            "peg_risk": abs(peg),
+            "utilization_risk": util,
+            "curve_risk": (1 - curve),
+        },
+    }
+
+
+@app.get("/defi/summary")
+def api_defi_summary(days: int = 7):
+    latest = _latest_defi(days)
+
+    return {
+        "days": days,
+        "summary": {
+            "uniswap_liquidity": latest.get("uniswap_liquidity", 0),
+            "sushiswap_liquidity": latest.get("sushiswap_liquidity", 0),
+            "curve_stability": latest.get("curve_stability", 0),
+            "aave_utilization": latest.get("aave_utilization", 0),
+            "dai_peg_deviation": latest.get("dai_peg_deviation", 0),
+            "defi_score": score_defi(
+                latest.get("uniswap_liquidity", 0),
+                latest.get("sushiswap_liquidity", 0),
+                latest.get("curve_stability", 0),
+                latest.get("aave_utilization", 0),
+                latest.get("dai_peg_deviation", 0),
+            ),
+            "alerts": compute_defi_alerts(latest),
+        }
+    }
+
+
+@app.get("/defi/health")
+def api_defi_health(days: int = 7):
+    latest = _latest_defi(days)
+
+    score = score_defi(
+        latest.get("uniswap_liquidity", 0),
+        latest.get("sushiswap_liquidity", 0),
+        latest.get("curve_stability", 0),
+        latest.get("aave_utilization", 0),
+        latest.get("dai_peg_deviation", 0),
+    )
+
+    health = max(0.0, min(1.0, score))
+
+    return {
+        "days": days,
+        "health_score": round(health, 4),
+        "status": (
+            "excellent" if health >= 0.8 else
+            "good" if health >= 0.6 else
+            "fair" if health >= 0.4 else
+            "poor"
+        ),
+    }
+
+
+@app.get("/defi/forecast")
+def api_defi_forecast(days: int = 7):
+    snaps = read_snapshots("defi_health", days)
+    if not snaps:
+        raise HTTPException(status_code=404, detail="No DeFi snapshots found")
+
+    scores = [
+        score_defi(
+            s.get("uniswap_liquidity", 0),
+            s.get("sushiswap_liquidity", 0),
+            s.get("curve_stability", 0),
+            s.get("aave_utilization", 0),
+            s.get("dai_peg_deviation", 0),
+        )
+        for s in snaps
+    ]
+
+    if len(scores) < 3:
+        forecast = scores[-1]
+    else:
+        forecast = sum(scores[-3:]) / 3
+
+    return {
+        "days": days,
+        "forecast_score": round(forecast, 4),
+        "method": "3-point moving average",
     }
