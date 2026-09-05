@@ -23,6 +23,10 @@ from .api import (
     api_market_intel_report,
 )
 
+from src.onchain.rpc import RPC
+from src.onchain.intelligence import build_chain_health, build_stablecoin_flows, build_whale_activity
+from src.snapshots import write_snapshot  # your existing snapshot writer
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
 PRIVATE_DIR = BASE_DIR / "private"
@@ -68,6 +72,37 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     except Exception as e:
         logger.error("DeFi health computation failed: %s", e)
         defi_health = None
+
+# -----------------------------
+# 3B. ON-CHAIN INTELLIGENCE (PRO ONLY)
+# -----------------------------
+chain_health = None
+stablecoin_flows = None
+whale_data = None
+
+if tier == "pro":
+    try:
+        rpc = RPC()
+        chain_health = build_chain_health(rpc)
+
+        latest_block = chain_health["latest_block"]
+        from_block = max(0, latest_block - 200)
+
+        stablecoin_flows = build_stablecoin_flows(rpc, from_block, latest_block)
+        whale_data = build_whale_activity(
+            rpc,
+            min_value_eth=100.0,
+            from_block=from_block,
+            to_block=latest_block,
+        )
+    except Exception as e:
+        logger.error("On-chain intelligence failed: %s", e)
+        chain_health = None
+        stablecoin_flows = None
+        whale_data = None
+
+
+    
 
     # -----------------------------
     # 4. MARKET INTELLIGENCE LAYER (M1–M5)
@@ -165,8 +200,33 @@ global_data = {
 }
 
 # -----------------------------
-# 6. WRITE SNAPSHOTS
+# ON-CHAIN ENRICHMENT (PRO ONLY)
 # -----------------------------
+if tier == "pro" and chain_health:
+    bt_vol = chain_health.get("block_time_volatility_sec") or 0.0
+    gas_wei = chain_health.get("gas_price_wei") or 0
+
+    penalty = 0.0
+    if bt_vol > 3.0:
+        penalty += 0.05
+    if gas_wei > 80 * 10**9:  # > 80 gwei
+        penalty += 0.05
+
+    global_data["fusion_score"] = round(
+        max(global_data["fusion_score"] - penalty, 0.0),
+        6
+    )
+
+    global_data["chain_health"] = {
+        "latest_block": chain_health["latest_block"],
+        "avg_block_time_sec": chain_health["avg_block_time_sec"],
+        "block_time_volatility_sec": chain_health["block_time_volatility_sec"],
+        "gas_price_wei": chain_health["gas_price_wei"],
+    }
+
+
+# -----------------------------
+# 6. WRITE SNAPSHOTS
 if write_snaps:
     try:
         # Existing snapshots
@@ -182,8 +242,18 @@ if write_snaps:
         write_snapshot("sector", sector_data)
         write_snapshot("global", global_data)
 
+        # ON-CHAIN SNAPSHOTS (PRO ONLY)
+        if tier == "pro":
+            if chain_health:
+                write_snapshot("chain_health", chain_health)
+            if stablecoin_flows:
+                write_snapshot("stablecoin_flows", stablecoin_flows)
+            if whale_data:
+                write_snapshot("whale_activity", whale_data)
+
     except Exception as e:
         logger.error("Snapshot writing failed: %s", e)
+
 
 
     # -----------------------------
