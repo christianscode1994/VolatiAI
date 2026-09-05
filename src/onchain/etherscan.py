@@ -6,11 +6,31 @@ import requests
 ETHERSCAN_KEY = os.getenv("ETHERSCAN_API_KEY")
 BASE = "https://api.etherscan.io/api"
 
-def etherscan_get(params):
+class EtherscanError(Exception):
+    pass
+
+def etherscan_get(params: dict):
+    """Generic Etherscan GET wrapper with proper error handling."""
+    if not ETHERSCAN_KEY:
+        raise EtherscanError("ETHERSCAN_API_KEY is missing from environment.")
+
     params["apikey"] = ETHERSCAN_KEY
-    resp = requests.get(BASE, params=params, timeout=10)
-    resp.raise_for_status()
-    data = resp.json()
+
+    try:
+        resp = requests.get(BASE, params=params, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        raise EtherscanError(f"Etherscan request failed: {e}")
+
+    # Etherscan returns status + message fields
+    status = data.get("status")
+    message = data.get("message")
+
+    if status == "0" and message != "OK":
+        # Etherscan error (e.g., invalid address, rate limit, etc.)
+        raise EtherscanError(f"Etherscan error: {message}")
+
     return data.get("result")
 
 # -----------------------------
@@ -53,7 +73,7 @@ def get_token_holders(address: str):
 # INTERNAL TRANSACTIONS
 # -----------------------------
 
-def get_internal_txs(address: str, start_block=0, end_block=99999999):
+def get_internal_txs(address: str, start_block: int = 0, end_block: int = 99999999):
     return etherscan_get({
         "module": "account",
         "action": "txlistinternal",
