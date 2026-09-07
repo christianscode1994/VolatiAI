@@ -1,0 +1,9 @@
+{
+  "id": "market-agent",
+  "description": "Market volatility and depth across free public APIs.",
+  "modes": ["online", "offline"],
+  "outputs": {
+    "free": "public/free_market.json",
+    "pro": "private/pro_market.json"
+  }
+}
