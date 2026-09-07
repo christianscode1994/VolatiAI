@@ -1,0 +1,27 @@
+name: VolatiAI Agents
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  run-agents:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+
+      - run: python agents/market_agent/policy.py
+      - run: python agents/sentiment_agent/policy.py
+      - run: python agents/developer_agent/policy.py
+      - run: python src/fuse.py
+
+      - run: |
+          git config user.name "VolatiAI Bot"
+          git config user.email "bot@volatiai.local"
+          git add public private agents/*/memory.json
+          git commit -m "VolatiAI: update agent outputs" || echo "No changes"
+          git push
