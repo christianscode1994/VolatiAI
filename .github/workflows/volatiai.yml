@@ -25,10 +25,13 @@ jobs:
       # 3. Run fusion layer (Free + Pro)
       - run: python src/fuse.py
 
-      # 4. Commit results
+      # 4. Run dashboards
+      - run: python src/dashboard/html_builder.py
+
+      # 5. Commit results
       - run: |
           git config user.name "VolatiAI Bot"
           git config user.email "bot@volatiai.local"
-          git add public private agents/*/memory.json
+          git add public private docs agents/*/memory.json
           git commit -m "VolatiAI: update agent outputs" || echo "No changes"
           git push
