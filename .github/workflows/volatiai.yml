@@ -25,6 +25,12 @@ jobs:
       # 3. Run fusion layer (Free + Pro)
       - run: python src/fuse.py
 
+      # 3.5 Run intelligence modules
+      - run: python src/intel/trends.py
+      - run: python src/intel/narratives.py
+      - run: python src/intel/microstructure.py
+      - run: python src/intel/rpc_truth.py
+
       # 4. Run dashboards
       - run: python src/dashboard/html_builder.py
 
