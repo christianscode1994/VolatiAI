@@ -34,6 +34,10 @@ jobs:
       # 4. Run dashboards
       - run: python src/dashboard/html_builder.py
 
+
+            # 4.5 Telegram bot 
+      - run: python src/telegram/bot.py
+
       # 5. Commit results
       - run: |
           git config user.name "VolatiAI Bot"
