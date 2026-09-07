@@ -66,6 +66,34 @@ It also supports **full offline mode** using cached snapshots and local fallback
 
 ---
 
+## Intelligence Layer
+
+VolatiAI builds a **multi‑signal intelligence engine** on top of raw data:
+
+- **Trend Acceleration Engine**  
+  Tracks first‑derivative changes in volatility, sentiment, and developer activity to detect early trend formation and momentum shifts.
+
+- **Narrative Timeline Engine**  
+  Monitors AI and DePIN narratives across Reddit, Hacker News, Nitter, and GitHub to capture emerging narratives and narrative decay.
+
+- **Microstructure Engine**  
+  Analyzes exchange depth to estimate whale pressure, spoofing probability, and liquidity stress.
+
+- **RPC Truth Engine**  
+  Cross‑checks multiple blockchain RPCs (Infura, Alchemy, etc.) to compute a “truth score” for chain data consistency.
+
+All of these signals are visualized in the **Pro dashboard** via:
+
+- Volatility curve (30‑day)  
+- Depth heatmap  
+- Trend acceleration bars  
+- Narrative timeline chart  
+- Whale pressure bars  
+- Spoofing probability meter  
+- RPC truth bar
+
+---
+
 ## Developer Sentiment Index (DSI)
 
 A **0–100 score** measuring:
@@ -102,9 +130,105 @@ A **0–100 score** measuring:
 
 ---
 
-## Run locally
+## Dashboard Preview (Pro Tier)
+
+```text
+┌───────────────────────────────────────────────┐
+│                VolatiAI – Pro Tier            │
+├───────────────────────────────────────────────┤
+│ Trend Index: 78                                │
+│ Liquidity Index: 64                            │
+│ AI/DePIN Narrative Index: 52                   │
+│ Developer Sentiment Index: 71                  │
+├───────────────────────────────────────────────┤
+│ Volatility (30‑day)                            │
+│   ╰───╮╭──────╯╰───────╮╭───────╯             │
+├───────────────────────────────────────────────┤
+│ Depth Heatmap                                  │
+│ ████ ███ █████ ███ ███ ███ ███ ███ ███ ███    │
+├───────────────────────────────────────────────┤
+│ Trend Acceleration                             │
+│ Vol: ▇▇▇▇▇   Sent: ▇▇▇▇   DSI: ▇▇▇▇▇▇          │
+├───────────────────────────────────────────────┤
+│ Narrative Timeline                              │
+│ AI:   ╰──╮╭────╯╰──╮╭────╯                     │
+│ DePIN: ╰────╮╭────╯╰────╮                     │
+├───────────────────────────────────────────────┤
+│ Whale Pressure                                 │
+│ ▇▇▇▇▇▇▇▇▇▇                                    │
+├───────────────────────────────────────────────┤
+│ Spoofing Probability: ████████████ 72%         │
+├───────────────────────────────────────────────┤
+│ RPC Truth Score: ████████████████████ 100%     │
+
+
+
+Run locally
+bash
+pip install -r requirements.txt
+python -m src.main --tier free
+python -m src.main --tier pro
+
+
+
+Serverless AI/DePIN crypto intelligence engine.
+
+---
+
+## What VolatiAI does
+
+VolatiAI fuses:
+
+- Market volatility  
+- Social sentiment  
+- Exchange depth  
+- Developer activity  
+- Multi‑chain RPC truth  
+
+to detect:
+
+- Emerging narratives  
+- Trend acceleration  
+- Whale pressure  
+- Spoofing probability  
+- Chain data divergence  
+
+---
+
+## Dashboards
+
+- **Free dashboard:** `summary_free.html`  
+- **Pro dashboard:** `summary_pro.html`  
+
+These are regenerated every 15 minutes via GitHub Actions.
+
+---
+
+## Architecture
+
+- Autonomous agents (market, sentiment, developer)  
+- Scoring + fusion layer (Free + Pro)  
+- Intelligence layer (trends, narratives, microstructure, RPC truth)  
+- HTML dashboards (Free + Pro)  
+- GitHub Pages hosting  
+- Optional Telegram bot output
+
+---
+
+## Usage
+
+- View dashboards via GitHub Pages  
+- Run locally with:
 
 ```bash
 pip install -r requirements.txt
 python -m src.main --tier free
 python -m src.main --tier pro
+
+
+
+
+
+
+
+└───────────────────────────────────────────────┘
