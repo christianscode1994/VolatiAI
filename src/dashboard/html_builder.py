@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from .components import card, grid
 from .themes import FREE_THEME, PRO_THEME
+from .charts import volatility_svg
 
 def load(path):
     try:
@@ -46,17 +47,23 @@ def render_pro():
     ])
 
     html = f"""
-    <html>
-    <head>
-      <title>VolatiAI – Pro Dashboard</title>
-      <style>{PRO_THEME}</style>
-    </head>
-    <body>
-      <h1>VolatiAI – Pro Tier</h1>
-      {grid(cards)}
-    </body>
-    </html>
-    """
+<html>
+<head>
+  <title>VolatiAI – Pro Dashboard</title>
+  <style> { PRO_THEME } </style>
+</head>
+<body>
+  <h1>VolatiAI – Pro Tier</h1>
+
+  { grid(cards) }
+
+  <h2>Volatility (30‑day)</h2>
+  { volatility_svg() }   # ← ADD THIS LINE
+
+</body>
+</html>
+"""
+
 
     Path("private/pro.html").write_text(html)
     Path("docs/summary_pro.html").write_text(html)
