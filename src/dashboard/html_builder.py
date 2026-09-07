@@ -50,19 +50,23 @@ def render_pro():
 <html>
 <head>
   <title>VolatiAI – Pro Dashboard</title>
-  <style> { PRO_THEME } </style>
+  <style>{PRO_THEME}</style>
 </head>
 <body>
   <h1>VolatiAI – Pro Tier</h1>
 
-  { grid(cards) }
+  {grid(cards)}
 
   <h2>Volatility (30‑day)</h2>
-  { volatility_svg() }   # ← ADD THIS LINE
+  {volatility_svg()}
+
+  <h2>Depth Heatmap</h2>
+  {depth_svg()}
 
 </body>
 </html>
 """
+
 
 
     Path("private/pro.html").write_text(html)
