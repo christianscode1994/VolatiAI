@@ -7,9 +7,6 @@
 
 ---
 
-
-# VolatiAI
-
 VolatiAI is a serverless crypto intelligence engine combining **market volatility**,  
 **social sentiment**, **exchange depth**, **developer activity signals**,  
 and **multi‑chain truth** to detect early trends and narrative formation.  
