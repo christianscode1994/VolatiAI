@@ -18,7 +18,7 @@ VolatiAI Pro unlocks the full intelligence layer:
 
 ## 🔐 Pricing
 
-### **Pro Tier — €9.99 / month**
+### **Pro Tier — €4.99 / month**
 Perfect for traders, analysts, and builders.
 
 **Includes:**
