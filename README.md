@@ -1,3 +1,13 @@
+<p align="center">
+  <img src="docs/logo_animated.svg" width="260" alt="VolatiAI Banner">
+</p>
+
+<h1 align="center">VolatiAI</h1>
+<p align="center"><i>Serverless AI/DePIN Crypto Intelligence Engine</i></p>
+
+---
+
+
 # VolatiAI
 
 VolatiAI is a serverless crypto intelligence engine combining **market volatility**,  
