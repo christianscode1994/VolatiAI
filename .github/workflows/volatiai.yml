@@ -38,6 +38,13 @@ jobs:
             # 4.5 Telegram bot 
       - run: python src/telegram/bot.py
 
+      # 4.6 Run alert modules
+- run: python src/alerts/whale_alerts.py
+- run: python src/alerts/spoofing_alerts.py
+- run: python src/alerts/trend_accel_alerts.py
+- run: python src/alerts/narrative_alerts.py
+
+
       # 5. Commit results
       - run: |
           git config user.name "VolatiAI Bot"
