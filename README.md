@@ -67,51 +67,52 @@ It also supports **full offline mode** using cached snapshots and local fallback
 ---
 ## How VolatiAI Works
 
-                ┌──────────────────────────────┐
-                │        Autonomous Agents      │
-                │  - Market Agent               │
-                │  - Sentiment Agent            │
-                │  - Developer Agent            │
-                └───────────────┬──────────────┘
+                ╔══════════════════════════════════════╗
+                ║           Autonomous Agents          ║
+                ║  • Market Agent                      ║
+                ║  • Sentiment Agent                   ║
+                ║  • Developer Agent                   ║
+                ╚═══════════════╦══════════════════════╝
                                 │
                                 ▼
-                ┌──────────────────────────────┐
-                │        Scoring Layer          │
-                │  - Volatility Score           │
-                │  - Sentiment Score            │
-                │  - Developer Sentiment Index  │
-                └───────────────┬──────────────┘
+                ╔══════════════════════════════════════╗
+                ║            Scoring Layer              ║
+                ║  • Volatility Score                   ║
+                ║  • Sentiment Score                    ║
+                ║  • Developer Sentiment Index (DSI)    ║
+                ╚═══════════════╦══════════════════════╝
                                 │
                                 ▼
-                ┌──────────────────────────────┐
-                │        Fusion Layer           │
-                │  - Free Tier JSON             │
-                │  - Pro Tier JSON              │
-                └───────────────┬──────────────┘
+                ╔══════════════════════════════════════╗
+                ║             Fusion Layer              ║
+                ║  • Free Tier JSON                     ║
+                ║  • Pro Tier JSON                      ║
+                ╚═══════════════╦══════════════════════╝
                                 │
                                 ▼
-                ┌──────────────────────────────┐
-                │     Intelligence Layer        │
-                │  - Trend Acceleration         │
-                │  - Narrative Timeline         │
-                │  - Whale Pressure             │
-                │  - Spoofing Probability       │
-                │  - RPC Truth Score            │
-                └───────────────┬──────────────┘
+                ╔══════════════════════════════════════╗
+                ║          Intelligence Layer           ║
+                ║  • Trend Acceleration                 ║
+                ║  • Narrative Timeline                 ║
+                ║  • Whale Pressure                     ║
+                ║  • Spoofing Probability               ║
+                ║  • RPC Truth Score                    ║
+                ╚═══════════════╦══════════════════════╝
                                 │
                                 ▼
-                ┌──────────────────────────────┐
-                │         Dashboards            │
-                │  - Free Dashboard             │
-                │  - Pro Dashboard              │
-                └───────────────┬──────────────┘
+                ╔══════════════════════════════════════╗
+                ║             Dashboards                ║
+                ║  • Free Dashboard                     ║
+                ║  • Pro Dashboard                      ║
+                ╚═══════════════╦══════════════════════╝
                                 │
                                 ▼
-                ┌──────────────────────────────┐
-                │        Delivery Layer         │
-                │  - GitHub Pages               │
-                │  - Telegram Alerts            │
-                └──────────────────────────────┘
+                ╔══════════════════════════════════════╗
+                ║            Delivery Layer             ║
+                ║  • GitHub Pages                       ║
+                ║  • Telegram Alerts                    ║
+                ╚══════════════════════════════════════╝
+
 ---
 
 
