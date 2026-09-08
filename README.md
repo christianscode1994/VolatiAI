@@ -65,6 +65,56 @@ It also supports **full offline mode** using cached snapshots and local fallback
 - Portable agent runtime (GitHub, local machines, offline)
 
 ---
+## How VolatiAI Works
+
+                ┌──────────────────────────────┐
+                │        Autonomous Agents      │
+                │  - Market Agent               │
+                │  - Sentiment Agent            │
+                │  - Developer Agent            │
+                └───────────────┬──────────────┘
+                                │
+                                ▼
+                ┌──────────────────────────────┐
+                │        Scoring Layer          │
+                │  - Volatility Score           │
+                │  - Sentiment Score            │
+                │  - Developer Sentiment Index  │
+                └───────────────┬──────────────┘
+                                │
+                                ▼
+                ┌──────────────────────────────┐
+                │        Fusion Layer           │
+                │  - Free Tier JSON             │
+                │  - Pro Tier JSON              │
+                └───────────────┬──────────────┘
+                                │
+                                ▼
+                ┌──────────────────────────────┐
+                │     Intelligence Layer        │
+                │  - Trend Acceleration         │
+                │  - Narrative Timeline         │
+                │  - Whale Pressure             │
+                │  - Spoofing Probability       │
+                │  - RPC Truth Score            │
+                └───────────────┬──────────────┘
+                                │
+                                ▼
+                ┌──────────────────────────────┐
+                │         Dashboards            │
+                │  - Free Dashboard             │
+                │  - Pro Dashboard              │
+                └───────────────┬──────────────┘
+                                │
+                                ▼
+                ┌──────────────────────────────┐
+                │        Delivery Layer         │
+                │  - GitHub Pages               │
+                │  - Telegram Alerts            │
+                └──────────────────────────────┘
+---
+
+
 
 ## Intelligence Layer
 
