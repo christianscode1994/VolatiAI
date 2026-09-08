@@ -1,4 +1,4 @@
-<img src="logo.svg" width="160" alt="VolatiAI Logo">
+<img src="logo_animated.svg" width="180" alt="VolatiAI Logo">
 
 # VolatiAI  
 ### *Serverless AI/DePIN Intelligence Engine*
