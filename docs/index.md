@@ -1,65 +1,69 @@
-VolatiAI
-Serverless AI/DePIN intelligence engine
-VolatiAI combines:
+<img src="logo.svg" width="160" alt="VolatiAI Logo">
 
-Market volatility
+# VolatiAI  
+### *Serverless AI/DePIN Intelligence Engine*
 
-Social sentiment
+VolatiAI fuses:
 
-Developer activity
+- **Market volatility**  
+- **Social sentiment**  
+- **Developer activity**  
+- **Exchange depth**  
+- **Narrative momentum**  
+- **Trend acceleration**  
+- **Whale pressure**  
+- **Spoofing probability**  
+- **Multi‑chain RPC truth**
 
-Exchange depth
+into a single autonomous intelligence engine that updates every **15 minutes**.
 
-Narrative momentum
+---
 
-Trend acceleration
+## 🚀 Features
 
-Whale pressure
+- Autonomous agents (market, sentiment, developer)  
+- 15‑minute GitHub Actions update cycle  
+- Free dashboard (volatility, sentiment, DSI)  
+- Pro dashboard (full intelligence layer)  
+- Offline snapshots for degraded mode  
+- Zero external servers — fully serverless  
 
-Spoofing probability
+---
 
-Multi‑chain RPC truth
+## 📊 Dashboards
 
-into a single autonomous intelligence engine.
+- **Free Dashboard:** `summary_free.html`  
+- **Pro Dashboard:** `summary_pro.html`  
 
-🚀 Features
-Autonomous agents (market, sentiment, developer)
+---
 
-15‑minute updates via GitHub Actions
+## 🧠 Intelligence Layer
 
-Free dashboard (volatility, sentiment, DSI)
-
-Pro dashboard (full intelligence layer)
-
-Offline snapshots for degraded mode
-
-Zero external servers — fully serverless
-
-📊 Dashboards
-Free: docs/summary_free.html
-
-Pro: docs/summary_pro.html
-
-🧠 Intelligence Layer
 VolatiAI detects:
 
-Emerging narratives
+- Emerging narratives  
+- Trend acceleration  
+- Whale pressure  
+- Spoofing probability  
+- RPC truth divergence  
 
-Trend acceleration
+These signals power the **Pro dashboard** and **Telegram alert system**.
 
-Whale pressure
+---
 
-Spoofing
+## 🔧 Tech Stack
 
-RPC truth divergence
+- Python  
+- GitHub Actions  
+- Serverless architecture  
+- JSON snapshots  
+- HTML dashboards  
 
-🔧 Tech Stack
-Python
+---
 
-GitHub Actions
+## 🧪 Run Locally
 
-Serverless architecture
-
-JSON snapshots
-
-HTML dashboards
+```bash
+pip install -r requirements.txt
+python -m src.main --tier free
+python -m src.main --tier pro
