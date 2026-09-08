@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">VolatiAI</h1>
-<p align="center"><i>Serverless AI/DePIN Crypto Intelligence Engine</i></p>
+<p align="center"><i>Detect Trends Before They Become Narratives</i></p>
 
 ---
 
