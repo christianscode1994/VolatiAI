@@ -1,4 +1,5 @@
 import os
+import json
 import discord
 from discord.ext import commands
 from core.uio import build_uio
@@ -11,18 +12,31 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
+def embed_from_dict(title: str, data: dict, color=0x5865F2):
+    """
+    Convert a Python dict into a Discord embed with formatted JSON.
+    """
+    embed = discord.Embed(
+        title=title,
+        description=f"```json\n{json.dumps(data, indent=2)}\n```",
+        color=color
+    )
+    return embed
+
+
 @bot.event
 async def on_ready():
     print(f"VolatiAI Discord Bot is online as {bot.user}")
 
 
 # ------------------------------------------------------------
-# Full UIO dump
+# Full UIO
 # ------------------------------------------------------------
 @bot.command()
 async def uio(ctx):
     uio = build_uio()
-    await ctx.send(f"```json\n{uio}\n```")
+    embed = embed_from_dict("Unified Intelligence Object", uio)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -32,17 +46,8 @@ async def uio(ctx):
 async def developer(ctx):
     uio = build_uio()
     dev = uio.get("developer", {})
-    await ctx.send(f"```json\n{dev}\n```")
-
-
-# ------------------------------------------------------------
-# Market Intelligence
-# ------------------------------------------------------------
-@bot.command()
-async def market(ctx):
-    uio = build_uio()
-    market = uio.get("market", {})
-    await ctx.send(f"```json\n{market}\n```")
+    embed = embed_from_dict("Developer Intelligence", dev, color=0x00AAFF)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -52,7 +57,8 @@ async def market(ctx):
 async def agents(ctx):
     uio = build_uio()
     agents = uio.get("agents", {})
-    await ctx.send(f"```json\n{agents}\n```")
+    embed = embed_from_dict("VolatiAI Agents", agents, color=0xFF8800)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -62,7 +68,8 @@ async def agents(ctx):
 async def trend(ctx):
     uio = build_uio()
     trend = uio.get("agents", {}).get("trend", {})
-    await ctx.send(f"```json\n{trend}\n```")
+    embed = embed_from_dict("Trend Agent", trend, color=0x33CC33)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -72,7 +79,8 @@ async def trend(ctx):
 async def whale(ctx):
     uio = build_uio()
     whale = uio.get("agents", {}).get("whale", {})
-    await ctx.send(f"```json\n{whale}\n```")
+    embed = embed_from_dict("Whale Agent", whale, color=0xCC33FF)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -82,7 +90,8 @@ async def whale(ctx):
 async def spoof(ctx):
     uio = build_uio()
     spoof = uio.get("agents", {}).get("spoof", {})
-    await ctx.send(f"```json\n{spoof}\n```")
+    embed = embed_from_dict("Spoofing Agent", spoof, color=0xFF3333)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -92,7 +101,8 @@ async def spoof(ctx):
 async def narrative(ctx):
     uio = build_uio()
     narrative = uio.get("agents", {}).get("narrative", {})
-    await ctx.send(f"```json\n{narrative}\n```")
+    embed = embed_from_dict("Narrative Agent", narrative, color=0x0099FF)
+    await ctx.send(embed=embed)
 
 
 # ------------------------------------------------------------
@@ -102,7 +112,8 @@ async def narrative(ctx):
 async def risk(ctx):
     uio = build_uio()
     risk = uio.get("agents", {}).get("risk", {})
-    await ctx.send(f"```json\n{risk}\n```")
+    embed = embed_from_dict("Risk Agent", risk, color=0xFF0000)
+    await ctx.send(embed=embed)
 
 
 bot.run(TOKEN)
