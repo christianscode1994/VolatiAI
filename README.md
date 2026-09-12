@@ -7,286 +7,185 @@
 
 ---
 
-VolatiAI is a serverless crypto intelligence engine combining **market volatility**,  
-**social sentiment**, **exchange depth**, **developer activity signals**,  
-and **multi‑chain truth** to detect early trends and narrative formation.  
+VolatiAI is a **serverless, autonomous, multi‑signal crypto intelligence engine** powered by **swarmer agents**.  
+These agents operate in parallel, fuse heterogeneous signals, and generate unified intelligence snapshots without any tiering, pricing, or access segmentation.
+
+VolatiAI combines:
+
+- **Market volatility**
+- **Social sentiment**
+- **Exchange depth**
+- **Developer activity signals**
+- **Multi‑chain RPC truth**
+
+to detect **early trend formation**, **narrative acceleration**, and **microstructure anomalies** across crypto ecosystems.
+
 It also supports **full offline mode** using cached snapshots and local fallback agents.
 
 ---
 
-## Tiers
+## Autonomous swarmer agents
 
-### Free Tier
+VolatiAI uses a distributed swarm of autonomous agents, each specializing in a specific intelligence domain:
 
-**Includes:**
-- CoinGecko market data  
-- CoinPaprika market data  
-- Reddit sentiment (Pushshift)  
-- Hacker News sentiment  
-- Nitter sentiment  
-- Etherscan public API (free endpoints)
+- **Market Agent** — volatility, acceleration, microstructure  
+- **Sentiment Agent** — Reddit, Hacker News, Nitter, social velocity  
+- **Developer Agent** — GitHub activity, repo velocity, DSI  
+- **Depth Agent** — multi‑exchange orderbook analysis  
+- **Truth Agent** — RPC consistency scoring across chains  
 
-**Outputs:**
-- `public/free.json`  
-- `public/free.html`
+These agents operate independently, then converge through a **fusion layer** to produce unified intelligence snapshots.
 
 ---
 
-### Pro Tier
-
-**Includes everything in Free plus:**
-- Kraken ticker, depth, OHLC  
-- Multi‑exchange depth (Binance, Coinbase, Crypto.com, Bybit, OKX)  
-- Whale Pressure Index  
-- Spoofing detection  
-- Liquidity migration  
-- Arbitrage deltas  
-- Depth heatmaps  
-- GitHub developer‑activity signals  
-- Developer Sentiment Index (0–100)  
-- Multi‑chain truth (Magic Eden RPC, Infura, Alchemy free tier)  
-- Advanced Etherscan analytics (contract activity, transaction patterns)
-
-**Outputs:**
-- `private/pro.json`  
-- `private/pro.html`
-
----
-
-## Features
-
-- Market volatility scoring  
-- Social sentiment scoring  
-- Developer Sentiment Index (DSI)  
-- Multi‑exchange depth analysis  
-- Whale pressure engine  
-- Spoofing detector  
-- Liquidity migration tracking  
-- Arbitrage delta computation  
-- Depth heatmap generation  
-- Free + Pro tier separation  
-- GitHub Pages hosting for dashboards  
-- Telegram bot (VolatiAI) for JSON delivery  
-- Key‑based Pro access (planned)  
-- Offline mode using snapshots + trend extrapolation  
-- Portable agent runtime (GitHub, local machines, offline)
-
----
-## How VolatiAI Works
-
-                ╔══════════════════════════════════════╗
-                ║           Autonomous Agents          ║
-                ║  • Market Agent                      ║
-                ║  • Sentiment Agent                   ║
-                ║  • Developer Agent                   ║
-                ╚═══════════════╦══════════════════════╝
-                                │
-                                ▼
-                ╔══════════════════════════════════════╗
-                ║            Scoring Layer              ║
-                ║  • Volatility Score                   ║
-                ║  • Sentiment Score                    ║
-                ║  • Developer Sentiment Index (DSI)    ║
-                ╚═══════════════╦══════════════════════╝
-                                │
-                                ▼
-                ╔══════════════════════════════════════╗
-                ║             Fusion Layer              ║
-                ║  • Free Tier JSON                     ║
-                ║  • Pro Tier JSON                      ║
-                ╚═══════════════╦══════════════════════╝
-                                │
-                                ▼
-                ╔══════════════════════════════════════╗
-                ║          Intelligence Layer           ║
-                ║  • Trend Acceleration                 ║
-                ║  • Narrative Timeline                 ║
-                ║  • Whale Pressure                     ║
-                ║  • Spoofing Probability               ║
-                ║  • RPC Truth Score                    ║
-                ╚═══════════════╦══════════════════════╝
-                                │
-                                ▼
-                ╔══════════════════════════════════════╗
-                ║             Dashboards                ║
-                ║  • Free Dashboard                     ║
-                ║  • Pro Dashboard                      ║
-                ╚═══════════════╦══════════════════════╝
-                                │
-                                ▼
-                ╔══════════════════════════════════════╗
-                ║            Delivery Layer             ║
-                ║  • GitHub Pages                       ║
-                ║  • Telegram Alerts                    ║
-                ╚══════════════════════════════════════╝
-
----
-
-
-
-## Intelligence Layer
-
-VolatiAI builds a **multi‑signal intelligence engine** on top of raw data:
-
-- **Trend Acceleration Engine**  
-  Tracks first‑derivative changes in volatility, sentiment, and developer activity to detect early trend formation and momentum shifts.
-
-- **Narrative Timeline Engine**  
-  Monitors AI and DePIN narratives across Reddit, Hacker News, Nitter, and GitHub to capture emerging narratives and narrative decay.
-
-- **Microstructure Engine**  
-  Analyzes exchange depth to estimate whale pressure, spoofing probability, and liquidity stress.
-
-- **RPC Truth Engine**  
-  Cross‑checks multiple blockchain RPCs (Infura, Alchemy, etc.) to compute a “truth score” for chain data consistency.
-
-All of these signals are visualized in the **Pro dashboard** via:
-
-- Volatility curve (30‑day)  
-- Depth heatmap  
-- Trend acceleration bars  
-- Narrative timeline chart  
-- Whale pressure bars  
-- Spoofing probability meter  
-- RPC truth bar
-
----
-
-## Developer Sentiment Index (DSI)
-
-A **0–100 score** measuring:
-- Stars  
-- Forks  
-- Watchers  
-- Issue activity  
-- Last push recency  
-- Trending repo velocity  
-
-**Used to detect:**
-- Early ecosystem growth  
-- New protocol adoption  
-- AI/DePIN narrative formation  
-- Pre‑market hype cycles  
-
----
-
-## Outputs
-
-### Free
-- `public/free.json`  
-- `public/free.html`
-
-### Pro
-- `private/pro.json`  
-- `private/pro.html`
-
-### GitHub Pages (public)
-- `docs/latest_free.json`  
-- `docs/summary_free.html`  
-- `docs/latest_pro.json`  
-- `docs/summary_pro.html`
-
----
-
-## Dashboard Preview (Pro Tier)
+## How VolatiAI works
 
 ```text
-┌───────────────────────────────────────────────┐
-│                VolatiAI – Pro Tier            │
-├───────────────────────────────────────────────┤
-│ Trend Index: 78                                │
-│ Liquidity Index: 64                            │
-│ AI/DePIN Narrative Index: 52                   │
-│ Developer Sentiment Index: 71                  │
-├───────────────────────────────────────────────┤
-│ Volatility (30‑day)                            │
-│   ╰───╮╭──────╯╰───────╮╭───────╯             │
-├───────────────────────────────────────────────┤
-│ Depth Heatmap                                  │
-│ ████ ███ █████ ███ ███ ███ ███ ███ ███ ███    │
-├───────────────────────────────────────────────┤
-│ Trend Acceleration                             │
-│ Vol: ▇▇▇▇▇   Sent: ▇▇▇▇   DSI: ▇▇▇▇▇▇          │
-├───────────────────────────────────────────────┤
-│ Narrative Timeline                              │
-│ AI:   ╰──╮╭────╯╰──╮╭────╯                     │
-│ DePIN: ╰────╮╭────╯╰────╮                     │
-├───────────────────────────────────────────────┤
-│ Whale Pressure                                 │
-│ ▇▇▇▇▇▇▇▇▇▇                                    │
-├───────────────────────────────────────────────┤
-│ Spoofing Probability: ████████████ 72%         │
-├───────────────────────────────────────────────┤
-│ RPC Truth Score: ████████████████████ 100%     │
+╔══════════════════════════════════════╗
+║           Autonomous Agents          ║
+║  • Market Agent                      ║
+║  • Sentiment Agent                   ║
+║  • Developer Agent                   ║
+║  • Depth Agent                       ║
+║  • Truth Agent                       ║
+╚═══════════════╦══════════════════════╝
+                │
+                ▼
+╔══════════════════════════════════════╗
+║            Scoring Layer             ║
+║  • Volatility Score                  ║
+║  • Sentiment Score                   ║
+║  • Developer Sentiment Index (DSI)   ║
+║  • Depth Stress Score                ║
+║  • RPC Truth Score                   ║
+╚═══════════════╦══════════════════════╝
+                │
+                ▼
+╔══════════════════════════════════════╗
+║             Fusion Layer             ║
+║  • Multi‑signal JSON snapshot        ║
+║  • Unified intelligence output       ║
+╚═══════════════╦══════════════════════╝
+                │
+                ▼
+╔══════════════════════════════════════╗
+║          Intelligence Layer          ║
+║  • Trend Acceleration                ║
+║  • Narrative Timeline                ║
+║  • Whale Pressure                    ║
+║  • Spoofing Probability              ║
+║  • Chain Truth Divergence            ║
+╚═══════════════╦══════════════════════╝
+                │
+                ▼
+╔══════════════════════════════════════╗
+║             Dashboards               ║
+║  • Unified HTML dashboard            ║
+║  • GitHub Pages hosting              ║
+╚══════════════════════════════════════╝
+Intelligence layer
+VolatiAI builds a multi‑signal intelligence engine on top of raw data:
 
+Trend Acceleration Engine  
+Detects early momentum shifts across volatility, sentiment, and developer activity.
 
+Narrative Timeline Engine  
+Tracks emerging and decaying narratives across social + developer ecosystems.
+
+Microstructure Engine  
+Analyzes orderbook depth to estimate whale pressure, spoofing probability, and liquidity stress.
+
+RPC Truth Engine  
+Cross‑checks multiple RPC providers to compute a chain‑level consistency score.
+
+Developer Sentiment Index (DSI)
+A 0–100 score measuring:
+
+Stars
+
+Forks
+
+Watchers
+
+Issue activity
+
+Last push recency
+
+Trending repo velocity
+
+Used to detect:
+
+Early ecosystem growth
+
+New protocol adoption
+
+AI/DePIN narrative formation
+
+Pre‑market hype cycles
+
+Outputs
+VolatiAI produces a single unified output format:
+
+public/intel.json — machine‑readable intelligence snapshot
+
+public/intel.html — human‑readable dashboard
+
+docs/latest.json — GitHub Pages version
+
+docs/summary.html — public dashboard
+
+No tiers.
+No segmentation.
+No pricing.
+No corporate structure.
 
 Run locally
 bash
 pip install -r requirements.txt
-python -m src.main --tier free
-python -m src.main --tier pro
+python -m src.main
+This runs the full autonomous swarmer engine with unified outputs.
 
+Dashboards
+Dashboards are automatically regenerated via GitHub Actions and published to GitHub Pages.
 
+They include:
 
-Serverless AI/DePIN crypto intelligence engine.
+Volatility curve
 
----
+Depth heatmap
 
-## What VolatiAI does
+Trend acceleration bars
 
-VolatiAI fuses:
+Narrative timeline
 
-- Market volatility  
-- Social sentiment  
-- Exchange depth  
-- Developer activity  
-- Multi‑chain RPC truth  
+Whale pressure
 
-to detect:
+Spoofing probability
 
-- Emerging narratives  
-- Trend acceleration  
-- Whale pressure  
-- Spoofing probability  
-- Chain data divergence  
+RPC truth score
 
----
+Architecture
+Autonomous swarmer agents
 
-## Dashboards
+Scoring + fusion layer
 
-- **Free dashboard:** `summary_free.html`  
-- **Pro dashboard:** `summary_pro.html`  
+Intelligence layer
 
-These are regenerated every 15 minutes via GitHub Actions.
+Unified dashboard
 
----
+GitHub Pages hosting
 
-## Architecture
+Optional Telegram alerts
 
-- Autonomous agents (market, sentiment, developer)  
-- Scoring + fusion layer (Free + Pro)  
-- Intelligence layer (trends, narratives, microstructure, RPC truth)  
-- HTML dashboards (Free + Pro)  
-- GitHub Pages hosting  
-- Optional Telegram bot output
+What VolatiAI detects
+Emerging narratives
 
----
+Trend acceleration
 
-## Usage
+Whale pressure
 
-- View dashboards via GitHub Pages  
-- Run locally with:
+Spoofing probability
 
-```bash
-pip install -r requirements.txt
-python -m src.main --tier free
-python -m src.main --tier pro
+Chain data divergence
 
-
-
-
-
-
-
-└───────────────────────────────────────────────┘
+Developer ecosystem growth
