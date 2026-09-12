@@ -26,6 +26,12 @@ from swarmer.backpressure import backpressure
 from swarmer.clustering import assign_cluster
 from swarmer.specialization_pools import pool_for_cluster
 
+# NEW: Health, healing, analytics, orchestration
+from swarmer.health_dashboard import update_health, snapshot_health
+from swarmer.self_healing import heal_rpc_failure, heal_platform_throttle, heal_bad_intel
+from swarmer.analytics import record_task, record_cluster
+from swarmer.orchestrator import should_allow_publish
+
 # Infrastructure modules
 from swarmer.rpc_refresh import refresh_rpcs
 from swarmer.logger import log_event
@@ -51,23 +57,38 @@ def run_swarmer():
     refresh_rpcs()
 
     # 1. Pull intelligence
-    intel = requests.get(AGENT_FEED_URL).json()
+    try:
+        intel = requests.get(AGENT_FEED_URL).json()
+        intel_ok = "signals" in intel and "platform_state" in intel
+    except Exception:
+        heal_rpc_failure(error_count=10)
+        return
+
+    heal_bad_intel(intel_ok)
+    if not intel_ok:
+        return
 
     # 2. Backpressure (global load protection)
     if backpressure(intel):
+        heal_platform_throttle(intel["platform_state"])
+        update_health(event=None, cluster="unknown", blocked=True)
         return
 
     # 3. Self-regulation checks
     if not swarm_governor(intel):
+        update_health(event=None, cluster="unknown", blocked=True)
         return
 
     if not platform_throttle(intel["platform_state"]):
+        update_health(event=None, cluster="unknown", blocked=True)
         return
 
     if channel_fatigue(intel["channel_state"]):
+        update_health(event=None, cluster="unknown", blocked=True)
         return
 
     if not stability_check(intel):
+        update_health(event=None, cluster="unknown", blocked=True)
         return
 
     # 4. Swarm identity
@@ -75,6 +96,7 @@ def run_swarmer():
 
     # 5. Clustering (assign swarm role)
     cluster = assign_cluster(instance_id)
+    record_cluster(cluster)
 
     # 6. Specialization pools (role → allowed tasks)
     pool = pool_for_cluster(cluster)
@@ -82,13 +104,16 @@ def run_swarmer():
     # 7. Coordination (avoid too many swarmers doing same task)
     candidate_tasks = [t for t in pool if should_run_task(t)]
     if not candidate_tasks:
+        update_health(event=None, cluster=cluster, blocked=True)
         return
 
     # 8. Specialize micro-task selection
     task_name = random.choice(candidate_tasks)
+    record_task(task_name)
 
     # 9. Anti-repeat (avoid spam patterns)
     if is_repeated_pattern(task_name, threshold=15, window_seconds=900):
+        update_health(event=None, cluster=cluster, blocked=True)
         return
 
     # 10. Register task
@@ -98,20 +123,30 @@ def run_swarmer():
     task = TASK_MAP[task_name]
     event = task(intel)
 
-    # 12. Memory
+    # 12. Global orchestration check
+    health = snapshot_health()
+    if not should_allow_publish(health):
+        update_health(event=None, cluster=cluster, blocked=True)
+        release_task(instance_id)
+        return
+
+    # 13. Memory
     remember_event(event)
 
-    # 13. Batch + log + publish
+    # 14. Batch + log + publish
     add_to_batch(event)
     flush_batch()
     log_event(event)
     publish_depin(event)
 
-    # 14. Release coordination lock
+    # 15. Update health dashboard
+    update_health(event, cluster, blocked=False)
+
+    # 16. Release coordination lock
     release_task(instance_id)
 
-    # 15. Spawn next Swarmer
+    # 17. Spawn next Swarmer
     spawn_swarmer()
 
-    # 16. Terminate
+    # 18. Terminate
     return
