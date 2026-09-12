@@ -32,6 +32,11 @@ from swarmer.self_healing import heal_rpc_failure, heal_platform_throttle, heal_
 from swarmer.analytics import record_task, record_cluster
 from swarmer.orchestrator import should_allow_publish
 
+# NEW: Viewer + Exporter + Global Controller
+from swarmer.health_viewer import discord_health_view
+from swarmer.metrics_exporter import export_metrics_json
+from swarmer.global_controller import global_allow_publish
+
 # Infrastructure modules
 from swarmer.rpc_refresh import refresh_rpcs
 from swarmer.logger import log_event
@@ -39,6 +44,7 @@ from swarmer.depin_publisher import publish_depin
 from swarmer.batcher import add_to_batch, flush_batch
 
 from swarmer.spawner import spawn_swarmer
+
 
 AGENT_FEED_URL = "https://your-volata-endpoint/agent/feed"
 
