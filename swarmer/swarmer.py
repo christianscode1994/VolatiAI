@@ -1,6 +1,7 @@
 import requests
 import random
 import time
+import os
 
 # Microtasks
 from swarmer.microtasks.narrative_spike import detect_narrative_spike
@@ -17,6 +18,13 @@ from swarmer.platform_limits import platform_throttle
 from swarmer.fatigue import channel_fatigue
 from swarmer.stability import stability_check
 from swarmer.specialize import specialize
+
+# Swarm-level intelligence modules
+from swarmer.memory import remember_event, is_repeated_pattern
+from swarmer.coordination import register_task, release_task, should_run_task
+from swarmer.backpressure import backpressure
+from swarmer.clustering import assign_cluster
+from swarmer.specialization_pools import pool_for_cluster
 
 # Infrastructure modules
 from swarmer.rpc_refresh import refresh_rpcs
@@ -45,7 +53,11 @@ def run_swarmer():
     # 1. Pull intelligence
     intel = requests.get(AGENT_FEED_URL).json()
 
-    # 2. Self-regulation checks
+    # 2. Backpressure (global load protection)
+    if backpressure(intel):
+        return
+
+    # 3. Self-regulation checks
     if not swarm_governor(intel):
         return
 
@@ -58,21 +70,48 @@ def run_swarmer():
     if not stability_check(intel):
         return
 
-    # 3. Specialize micro-task selection
-    task_name = specialize(intel)
-    task = TASK_MAP[task_name]
+    # 4. Swarm identity
+    instance_id = int(os.environ.get("SWARM_INSTANCE_ID", random.randint(1, 100000)))
 
-    # 4. Execute micro-task
+    # 5. Clustering (assign swarm role)
+    cluster = assign_cluster(instance_id)
+
+    # 6. Specialization pools (role → allowed tasks)
+    pool = pool_for_cluster(cluster)
+
+    # 7. Coordination (avoid too many swarmers doing same task)
+    candidate_tasks = [t for t in pool if should_run_task(t)]
+    if not candidate_tasks:
+        return
+
+    # 8. Specialize micro-task selection
+    task_name = random.choice(candidate_tasks)
+
+    # 9. Anti-repeat (avoid spam patterns)
+    if is_repeated_pattern(task_name, threshold=15, window_seconds=900):
+        return
+
+    # 10. Register task
+    register_task(task_name, instance_id)
+
+    # 11. Execute micro-task
+    task = TASK_MAP[task_name]
     event = task(intel)
 
-    # 5. Batch + log + publish
+    # 12. Memory
+    remember_event(event)
+
+    # 13. Batch + log + publish
     add_to_batch(event)
     flush_batch()
     log_event(event)
     publish_depin(event)
 
-    # 6. Spawn next Swarmer
+    # 14. Release coordination lock
+    release_task(instance_id)
+
+    # 15. Spawn next Swarmer
     spawn_swarmer()
 
-    # 7. Terminate
+    # 16. Terminate
     return
