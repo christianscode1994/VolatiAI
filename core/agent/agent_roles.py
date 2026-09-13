@@ -48,7 +48,13 @@ class MissionAgent(Agent):
 
 
 
+class SignalAgent(Agent):
+    def bid(self, mission_spec):
+        capability_fit = self.state.capabilities.get("signal_fit", 0.5)
+        latency = self.state.capabilities.get("latency", 0.5)
+        vai_term = 1 + self.state.vai_score / 1000
 
+        return capability_fit * vai_term - 0.1 * latency
 
 
 
