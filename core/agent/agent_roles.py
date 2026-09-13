@@ -10,3 +10,50 @@ class SignalAgent(Agent):
     def execute(self, mission_spec):
         # Produce raw signal packet
         return {"signal": "value", "confidence": self.state.capabilities.get("confidence", 0.5)}
+
+class FusionAgent(Agent):
+    def bid(self, mission_spec):
+        return (
+            self.state.capabilities.get("fusion_strength", 0.5)
+            * (1 + self.state.vai_score / 1500)
+        )
+
+    def execute(self, mission_spec):
+        # Combine signals
+        return {"fusion_view": "combined"}
+
+
+class ArbitrationAgent(Agent):
+    def bid(self, mission_spec):
+        return (
+            self.state.capabilities.get("consistency", 0.5)
+            * (1 + self.state.vai_score / 2000)
+        )
+
+    def execute(self, mission_spec):
+        # Vote on truth
+        return {"vote": self.state.capabilities.get("consistency", 0.5)}
+
+
+class MissionAgent(Agent):
+    def bid(self, mission_spec):
+        return (
+            self.state.capabilities.get("mission_fit", 0.5)
+            * (1 + self.state.vai_score / 1200)
+        )
+
+    def execute(self, mission_spec):
+        # Run mission logic
+        return {"result": "mission_output"}
+
+
+
+
+
+
+
+
+
+
+
+
