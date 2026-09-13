@@ -1,14 +1,17 @@
 from datetime import datetime
-from history import read_snapshots
-from metrics import (
+
+# Correct relative imports for package execution
+from .history import read_snapshots
+from .metrics import (
     METRICS,
     aggregate_metric,
     volatai_score,
     detect_alerts,
 )
 
-from defi_scoring import score_defi
-from compute_defi_alerts import compute_defi_alerts
+from .defi_scoring import score_defi
+from .compute_defi_alerts import compute_defi_alerts
+
 
 
 # ---------- Helpers ----------
