@@ -186,6 +186,29 @@ Whale pressure
 
 Spoofing probability
 
+
+---
+
+### Legal & Privacy Notice
+
+VolatiAI is a downloadable software tool.  
+It does not collect, store, or transmit personal data.  
+It does not provide hosted services, user accounts, subscriptions, or access tiers.
+
+Activation keys (VAI‑LIC) are used solely to verify legitimate purchase from
+authorized platforms. They do not represent a subscription, financial asset,
+token, or entitlement to online services.
+
+VolatiAI operates fully offline and locally.  
+No analytics, telemetry, or usage tracking is performed.
+
+By using VolatiAI, you agree to the minimal Activation Terms, Privacy Note, and
+License Agreement included in the repository.
+
+
+
+
+
 Chain data divergence
 
 Developer ecosystem growth
