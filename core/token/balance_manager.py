@@ -1,22 +1,22 @@
 class VAIIntManager:
-    def __init__(self, storage):
-        self.storage = storage  # abstraction over DB/KV
-
-    def get_balance(self, agent_id: str) -> int:
-        # returns current internal score
-        ...
+    def __init__(self, storage, ledger: VAIIntLedger):
+        self.storage = storage
+        self.ledger = ledger
 
     def apply_delta(self, agent_id: str, delta: int, reason: str, timestamp_ms: int) -> int:
-        """
-        - Updates the agent's internal score.
-        - Appends a ledger entry.
-        - Returns new balance.
-        """
-        ...
+        current = self.get_balance(agent_id)
+        new_balance = current + delta
 
-    def set_balance(self, agent_id: str, new_balance: int, reason: str, timestamp_ms: int) -> int:
-        """
-        - Used only for initialization or corrective maintenance.
-        - Not exposed to any external API.
-        """
-        ...
+        # write balance
+        self.storage.set_balance(agent_id, new_balance)
+
+        # log ledger entry
+        entry = LedgerEntry(
+            agent_id=agent_id,
+            delta=delta,
+            reason=reason,
+            timestamp_ms=timestamp_ms,
+        )
+        self.ledger.append(entry)
+
+        return new_balance
