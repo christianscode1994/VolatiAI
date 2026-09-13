@@ -3,7 +3,7 @@ name: VolatiAI Bots
 on:
   schedule:
     - cron: "0 * * * *"   # every hour
-  workflow_dispatch:       # manual trigger
+  workflow_dispatch:
 
 jobs:
   run-bots:
@@ -21,20 +21,5 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run X bot
-        run: python VolatiAI/bots/x_bot.py
-
-      - name: Run Reddit bot
-        run: python VolatiAI/bots/reddit_bot.py
-
-      - name: Run Substack bot
-        run: python VolatiAI/bots/substack_bot.py
-
-      - name: Run Telegram bot
-        run: python VolatiAI/bots/telegram_bot.py
-
-      - name: Run WhatsApp bot
-        run: python VolatiAI/bots/whatsapp_bot.py
-
-      - name: Run Slack bot
-        run: python VolatiAI/bots/slack_bot.py
+      - name: Run VolatiAI Engine
+        run: python3 -m src.main
