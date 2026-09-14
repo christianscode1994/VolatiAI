@@ -1,5 +1,3 @@
-# volatiai/src/api.py
-
 from fastapi import FastAPI, HTTPException
 from .history import read_latest_snapshot, read_snapshots
 from .metrics import (
@@ -57,6 +55,26 @@ def root():
             "/sentiment/volatility",
             "/sentiment/regime",
             "/sentiment/early-warning",
+            "/macro/metrics",
+            "/macro/stress-test",
+            "/macro/regime",
+            "/macro/early-warning",
+            "/macro/intel-report",
+            "/fusion/score",
+            "/fusion/regime",
+            "/fusion/early-warning",
+            "/fusion/index",
+            "/fusion/intel-report",
+            "/narrative/metrics",
+            "/narrative/volatility",
+            "/narrative/regime",
+            "/narrative/early-warning",
+            "/narrative/intel-report",
+            "/risk/metrics",
+            "/risk/score",
+            "/risk/regime",
+            "/risk/early-warning",
+            "/risk/intel-report",
         ],
     }
 
@@ -115,8 +133,6 @@ def api_latest(name: str):
         raise HTTPException(status_code=404, detail="No snapshots found")
 
     return {"metric": name, "latest": snap}
-
-
 
 # ============================================================
 # ===================== RAW SNAPSHOTS WINDOW ==================
@@ -341,10 +357,6 @@ def api_defi_volatility_trends(days: int = 7):
     return {"days": days, "volatility_trend": vol}
 
 
-# ============================================================
-# ====================== ADVANCED DEFI ========================
-# ============================================================
-
 @app.get("/defi/risk")
 def api_defi_risk(days: int = 7):
     latest = _latest_defi(days)
@@ -410,7 +422,6 @@ def api_defi_health(days: int = 7):
             "poor"
         ),
     }
-
 
 # ============================================================
 # ======================= SENTIMENT ===========================
@@ -513,6 +524,7 @@ def api_sentiment_early_warning(days: int = 7):
         },
     }
 
+
 # ============================================================
 # ======================== MACRO METRICS ======================
 # ============================================================
@@ -603,7 +615,7 @@ def api_macro_intel_report(days: int = 7):
         f"Macro regime: {regime['regime']}.",
         f"Risk‑off index: {round(m['risk_off'], 6)}.",
         f"Liquidity index: {round(m['liquidity'], 6)}.",
-        f"Policy pressure: {round(m['policy_pressure'], 6)}."
+        f"Policy pressure: {round(m['policy_pressure'], 6)}.",
     ]
 
     if ew["warnings"]:
@@ -614,7 +626,6 @@ def api_macro_intel_report(days: int = 7):
         lines.append("No major macro early‑warning signals detected.")
 
     return {"days": days, "intel_report": " ".join(lines)}
-
 
 # ============================================================
 # ========================= FUSION ============================
@@ -707,215 +718,10 @@ def api_fusion_intel_report(days: int = 7):
     lines = [
         f"Fusion regime: {fregime['regime']} (score {round(fscore['fusion_score'], 6)}).",
         f"Sentiment regime: {sent_reg['regime']}.",
-        f"Macro regime: {macro_reg['regime']}."
-    ]
-
-    return {"days": days, "intel_report": " ".join(lines)}
-
-# ============================================================
-# ======================== MACRO (X1–X5) ======================
-# ============================================================
-
-@app.get("/macro/metrics")
-def api_macro_metrics(days: int = 7):
-    snaps = read_snapshots("macro", days)
-    if not snaps:
-        raise HTTPException(404, "No macro snapshots")
-
-    def avg(key):
-        vals = [s.get(key, 0.0) for s in snaps]
-        return sum(vals) / len(vals) if vals else 0.0
-
-    return {
-        "days": days,
-        "risk_off": round(avg("risk_off"), 6),
-        "liquidity": round(avg("liquidity"), 6),
-        "policy_pressure": round(avg("policy_pressure"), 6),
-    }
-
-
-@app.get("/macro/stress-test")
-def api_macro_stress_test(days: int = 7):
-    m = api_macro_metrics(days)
-
-    stress_risk_off = m["risk_off"] + 0.3
-    stress_liquidity = max(m["liquidity"] - 0.3, 0.0)
-    stress_policy = m["policy_pressure"] + 0.2
-
-    stress_score = (
-        stress_risk_off * 0.6 +
-        (1 - stress_liquidity) * 0.3 +
-        stress_policy * 0.5
-    )
-
-    return {
-        "days": days,
-        "stress_score": round(stress_score, 6),
-        "shock_scenario": {
-            "risk_off": round(stress_risk_off, 6),
-            "liquidity": round(stress_liquidity, 6),
-            "policy_pressure": round(stress_policy, 6),
-        },
-    }
-
-
-@app.get("/macro/regime")
-def api_macro_regime(days: int = 7):
-    m = api_macro_metrics(days)
-
-    if m["risk_off"] > 0.6 and m["liquidity"] < 0.4:
-        regime = "risk_off"
-    elif m["liquidity"] > 0.6 and m["policy_pressure"] < 0.4:
-        regime = "risk_on"
-    else:
-        regime = "mixed"
-
-    return {"days": days, "regime": regime, "metrics": m}
-
-
-@app.get("/macro/early-warning")
-def api_macro_early_warning(days: int = 7):
-    snaps = read_snapshots("macro", days)
-    if not snaps or len(snaps) < 3:
-        raise HTTPException(404, "Not enough macro snapshots")
-
-    m1 = api_macro_metrics(days)
-    m2 = api_macro_metrics(days - 1)
-    m3 = api_macro_metrics(days - 2)
-
-    warnings = []
-    if m1["risk_off"] > m2["risk_off"] > m3["risk_off"]:
-        warnings.append("Risk‑off pressure rising.")
-    if m1["liquidity"] < m2["liquidity"] < m3["liquidity"]:
-        warnings.append("Liquidity deteriorating.")
-    if m1["policy_pressure"] > 0.7:
-        warnings.append("High policy pressure detected.")
-
-    return {"days": days, "warnings": warnings, "metrics": m1}
-
-
-@app.get("/macro/intel-report")
-def api_macro_intel_report(days: int = 7):
-    m = api_macro_metrics(days)
-    regime = api_macro_regime(days)
-    ew = api_macro_early_warning(days)
-
-    lines = [
-        f"Macro regime: {regime['regime']}.",
-        f"Risk‑off index: {round(m['risk_off'], 6)}.",
-        f"Liquidity index: {round(m['liquidity'], 6)}.",
-        f"Policy pressure: {round(m['policy_pressure'], 6)}.",
-    ]
-
-    if ew["warnings"]:
-        lines.append("Early‑warning signals:")
-        for w in ew["warnings"]:
-            lines.append(f"- {w}")
-    else:
-        lines.append("No major macro early‑warning signals detected.")
-
-    return {"days": days, "intel_report": " ".join(lines)}
-
-
-# ============================================================
-# ======================== FUSION (F1–F5) =====================
-# ============================================================
-
-@app.get("/fusion/score")
-def api_fusion_score(days: int = 7):
-    market = api_metric("market", days)
-    sentiment = api_sentiment_metrics(days)
-    macro = api_macro_metrics(days)
-    defi = api_defi_health(days)
-
-    vol = market["aggregated"].get("volatility", 0.0)
-    mr = market["aggregated"].get("mean", 0.0)
-    sent = (sentiment["reddit_avg"] + sentiment["hn_avg"]) / 2.0
-    risk_off = macro["risk_off"]
-    liq = macro["liquidity"]
-    defi_score = defi["health_score"]
-
-    fusion = (
-        (1 - min(vol, 0.5)) * 0.2 +
-        max(mr + 0.1, 0.0) * 0.2 +
-        (sent + 0.5) * 0.2 +
-        (1 - risk_off) * 0.2 +
-        liq * 0.1 +
-        defi_score * 0.1
-    )
-
-    return {
-        "days": days,
-        "fusion_score": round(fusion, 6),
-        "components": {
-            "volatility": vol,
-            "avg_return": mr,
-            "sentiment": sent,
-            "risk_off": risk_off,
-            "liquidity": liq,
-            "defi_health": defi_score,
-        },
-    }
-
-
-@app.get("/fusion/regime")
-def api_fusion_regime(days: int = 7):
-    f = api_fusion_score(days)
-    score = f["fusion_score"]
-
-    if score > 0.7:
-        regime = "constructive"
-    elif score < 0.3:
-        regime = "fragile"
-    else:
-        regime = "balanced"
-
-    return {"days": days, "regime": regime, "fusion_score": score}
-
-
-@app.get("/fusion/early-warning")
-def api_fusion_early_warning(days: int = 7):
-    market = api_metric("market", days)
-    sentiment = api_sentiment_metrics(days)
-    macro = api_macro_metrics(days)
-    defi = api_defi_health(days)
-
-    warnings = []
-
-    if market["aggregated"].get("volatility", 0.0) > 0.05:
-        warnings.append("High market volatility.")
-    if sentiment["reddit_avg"] < -0.2 and sentiment["hn_avg"] < -0.2:
-        warnings.append("Broadly negative sentiment.")
-    if macro["risk_off"] > 0.6:
-        warnings.append("Macro risk‑off regime.")
-    if defi["health_score"] < 0.4:
-        warnings.append("DeFi systemic stress elevated.")
-
-    return {"days": days, "warnings": warnings}
-
-
-@app.get("/fusion/index")
-def api_fusion_index(days: int = 7):
-    f = api_fusion_score(days)
-    index = max(0.0, min(100.0, f["fusion_score"] * 100.0))
-    return {"days": days, "volatai_index": round(index, 2)}
-
-
-@app.get("/fusion/intel-report")
-def api_fusion_intel_report(days: int = 7):
-    fscore = api_fusion_score(days)
-    fregime = api_fusion_regime(days)
-    macro_reg = api_macro_regime(days)
-    sent_reg = api_sentiment_regime(days)
-
-    lines = [
-        f"Fusion regime: {fregime['regime']} (score {round(fscore['fusion_score'], 6)}).",
-        f"Sentiment regime: {sent_reg['regime']}.",
         f"Macro regime: {macro_reg['regime']}.",
     ]
 
     return {"days": days, "intel_report": " ".join(lines)}
-
 
 # ============================================================
 # ===================== NARRATIVE (N1–N5) =====================
@@ -925,7 +731,7 @@ def api_fusion_intel_report(days: int = 7):
 def api_narrative_metrics(days: int = 7):
     snaps = read_snapshots("narrative", days)
     if not snaps:
-        raise HTTPException(404, "No narrative snapshots")
+        raise HTTPException(status_code=404, detail="No narrative snapshots")
 
     scores = [s.get("score", 0.0) for s in snaps]
 
@@ -939,7 +745,7 @@ def api_narrative_metrics(days: int = 7):
 def api_narrative_volatility(days: int = 7):
     snaps = read_snapshots("narrative", days)
     if not snaps or len(snaps) < 2:
-        raise HTTPException(404, "Not enough narrative snapshots")
+        raise HTTPException(status_code=404, detail="Not enough narrative snapshots")
 
     scores = [s.get("score", 0.0) for s in snaps]
     mean = sum(scores) / len(scores)
@@ -967,7 +773,7 @@ def api_narrative_regime(days: int = 7):
 def api_narrative_early_warning(days: int = 7):
     snaps = read_snapshots("narrative", days)
     if not snaps or len(snaps) < 3:
-        raise HTTPException(404, "Not enough narrative snapshots")
+        raise HTTPException(status_code=404, detail="Not enough narrative snapshots")
 
     m1 = api_narrative_metrics(days)
     m2 = api_narrative_metrics(days - 1)
@@ -1002,7 +808,6 @@ def api_narrative_intel_report(days: int = 7):
 
     return {"days": days, "intel_report": " ".join(lines)}
 
-
 # ============================================================
 # ======================== RISK (R1–R5) =======================
 # ============================================================
@@ -1011,7 +816,7 @@ def api_narrative_intel_report(days: int = 7):
 def api_risk_metrics(days: int = 7):
     snaps = read_snapshots("risk", days)
     if not snaps:
-        raise HTTPException(404, "No risk snapshots")
+        raise HTTPException(status_code=404, detail="No risk snapshots")
 
     def avg(key):
         vals = [s.get(key, 0.0) for s in snaps]
@@ -1057,7 +862,7 @@ def api_risk_regime(days: int = 7):
 def api_risk_early_warning(days: int = 7):
     snaps = read_snapshots("risk", days)
     if not snaps or len(snaps) < 3:
-        raise HTTPException(404, "Not enough risk snapshots")
+        raise HTTPException(status_code=404, detail="Not enough risk snapshots")
 
     m1 = api_risk_metrics(days)
     m2 = api_risk_metrics(days - 1)
@@ -1094,215 +899,23 @@ def api_risk_intel_report(days: int = 7):
     return {"days": days, "intel_report": " ".join(lines)}
 
 
-# ============================================================
-# ===================== ASSET INTELLIGENCE ====================
-# ============================================================
-
-@app.get("/asset/metrics/{symbol}")
-def api_asset_metrics(symbol: str, days: int = 7):
-    snaps = read_snapshots("asset", days)
-    if not snaps:
-        raise HTTPException(404, "No asset snapshots")
-
-    vals = [s.get(symbol.upper(), {}) for s in snaps]
-    if not any(vals):
-        raise HTTPException(404, f"No data for asset {symbol}")
-
-    def avg(key):
-        xs = [v.get(key, 0.0) for v in vals]
-        return sum(xs) / len(xs) if xs else 0.0
-
-    return {
-        "symbol": symbol.upper(),
-        "days": days,
-        "volatility": round(avg("volatility"), 6),
-        "return": round(avg("return"), 6),
-        "sentiment": round(avg("sentiment"), 6),
-        "defi_exposure": round(avg("defi_exposure"), 6),
-    }
 
 
-@app.get("/asset/score/{symbol}")
-def api_asset_score(symbol: str, days: int = 7):
-    m = api_asset_metrics(symbol, days)
-    score = (
-        (1 - min(m["volatility"], 0.5)) * 0.3 +
-        max(m["return"] + 0.05, 0.0) * 0.3 +
-        (m["sentiment"] + 0.5) * 0.2 +
-        (1 - m["defi_exposure"]) * 0.2
-    )
-
-    return {
-        "symbol": m["symbol"],
-        "days": days,
-        "asset_score": round(score, 6),
-        "metrics": m,
-    }
 
 
-@app.get("/asset/regime/{symbol}")
-def api_asset_regime(symbol: str, days: int = 7):
-    s = api_asset_score(symbol, days)
-    sc = s["asset_score"]
-
-    if sc > 0.7:
-        regime = "constructive"
-    elif sc < 0.3:
-        regime = "fragile"
-    else:
-        regime = "balanced"
-
-    return {
-        "symbol": s["symbol"],
-        "days": days,
-        "regime": regime,
-        "asset_score": sc,
-    }
 
 
-@app.get("/asset/intel-report/{symbol}")
-def api_asset_intel_report(symbol: str, days: int = 7):
-    m = api_asset_metrics(symbol, days)
-    r = api_asset_regime(symbol, days)
-
-    lines = [
-        f"Asset {m['symbol']} regime: {r['regime']} (score {round(r['asset_score'], 6)}).",
-        f"Volatility: {m['volatility']}, return: {m['return']}, sentiment: {m['sentiment']}, DeFi exposure: {m['defi_exposure']}.",
-    ]
-
-    return {
-        "symbol": m["symbol"],
-        "days": days,
-        "intel_report": " ".join(lines),
-    }
-
-# ============================================================
-# ======================== SECTOR INTELLIGENCE ===============
-# ============================================================
-
-@app.get("/sector/metrics")
-def api_sector_metrics(days: int = 7):
-    snaps = read_snapshots("sector", days)
-    if not snaps:
-        raise HTTPException(404, "No sector snapshots")
-
-    agg = {}
-    for s in snaps:
-        for name, data in s.items():
-            agg.setdefault(name, []).append(data.get("score", 0.0))
-
-    averaged = {name: sum(vals) / len(vals) for name, vals in agg.items()}
-    return {"days": days, "sectors": averaged}
 
 
-@app.get("/sector/regime")
-def api_sector_regime(days: int = 7):
-    m = api_sector_metrics(days)
-    regimes = {}
-
-    for name, score in m["sectors"].items():
-        if score > 0.7:
-            regimes[name] = "strong"
-        elif score < 0.3:
-            regimes[name] = "weak"
-        else:
-            regimes[name] = "mixed"
-
-    return {"days": days, "regimes": regimes}
 
 
-@app.get("/sector/intel-report")
-def api_sector_intel_report(days: int = 7):
-    m = api_sector_metrics(days)
-    reg = api_sector_regime(days)
-
-    lines = ["Sector regimes:"]
-    for name, regime in reg["regimes"].items():
-        score = m["sectors"][name]
-        lines.append(f"- {name}: {regime} (score {round(score, 6)})")
-
-    return {"days": days, "intel_report": " ".join(lines)}
 
 
-# ============================================================
-# ======================== GLOBAL INTELLIGENCE ===============
-# ============================================================
-
-@app.get("/global/score")
-def api_global_score(days: int = 7):
-    fusion = api_fusion_score(days)
-    risk = api_risk_score(days)
-    macro = api_macro_metrics(days)
-
-    score = (
-        fusion["fusion_score"] * 0.5 +
-        (1 - risk["risk_score"]) * 0.3 +
-        (1 - macro["risk_off"]) * 0.2
-    )
-
-    return {"days": days, "global_score": round(score, 6)}
 
 
-@app.get("/global/regime")
-def api_global_regime(days: int = 7):
-    g = api_global_score(days)
-    s = g["global_score"]
-
-    if s > 0.7:
-        regime = "constructive"
-    elif s < 0.3:
-        regime = "fragile"
-    else:
-        regime = "balanced"
-
-    return {"days": days, "regime": regime, "global_score": s}
 
 
-@app.get("/global/intel-report")
-def api_global_intel_report(days: int = 7):
-    g = api_global_score(days)
-    reg = api_global_regime(days)
-    fusion_idx = api_fusion_index(days)
 
-    lines = [
-        f"Global regime: {reg['regime']} (score {round(g['global_score'], 6)}).",
-        f"VolatiAI Intelligence Index: {fusion_idx['volatai_index']}.",
-    ]
-
-    return {"days": days, "intel_report": " ".join(lines)}
-
-
-# ============================================================
-# ======================== DEFI FORECAST ======================
-# ============================================================
-
-@app.get("/defi/forecast")
-def api_defi_forecast(days: int = 7):
-    snaps = read_snapshots("defi_health", days)
-    if not snaps:
-        raise HTTPException(404, "No DeFi snapshots found")
-
-    scores = [
-        score_defi(
-            s.get("uniswap_liquidity", 0),
-            s.get("sushiswap_liquidity", 0),
-            s.get("curve_stability", 0),
-            s.get("aave_utilization", 0),
-            s.get("dai_peg_deviation", 0),
-        )
-        for s in snaps
-    ]
-
-    if len(scores) < 3:
-        forecast = scores[-1]
-    else:
-        forecast = sum(scores[-3:]) / 3
-
-    return {
-        "days": days,
-        "forecast_score": round(forecast, 4),
-        "method": "3-point moving average",
-    }
 
 
 
