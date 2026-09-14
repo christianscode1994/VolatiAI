@@ -897,29 +897,3 @@ def api_risk_intel_report(days: int = 7):
         lines.append("No major risk early‑warning signals detected.")
 
     return {"days": days, "intel_report": " ".join(lines)}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
