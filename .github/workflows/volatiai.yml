@@ -4,9 +4,14 @@ on:
   schedule:
     - cron: "*/15 * * * *"
 
+concurrency:
+  group: volatiai-agents
+  cancel-in-progress: true
+
 jobs:
   run-agents:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -14,41 +19,62 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - run: pip install -r requirements.txt
 
-      # 1. Run autonomous agents (online/offline)
+      # Agents
       - run: python agents/market_agent/policy.py
       - run: python agents/sentiment_agent/policy.py
       - run: python agents/developer_agent/policy.py
 
-      # 2. Run scoring layer
+      # Scoring
       - run: python src/scoring/fusion_scores.py
 
-      # 3. Run fusion layer (Free + Pro)
+      # Fusion
       - run: python src/fuse.py
 
-      # 3.5 Run intelligence modules
+      # Intelligence modules
       - run: python src/intel/trends.py
       - run: python src/intel/narratives.py
       - run: python src/intel/microstructure.py
       - run: python src/intel/rpc_truth.py
 
-      # 4. Run dashboards
+      # Dashboards
       - run: python src/dashboard/html_builder.py
 
-      # 4.5 Telegram bot
+      # Telegram bot
       - run: python src/telegram/bot.py
 
-      # 4.6 Run alert modules
+      # Alerts
       - run: python src/alerts/whale_alerts.py
       - run: python src/alerts/spoofing_alerts.py
       - run: python src/alerts/trend_accel_alerts.py
       - run: python src/alerts/narrative_alerts.py
 
-      # 5. Commit results
-      - run: |
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: agents-output-${{ github.run_id }}
+          path: |
+            public/
+            private/
+            agents/*/memory.json
+
+      - name: Commit results
+        run: |
           git config user.name "VolatiAI Bot"
           git config user.email "bot@volatiai.local"
           git add public private docs agents/*/memory.json
           git commit -m "VolatiAI: update agent outputs" || echo "No changes"
           git push
+
+      - name: Report failure
+        if: ${{ failure() }}
+        run: echo "Agents workflow failed @ ${{ github.sha }}"
