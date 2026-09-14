@@ -4,6 +4,9 @@ import logging
 import cProfile
 import pstats
 
+# -----------------------------
+# DATA PIPELINES
+# -----------------------------
 from .fetch_data import fetch_top_market_data, fetch_reddit_titles, fetch_hn_titles
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
@@ -11,21 +14,18 @@ from .generate_output import build_payload, write_json, write_html
 from .history import write_snapshot
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
-from .api import app  # for --api mode
 
-# Intelligence layers (serverless, snapshot-based)
-from .compute_defi_health import compute_defi_health_from_snapshots
-from .api import (
-    api_market_metrics,
-    api_market_regime,
-    api_market_stress_test,
-    api_market_early_warning,
-    api_market_intel_report,
-)
+# Unified API (FastAPI app only)
+from .api import app
+from .api import api_metric, api_sentiment_metrics, api_macro_metrics, api_defi_health
 
+# On-chain intelligence (Pro tier)
 from src.onchain.rpc import RPC
-from src.onchain.intelligence import build_chain_health, build_stablecoin_flows, build_whale_activity
-from src.snapshots import write_snapshot  # your existing snapshot writer
+from src.onchain.intelligence import (
+    build_chain_health,
+    build_stablecoin_flows,
+    build_whale_activity,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -37,6 +37,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("volatai")
 
+
+# ============================================================
+# ========================= RUN ONCE ==========================
+# ============================================================
 
 def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     logger.info("Running tier=%s", tier)
@@ -68,58 +72,48 @@ def run_once(tier: str, write_snaps: bool, show_dashboard: bool):
     # 3. DEFI HEALTH (SNAPSHOT-BASED)
     # -----------------------------
     try:
-        defi_health = compute_defi_health_from_snapshots()
+        defi_health = api_defi_health(days=7)
     except Exception as e:
         logger.error("DeFi health computation failed: %s", e)
-        defi_health = None
-
-# -----------------------------
-# 3B. ON-CHAIN INTELLIGENCE (PRO ONLY)
-# -----------------------------
-chain_health = None
-stablecoin_flows = None
-whale_data = None
-
-if tier == "pro":
-    try:
-        rpc = RPC()
-        chain_health = build_chain_health(rpc)
-
-        latest_block = chain_health["latest_block"]
-        from_block = max(0, latest_block - 200)
-
-        stablecoin_flows = build_stablecoin_flows(rpc, from_block, latest_block)
-        whale_data = build_whale_activity(
-            rpc,
-            min_value_eth=100.0,
-            from_block=from_block,
-            to_block=latest_block,
-        )
-    except Exception as e:
-        logger.error("On-chain intelligence failed: %s", e)
-        chain_health = None
-        stablecoin_flows = None
-        whale_data = None
-
-
-    
+        defi_health = {}
 
     # -----------------------------
-    # 4. MARKET INTELLIGENCE LAYER (M1–M5)
+    # 3B. ON-CHAIN INTELLIGENCE (PRO ONLY)
+    # -----------------------------
+    chain_health = None
+    stablecoin_flows = None
+    whale_data = None
+
+    if tier == "pro":
+        try:
+            rpc = RPC()
+            chain_health = build_chain_health(rpc)
+
+            latest_block = chain_health["latest_block"]
+            from_block = max(0, latest_block - 200)
+
+            stablecoin_flows = build_stablecoin_flows(rpc, from_block, latest_block)
+            whale_data = build_whale_activity(
+                rpc,
+                min_value_eth=100.0,
+                from_block=from_block,
+                to_block=latest_block,
+            )
+        except Exception as e:
+            logger.error("On-chain intelligence failed: %s", e)
+            chain_health = None
+            stablecoin_flows = None
+            whale_data = None
+
+    # -----------------------------
+    # 4. MARKET INTELLIGENCE (Unified)
     # -----------------------------
     try:
-        market_metrics = api_market_metrics(days=7)
-        market_regime = api_market_regime(days=7)
-        market_stress = api_market_stress_test(days=7)
-        market_ew = api_market_early_warning(days=7)
-        market_report = api_market_intel_report(days=7)
+        market = api_metric("market", days=7)
+        market_metrics = market["aggregated"]
     except Exception as e:
-        logger.error("Market intelligence failed: %s", e)
+        logger.error("Unified market intelligence failed: %s", e)
         market_metrics = {}
-        market_regime = {}
-        market_stress = {}
-        market_ew = {}
-        market_report = {}
 
     # -----------------------------
     # 5. BUILD PAYLOAD
@@ -130,131 +124,123 @@ if tier == "pro":
         sent_hn,
         tier=tier,
         market=market_metrics,
-        market_regime=market_regime,
-        market_stress=market_stress,
-        market_ew=market_ew,
-        market_report=market_report,
         defi_health=defi_health,
     )
 
-# -----------------------------
-# 5B. BUILD NEW INTELLIGENCE LAYER SNAPSHOT DATA
-# -----------------------------
+    # -----------------------------
+    # 5B. NEW INTELLIGENCE LAYER SNAPSHOTS
+    # -----------------------------
 
-# --- Narrative Data (N1–N5) ---
-narrative_data = {
-    "topics": reddit_titles[:10],  # or your own top_topics list
-    "intensity": round(sent_reddit["score"] * 0.4 + sent_hn["score"] * 0.3, 6),
-    "dispersion": round(abs(sent_reddit["score"] - sent_hn["score"]), 6),
-    "coherence": round(1.0 - abs(sent_reddit["score"] - sent_hn["score"]), 6),
-}
-
-# --- Risk Data (R1–R5) ---
-risk_data = {
-    "market_risk": round(min(market_metrics.get("volatility", 0.0) * 2.0, 1.0), 6),
-    "defi_risk": round(defi_health.get("stress_level", 0.0), 6),
-    "liquidity_risk": round(1.0 - market_metrics.get("liquidity_score", 0.5), 6),
-    "sentiment_risk": round(1.0 - ((sent_reddit["score"] + sent_hn["score"]) / 2.0 + 0.5), 6),
-}
-
-# --- Asset Data (A1–A5) ---
-asset_data = {}
-for symbol in coins_vol.keys():
-    asset_data[symbol] = {
-        "volatility": round(coins_vol[symbol], 6),
-        "return": round(coins.get(symbol, {}).get("return", 0.0), 6),
-        "sentiment": round((sent_reddit["score"] + sent_hn["score"]) / 2.0, 6),
-        "defi_exposure": round(defi_health.get("exposure_map", {}).get(symbol, 0.1), 6),
+    # Narrative (N1–N5)
+    narrative_data = {
+        "topics": reddit_titles[:10],
+        "intensity": round(sent_reddit["score"] * 0.4 + sent_hn["score"] * 0.3, 6),
+        "dispersion": round(abs(sent_reddit["score"] - sent_hn["score"]), 6),
+        "coherence": round(1.0 - abs(sent_reddit["score"] - sent_hn["score"]), 6),
     }
 
-# --- Sector Data (C1–C5) ---
-sector_map = {
-    "L1": ["BTC", "ETH", "SOL", "ADA", "AVAX"],
-    "L2": ["MATIC", "OP", "ARB"],
-    "DEFI": ["UNI", "AAVE", "CRV", "MKR"],
-    "AI": ["FET", "AGIX", "RNDR"],
-    "MEME": ["DOGE", "SHIB", "PEPE"],
-}
+    # Risk (R1–R5)
+    risk_data = {
+        "market_risk": round(min(market_metrics.get("volatility", 0.0) * 2.0, 1.0), 6),
+        "defi_risk": round(defi_health.get("stress_level", 0.0), 6),
+        "liquidity_risk": round(1.0 - market_metrics.get("liquidity_score", 0.5), 6),
+        "sentiment_risk": round(
+            1.0 - ((sent_reddit["score"] + sent_hn["score"]) / 2.0 + 0.5), 6
+        ),
+    }
 
-sector_data = {}
-for sector, assets in sector_map.items():
-    vals = [asset_data[a]["return"] for a in assets if a in asset_data]
-    score = sum(vals) / len(vals) if vals else 0.0
-    sector_data[sector] = {"score": round(score, 6)}
+    # Asset (A1–A5)
+    asset_data = {}
+    for symbol in coins_vol.keys():
+        asset_data[symbol] = {
+            "volatility": round(coins_vol[symbol], 6),
+            "return": round(coins.get(symbol, {}).get("return", 0.0), 6),
+            "sentiment": round((sent_reddit["score"] + sent_hn["score"]) / 2.0, 6),
+            "defi_exposure": round(
+                defi_health.get("exposure_map", {}).get(symbol, 0.1), 6
+            ),
+        }
 
-# --- Global Data (G1–G5) ---
-global_data = {
-    "fusion_score": round(
-        (market_metrics.get("avg_return", 0.0) * 0.3) +
-        ((sent_reddit["score"] + sent_hn["score"]) / 2.0 * 0.2) +
-        (1.0 - risk_data["market_risk"]) * 0.2 +
-        (1.0 - risk_data["defi_risk"]) * 0.2 +
-        (1.0 - risk_data["liquidity_risk"]) * 0.1,
-        6
-    ),
-    "global_regime": "constructive"
-        if (market_metrics.get("avg_return", 0.0) > 0.01 and risk_data["market_risk"] < 0.4)
+    # Sector (C1–C5)
+    sector_map = {
+        "L1": ["BTC", "ETH", "SOL", "ADA", "AVAX"],
+        "L2": ["MATIC", "OP", "ARB"],
+        "DEFI": ["UNI", "AAVE", "CRV", "MKR"],
+        "AI": ["FET", "AGIX", "RNDR"],
+        "MEME": ["DOGE", "SHIB", "PEPE"],
+    }
+
+    sector_data = {}
+    for sector, assets in sector_map.items():
+        vals = [asset_data[a]["return"] for a in assets if a in asset_data]
+        score = sum(vals) / len(vals) if vals else 0.0
+        sector_data[sector] = {"score": round(score, 6)}
+
+    # Global (G1–G5)
+    global_data = {
+        "fusion_score": round(
+            (market_metrics.get("mean", 0.0) * 0.3)
+            + ((sent_reddit["score"] + sent_hn["score"]) / 2.0 * 0.2)
+            + (1.0 - risk_data["market_risk"]) * 0.2
+            + (1.0 - risk_data["defi_risk"]) * 0.2
+            + (1.0 - risk_data["liquidity_risk"]) * 0.1,
+            6,
+        ),
+        "global_regime": "constructive"
+        if (market_metrics.get("mean", 0.0) > 0.01 and risk_data["market_risk"] < 0.4)
         else "fragile"
         if risk_data["market_risk"] > 0.7
         else "balanced",
-}
-
-# -----------------------------
-# ON-CHAIN ENRICHMENT (PRO ONLY)
-# -----------------------------
-if tier == "pro" and chain_health:
-    bt_vol = chain_health.get("block_time_volatility_sec") or 0.0
-    gas_wei = chain_health.get("gas_price_wei") or 0
-
-    penalty = 0.0
-    if bt_vol > 3.0:
-        penalty += 0.05
-    if gas_wei > 80 * 10**9:  # > 80 gwei
-        penalty += 0.05
-
-    global_data["fusion_score"] = round(
-        max(global_data["fusion_score"] - penalty, 0.0),
-        6
-    )
-
-    global_data["chain_health"] = {
-        "latest_block": chain_health["latest_block"],
-        "avg_block_time_sec": chain_health["avg_block_time_sec"],
-        "block_time_volatility_sec": chain_health["block_time_volatility_sec"],
-        "gas_price_wei": chain_health["gas_price_wei"],
     }
 
+    # On-chain enrichment (Pro only)
+    if tier == "pro" and chain_health:
+        bt_vol = chain_health.get("block_time_volatility_sec") or 0.0
+        gas_wei = chain_health.get("gas_price_wei") or 0
 
-# -----------------------------
-# 6. WRITE SNAPSHOTS
-if write_snaps:
-    try:
-        # Existing snapshots
-        write_snapshot("volatility", coins_vol)
-        write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
-        write_snapshot("market", market_metrics)
-        write_snapshot("defi_health", defi_health)
+        penalty = 0.0
+        if bt_vol > 3.0:
+            penalty += 0.05
+        if gas_wei > 80 * 10**9:
+            penalty += 0.05
 
-        # NEW SNAPSHOTS (N, R, A, C, G)
-        write_snapshot("narrative", narrative_data)
-        write_snapshot("risk", risk_data)
-        write_snapshot("asset", asset_data)
-        write_snapshot("sector", sector_data)
-        write_snapshot("global", global_data)
+        global_data["fusion_score"] = round(
+            max(global_data["fusion_score"] - penalty, 0.0), 6
+        )
 
-        # ON-CHAIN SNAPSHOTS (PRO ONLY)
-        if tier == "pro":
-            if chain_health:
-                write_snapshot("chain_health", chain_health)
-            if stablecoin_flows:
-                write_snapshot("stablecoin_flows", stablecoin_flows)
-            if whale_data:
-                write_snapshot("whale_activity", whale_data)
+        global_data["chain_health"] = {
+            "latest_block": chain_health["latest_block"],
+            "avg_block_time_sec": chain_health["avg_block_time_sec"],
+            "block_time_volatility_sec": chain_health["block_time_volatility_sec"],
+            "gas_price_wei": chain_health["gas_price_wei"],
+        }
 
-    except Exception as e:
-        logger.error("Snapshot writing failed: %s", e)
+    # -----------------------------
+    # 6. WRITE SNAPSHOTS
+    # -----------------------------
+    if write_snaps:
+        try:
+            write_snapshot("volatility", coins_vol)
+            write_snapshot("sentiment", {"reddit": sent_reddit, "hn": sent_hn})
+            write_snapshot("market", market_metrics)
+            write_snapshot("defi_health", defi_health)
 
+            write_snapshot("narrative", narrative_data)
+            write_snapshot("risk", risk_data)
+            write_snapshot("asset", asset_data)
+            write_snapshot("sector", sector_data)
+            write_snapshot("global", global_data)
 
+            if tier == "pro":
+                if chain_health:
+                    write_snapshot("chain_health", chain_health)
+                if stablecoin_flows:
+                    write_snapshot("stablecoin_flows", stablecoin_flows)
+                if whale_data:
+                    write_snapshot("whale_activity", whale_data)
+
+        except Exception as e:
+            logger.error("Snapshot writing failed: %s", e)
 
     # -----------------------------
     # 7. OUTPUT FILES
@@ -263,63 +249,4 @@ if write_snaps:
     PRIVATE_DIR.mkdir(exist_ok=True)
 
     if tier == "free":
-        json_path = PUBLIC_DIR / "free.json"
-        html_path = PUBLIC_DIR / "free.html"
-    else:
-        json_path = PRIVATE_DIR / "pro.json"
-        html_path = PRIVATE_DIR / "pro.html"
-
-    try:
-        write_json(json_path, payload)
-        write_html(html_path, payload)
-    except Exception as e:
-        logger.error("Output writing failed: %s", e)
-
-    # -----------------------------
-    # 8. DASHBOARD
-    # -----------------------------
-    if show_dashboard:
-        print_dashboard(days=7)
-        aggregated = aggregate_all_metrics(__import__("volatiai.src.history"), days=7)
-        score = volatai_score(aggregated)
-        alerts = detect_alerts(aggregated)
-        logger.info("Composite score: %.4f", score)
-        if alerts:
-            for a in alerts:
-                logger.warning("Alert: %s", a)
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--tier", choices=["free", "pro"], default=None)
-    parser.add_argument("--dashboard", action="store_true")
-    parser.add_argument("--api", action="store_true")
-    parser.add_argument("--no-snapshots", action="store_true")
-    parser.add_argument("--profile", action="store_true")
-    args = parser.parse_args()
-
-    if args.api:
-        logger.info("API mode selected. Use: uvicorn volatiai.src.api:app")
-        return
-
-    def _run():
-        if args.tier:
-            run_once(args.tier, write_snaps=not args.no_snapshots, show_dashboard=args.dashboard)
-        else:
-            run_once("free", write_snaps=not args.no_snapshots, show_dashboard=args.dashboard)
-            run_once("pro", write_snaps=not args.no_snapshots, show_dashboard=args.dashboard)
-
-    if args.profile:
-        logger.info("Profiling enabled")
-        profiler = cProfile.Profile()
-        profiler.enable()
-        _run()
-        profiler.disable()
-        stats = pstats.Stats(profiler).sort_stats(pstats.SortKey.TIME)
-        stats.print_stats(30)
-    else:
-        _run()
-
-
-if __name__ == "__main__":
-    main()
+        json
