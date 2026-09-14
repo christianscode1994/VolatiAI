@@ -1,3 +1,5 @@
+# volatiai/src/api.py
+
 from fastapi import FastAPI, HTTPException
 from .history import read_latest_snapshot, read_snapshots
 from .metrics import (
@@ -16,7 +18,6 @@ app = FastAPI(
     description="Unified analytics API for whales, spoofing, liquidity, sentiment, volatility, and DeFi health.",
     version="1.0.0",
 )
-
 
 # ============================================================
 # =========================== ROOT ============================
@@ -59,7 +60,6 @@ def root():
         ],
     }
 
-
 # ============================================================
 # ======================== DASHBOARD ==========================
 # ============================================================
@@ -67,7 +67,6 @@ def root():
 @app.get("/dashboard")
 def api_dashboard(days: int = 7):
     return build_dashboard(days)
-
 
 # ============================================================
 # ===================== COMPOSITE SCORE =======================
@@ -79,7 +78,6 @@ def api_score(days: int = 7):
     score = volatai_score(agg)
     return {"days": days, "score": score}
 
-
 # ============================================================
 # ========================= ALERTS ============================
 # ============================================================
@@ -89,7 +87,6 @@ def api_alerts(days: int = 7):
     agg = aggregate_all_metrics(read_snapshots, days)
     alerts = detect_alerts(agg)
     return {"days": days, "alerts": alerts}
-
 
 # ============================================================
 # ===================== METRIC AGGREGATION ====================
@@ -103,7 +100,6 @@ def api_metric(name: str, days: int = 7):
     snaps = read_snapshots(name, days)
     agg = aggregate_metric(name, snaps)
     return {"metric": name, "days": days, "aggregated": agg}
-
 
 # ============================================================
 # ======================= LATEST SNAPSHOT =====================
@@ -119,6 +115,7 @@ def api_latest(name: str):
         raise HTTPException(status_code=404, detail="No snapshots found")
 
     return {"metric": name, "latest": snap}
+
 
 
 # ============================================================
