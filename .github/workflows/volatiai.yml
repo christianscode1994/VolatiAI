@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - run: pip install -r requirements.txt
 
       # 1. Run autonomous agents (online/offline)
@@ -34,16 +36,14 @@ jobs:
       # 4. Run dashboards
       - run: python src/dashboard/html_builder.py
 
-
-            # 4.5 Telegram bot 
+      # 4.5 Telegram bot
       - run: python src/telegram/bot.py
 
       # 4.6 Run alert modules
-- run: python src/alerts/whale_alerts.py
-- run: python src/alerts/spoofing_alerts.py
-- run: python src/alerts/trend_accel_alerts.py
-- run: python src/alerts/narrative_alerts.py
-
+      - run: python src/alerts/whale_alerts.py
+      - run: python src/alerts/spoofing_alerts.py
+      - run: python src/alerts/trend_accel_alerts.py
+      - run: python src/alerts/narrative_alerts.py
 
       # 5. Commit results
       - run: |
