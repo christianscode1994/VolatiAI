@@ -7,18 +7,28 @@ on:
     - cron: "*/5 * * * *"
   workflow_dispatch:
 
+concurrency:
+  group: volatiai-engine
+  cancel-in-progress: true
+
 jobs:
   run-engine:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
@@ -36,12 +46,23 @@ jobs:
           cp public/latest.json docs/latest.json
           cp public/summary.html docs/summary.html
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-output-${{ github.run_id }}
+          path: |
+            public/
+            docs/
+            history/
+
       - name: Commit updated docs & history
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add docs/latest.json docs/summary.html history
           git commit -m "Update dashboard, API & history snapshots" || echo "No changes"
+          git push
 
-      - name: Push changes
-        run: git push
+      - name: Report failure
+        if: ${{ failure() }}
+        run: echo "Engine workflow failed @ ${{ github.sha }}"
