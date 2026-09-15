@@ -4,13 +4,12 @@
 VolatiAI On‑Chain Intelligence Module
 -------------------------------------
 
-This module provides lightweight, dependency‑free analytics for:
+Lightweight analytics for:
 - Chain health
 - Stablecoin flows
 - Whale activity
 
-It integrates with src/onchain/rpc.py and is designed for serverless
-execution inside GitHub Actions.
+Compatible with src/onchain/rpc.py
 """
 
 from src.onchain.rpc import RPC
@@ -22,44 +21,43 @@ from src.onchain.rpc import RPC
 
 def build_chain_health(rpc: RPC):
     """
-    Compute basic chain health metrics:
+    Compute basic chain health metrics using RPC:
     - latest block
     - gas price
-    - base fee
-    - pending tx count
+    - tx count
+    - timestamp
     """
 
-    latest_block = rpc.block_number()
-    gas_price = rpc.gas_price()
-    base_fee = rpc.base_fee()
-    pending = rpc.pending_tx_count()
+    latest_block = rpc.get_block_number()
+    block = rpc.get_block(latest_block)
+    gas_price = rpc.get_gas_price()
+
+    tx_count = len(block.get("transactions", []))
+    timestamp = int(block.get("timestamp", "0"), 16) if isinstance(block.get("timestamp"), str) else block.get("timestamp")
 
     return {
         "latest_block": latest_block,
         "gas_price": gas_price,
-        "base_fee": base_fee,
-        "pending_tx": pending,
-        "health_score": _score_chain_health(gas_price, base_fee, pending)
+        "timestamp": timestamp,
+        "tx_count": tx_count,
+        "health_score": _score_chain_health(gas_price, tx_count)
     }
 
 
-def _score_chain_health(gas_price, base_fee, pending):
+def _score_chain_health(gas_price, tx_count):
     """
     Simple heuristic scoring:
-    - low gas + low pending → healthy
-    - high gas + high pending → stressed
+    - low gas + moderate tx count → healthy
+    - high gas + low tx count → stressed
     """
 
     score = 100
 
     if gas_price > 50_000_000_000:  # 50 gwei
-        score -= 20
+        score -= 30
 
-    if base_fee > 60_000_000_000:  # 60 gwei
+    if tx_count < 100:
         score -= 20
-
-    if pending > 150_000:
-        score -= 40
 
     return max(score, 0)
 
@@ -71,7 +69,7 @@ def _score_chain_health(gas_price, base_fee, pending):
 def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
     """
     Aggregate stablecoin transfer volume between two blocks.
-    Uses ERC‑20 Transfer logs for USDT, USDC, DAI.
+    Uses eth_getLogs for ERC‑20 Transfer events.
     """
 
     tokens = {
@@ -82,12 +80,18 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
 
     flows = {}
 
+    transfer_topic = "0xddf252ad"  # ERC‑20 Transfer event signature prefix
+
     for symbol, address in tokens.items():
-        logs = rpc.erc20_transfers(address, from_block, to_block)
-        total = sum(log["value"] for log in logs)
+        logs = rpc.get_logs(
+            address=address,
+            topics=[transfer_topic],
+            provider="infura"
+        )
+
         flows[symbol] = {
             "transfers": len(logs),
-            "volume": total
+            "volume": sum(int(log.get("data", "0x0"), 16) for log in logs)
         }
 
     return flows
@@ -99,15 +103,22 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
 
 def build_whale_activity(rpc: RPC, min_value_eth: float, from_block: int, to_block: int):
     """
-    Detect large ETH transfers between two blocks.
+    Detect large ETH transfers using eth_getLogs.
     """
 
-    logs = rpc.eth_transfers(from_block, to_block)
+    transfer_topic = "0xddf252ad"  # ERC‑20 Transfer signature (ETH transfers use value field)
+
+    logs = rpc.get_logs(
+        address=None,
+        topics=[transfer_topic],
+        provider="infura"
+    )
+
     threshold = int(min_value_eth * 10**18)
 
     whales = [
-        tx for tx in logs
-        if tx["value"] >= threshold
+        log for log in logs
+        if int(log.get("data", "0x0"), 16) >= threshold
     ]
 
     return {
