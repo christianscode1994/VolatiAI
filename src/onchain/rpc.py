@@ -104,12 +104,15 @@ class RPC:
     # -----------------------------
     # LOGS / EVENTS
     # -----------------------------
-    def get_logs(self, address: str, topics=None, provider="infura"):
+    def get_logs(self, address: str, from_block: int, to_block: int, topics=None, provider="infura"):
         params = [{
+            "fromBlock": hex(from_block),
+            "toBlock": hex(to_block),
             "address": address,
             "topics": topics or []
         }]
-        return self.call("eth_getLogs", params, provider=provider)["result"]
+        # Prevent KeyError: 'result'
+        return self.call("eth_getLogs", params, provider=provider).get("result", [])
 
     # -----------------------------
     # CONTRACT CALLS
