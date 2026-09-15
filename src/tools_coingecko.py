@@ -56,6 +56,10 @@ class CoinGecko:
             "sparkline": "false"
         })
 
+    def global_market(self):
+        # NEW: required by market_agent/policy.py
+        return self._get("/global")
+
     # -----------------------------
     # Convenience utilities
     # -----------------------------
