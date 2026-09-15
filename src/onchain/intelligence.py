@@ -70,6 +70,7 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
     """
     Aggregate stablecoin transfer volume between two blocks.
     Uses eth_getLogs for ERC‑20 Transfer events.
+    Heavy log queries use PUBLIC_ETH_RPC (provider="ethereum") to avoid Infura rate limits.
     """
 
     tokens = {
@@ -88,7 +89,7 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
             from_block=from_block,
             to_block=to_block,
             topics=[transfer_topic],
-            provider="infura"
+            provider="ethereum"   # use public RPC to avoid 429 Infura rate limits
         )
 
         flows[symbol] = {
@@ -106,6 +107,7 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
 def build_whale_activity(rpc: RPC, min_value_eth: float, from_block: int, to_block: int):
     """
     Detect large ETH transfers using eth_getLogs.
+    Heavy log queries use PUBLIC_ETH_RPC (provider="ethereum") to avoid Infura rate limits.
     """
 
     transfer_topic = "0xddf252ad"  # ERC‑20 Transfer signature
@@ -115,7 +117,7 @@ def build_whale_activity(rpc: RPC, min_value_eth: float, from_block: int, to_blo
         from_block=from_block,
         to_block=to_block,
         topics=[transfer_topic],
-        provider="infura"
+        provider="ethereum"   # use public RPC to avoid 429 Infura rate limits
     )
 
     threshold = int(min_value_eth * 10**18)
