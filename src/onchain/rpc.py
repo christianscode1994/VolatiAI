@@ -12,11 +12,11 @@ INFURA_GAS_URL = (os.getenv("INFURA_GAS_URL") or "").strip()
 
 # Public RPCs (sanitized)
 PUBLIC_RPC = {
-    "ethereum": (os.getenv("PUBLIC_ETH_RPC") or "").strip(),
-    "polygon": (os.getenv("PUBLIC_POLYGON_RPC") or "").strip(),
-    "bsc": (os.getenv("PUBLIC_BSC_RPC") or "").strip(),
-    "avalanche": (os.getenv("PUBLIC_AVAX_RPC") or "").strip(),
-    "solana": (os.getenv("PUBLIC_SOLANA_RPC") or "").strip(),
+    "ethereum": (os.getenv("PUBLIC_ETH_RPC") or "https://ethereum.publicnode.com").strip(),
+    "polygon": (os.getenv("PUBLIC_POLYGON_RPC") or "https://polygon-rpc.com").strip(),
+    "bsc": (os.getenv("PUBLIC_BSC_RPC") or "https://bsc-dataseed.binance.org").strip(),
+    "avalanche": (os.getenv("PUBLIC_AVAX_RPC") or "https://api.avax.network/ext/bc/C/rpc").strip(),
+    "solana": (os.getenv("PUBLIC_SOLANA_RPC") or "https://api.mainnet-beta.solana.com").strip(),
 }
 
 
@@ -36,25 +36,24 @@ class RPC:
         self.gas = (INFURA_GAS_URL or "").strip()
 
     # -----------------------------
-    # Core RPC call
+    # Core RPC call with fallback
     # -----------------------------
     def call(self, method: str, params=None, provider="infura"):
         if params is None:
             params = []
 
-        # Provider selection
+        # Provider selection with fallback
         if provider == "infura":
-            url = self.infura
+            url = self.infura or self.alchemy or PUBLIC_RPC["ethereum"]
         elif provider == "alchemy":
-            url = self.alchemy
+            url = self.alchemy or PUBLIC_RPC["ethereum"]
         elif provider in PUBLIC_RPC:
             url = PUBLIC_RPC[provider]
         else:
-            raise ValueError(f"Unknown provider: {provider}")
+            # Final fallback: public Ethereum
+            url = PUBLIC_RPC["ethereum"]
 
-        # Final safety strip
         url = (url or "").strip()
-
         if not url:
             raise ValueError(f"RPC URL missing for provider: {provider}")
 
@@ -75,14 +74,17 @@ class RPC:
     def chain_call(self, chain: str, method: str, params=None):
         chain = chain.lower()
 
-        # Ethereum → Infura → Alchemy fallback
+        # Ethereum → Infura → Alchemy → Public fallback
         if chain == "ethereum":
             try:
                 return self.call(method, params, provider="infura")
             except:
-                return self.call(method, params, provider="alchemy")
+                try:
+                    return self.call(method, params, provider="alchemy")
+                except:
+                    return self.call(method, params, provider="ethereum")
 
-        # Other chains → public RPC
+        # Other chains → public RPC fallback
         if chain in PUBLIC_RPC:
             return self.call(method, params, provider=chain)
 
@@ -111,7 +113,6 @@ class RPC:
             "address": address,
             "topics": topics or []
         }]
-        # Prevent KeyError: 'result'
         return self.call("eth_getLogs", params, provider=provider).get("result", [])
 
     # -----------------------------
