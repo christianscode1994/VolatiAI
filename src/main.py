@@ -1,25 +1,15 @@
 from pathlib import Path
 import argparse
 import logging
-import cProfile
-import pstats
 
-# -----------------------------
-# DATA PIPELINES
-# -----------------------------
 from .fetch_data import fetch_top_market_data, fetch_reddit_titles, fetch_hn_titles
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
-from .generate_output import build_payload, write_json, write_html
+from .generate_output import build_payload
 from .history import write_snapshot
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
 
-# Unified API (FastAPI app only)
-from .api import app
-from .api import api_metric, api_sentiment_metrics, api_macro_metrics, api_defi_health
-
-# On-chain intelligence (Pro tier)
 from src.onchain.rpc import RPC
 from src.onchain.intelligence import (
     build_chain_health,
@@ -29,13 +19,100 @@ from src.onchain.intelligence import (
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
-PRIVATE_DIR = BASE_DIR / "private"
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
 logger = logging.getLogger("volatai")
+
+
+def run_once(write_snaps: bool, show_dashboard: bool):
+    logger.info("Running unified VolatiAI engine")
+
+    # Market + sentiment
+    market = fetch_top_market_data()
+    reddit_titles = fetch_reddit_titles()
+    hn_titles = fetch_hn_titles()
+
+    volatility = compute_volatility_summary(market)
+    sentiment = compute_sentiment(reddit_titles, hn_titles)
+
+    # On-chain
+    rpc = RPC()
+    latest_block = rpc.block_number()
+    from_block = max(0, latest_block - 100)
+    to_block = latest_block
+
+    onchain = {
+        "chain_health": build_chain_health(rpc),
+        "stablecoin_flows": build_stablecoin_flows(rpc, from_block, to_block),
+        "whale_activity": build_whale_activity(rpc, 50, from_block, to_block),
+    }
+
+    # Unified payload
+    payload = build_payload(market, volatility, sentiment)
+
+    metrics = aggregate_all_metrics(payload)
+    score = volatai_score(metrics)
+    alerts = detect_alerts(metrics)
+
+    if write_snaps:
+        write_snapshot(payload, metrics, score, alerts)
+
+    if show_dashboard:
+        print_dashboard(payload, metrics, score, alerts)
+
+    PUBLIC_DIR.mkdir(exist_ok=True)
+
+    latest = {
+        "payload": payload,
+        "metrics": metrics,
+        "score": score,
+        "alerts": alerts,
+        "onchain": onchain,
+        "meta": {
+            "latest_block": latest_block,
+            "range": [from_block, to_block],
+        },
+    }
+
+    # Unified JSON output
+    with open(PUBLIC_DIR / "latest.json", "w") as f:
+        import json
+        json.dump(latest, f, indent=2)
+
+    # Unified HTML summary
+    html = f"""
+    <html>
+    <head><title>VolatiAI Summary</title></head>
+    <body>
+        <h1>VolatiAI Intelligence Summary</h1>
+        <p>Latest block: {latest_block}</p>
+        <h2>Market</h2>
+        <pre>{json.dumps(payload['market'], indent=2)}</pre>
+        <h2>On-Chain</h2>
+        <pre>{json.dumps(onchain, indent=2)}</pre>
+        <h2>Score</h2>
+        <pre>{score}</pre>
+        <h2>Alerts</h2>
+        <pre>{json.dumps(alerts, indent=2)}</pre>
+    </body>
+    </html>
+    """
+
+    with open(PUBLIC_DIR / "summary.html", "w") as f:
+        f.write(html)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--snaps", action="store_true")
+    parser.add_argument("--dashboard", action="store_true")
+    args = parser.parse_args()
+
+    run_once(write_snaps=args.snaps, show_dashboard=args.dashboard)
+
 
 
 # ============================================================
