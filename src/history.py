@@ -14,7 +14,6 @@ METRIC_SCHEMAS: dict[str, set[str]] = {
     "liquidity": {"score", "pairs", "timestamp"},
 }
 
-
 # --- TIMESTAMP HELPERS ---
 
 def current_ts() -> str:
@@ -33,7 +32,6 @@ def parse_ts_from_filename(name: str) -> datetime | None:
     except ValueError:
         return None
 
-
 # --- SCHEMA VALIDATION ---
 
 def validate_metric_schema(metric: str, data: dict) -> None:
@@ -47,13 +45,11 @@ def validate_metric_schema(metric: str, data: dict) -> None:
             f"Snapshot for metric '{metric}' missing required keys: {sorted(missing)}"
         )
 
-
 # --- ROTATION ---
 
 def rotate_snapshots(metric: str) -> None:
     folder = Path("history") / metric
 
-    # CI-safe directory check
     if not folder.exists():
         return
     if not folder.is_dir():
@@ -75,7 +71,6 @@ def rotate_snapshots(metric: str) -> None:
             except OSError:
                 pass
 
-
 # --- SNAPSHOT WRITER ---
 
 def write_snapshot(metric: str, data: dict) -> str:
@@ -84,7 +79,6 @@ def write_snapshot(metric: str, data: dict) -> str:
     ts = current_ts()
     folder = Path("history") / metric
 
-    # CI-safe directory creation
     if not folder.exists():
         folder.mkdir(parents=True, exist_ok=True)
     elif not folder.is_dir():
@@ -93,7 +87,6 @@ def write_snapshot(metric: str, data: dict) -> str:
     final_path = folder / f"{ts}.json.gz"
     tmp_path = folder / f"{ts}.tmp.json.gz"
 
-    # Atomic write
     with gzip.open(tmp_path, "wt", encoding="utf-8") as f:
         json.dump(data, f, separators=(",", ":"), sort_keys=True)
 
@@ -103,13 +96,11 @@ def write_snapshot(metric: str, data: dict) -> str:
 
     return str(final_path)
 
-
 # --- SNAPSHOT READER API ---
 
 def list_snapshot_files(metric: str) -> List[Path]:
     folder = Path("history") / metric
 
-    # CI-safe directory check
     if not folder.exists() or not folder.is_dir():
         return []
 
@@ -118,18 +109,15 @@ def list_snapshot_files(metric: str) -> List[Path]:
         key=lambda p: p.name,
     )
 
-
 def read_snapshot_file(path: Path) -> Dict[str, Any]:
     with gzip.open(path, "rt", encoding="utf-8") as f:
         return json.load(f)
-
 
 def read_latest_snapshot(metric: str) -> Optional[Dict[str, Any]]:
     files = list_snapshot_files(metric)
     if not files:
         return None
     return read_snapshot_file(files[-1])
-
 
 def read_snapshots(metric: str, days: int) -> List[Dict[str, Any]]:
     cutoff = datetime.utcnow() - timedelta(days=days)
@@ -142,3 +130,12 @@ def read_snapshots(metric: str, days: int) -> List[Dict[str, Any]]:
         out.append(read_snapshot_file(p))
 
     return out
+
+# --- SnapshotReader CLASS (required by main.py & metrics.py) ---
+
+class SnapshotReader:
+    def read_snapshots(self, metric: str, days: int) -> List[Dict[str, Any]]:
+        return read_snapshots(metric, days)
+
+    def read_latest(self, metric: str) -> Optional[Dict[str, Any]]:
+        return read_latest_snapshot(metric)
