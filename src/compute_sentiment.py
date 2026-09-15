@@ -12,36 +12,20 @@ def score_text(text: str) -> float:
     return score
 
 
-def compute_sentiment(reddit_titles, hn_titles):
-    # Combine both sources
-    combined = (reddit_titles or []) + (hn_titles or [])
+def compute_sentiment(titles):
+    """
+    Compute sentiment for a single list of titles.
+    Returns a dict: {score, avg, count}
+    """
 
-    if not combined:
-        return {
-            "reddit": {"score": 0, "avg": 0, "count": 0},
-            "hn": {"score": 0, "avg": 0, "count": 0},
-            "combined": {"score": 0, "avg": 0, "count": 0},
-        }
+    if not titles:
+        return {"score": 0, "avg": 0, "count": 0}
 
-    # Individual scores
-    reddit_scores = [score_text(t) for t in reddit_titles] if reddit_titles else []
-    hn_scores = [score_text(t) for t in hn_titles] if hn_titles else []
+    scores = [score_text(t) for t in titles]
+    total = sum(scores)
+    avg = total / len(scores)
 
-    # Combined scores
-    combined_scores = reddit_scores + hn_scores
-
-    def pack(scores):
-        if not scores:
-            return {"score": 0, "avg": 0, "count": 0}
-        total = sum(scores)
-        avg = total / len(scores)
-        return {"score": total, "avg": avg, "count": len(scores)}
-
-    return {
-        "reddit": pack(reddit_scores),
-        "hn": pack(hn_scores),
-        "combined": pack(combined_scores),
-    }
+    return {"score": total, "avg": avg, "count": len(scores)}
 
 
 def sentiment_label(avg_score: float) -> str:
