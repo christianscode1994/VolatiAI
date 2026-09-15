@@ -1,6 +1,9 @@
 name: VolatiAI Agents
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: "*/15 * * * *"
 
