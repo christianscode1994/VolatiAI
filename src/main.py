@@ -42,7 +42,8 @@ def run_once(write_snaps: bool, show_dashboard: bool):
 
     # On-chain
     rpc = RPC()
-    latest_block = rpc.get_block_number()
+    latest_block = rpc.get_block_number(provider="public_eth")
+
     from_block = max(0, latest_block - 100)
     to_block = latest_block
 
