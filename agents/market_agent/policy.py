@@ -1,9 +1,8 @@
-from src.tools_coingecko import CoinGecko
+from src.tools_coinpaprika import CoinPaprika
+from src.tools_kraken import Kraken
+from src.tools_etherscan import Etherscan
+from src.offline import snap, mode
 
-from tools_coinpaprika import CoinPaprika
-from tools_kraken import Kraken
-from tools_etherscan import Etherscan
-from offline import snap, mode
 import json
 
 cg = CoinGecko()
