@@ -87,23 +87,49 @@ def run_once(write_snaps: bool, show_dashboard: bool):
         json.dump(latest, f, indent=2)
 
     # Unified HTML summary
-    html = f"""
-    <html>
-    <head><title>VolatiAI Summary</title></head>
-    <body>
-        <h1>VolatiAI Intelligence Summary</h1>
-        <p>Latest block: {latest_block}</p>
-        <h2>Market</h2>
-        <pre>{json.dumps(payload['market'], indent=2)}</pre>
-        <h2>On-Chain</h2>
-        <pre>{json.dumps(onchain, indent=2)}</pre>
-        <h2>Score</h2>
-        <pre>{score}</pre>
-        <h2>Alerts</h2>
-        <pre>{json.dumps(alerts, indent=2)}</pre>
-    </body>
-    </html>
-    """
+html = f"""
+<html>
+<head><title>VolatiAI Summary</title></head>
+<body>
+    <h1>VolatiAI Intelligence Summary</h1>
+    <p>Latest block: {latest_block}</p>
+
+    <h2>Top by Volatility</h2>
+    <pre>{json.dumps(payload['top_by_volatility'], indent=2)}</pre>
+
+    <h2>Sentiment</h2>
+    <pre>{json.dumps(payload['sentiment'], indent=2)}</pre>
+
+    <h2>Exchanges</h2>
+    <pre>{json.dumps(payload['exchanges'], indent=2)}</pre>
+
+    <h2>Whales</h2>
+    <pre>{json.dumps(payload.get('whales'), indent=2)}</pre>
+
+    <h2>Spoofing</h2>
+    <pre>{json.dumps(payload.get('spoofing'), indent=2)}</pre>
+
+    <h2>Liquidity</h2>
+    <pre>{json.dumps(payload.get('liquidity'), indent=2)}</pre>
+
+    <h2>Arbitrage</h2>
+    <pre>{json.dumps(payload.get('arbitrage'), indent=2)}</pre>
+
+    <h2>Depth Heatmaps</h2>
+    <pre>{json.dumps(payload.get('depth_heatmaps'), indent=2)}</pre>
+
+    <h2>On-Chain</h2>
+    <pre>{json.dumps(onchain, indent=2)}</pre>
+
+    <h2>Score</h2>
+    <pre>{score}</pre>
+
+    <h2>Alerts</h2>
+    <pre>{json.dumps(alerts, indent=2)}</pre>
+</body>
+</html>
+"""
+
 
     with open(PUBLIC_DIR / "summary.html", "w") as f:
         f.write(html)
