@@ -1,4 +1,5 @@
-from tools_coingecko import CoinGecko
+from src.tools_coingecko import CoinGecko
+
 from tools_coinpaprika import CoinPaprika
 from tools_kraken import Kraken
 from tools_etherscan import Etherscan
