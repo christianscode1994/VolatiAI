@@ -131,8 +131,8 @@ html = f"""
 """
 
 
-    with open(PUBLIC_DIR / "summary.html", "w") as f:
-        f.write(html)
+with open(PUBLIC_DIR / "summary.html", "w") as f:
+    f.write(html)
 
 
 if __name__ == "__main__":
