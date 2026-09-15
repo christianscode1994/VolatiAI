@@ -36,7 +36,9 @@ def run_once(write_snaps: bool, show_dashboard: bool):
     hn_titles = fetch_hn_titles()
 
     volatility = compute_volatility_summary(market)
-    sentiment = compute_sentiment(reddit_titles, hn_titles)
+    sentiment_reddit = compute_sentiment(reddit_titles)
+    sentiment_hn = compute_sentiment(hn_titles)
+
 
     # On-chain
     rpc = RPC()
