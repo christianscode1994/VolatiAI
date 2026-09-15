@@ -23,6 +23,7 @@ def run():
 
     write_outputs(data)
 
+
 def run_online():
     return {
         "global": {
@@ -39,20 +40,16 @@ def run_online():
         }
     }
 
+
 def run_offline():
     return snap.get("last", {"global": {}, "btc": {}, "onchain": {}})
 
-def write_outputs(data):
-    free = {
-        "global": data["global"],
-        "btc": data["btc"]
-    }
-    pro = data
 
-    with open("public/free_market.json", "w") as f:
-        json.dump(free, f, indent=2)
-    with open("private/pro_market.json", "w") as f:
-        json.dump(pro, f, indent=2)
+def write_outputs(data):
+    # Unified output — no free/pro tiers
+    with open("public/latest.json", "w") as f:
+        json.dump(data, f, indent=2)
+
 
 if __name__ == "__main__":
     run()
