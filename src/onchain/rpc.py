@@ -5,19 +5,20 @@ import requests
 
 HEADERS = {"Content-Type": "application/json"}
 
-# Existing secrets (you already have these)
-INFURA_URL = os.getenv("INFURA_URL")
-ALCHEMY_URL = os.getenv("ALCHEMY_URL")
-INFURA_GAS_URL = os.getenv("INFURA_GAS_URL")
+# Existing secrets (sanitized)
+INFURA_URL = (os.getenv("INFURA_URL") or "").strip()
+ALCHEMY_URL = (os.getenv("ALCHEMY_URL") or "").strip()
+INFURA_GAS_URL = (os.getenv("INFURA_GAS_URL") or "").strip()
 
-# New public RPCs (recommended to store in GitHub Secrets)
+# Public RPCs (sanitized)
 PUBLIC_RPC = {
-    "ethereum": os.getenv("PUBLIC_ETH_RPC"),
-    "polygon": os.getenv("PUBLIC_POLYGON_RPC"),
-    "bsc": os.getenv("PUBLIC_BSC_RPC"),
-    "avalanche": os.getenv("PUBLIC_AVAX_RPC"),
-    "solana": os.getenv("PUBLIC_SOLANA_RPC"),
+    "ethereum": (os.getenv("PUBLIC_ETH_RPC") or "").strip(),
+    "polygon": (os.getenv("PUBLIC_POLYGON_RPC") or "").strip(),
+    "bsc": (os.getenv("PUBLIC_BSC_RPC") or "").strip(),
+    "avalanche": (os.getenv("PUBLIC_AVAX_RPC") or "").strip(),
+    "solana": (os.getenv("PUBLIC_SOLANA_RPC") or "").strip(),
 }
+
 
 class RPC:
     """
@@ -29,9 +30,10 @@ class RPC:
     """
 
     def __init__(self):
-        self.infura = INFURA_URL
-        self.alchemy = ALCHEMY_URL
-        self.gas = INFURA_GAS_URL
+        # sanitize all URLs to avoid %0A newline issues
+        self.infura = (INFURA_URL or "").strip()
+        self.alchemy = (ALCHEMY_URL or "").strip()
+        self.gas = (INFURA_GAS_URL or "").strip()
 
     # -----------------------------
     # Core RPC call
@@ -49,6 +51,9 @@ class RPC:
             url = PUBLIC_RPC[provider]
         else:
             raise ValueError(f"Unknown provider: {provider}")
+
+        # Final safety strip
+        url = (url or "").strip()
 
         if not url:
             raise ValueError(f"RPC URL missing for provider: {provider}")
@@ -68,20 +73,16 @@ class RPC:
     # Multi-chain routing
     # -----------------------------
     def chain_call(self, chain: str, method: str, params=None):
-        """
-        Automatically selects the correct RPC for the chain.
-        Falls back to public RPC if Infura/Alchemy unavailable.
-        """
         chain = chain.lower()
 
-        # Ethereum → use Infura/Alchemy first
+        # Ethereum → Infura → Alchemy fallback
         if chain == "ethereum":
             try:
                 return self.call(method, params, provider="infura")
             except:
                 return self.call(method, params, provider="alchemy")
 
-        # Other chains → use public RPC
+        # Other chains → public RPC
         if chain in PUBLIC_RPC:
             return self.call(method, params, provider=chain)
 
