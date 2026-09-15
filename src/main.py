@@ -9,7 +9,8 @@ from .generate_output import build_payload
 from .history import write_snapshot
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
-from .snapshot_reader import SnapshotReader
+from .history import SnapshotReader
+
 
 from src.onchain.rpc import RPC
 from src.onchain.intelligence import (
