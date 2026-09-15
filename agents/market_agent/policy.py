@@ -1,14 +1,15 @@
+from src.tools_coingecko import CoinGecko
 from src.tools_coinpaprika import CoinPaprika
 from src.tools_kraken import Kraken
 from src.tools_etherscan import Etherscan
 from src.offline import snap, mode
-
 import json
 
 cg = CoinGecko()
 cp = CoinPaprika()
 kr = Kraken()
 es = Etherscan()
+
 
 def run():
     current_mode = mode.detect()
