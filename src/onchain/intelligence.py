@@ -85,6 +85,8 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
     for symbol, address in tokens.items():
         logs = rpc.get_logs(
             address=address,
+            from_block=from_block,
+            to_block=to_block,
             topics=[transfer_topic],
             provider="infura"
         )
@@ -106,10 +108,12 @@ def build_whale_activity(rpc: RPC, min_value_eth: float, from_block: int, to_blo
     Detect large ETH transfers using eth_getLogs.
     """
 
-    transfer_topic = "0xddf252ad"  # ERC‑20 Transfer signature (ETH transfers use value field)
+    transfer_topic = "0xddf252ad"  # ERC‑20 Transfer signature
 
     logs = rpc.get_logs(
         address=None,
+        from_block=from_block,
+        to_block=to_block,
         topics=[transfer_topic],
         provider="infura"
     )
