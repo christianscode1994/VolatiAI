@@ -54,7 +54,8 @@ def run_once(write_snaps: bool, show_dashboard: bool):
 
     # Unified payload
     payload = build_payload(market, sentiment_reddit, sentiment_hn)
-    metrics = aggregate_all_metrics()
+    snapshot_reader = SnapshotReader()
+    metrics = aggregate_all_metrics(snapshot_reader)
     score = volatai_score(metrics)
     alerts = detect_alerts(metrics)
 
