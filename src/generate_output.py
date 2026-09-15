@@ -6,7 +6,6 @@ def build_payload(
     coins_vol,
     sentiment_reddit,
     sentiment_hn,
-    tier: str,
     kraken_data=None,
     binance_data=None,
     coinbase_data=None,
@@ -24,7 +23,6 @@ def build_payload(
 
     payload = {
         "timestamp": now,
-        "tier": tier,
         "top_by_volatility": coins_vol,
         "sentiment": {
             "reddit": {
@@ -58,7 +56,6 @@ def build_payload(
     return payload
 
 
-
 def write_json(path, payload):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
@@ -66,7 +63,6 @@ def write_json(path, payload):
 
 def write_html(path, payload):
     ts = payload["timestamp"]
-    tier = payload["tier"]
     coins = payload["top_by_volatility"]
     sent = payload["sentiment"]
     exchanges = payload["exchanges"]
@@ -81,7 +77,7 @@ def write_html(path, payload):
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>VolatiAI – {tier} dashboard</title>
+  <title>VolatiAI Dashboard</title>
   <style>
     body {{ font-family: system-ui, sans-serif; background:#0b0c10; color:#c5c6c7; }}
     h1 {{ color:#66fcf1; }}
@@ -92,7 +88,7 @@ def write_html(path, payload):
   </style>
 </head>
 <body>
-  <h1>VolatiAI – {tier} dashboard</h1>
+  <h1>VolatiAI Dashboard</h1>
   <p>Updated: {ts}</p>
 
   <h2>Sentiment</h2>
@@ -100,43 +96,29 @@ def write_html(path, payload):
   <p><span class="label">Hacker News:</span> {sent['hn']['label']} (avg {sent['hn']['avg']:.2f}, n={sent['hn']['count']})</p>
 """
 
-    # Pro Features Section
-    if tier == "pro":
-        html += """
-  <h2>Pro Features</h2>
-  <ul>
-    <li>Whale Intelligence</li>
-    <li>Spoofing Detection</li>
-    <li>Liquidity Migration</li>
-    <li>Arbitrage Deltas</li>
-    <li>Depth Heatmaps</li>
-    <li>Multi-exchange market data</li>
-  </ul>
-"""
-
     # Whale Intelligence
     if whales:
         html += f"""
-  <h2>Whale Intelligence (Pro)</h2>
+  <h2>Whale Intelligence</h2>
   <p><span class="label">Whale Pressure Index:</span> {whales.get('whale_pressure_index')}</p>
   <p><span class="label">Aggregate Imbalance:</span> {whales.get('aggregate_imbalance')}</p>
 """
 
     # Spoofing Signals
     if spoofing:
-        html += "<h2>Spoofing Signals (Pro)</h2>"
+        html += "<h2>Spoofing Signals</h2>"
         for ex, signals in spoofing.items():
             html += f"<p>{ex}: {len(signals)} spoofing candidates</p>"
 
     # Liquidity Distribution
     if liquidity:
-        html += "<h2>Liquidity Distribution (Pro)</h2>"
+        html += "<h2>Liquidity Distribution</h2>"
         for ex, share in liquidity.get("liquidity_shares", {}).items():
             html += f"<p>{ex}: {share:.2%} of total liquidity</p>"
 
     # Arbitrage Deltas
     if arbitrage:
-        html += "<h2>Arbitrage Deltas (Pro)</h2>"
+        html += "<h2>Arbitrage Deltas</h2>"
         base = arbitrage.get("base_exchange")
         html += f"<p>Base exchange: {base}</p>"
         for ex, delta in arbitrage.get("deltas_vs_base", {}).items():
@@ -144,7 +126,7 @@ def write_html(path, payload):
 
     # Depth Heatmaps
     if depth_heatmaps:
-        html += "<h2>Depth Heatmaps (Pro)</h2>"
+        html += "<h2>Depth Heatmaps</h2>"
         for ex, buckets in depth_heatmaps.items():
             html += f"<h3>{ex}</h3>"
             for b in buckets[:10]:
@@ -154,7 +136,7 @@ def write_html(path, payload):
     for name, data in exchanges.items():
         if data:
             html += f"""
-  <h2>{name.capitalize()} (Pro)</h2>
+  <h2>{name.capitalize()}</h2>
   <p><span class="label">Ticker:</span> {data.get('ticker')}</p>
   <p><span class="label">Depth:</span> {data.get('depth')}</p>
 """
