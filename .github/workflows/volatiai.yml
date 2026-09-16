@@ -35,34 +35,58 @@ jobs:
       - name: Add src to PYTHONPATH
         run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
 
-      # Agents
-      - run: python agents/market_agent/policy.py
-      - run: python agents/sentiment_agent/policy.py
-      - run: python agents/developer_agent/policy.py
+      # -------------------------
+      # VolatiAI Agents (NEW ORDER)
+      # -------------------------
 
-      # Scoring
-      - run: python src/scoring/fusion_scores.py
+      - name: Market Agent
+        run: python agents/market_agent/policy.py
 
-      # Fusion
-      - run: python src/fuse.py
+      - name: Sentiment Agent
+        run: python agents/sentiment_agent/policy.py
 
-      # Intelligence modules
+      - name: Developer Activity Agent
+        run: python agents/developer_activity_agent/policy.py
+
+      - name: Liquidity Agent
+        run: python agents/liquidity_agent/policy.py
+
+      - name: Fusion Agent
+        run: python agents/fusion_agent/policy.py
+
+      # -------------------------
+      # Intelligence Modules
+      # -------------------------
+
       - run: python src/intel/trends.py
       - run: python src/intel/narratives.py
       - run: python src/intel/microstructure.py
       - run: python src/intel/rpc_truth.py
 
+      # -------------------------
       # Dashboards
+      # -------------------------
+
       - run: python src/dashboard/html_builder.py
 
-      # Telegram bot
+      # -------------------------
+      # Telegram Bot
+      # -------------------------
+
       - run: python src/telegram/bot.py
 
+      # -------------------------
       # Alerts
+      # -------------------------
+
       - run: python src/alerts/whale_alerts.py
       - run: python src/alerts/spoofing_alerts.py
       - run: python src/alerts/trend_accel_alerts.py
       - run: python src/alerts/narrative_alerts.py
+
+      # -------------------------
+      # Upload artifacts
+      # -------------------------
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -73,6 +97,10 @@ jobs:
             private/
             agents/*/memory.json
 
+      # -------------------------
+      # Commit results
+      # -------------------------
+
       - name: Commit results
         run: |
           git config user.name "VolatiAI Bot"
@@ -80,6 +108,10 @@ jobs:
           git add public private docs agents/*/memory.json
           git commit -m "VolatiAI: update agent outputs" || echo "No changes"
           git push
+
+      # -------------------------
+      # Failure reporting
+      # -------------------------
 
       - name: Report failure
         if: ${{ failure() }}
