@@ -27,8 +27,8 @@ def run():
 def run_online():
     return {
         "global": {
-            "coingecko": cg.get_global(),          # ✔ correct
-            "coinpaprika": cp.global_market()      # ✔ FIXED — cp.global() was invalid
+            "coingecko": cg.global_data(),        # ✔ FIXED — use your actual wrapper method
+            "coinpaprika": cp.global_market()     # ✔ FIXED — cp.global() was invalid
         },
         "btc": {
             "coingecko": cg.ticker("bitcoin"),
@@ -46,7 +46,6 @@ def run_offline():
 
 
 def write_outputs(data):
-    # Unified output — no free/pro tiers
     with open("public/latest.json", "w") as f:
         json.dump(data, f, indent=2)
 
