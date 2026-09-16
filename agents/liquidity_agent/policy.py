@@ -13,6 +13,18 @@ bn = Binance()
 cb = Coinbase()
 
 
+# -----------------------------
+# Anomaly detection helper
+# -----------------------------
+def detect_anomaly(current, previous, threshold=20):
+    if previous is None:
+        return False
+    return abs(current - previous) >= threshold
+
+
+# -----------------------------
+# Safe wrappers
+# -----------------------------
 def safe_call(fn, default=None, retries=3, delay=0.8):
     for _ in range(retries):
         try:
@@ -33,6 +45,9 @@ def stamp(data, status):
     }
 
 
+# -----------------------------
+# Scoring model
+# -----------------------------
 def depth_score(depth_usd):
     if depth_usd is None:
         return 0
@@ -55,6 +70,9 @@ def composite_liquidity(depth_s, spread_s, slip_s):
     return round(depth_s * 0.4 + spread_s * 0.3 + slip_s * 0.3, 2)
 
 
+# -----------------------------
+# Agent runtime
+# -----------------------------
 def run():
     current_mode = mode.detect()
 
@@ -69,6 +87,7 @@ def run():
 
 
 def run_online():
+    # Fetch order books
     kr_book = safe_call(lambda: kr.order_book("XBT/USD"), default={})
     bn_book = safe_call(lambda: bn.order_book("BTCUSDT"), default={})
     cb_book = safe_call(lambda: cb.order_book("BTC-USD"), default={})
@@ -79,7 +98,7 @@ def run_online():
         "coinbase": "ok" if cb_book else "fail",
     }
 
-    # Assume wrappers expose precomputed metrics; otherwise you’ll compute from raw book.
+    # Extract metrics
     metrics = {
         "kraken": {
             "depth_usd": kr_book.get("depth_usd"),
@@ -98,15 +117,10 @@ def run_online():
         },
     }
 
-    depth_scores = {
-        ex: depth_score(m["depth_usd"]) for ex, m in metrics.items()
-    }
-    spread_scores = {
-        ex: spread_score(m["spread_pct"]) for ex, m in metrics.items()
-    }
-    slippage_scores = {
-        ex: slippage_score(m["slippage_pct"]) for ex, m in metrics.items()
-    }
+    # Compute scores
+    depth_scores = {ex: depth_score(m["depth_usd"]) for ex, m in metrics.items()}
+    spread_scores = {ex: spread_score(m["spread_pct"]) for ex, m in metrics.items()}
+    slippage_scores = {ex: slippage_score(m["slippage_pct"]) for ex, m in metrics.items()}
 
     avg_depth = sum(depth_scores.values()) / len(depth_scores) if depth_scores else 0
     avg_spread = sum(spread_scores.values()) / len(spread_scores) if spread_scores else 0
@@ -128,6 +142,34 @@ def run_online():
         },
     }
 
+    # -----------------------------
+    # Anomaly detection + memory snapshots
+    # -----------------------------
+    prev_score = snap.get("last_liq_score", None)
+    anomaly = detect_anomaly(liq_score, prev_score)
+
+    snap.set("last_liq_score", liq_score)
+    snap.set("last_liq_anomaly", anomaly)
+    snap.set("last_liq_delta", liq_score - (prev_score or 0))
+    snap.set("last_liq_timestamp", datetime.utcnow().isoformat())
+
+    snap.set("last_liq_snapshot", {
+        "timestamp": datetime.utcnow().isoformat(),
+        "score": liq_score,
+        "anomaly": anomaly,
+        "raw": {
+            "kraken": kr_book,
+            "binance": bn_book,
+            "coinbase": cb_book,
+            "metrics": metrics,
+        }
+    })
+
+    snap.persist()
+
+    # -----------------------------
+    # Final output
+    # -----------------------------
     return {
         "snapshot": stamp(
             {
