@@ -27,8 +27,8 @@ def run():
 def run_online():
     return {
         "global": {
-            "coingecko": cg.global_data(),        # ✔ FIXED — use your actual wrapper method
-            "coinpaprika": cp.global_market()     # ✔ FIXED — cp.global() was invalid
+            "coingecko": cg.global_market(),       # ✔ correct method name
+            "coinpaprika": cp.global_market()      # ✔ correct method name
         },
         "btc": {
             "coingecko": cg.ticker("bitcoin"),
