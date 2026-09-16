@@ -8,15 +8,22 @@ from src.offline import snap, mode
 
 from src.compute_sentiment import compute_sentiment, sentiment_label
 
-
 rd = Reddit()
 hn = HackerNews()
 
 
 # -----------------------------
+# Anomaly detection helper
+# -----------------------------
+def detect_anomaly(current, previous, threshold=20):
+    if previous is None:
+        return False
+    return abs(current - previous) >= threshold
+
+
+# -----------------------------
 # Safe wrappers
 # -----------------------------
-
 def safe_call(fn, default=None, retries=3, delay=0.8):
     for _ in range(retries):
         try:
@@ -40,7 +47,6 @@ def stamp(data, status):
 # -----------------------------
 # Scoring model
 # -----------------------------
-
 def score_sentiment(avg):
     # avg ∈ [-∞, ∞], but realistically [-3, 3]
     # map to 0–100
@@ -54,7 +60,6 @@ def composite_score(sent):
 # -----------------------------
 # Agent runtime
 # -----------------------------
-
 def run():
     current_mode = mode.detect()
 
@@ -92,6 +97,33 @@ def run_online():
         "composite": composite_score(score)
     }
 
+    # -----------------------------
+    # Anomaly detection + memory snapshots
+    # -----------------------------
+    prev_score = snap.get("last_sentiment_score", None)
+    anomaly = detect_anomaly(score_block["composite"], prev_score)
+
+    snap.set("last_sentiment_score", score_block["composite"])
+    snap.set("last_sentiment_anomaly", anomaly)
+    snap.set("last_sentiment_delta", score_block["composite"] - (prev_score or 0))
+    snap.set("last_sentiment_timestamp", datetime.utcnow().isoformat())
+
+    snap.set("last_sentiment_snapshot", {
+        "timestamp": datetime.utcnow().isoformat(),
+        "score": score_block["composite"],
+        "anomaly": anomaly,
+        "raw": {
+            "reddit": reddit_titles,
+            "hn": hn_titles,
+            "sentiment": sentiment
+        }
+    })
+
+    snap.persist()
+
+    # -----------------------------
+    # Final output
+    # -----------------------------
     return {
         "snapshot": stamp(
             {
