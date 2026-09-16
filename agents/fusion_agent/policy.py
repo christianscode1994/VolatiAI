@@ -5,6 +5,18 @@ from datetime import datetime
 from src.offline import snap, mode
 
 
+# -----------------------------
+# Anomaly detection helper
+# -----------------------------
+def detect_anomaly(current, previous, threshold=25):
+    if previous is None:
+        return False
+    return abs(current - previous) >= threshold
+
+
+# -----------------------------
+# JSON loader
+# -----------------------------
 def load_json(path, default=None):
     try:
         with open(path, "r") as f:
@@ -25,6 +37,9 @@ def clamp_score(x):
     return max(0, min(100, x if x is not None else 0))
 
 
+# -----------------------------
+# Agent runtime
+# -----------------------------
 def run():
     current_mode = mode.detect()
 
@@ -39,6 +54,7 @@ def run():
 
 
 def run_online():
+    # Load upstream agent outputs
     market = load_json("public/latest.json", {})
     sentiment = load_json("public/sentiment.json", {})
     dev = load_json("public/developer_activity.json", {})
@@ -51,12 +67,15 @@ def run_online():
         "liquidity": "ok" if liq else "fail",
     }
 
+    # Extract scores
     market_score = clamp_score(market.get("score", {}).get("composite"))
     sentiment_score = clamp_score(sentiment.get("score", {}).get("composite"))
     dev_score = clamp_score(dev.get("score", {}).get("composite"))
     liq_score = clamp_score(liq.get("score", {}).get("aggregate", {}).get("liquidity_score"))
 
-    # F1–F4 as layers
+    # -----------------------------
+    # F1 – Raw fusion layer
+    # -----------------------------
     f1_raw = {
         "market": market,
         "sentiment": sentiment,
@@ -64,6 +83,9 @@ def run_online():
         "liquidity": liq,
     }
 
+    # -----------------------------
+    # F2 – Normalized scores
+    # -----------------------------
     f2_normalized = {
         "market_score": market_score,
         "sentiment_score": sentiment_score,
@@ -71,7 +93,9 @@ def run_online():
         "liquidity_score": liq_score,
     }
 
-    # Thematic scores
+    # -----------------------------
+    # F3 – Thematic scores
+    # -----------------------------
     macro_score = round((market_score * 0.6 + liq_score * 0.4), 2)
     ecosystem_score = dev_score
     psychology_score = sentiment_score
@@ -84,7 +108,9 @@ def run_online():
         "risk": risk_score,
     }
 
-    # Final VolatiAI composite
+    # -----------------------------
+    # F4 – Composite VolatiAI score
+    # -----------------------------
     composite = round(
         macro_score * 0.4 +
         ecosystem_score * 0.25 +
@@ -97,6 +123,9 @@ def run_online():
         "volati_score": composite
     }
 
+    # -----------------------------
+    # Full fusion block
+    # -----------------------------
     fusion_block = {
         "F1_raw": f1_raw,
         "F2_normalized": f2_normalized,
@@ -104,10 +133,35 @@ def run_online():
         "F4_composite": f4_composite,
     }
 
+    # -----------------------------
+    # Anomaly detection + memory snapshots
+    # -----------------------------
+    prev_score = snap.get("last_fusion_score", None)
+    anomaly = detect_anomaly(composite, prev_score)
+
+    snap.set("last_fusion_score", composite)
+    snap.set("last_fusion_anomaly", anomaly)
+    snap.set("last_fusion_delta", composite - (prev_score or 0))
+    snap.set("last_fusion_timestamp", datetime.utcnow().isoformat())
+
+    snap.set("last_fusion_snapshot", {
+        "timestamp": datetime.utcnow().isoformat(),
+        "score": composite,
+        "anomaly": anomaly,
+        "raw": fusion_block
+    })
+
+    snap.persist()
+
+    # -----------------------------
+    # Final output
+    # -----------------------------
     return {
         "snapshot": stamp(fusion_block, status),
         "score": {
             "volati_score": composite,
+            "anomaly": anomaly,
+            "delta": composite - (prev_score or 0),
             "layers": f3_thematic,
         },
     }
