@@ -15,9 +15,17 @@ es = Etherscan()
 
 
 # -----------------------------
+# Anomaly detection helper
+# -----------------------------
+def detect_anomaly(current, previous, threshold=20):
+    if previous is None:
+        return False
+    return abs(current - previous) >= threshold
+
+
+# -----------------------------
 # Safe wrappers
 # -----------------------------
-
 def safe_call(fn, default=None, retries=3, delay=0.8):
     for _ in range(retries):
         try:
@@ -41,7 +49,6 @@ def stamp(data, status):
 # -----------------------------
 # Scoring model
 # -----------------------------
-
 def score_global(g):
     if not g: return 0
     mcap = g.get("data", {}).get("total_market_cap", {}).get("usd", 0)
@@ -66,13 +73,12 @@ def composite_score(gs, bs, os):
 # -----------------------------
 # Agent runtime
 # -----------------------------
-
 def run():
     current_mode = mode.detect()
 
     if current_mode == "online":
         data = run_online()
-        snap.set("last", data)
+        snap.set("last_market", data)
         snap.persist()
     else:
         data = run_offline()
@@ -113,13 +119,42 @@ def run_online():
     bs = score_btc(btc_block)
     os = score_onchain(onchain_block)
 
+    composite = composite_score(gs, bs, os)
+
     score_block = {
         "global_score": gs,
         "btc_score": bs,
         "onchain_score": os,
-        "composite": composite_score(gs, bs, os)
+        "composite": composite
     }
 
+    # -----------------------------
+    # Anomaly detection + memory snapshots
+    # -----------------------------
+    prev_score = snap.get("last_market_score", None)
+    anomaly = detect_anomaly(composite, prev_score)
+
+    snap.set("last_market_score", composite)
+    snap.set("last_market_anomaly", anomaly)
+    snap.set("last_market_delta", composite - (prev_score or 0))
+    snap.set("last_market_timestamp", datetime.utcnow().isoformat())
+
+    snap.set("last_market_snapshot", {
+        "timestamp": datetime.utcnow().isoformat(),
+        "score": composite,
+        "anomaly": anomaly,
+        "raw": {
+            "global": global_block,
+            "btc": btc_block,
+            "onchain": onchain_block
+        }
+    })
+
+    snap.persist()
+
+    # -----------------------------
+    # Final output
+    # -----------------------------
     return {
         "global": global_block,
         "btc": btc_block,
@@ -129,7 +164,7 @@ def run_online():
 
 
 def run_offline():
-    return snap.get("last", {
+    return snap.get("last_market", {
         "global": {},
         "btc": {},
         "onchain": {},
@@ -139,7 +174,7 @@ def run_offline():
 
 def write_outputs(data):
     import os
-    os.makedirs("public", exist_ok=True)   # ← INSERTED HERE
+    os.makedirs("public", exist_ok=True)
 
     with open("public/latest.json", "w") as f:
         json.dump(data, f, indent=2)
