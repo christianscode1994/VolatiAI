@@ -17,6 +17,18 @@ evm = EvmDev()
 dot = PolkadotDev()
 
 
+# -----------------------------
+# Anomaly detection helper
+# -----------------------------
+def detect_anomaly(current, previous, threshold=25):
+    if previous is None:
+        return False
+    return abs(current - previous) >= threshold
+
+
+# -----------------------------
+# Safe wrappers
+# -----------------------------
 def safe_call(fn, default=None, retries=3, delay=0.8):
     for _ in range(retries):
         try:
@@ -37,6 +49,9 @@ def stamp(data, status):
     }
 
 
+# -----------------------------
+# Scoring model
+# -----------------------------
 def normalize_activity(value, scale):
     if value is None:
         return 0
@@ -53,6 +68,9 @@ def composite_score(scores, weights):
     return round(total / wsum, 2) if wsum > 0 else 0.0
 
 
+# -----------------------------
+# Agent runtime
+# -----------------------------
 def run():
     current_mode = mode.detect()
 
@@ -67,6 +85,7 @@ def run():
 
 
 def run_online():
+    # Fetch developer activity
     npm_stats = safe_call(lambda: npm.activity(), default={})
     cargo_stats = safe_call(lambda: cargo.activity(), default={})
     sol_stats = safe_call(lambda: sol.activity(), default={})
@@ -81,6 +100,7 @@ def run_online():
         "polkadot": "ok" if dot_stats else "fail",
     }
 
+    # Normalize scores
     scores = {
         "npm": normalize_activity(npm_stats.get("recent_downloads", 0), 1_000_000),
         "cargo": normalize_activity(cargo_stats.get("recent_downloads", 0), 500_000),
@@ -104,6 +124,38 @@ def run_online():
         "composite": dev_score,
     }
 
+    # -----------------------------
+    # Anomaly detection + memory snapshots
+    # -----------------------------
+    prev_score = snap.get("last_dev_score", None)
+    curr_score = score_block["composite"]
+
+    anomaly = detect_anomaly(curr_score, prev_score)
+    score_block["anomaly"] = anomaly
+
+    snap.set("last_dev_score", curr_score)
+    snap.set("last_dev_anomaly", anomaly)
+    snap.set("last_dev_delta", curr_score - (prev_score or 0))
+    snap.set("last_dev_timestamp", datetime.utcnow().isoformat())
+
+    snap.set("last_dev_snapshot", {
+        "timestamp": datetime.utcnow().isoformat(),
+        "score": curr_score,
+        "anomaly": anomaly,
+        "raw": {
+            "npm": npm_stats,
+            "cargo": cargo_stats,
+            "solana": sol_stats,
+            "evm": evm_stats,
+            "polkadot": dot_stats,
+        }
+    })
+
+    snap.persist()
+
+    # -----------------------------
+    # Return final output
+    # -----------------------------
     return {
         "snapshot": stamp(
             {
