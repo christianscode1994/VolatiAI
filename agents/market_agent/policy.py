@@ -27,8 +27,8 @@ def run():
 def run_online():
     return {
         "global": {
-            "coingecko": cg.get_global(),      # ✔ correct
-            "coinpaprika": cp.global()         # ✔ correct
+            "coingecko": cg.get_global(),          # ✔ correct
+            "coinpaprika": cp.global_market()      # ✔ FIXED — cp.global() was invalid
         },
         "btc": {
             "coingecko": cg.ticker("bitcoin"),
