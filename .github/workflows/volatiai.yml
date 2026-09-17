@@ -1,123 +1,23 @@
-name: VolatiAI Agents
+# -------------------------
+# Upload artifacts
+# -------------------------
 
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: "*/15 * * * *"
+- name: Upload artifacts
+  uses: actions/upload-artifact@v4
+  with:
+    name: agents-output-${{ github.run_id }}
+    path: |
+      public/
+      agents/*/memory.json
 
-concurrency:
-  group: volatiai-agents
-  cancel-in-progress: true
+# -------------------------
+# Commit results
+# -------------------------
 
-jobs:
-  run-agents:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - run: pip install -r requirements.txt
-
-      - name: Add src to PYTHONPATH
-        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
-
-      # -------------------------
-      # VolatiAI Agents (with failure isolation)
-      # -------------------------
-
-      - name: Market Agent
-        run: |
-          python agents/market_agent/policy.py || echo "Market agent failed"
-
-      - name: Sentiment Agent
-        run: |
-          python agents/sentiment_agent/policy.py || echo "Sentiment agent failed"
-
-      - name: Developer Activity Agent
-        run: |
-          python agents/developer_activity_agent/policy.py || echo "Developer activity agent failed"
-
-      - name: Liquidity Agent
-        run: |
-          python agents/liquidity_agent/policy.py || echo "Liquidity agent failed"
-
-      - name: Fusion Agent
-        run: |
-          python agents/fusion_agent/policy.py || echo "Fusion agent failed"
-
-      # -------------------------
-      # Intelligence Modules
-      # -------------------------
-
-      - run: python src/intel/trends.py || echo "trends failed"
-      - run: python src/intel/narratives.py || echo "narratives failed"
-      - run: python src/intel/microstructure.py || echo "microstructure failed"
-      - run: python src/intel/rpc_truth.py || echo "rpc_truth failed"
-
-      # -------------------------
-      # Dashboards
-      # -------------------------
-
-      - run: python src/dashboard/html_builder.py || echo "dashboard failed"
-
-      # -------------------------
-      # Telegram Bot
-      # -------------------------
-
-      - run: python src/telegram/bot.py || echo "telegram bot failed"
-
-      # -------------------------
-      # Alerts
-      # -------------------------
-
-      - run: python src/alerts/whale_alerts.py || echo "whale alerts failed"
-      - run: python src/alerts/spoofing_alerts.py || echo "spoofing alerts failed"
-      - run: python src/alerts/trend_accel_alerts.py || echo "trend accel alerts failed"
-      - run: python src/alerts/narrative_alerts.py || echo "narrative alerts failed"
-
-      # -------------------------
-      # Upload artifacts
-      # -------------------------
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: agents-output-${{ github.run_id }}
-          path: |
-            public/
-            private/
-            agents/*/memory.json
-
-      # -------------------------
-      # Commit results
-      # -------------------------
-
-      - name: Commit results
-        run: |
-          git config user.name "VolatiAI Bot"
-          git config user.email "bot@volatiai.local"
-          git add public private docs agents/*/memory.json
-          git commit -m "VolatiAI: update agent outputs" || echo "No changes"
-          git push
-
-      # -------------------------
-      # Failure reporting
-      # -------------------------
-
-      - name: Report failure
-        if: ${{ failure() }}
-        run: echo "Agents workflow failed @ ${{ github.sha }}"
+- name: Commit results
+  run: |
+    git config user.name "VolatiAI Bot"
+    git config user.email "bot@volatiai.local"
+    git add public docs agents/*/memory.json
+    git commit -m "VolatiAI: update agent outputs" || echo "No changes"
+    git push
