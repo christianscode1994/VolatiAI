@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "cycle_id": "<github.run_id or timestamp>",
+    "timestamp_utc": "2026-09-17T10:15:00Z",
+    "version": "1.0.0"
+  },
+  "signals": {
+    "market": { /* from agents/market_agent/memory.json */ },
+    "sentiment": { /* from agents/sentiment_agent/memory.json */ },
+    "developer_activity": { /* from agents/developer_activity_agent/memory.json */ },
+    "liquidity": { /* from agents/liquidity_agent/memory.json */ },
+    "fusion": { /* from agents/fusion_agent/memory.json */ }
+  },
+  "intel": {
+    "trends": { /* from src/intel/trends.py */ },
+    "narratives": { /* from src/intel/narratives.py */ },
+    "microstructure": { /* from src/intel/microstructure.py */ },
+    "rpc_truth": { /* from src/intel/rpc_truth.py */ }
+  },
+  "alerts": {
+    "whale": [ /* from whale_alerts */ ],
+    "spoofing": [ /* from spoofing_alerts */ ],
+    "trend_accel": [ /* from trend_accel_alerts */ ],
+    "narrative": [ /* from narrative_alerts */ ]
+  }
+}
