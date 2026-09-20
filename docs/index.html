@@ -1,19 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>VolatiAI</title>
+  <meta charset="UTF-8">
+  <title>VolatiAI Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="dashboard.js" defer></script>
 </head>
+
 <body>
-    <h1>VolatiAI</h1>
-    <p>Serverless crypto volatility & sentiment engine.</p>
+  <header>
+    <h1>VolatiAI — Unified Intelligence Dashboard</h1>
+    <p>Detect trends before they become narratives.</p>
+  </header>
 
-    <h2>Live Dashboard</h2>
-    <a href="summary.html">View Dashboard</a>
+  <section id="summary">
+    <h2>Global Intelligence Snapshot</h2>
+    <div id="global-intel"></div>
+  </section>
 
-    <h2>API</h2>
-    <a href="latest.json">latest.json</a>
+  <section id="developer">
+    <h2>Developer Activity (DSI)</h2>
+    <canvas id="dsiChart"></canvas>
+  </section>
 
-    <h2>GitHub</h2>
-    <a href="https://github.com/christianscode1994/VolatiAI">Repository</a>
+  <section id="rpc">
+    <h2>RPC Truth Score</h2>
+    <canvas id="rpcChart"></canvas>
+  </section>
+
+  <section id="depth">
+    <h2>Depth Microstructure</h2>
+    <canvas id="depthChart"></canvas>
+  </section>
+
+  <section id="trend">
+    <h2>Trend Acceleration</h2>
+    <canvas id="trendChart"></canvas>
+  </section>
+
+  <section id="narrative">
+    <h2>Narrative Timeline</h2>
+    <div id="narrativeTimeline"></div>
+  </section>
+
+  <section id="swarm">
+    <h2>Agent Swarm</h2>
+    <div id="swarmClusters"></div>
+  </section>
+
 </body>
 </html>
