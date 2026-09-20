@@ -1,0 +1,30 @@
+name: Sync VolatiAI Intel
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+
+jobs:
+  sync-intel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch intel JSON
+        run: |
+          curl -s https://volatiai-runtime.fourieranalys.workers.dev/intel.json \
+            -o docs/intel.json
+
+      - name: Fetch intel HTML
+        run: |
+          curl -s https://volatiai-runtime.fourieranalys.workers.dev/intel.html \
+            -o docs/index.html
+
+      - name: Commit and push
+        run: |
+          git config user.name "VolatiAI Bot"
+          git config user.email "bot@volatiai.local"
+          git add docs/intel.json docs/index.html
+          git commit -m "Update intel snapshot" || echo "No changes"
+          git push
