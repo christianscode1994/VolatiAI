@@ -2,51 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>VolatiAI Dashboard</title>
+  <title>VolatiAI — Machine Narrative Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="dashboard.js" defer></script>
 </head>
 
 <body>
   <header>
-    <h1>VolatiAI — Unified Intelligence Dashboard</h1>
-    <p>Detect trends before they become narratives.</p>
+    <img src="logo_animated.svg" alt="VolatiAI Logo" class="logo">
+    <h1>VolatiAI — Unified Crypto Intelligence</h1>
+    <p>Developer activity · Depth microstructure · RPC truth · Trend acceleration · Agent swarms</p>
+    <p id="snapshotTime" class="snapshot-time"></p>
   </header>
 
-  <section id="summary">
-    <h2>Global Intelligence Snapshot</h2>
-    <div id="global-intel"></div>
-  </section>
+  <main>
+    <section id="summary">
+      <h2>Global Intelligence Snapshot</h2>
+      <div class="card-grid">
+        <div class="intel-card" id="card-dsi"></div>
+        <div class="intel-card" id="card-rpc"></div>
+        <div class="intel-card" id="card-depth"></div>
+        <div class="intel-card" id="card-trend"></div>
+      </div>
+      <div id="global-intel" class="global-intel"></div>
+    </section>
 
-  <section id="developer">
-    <h2>Developer Activity (DSI)</h2>
-    <canvas id="dsiChart"></canvas>
-  </section>
+    <section id="developer">
+      <h2>Developer Activity (DSI & Velocity)</h2>
+      <div class="chart-row">
+        <canvas id="dsiChart"></canvas>
+        <canvas id="devVelocityChart"></canvas>
+      </div>
+    </section>
 
-  <section id="rpc">
-    <h2>RPC Truth Score</h2>
-    <canvas id="rpcChart"></canvas>
-  </section>
+    <section id="rpc">
+      <h2>RPC Truth & Chain Integrity</h2>
+      <div class="chart-row">
+        <canvas id="rpcChart"></canvas>
+        <canvas id="rpcSpreadChart"></canvas>
+      </div>
+    </section>
 
-  <section id="depth">
-    <h2>Depth Microstructure</h2>
-    <canvas id="depthChart"></canvas>
-  </section>
+    <section id="depth">
+      <h2>Depth Microstructure & Spoofing</h2>
+      <div class="chart-row">
+        <canvas id="depthChart"></canvas>
+        <canvas id="spoofChart"></canvas>
+      </div>
+    </section>
 
-  <section id="trend">
-    <h2>Trend Acceleration</h2>
-    <canvas id="trendChart"></canvas>
-  </section>
+    <section id="trend">
+      <h2>Trend Acceleration</h2>
+      <canvas id="trendChart"></canvas>
+    </section>
 
-  <section id="narrative">
-    <h2>Narrative Timeline</h2>
-    <div id="narrativeTimeline"></div>
-  </section>
+    <section id="narrative">
+      <h2>Narrative Timeline</h2>
+      <div id="narrativeTimeline" class="timeline"></div>
+    </section>
 
-  <section id="swarm">
-    <h2>Agent Swarm</h2>
-    <div id="swarmClusters"></div>
-  </section>
-
+    <section id="swarm">
+      <h2>Agent Swarm</h2>
+      <div id="swarmClusters" class="swarm-clusters"></div>
+      <div id="swarmViz" class="swarm-viz"></div>
+    </section>
+  </main>
 </body>
 </html>
