@@ -1,29 +1,231 @@
+:root {
+  --bg: #050711;
+  --bg-panel: #111827;
+  --bg-panel-alt: #0f172a;
+  --accent: #3b82f6;
+  --accent2: #8b5cf6;
+  --accent3: #10b981;
+  --danger: #ef4444;
+  --warn: #f59e0b;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: system-ui, sans-serif;
-  background: #0f1117;
-  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  background: radial-gradient(circle at top, #0b1120, #020617);
+  color: var(--text);
   margin: 0;
-  padding: 20px;
+  padding: 24px;
 }
 
 header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
+  animation: fadeIn 0.8s ease;
+}
+
+.logo {
+  width: 120px;
+  display: block;
+  margin: 0 auto 12px auto;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  text-shadow: 0 0 12px rgba(59,130,246,0.6);
+}
+
+header p {
+  margin: 4px 0;
+  color: var(--muted);
+}
+
+.snapshot-time {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 section {
-  margin-bottom: 50px;
+  background: linear-gradient(135deg, var(--bg-panel), var(--bg-panel-alt));
+  border-radius: 14px;
   padding: 20px;
-  background: #1a1c23;
-  border-radius: 10px;
+  border: 1px solid #1f2937;
+  box-shadow: 0 0 24px rgba(0,0,0,0.5);
+  animation: fadeInUp 0.6s ease;
 }
 
-h2 {
+section h2 {
   margin-top: 0;
-  color: #9ca3af;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+/* Cards */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.intel-card {
+  background: #020617;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #1e293b;
+  box-shadow: 0 0 16px rgba(15,23,42,0.8);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.intel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 24px rgba(59,130,246,0.6);
+}
+
+.intel-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.intel-card p {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+/* Global intel */
+
+.global-intel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Charts */
+
+.chart-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
 }
 
 canvas {
-  width: 100%;
-  height: 300px;
+  width: 100% !important;
+  height: 260px !important;
+}
+
+/* Timeline */
+
+.timeline {
+  border-left: 3px solid var(--accent);
+  padding-left: 18px;
+  margin-top: 8px;
+}
+
+.timeline-item {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--accent2);
+  box-shadow: 0 0 12px rgba(139,92,246,0.8);
+}
+
+.timeline-item h4 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.timeline-item p {
+  margin: 2px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Swarm */
+
+.swarm-clusters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+.swarm-cluster-card {
+  background: #020617;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #1e293b;
+}
+
+.swarm-cluster-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.swarm-cluster-card p {
+  margin: 0;
+}
+
+.swarm-viz {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agent-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid #1f2937;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Animations */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  body {
+    padding: 16px;
+  }
 }
