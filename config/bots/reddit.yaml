@@ -1,0 +1,22 @@
+bot:
+  name: "VolatiAI Reddit Bot"
+  enabled: true
+
+targets:
+  daily_subreddit: "CryptoMarkets"
+  alerts_subreddit: "CryptoCurrency"
+  comment_watchlist:
+    - "whale"
+    - "spoofing"
+    - "narrative"
+    - "dev activity"
+    - "chain truth"
+
+format:
+  markdown: true
+  include_images: false
+
+schedule:
+  daily: "09:00"
+  hourly: false
+  alerts: true
