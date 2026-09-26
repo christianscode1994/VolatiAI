@@ -1,0 +1,17 @@
+bot:
+  name: "VolatiAI Twitter Bot"
+  enabled: true
+
+targets:
+  daily_thread: true
+  alerts_tweets: true
+
+format:
+  include_images: true
+  compress_text: true
+  max_tweet_length: 280
+
+schedule:
+  daily: "09:00"
+  hourly: false
+  alerts: true
