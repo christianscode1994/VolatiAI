@@ -1,0 +1,22 @@
+bot:
+  name: "VolatiAI Mastodon Bot"
+  enabled: true
+
+targets:
+  server: "https://mastodon.social"
+  handle: "@abc@mastodon.social"
+
+format:
+  tags:
+    - "volatai"
+    - "intel"
+    - "crypto"
+    - "narrative"
+    - "whale"
+    - "dev"
+    - "truth"
+
+schedule:
+  daily: "09:00"
+  hourly: false
+  alerts: true
