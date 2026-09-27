@@ -1,0 +1,21 @@
+bot:
+  name: "VolatiAI Bluesky Bot"
+  enabled: true
+
+targets:
+  handle: "abc.bsky.social"
+
+format:
+  tags:
+    - "volatai"
+    - "intel"
+    - "crypto"
+    - "narrative"
+    - "whale"
+    - "dev"
+    - "truth"
+
+schedule:
+  daily: "09:00"
+  hourly: false
+  alerts: true
