@@ -1,10 +1,9 @@
 import axios from "axios";
-import { BskyAgent } from "bsky";
+import { BskyAgent } from "@atproto/api";
 import Mastodon from "mastodon-api";
-import { SimplePool, getEventHash, signEvent } from "nostr-tools";
+import { SimplePool, getEventHash, signEvent, getPublicKey } from "nostr-tools";
 import { TwitterApi } from "twitter-api-v2";
 
-// The message you want to broadcast
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
 
 async function slack() {
@@ -64,10 +63,9 @@ async function nostr() {
     created_at: Math.floor(Date.now() / 1000),
     tags: [],
     content: MESSAGE,
-    pubkey: "", // filled automatically
+    pubkey: getPublicKey(process.env.NOSTR_PRIVATE_KEY),
   };
 
-  event.pubkey = (await import("nostr-tools")).getPublicKey(process.env.NOSTR_PRIVATE_KEY);
   event.id = getEventHash(event);
   event.sig = signEvent(event, process.env.NOSTR_PRIVATE_KEY);
 
