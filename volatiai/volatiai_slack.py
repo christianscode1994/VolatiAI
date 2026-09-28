@@ -6,6 +6,7 @@ SLACK_CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")
 
 def slack_send(text: str):
     if not SLACK_BOT_TOKEN or not SLACK_CHANNEL_ID:
+        print("Slack credentials missing")
         return
 
     url = "https://slack.com/api/chat.postMessage"
@@ -16,9 +17,5 @@ def slack_send(text: str):
     payload = {"channel": SLACK_CHANNEL_ID, "text": text}
 
     r = requests.post(url, headers=headers, json=payload)
-    data = r.json()
-
-    if not data.get("ok"):
-        raise RuntimeError(f"Slack error: {data}")
-
-    return data
+    print("Slack response:", r.text)
+    return r.json()
