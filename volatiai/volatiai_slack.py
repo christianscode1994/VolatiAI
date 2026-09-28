@@ -4,12 +4,7 @@ import requests
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")
 
-
 def slack_send(text: str):
-    """
-    Skickar ett meddelande till Slack-kanalen som VolatiAI är kopplad till.
-    """
-
     if not SLACK_BOT_TOKEN or not SLACK_CHANNEL_ID:
         return
 
