@@ -2,9 +2,7 @@ import axios from "axios";
 import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
-import { SimplePool, finalizeEvent } from "nostr-tools";
-import { WebSocket } from "nostr-tools/lib/esm/websocket";   // ⭐ BUILT-IN SHIM
-global.WebSocket = WebSocket;
+import { finalizeEvent } from "nostr-tools";
 
 //fresh workflow
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
@@ -50,8 +48,7 @@ async function mastodon() {
 async function nostr() {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
-  const relay = process.env.NOSTR_RELAY || "wss://relay.damus.io";
-  const pool = new SimplePool();   // ⭐ NO ARGUMENTS
+  const relay = process.env.NOSTR_RELAY || "https://relay.damus.io/api/event";
 
   const eventTemplate = {
     kind: 1,
@@ -66,8 +63,8 @@ async function nostr() {
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  // publish expects an array of relays
-  await pool.publish([relay], event);
+  // ⭐ Publish via HTTP POST (no WebSocket needed)
+  await axios.post(relay, event);
 }
 
 async function main() {
