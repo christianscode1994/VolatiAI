@@ -3,7 +3,8 @@ import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, finalizeEvent } from "nostr-tools";
-import WebSocket from "ws";   // ⭐ REQUIRED FOR NODE
+import { WebSocket } from "nostr-tools/lib/esm/websocket";   // ⭐ BUILT-IN SHIM
+global.WebSocket = WebSocket;
 
 //fresh workflow
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
@@ -50,9 +51,7 @@ async function nostr() {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
   const relay = process.env.NOSTR_RELAY || "wss://relay.damus.io";
-
-  // ⭐ Provide WebSocket implementation for Node.js
-  const pool = new SimplePool({ WebSocket });
+  const pool = new SimplePool();   // ⭐ NO ARGUMENTS
 
   const eventTemplate = {
     kind: 1,
@@ -61,13 +60,13 @@ async function nostr() {
     content: MESSAGE,
   };
 
-  // ⭐ Manual hex → Uint8Array conversion
+  // Manual hex → Uint8Array conversion
   const hex = process.env.NOSTR_PRIVATE_KEY;
   const privkey = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  // ⭐ publish expects an array of relays
+  // publish expects an array of relays
   await pool.publish([relay], event);
 }
 
