@@ -4,7 +4,7 @@ const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, finalizeEvent } from "nostr-tools";
 // Twitter removed completely
-
+//fresh workflow
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
 
 async function slack() {
