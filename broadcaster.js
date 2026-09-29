@@ -3,7 +3,7 @@ import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, finalizeEvent } from "nostr-tools";
-// Twitter removed
+// Twitter removed completely
 
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
 
@@ -23,11 +23,7 @@ async function telegram() {
   await axios.post(url, { chat_id: process.env.TELEGRAM_CHAT_ID, text: MESSAGE });
 }
 
-// ⭐ Twitter fully disabled
-async function twitter() {
-  console.log("Twitter disabled — skipping.");
-  return;
-}
+// Twitter function removed entirely
 
 async function bluesky() {
   if (!process.env.BLUESKY_HANDLE) return;
@@ -75,7 +71,7 @@ async function main() {
   await slack();
   await discord();
   await telegram();
-  await twitter();   // now safely skipped
+  // Twitter removed
   await bluesky();
   await mastodon();
   await nostr();
