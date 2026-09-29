@@ -1,5 +1,6 @@
 import axios from "axios";
-import { BskyAgent } from "@atproto/api";
+import pkg from "@atproto/api";
+const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, getEventHash, signEvent, getPublicKey } from "nostr-tools";
 import { TwitterApi } from "twitter-api-v2";
@@ -35,11 +36,14 @@ async function twitter() {
 
 async function bluesky() {
   if (!process.env.BLUESKY_HANDLE) return;
+
   const agent = new BskyAgent({ service: "https://bsky.social" });
+
   await agent.login({
     identifier: process.env.BLUESKY_HANDLE,
     password: process.env.BLUESKY_PASSWORD,
   });
+
   await agent.post({ text: MESSAGE });
 }
 
