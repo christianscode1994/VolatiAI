@@ -3,7 +3,6 @@ import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, finalizeEvent } from "nostr-tools";
-import { hexToBytes } from "@noble/hashes/hex";   // ⭐ FIXED IMPORT
 
 //fresh workflow
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
@@ -59,8 +58,9 @@ async function nostr() {
     content: MESSAGE,
   };
 
-  // ⭐ Convert hex → Uint8Array
-  const privkey = hexToBytes(process.env.NOSTR_PRIVATE_KEY);
+  // ⭐ Manual hex → Uint8Array conversion (works in ALL environments)
+  const hex = process.env.NOSTR_PRIVATE_KEY;
+  const privkey = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
   const event = finalizeEvent(eventTemplate, privkey);
 
