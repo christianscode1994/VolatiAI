@@ -3,7 +3,7 @@ import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, finalizeEvent } from "nostr-tools";
-import { hexToBytes } from "@noble/hashes/utils";   // ⭐ REQUIRED FIX
+import { hexToBytes } from "@noble/hashes/hex";   // ⭐ FIXED IMPORT
 
 //fresh workflow
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
@@ -23,8 +23,6 @@ async function telegram() {
   const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
   await axios.post(url, { chat_id: process.env.TELEGRAM_CHAT_ID, text: MESSAGE });
 }
-
-// Twitter removed entirely
 
 async function bluesky() {
   if (!process.env.BLUESKY_HANDLE) return;
@@ -61,7 +59,7 @@ async function nostr() {
     content: MESSAGE,
   };
 
-  // ⭐ Convert hex → Uint8Array (required by nostr-tools)
+  // ⭐ Convert hex → Uint8Array
   const privkey = hexToBytes(process.env.NOSTR_PRIVATE_KEY);
 
   const event = finalizeEvent(eventTemplate, privkey);
