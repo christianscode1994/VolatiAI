@@ -48,7 +48,10 @@ async function mastodon() {
 async function nostr() {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
-  const relay = process.env.NOSTR_RELAY || "https://relay.damus.io/api/event";
+  // ⭐ Convert wss://relay → https://relay/api/event
+  let relay = process.env.NOSTR_RELAY || "wss://relay.damus.io";
+  relay = relay.replace("wss://", "https://").replace("ws://", "https://");
+  relay = relay.endsWith("/api/event") ? relay : relay + "/api/event";
 
   const eventTemplate = {
     kind: 1,
