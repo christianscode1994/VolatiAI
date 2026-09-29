@@ -3,7 +3,8 @@ import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { SimplePool, finalizeEvent } from "nostr-tools";
-// Twitter removed completely
+import { hexToBytes } from "@noble/hashes/utils";   // ⭐ REQUIRED FIX
+
 //fresh workflow
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
 
@@ -23,7 +24,7 @@ async function telegram() {
   await axios.post(url, { chat_id: process.env.TELEGRAM_CHAT_ID, text: MESSAGE });
 }
 
-// Twitter function removed entirely
+// Twitter removed entirely
 
 async function bluesky() {
   if (!process.env.BLUESKY_HANDLE) return;
@@ -60,7 +61,10 @@ async function nostr() {
     content: MESSAGE,
   };
 
-  const event = finalizeEvent(eventTemplate, process.env.NOSTR_PRIVATE_KEY);
+  // ⭐ Convert hex → Uint8Array (required by nostr-tools)
+  const privkey = hexToBytes(process.env.NOSTR_PRIVATE_KEY);
+
+  const event = finalizeEvent(eventTemplate, privkey);
 
   await pool.publish(relay, event);
 }
@@ -71,7 +75,6 @@ async function main() {
   await slack();
   await discord();
   await telegram();
-  // Twitter removed
   await bluesky();
   await mastodon();
   await nostr();
