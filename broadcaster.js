@@ -2,7 +2,7 @@ import axios from "axios";
 import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
-import { SimplePool, getEventHash, signEvent, getPublicKey } from "nostr-tools";
+import { SimplePool, finalizeEvent } from "nostr-tools";
 import { TwitterApi } from "twitter-api-v2";
 
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
@@ -62,16 +62,14 @@ async function nostr() {
   const relay = process.env.NOSTR_RELAY || "wss://relay.damus.io";
   const pool = new SimplePool();
 
-  const event = {
+  const eventTemplate = {
     kind: 1,
     created_at: Math.floor(Date.now() / 1000),
     tags: [],
     content: MESSAGE,
-    pubkey: getPublicKey(process.env.NOSTR_PRIVATE_KEY),
   };
 
-  event.id = getEventHash(event);
-  event.sig = signEvent(event, process.env.NOSTR_PRIVATE_KEY);
+  const event = finalizeEvent(eventTemplate, process.env.NOSTR_PRIVATE_KEY);
 
   await pool.publish(relay, event);
 }
