@@ -58,13 +58,14 @@ async function nostr() {
     content: MESSAGE,
   };
 
-  // ⭐ Manual hex → Uint8Array conversion (works in ALL environments)
+  // Manual hex → Uint8Array conversion
   const hex = process.env.NOSTR_PRIVATE_KEY;
   const privkey = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  await pool.publish(relay, event);
+  // ⭐ FIX: publish expects an ARRAY of relays
+  await pool.publish([relay], event);
 }
 
 async function main() {
