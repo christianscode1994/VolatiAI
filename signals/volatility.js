@@ -18,14 +18,25 @@ export async function volatilitySignal() {
     const threshold = Number(process.env.VOLATILITY_THRESHOLD ?? 0.7);
 
     if (Number.isNaN(volatility) || volatility < threshold) {
-      return null;
+      return null; // no signal triggered
+    }
+
+    // --- Severity Escalation ---
+    let severity = "info";
+
+    if (volatility >= threshold * 1.5) {
+      severity = "critical";
+    } else if (volatility >= threshold * 1.1) {
+      severity = "warning";
+    } else {
+      severity = "info";
     }
 
     return {
       type: "volatility",
-      severity: volatility > 0.9 ? "critical" : "high",
-      summary: `Volatility spike detected (score=${volatility.toFixed(2)}).`,
-      data: { volatility },
+      severity,
+      summary: `Volatility spike detected (score=${volatility.toFixed(2)}, threshold=${threshold}).`,
+      data: { volatility, threshold },
     };
   } catch (err) {
     console.log("Volatility signal error:", err.message);
