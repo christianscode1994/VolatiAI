@@ -20,21 +20,39 @@ export async function sentimentSignal() {
 
     if (Number.isNaN(sentiment)) return null;
 
+    // --- Positive sentiment ---
     if (sentiment > posThreshold) {
+      let severity = "info";
+
+      if (sentiment >= posThreshold * 1.4) {
+        severity = "critical";
+      } else if (sentiment >= posThreshold * 1.15) {
+        severity = "warning";
+      }
+
       return {
         type: "sentiment",
-        severity: "positive",
-        summary: `Strong positive sentiment detected (score=${sentiment.toFixed(2)}).`,
-        data: { sentiment },
+        severity,
+        summary: `Strong positive sentiment detected (score=${sentiment.toFixed(2)}, threshold=${posThreshold}).`,
+        data: { sentiment, threshold: posThreshold },
       };
     }
 
+    // --- Negative sentiment ---
     if (sentiment < negThreshold) {
+      let severity = "info";
+
+      if (sentiment <= negThreshold * 1.4) {
+        severity = "critical";
+      } else if (sentiment <= negThreshold * 1.15) {
+        severity = "warning";
+      }
+
       return {
         type: "sentiment",
-        severity: "negative",
-        summary: `Strong negative sentiment detected (score=${sentiment.toFixed(2)}).`,
-        data: { sentiment },
+        severity,
+        summary: `Strong negative sentiment detected (score=${sentiment.toFixed(2)}, threshold=${negThreshold}).`,
+        data: { sentiment, threshold: negThreshold },
       };
     }
 
