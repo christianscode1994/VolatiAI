@@ -4,6 +4,7 @@ import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
+import crypto from "crypto";
 
 // --------------------------------------
 //  RELAY HEALTH SCORING
@@ -17,6 +18,44 @@ function scoreRelay(relay, delta) {
 
 function getRelayScore(relay) {
   return relayHealth[relay] ?? 0;
+}
+
+// --------------------------------------
+//  SWARM MEMORY (SERVERLESS)
+// --------------------------------------
+//
+// Each broadcast produces a deterministic hash.
+// If the same message appears again, nodes compute the same hash.
+// We store the last 50 hashes in memory (runtime only).
+// This prevents duplicate broadcasts across swarm nodes.
+//
+
+const swarmMemory = []; // last 50 event hashes
+
+function rememberHash(hash) {
+  swarmMemory.push(hash);
+  if (swarmMemory.length > 50) swarmMemory.shift();
+}
+
+function hasSeenHash(hash) {
+  return swarmMemory.includes(hash);
+}
+
+// --------------------------------------
+//  SWARM COORDINATION RULES
+// --------------------------------------
+//
+// 1. Compute deterministic hash from message + EVENT_ID
+// 2. If hash already seen → skip (duplicate)
+// 3. If hash does NOT end with "0" → skip (coordination)
+// 4. Otherwise → broadcast and remember hash
+//
+
+function swarmHash(message, EVENT_ID) {
+  return crypto
+    .createHash("sha256")
+    .update(message + EVENT_ID)
+    .digest("hex");
 }
 
 // --------------------------------------
@@ -82,8 +121,8 @@ async function nostr(message, EVENT_ID) {
   relays.sort((a, b) => getRelayScore(b) - getRelayScore(a));
 
   // Multi-relay redundancy settings
-  const MIN_GOOD_RELAYS = 3;   // always send to at least 3 good relays
-  const MAX_TOTAL_RELAYS = 6;  // never send to more than 6 relays
+  const MIN_GOOD_RELAYS = 3;
+  const MAX_TOTAL_RELAYS = 6;
 
   // Start with top relays
   let selectedRelays = relays.slice(0, MAX_TOTAL_RELAYS);
@@ -122,7 +161,6 @@ async function nostr(message, EVENT_ID) {
   for (const relay of finalRelays) {
     const score = getRelayScore(relay);
 
-    // Skip extremely unhealthy relays
     if (score <= -3) {
       console.log(`Skipping unhealthy relay (${score}): ${relay}`);
       continue;
@@ -150,6 +188,22 @@ async function nostr(message, EVENT_ID) {
 
 export async function broadcast(message, platforms) {
   const EVENT_ID = `VAI-${Date.now()}-${Math.floor(Math.random() * 999999)}`;
+
+  // --- Swarm Coordination ---
+  const hash = swarmHash(message, EVENT_ID);
+
+  if (hasSeenHash(hash)) {
+    console.log(`Swarm memory: duplicate detected, skipping (hash=${hash})`);
+    return;
+  }
+
+  if (!hash.endsWith("0")) {
+    console.log(`Swarm coordination: skipping broadcast (hash=${hash})`);
+    rememberHash(hash);
+    return;
+  }
+
+  rememberHash(hash);
 
   console.log(`Broadcasting… (EVENT_ID: ${EVENT_ID})`);
   console.log(`Message: ${message}`);
