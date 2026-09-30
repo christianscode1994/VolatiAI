@@ -5,7 +5,8 @@ import { sentimentSignal } from "../signals/sentiment.js";
 import { devActivitySignal } from "../signals/devActivity.js";
 import { depthSignal } from "../signals/depth.js";
 import { routeSignals } from "../signals/router.js";
-import { broadcast } from "../broadcaster/broadcaster.js";
+import { broadcast } from "../broadcaster.js";
+
 
 async function main() {
   const signals = [];
