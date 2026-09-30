@@ -4,29 +4,27 @@ const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
 
-// Fresh workflow message
-const MESSAGE = "VolatiAI broadcast test — swarm online.";
+// -----------------------------
+//  ADAPTERS (now accept message)
+// -----------------------------
 
-// Runtime-only event ID (serverless, ephemeral)
-const EVENT_ID = `VAI-${Date.now()}-${Math.floor(Math.random() * 999999)}`;
-
-async function slack() {
+async function slack(message) {
   if (!process.env.SLACK_WEBHOOK_URL) return;
-  await axios.post(process.env.SLACK_WEBHOOK_URL, { text: MESSAGE });
+  await axios.post(process.env.SLACK_WEBHOOK_URL, { text: message });
 }
 
-async function discord() {
+async function discord(message) {
   if (!process.env.DISCORD_WEBHOOK_URL) return;
-  await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: MESSAGE });
+  await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: message });
 }
 
-async function telegram() {
+async function telegram(message) {
   if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return;
   const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
-  await axios.post(url, { chat_id: process.env.TELEGRAM_CHAT_ID, text: MESSAGE });
+  await axios.post(url, { chat_id: process.env.TELEGRAM_CHAT_ID, text: message });
 }
 
-async function bluesky() {
+async function bluesky(message) {
   if (!process.env.BLUESKY_HANDLE) return;
 
   const agent = new BskyAgent({ service: "https://bsky.social" });
@@ -36,19 +34,19 @@ async function bluesky() {
     password: process.env.BLUESKY_PASSWORD,
   });
 
-  await agent.post({ text: MESSAGE });
+  await agent.post({ text: message });
 }
 
-async function mastodon() {
+async function mastodon(message) {
   if (!process.env.MASTODON_INSTANCE) return;
   const M = new Mastodon({
     access_token: process.env.MASTODON_ACCESS_TOKEN,
     api_url: `${process.env.MASTODON_INSTANCE}/api/v1/`,
   });
-  await M.post("statuses", { status: MESSAGE });
+  await M.post("statuses", { status: message });
 }
 
-async function nostr() {
+async function nostr(message, EVENT_ID) {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
   // Multi-relay list (comma-separated)
@@ -66,8 +64,8 @@ async function nostr() {
   const eventTemplate = {
     kind: 1,
     created_at: Math.floor(Date.now() / 1000),
-    tags: [["e", EVENT_ID]], // ⭐ Cross-relay correlation tag
-    content: MESSAGE,
+    tags: [["e", EVENT_ID]], // correlation tag
+    content: message,
   };
 
   // Manual hex → Uint8Array conversion
@@ -92,17 +90,23 @@ async function nostr() {
   }
 }
 
-async function main() {
-  console.log(`Broadcasting… (EVENT_ID: ${EVENT_ID})`);
+// --------------------------------------
+//  EXPORTABLE BROADCAST FUNCTION (NEW)
+// --------------------------------------
 
-  await slack();
-  await discord();
-  await telegram();
-  await bluesky();
-  await mastodon();
-  await nostr();
+export async function broadcast(message, platforms) {
+  const EVENT_ID = `VAI-${Date.now()}-${Math.floor(Math.random() * 999999)}`;
+
+  console.log(`Broadcasting… (EVENT_ID: ${EVENT_ID})`);
+  console.log(`Message: ${message}`);
+  console.log(`Platforms: ${platforms.join(", ")}`);
+
+  if (platforms.includes("slack")) await slack(message);
+  if (platforms.includes("discord")) await discord(message);
+  if (platforms.includes("telegram")) await telegram(message);
+  if (platforms.includes("bluesky")) await bluesky(message);
+  if (platforms.includes("mastodon")) await mastodon(message);
+  if (platforms.includes("nostr")) await nostr(message, EVENT_ID);
 
   console.log("Broadcast complete.");
 }
-
-main();
