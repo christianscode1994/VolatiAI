@@ -18,14 +18,25 @@ export async function depthSignal() {
     const threshold = Number(process.env.DEPTH_THRESHOLD ?? 0.6);
 
     if (Number.isNaN(imbalance) || imbalance < threshold) {
-      return null;
+      return null; // no signal triggered
+    }
+
+    // --- Severity Escalation ---
+    let severity = "info";
+
+    if (imbalance >= threshold * 1.4) {
+      severity = "critical";
+    } else if (imbalance >= threshold * 1.15) {
+      severity = "warning";
+    } else {
+      severity = "info";
     }
 
     return {
       type: "depth",
-      severity: imbalance > 0.85 ? "critical" : "high",
-      summary: `Order book imbalance detected (score=${imbalance.toFixed(2)}).`,
-      data: { imbalance },
+      severity,
+      summary: `Order book imbalance detected (score=${imbalance.toFixed(2)}, threshold=${threshold}).`,
+      data: { imbalance, threshold },
     };
   } catch (err) {
     console.log("Depth signal error:", err.message);
