@@ -4,8 +4,11 @@ const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
 
-//fresh workflow
+// Fresh workflow message
 const MESSAGE = "VolatiAI broadcast test — swarm online.";
+
+// Runtime-only event ID (serverless, ephemeral)
+const EVENT_ID = `VAI-${Date.now()}-${Math.floor(Math.random() * 999999)}`;
 
 async function slack() {
   if (!process.env.SLACK_WEBHOOK_URL) return;
@@ -48,15 +51,22 @@ async function mastodon() {
 async function nostr() {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
-  // ⭐ Convert wss://relay → https://relay/api/event
-  let relay = process.env.NOSTR_RELAY || "wss://relay.damus.io";
-  relay = relay.replace("wss://", "https://").replace("ws://", "https://");
-  relay = relay.endsWith("/api/event") ? relay : relay + "/api/event";
+  // Multi-relay list (comma-separated)
+  const relays = (process.env.NOSTR_RELAYS || "")
+    .split(",")
+    .map(r => r.trim())
+    .filter(Boolean);
 
+  if (relays.length === 0) {
+    console.log("No Nostr relays configured.");
+    return;
+  }
+
+  // Event template with cross-relay event ID tag
   const eventTemplate = {
     kind: 1,
     created_at: Math.floor(Date.now() / 1000),
-    tags: [],
+    tags: [["e", EVENT_ID]], // ⭐ Cross-relay correlation tag
     content: MESSAGE,
   };
 
@@ -66,12 +76,24 @@ async function nostr() {
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  // ⭐ Publish via HTTP POST (no WebSocket needed)
-  await axios.post(relay, event);
+  // Fan-out to all relays
+  for (const relay of relays) {
+    const url = relay
+      .replace("wss://", "https://")
+      .replace("ws://", "https://")
+      .replace(/\/$/, "") + "/api/event";
+
+    try {
+      await axios.post(url, event);
+      console.log(`Nostr relay OK: ${relay}`);
+    } catch (err) {
+      console.log(`Nostr relay FAIL: ${relay}`);
+    }
+  }
 }
 
 async function main() {
-  console.log("Broadcasting…");
+  console.log(`Broadcasting… (EVENT_ID: ${EVENT_ID})`);
 
   await slack();
   await discord();
