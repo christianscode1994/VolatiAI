@@ -54,6 +54,41 @@ function swarmBackoff(hash) {
 }
 
 // --------------------------------------
+//  SWARM-WIDE ANOMALY DETECTION
+// --------------------------------------
+
+function isAnomalous(message) {
+  const lower = message.toLowerCase();
+  const keywords = ["spike", "crash", "exploit", "halt", "liquidation", "rug", "attack"];
+  return keywords.some(k => lower.includes(k));
+}
+
+// --------------------------------------
+//  CHAIN WATCHER HOOK
+// --------------------------------------
+
+async function chainWatcher(message, EVENT_ID) {
+  if (!isAnomalous(message)) return;
+  console.log(`Chain watcher triggered for EVENT_ID=${EVENT_ID}: ${message}`);
+  // Wire to on-chain APIs/indexers later.
+}
+
+// --------------------------------------
+//  DePIN ROUTING INTELLIGENCE
+// --------------------------------------
+
+function preferredPlatformsFor(message, platforms) {
+  const lower = message.toLowerCase();
+  const depinKeywords = ["depin", "node", "relay", "infrastructure", "mesh"];
+
+  if (!depinKeywords.some(k => lower.includes(k))) return platforms;
+
+  const priority = ["nostr", "mastodon", "bluesky"];
+  const rest = platforms.filter(p => !priority.includes(p));
+  return [...priority.filter(p => platforms.includes(p)), ...rest];
+}
+
+// --------------------------------------
 //  PLATFORM ADAPTERS
 // --------------------------------------
 
@@ -112,14 +147,12 @@ async function nostr(message, EVENT_ID) {
     return;
   }
 
-  // Sort relays by health score (descending)
   relays.sort((a, b) => getRelayScore(b) - getRelayScore(a));
 
   const MIN_GOOD_RELAYS = 3;
   const MAX_TOTAL_RELAYS = 6;
 
   let selectedRelays = relays.slice(0, MAX_TOTAL_RELAYS);
-
   const goodRelays = selectedRelays.filter(r => getRelayScore(r) >= 0);
 
   if (goodRelays.length < MIN_GOOD_RELAYS) {
@@ -198,16 +231,23 @@ export async function broadcast(message, platforms) {
 
   rememberHash(hash);
 
+  if (isAnomalous(message)) {
+    console.log("Swarm anomaly detected in message.");
+    await chainWatcher(message, EVENT_ID);
+  }
+
+  const routedPlatforms = preferredPlatformsFor(message, platforms);
+
   console.log(`Broadcasting… (EVENT_ID: ${EVENT_ID})`);
   console.log(`Message: ${message}`);
-  console.log(`Platforms: ${platforms.join(", ")}`);
+  console.log(`Platforms: ${routedPlatforms.join(", ")}`);
 
-  if (platforms.includes("slack")) await slack(message);
-  if (platforms.includes("discord")) await discord(message);
-  if (platforms.includes("telegram")) await telegram(message);
-  if (platforms.includes("bluesky")) await bluesky(message);
-  if (platforms.includes("mastodon")) await mastodon(message);
-  if (platforms.includes("nostr")) await nostr(message, EVENT_ID);
+  if (routedPlatforms.includes("slack")) await slack(message);
+  if (routedPlatforms.includes("discord")) await discord(message);
+  if (routedPlatforms.includes("telegram")) await telegram(message);
+  if (routedPlatforms.includes("bluesky")) await bluesky(message);
+  if (routedPlatforms.includes("mastodon")) await mastodon(message);
+  if (routedPlatforms.includes("nostr")) await nostr(message, EVENT_ID);
 
   console.log("Broadcast complete.");
 }
