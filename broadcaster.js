@@ -23,12 +23,6 @@ function getRelayScore(relay) {
 // --------------------------------------
 //  SWARM MEMORY (SERVERLESS)
 // --------------------------------------
-//
-// Each broadcast produces a deterministic hash.
-// If the same message appears again, nodes compute the same hash.
-// We store the last 50 hashes in memory (runtime only).
-// This prevents duplicate broadcasts across swarm nodes.
-//
 
 const swarmMemory = []; // last 50 event hashes
 
@@ -42,20 +36,21 @@ function hasSeenHash(hash) {
 }
 
 // --------------------------------------
-//  SWARM COORDINATION RULES
+//  SWARM COORDINATION + BACKOFF
 // --------------------------------------
-//
-// 1. Compute deterministic hash from message + EVENT_ID
-// 2. If hash already seen → skip (duplicate)
-// 3. If hash does NOT end with "0" → skip (coordination)
-// 4. Otherwise → broadcast and remember hash
-//
 
 function swarmHash(message, EVENT_ID) {
   return crypto
     .createHash("sha256")
     .update(message + EVENT_ID)
     .digest("hex");
+}
+
+function swarmBackoff(hash) {
+  const num = parseInt(hash.slice(0, 8), 16);
+  const normalized = num / 0xffffffff;
+  const threshold = 0.30; // allow ~30% through
+  return normalized < threshold;
 }
 
 // --------------------------------------
@@ -120,14 +115,11 @@ async function nostr(message, EVENT_ID) {
   // Sort relays by health score (descending)
   relays.sort((a, b) => getRelayScore(b) - getRelayScore(a));
 
-  // Multi-relay redundancy settings
   const MIN_GOOD_RELAYS = 3;
   const MAX_TOTAL_RELAYS = 6;
 
-  // Start with top relays
   let selectedRelays = relays.slice(0, MAX_TOTAL_RELAYS);
 
-  // Ensure minimum number of good relays
   const goodRelays = selectedRelays.filter(r => getRelayScore(r) >= 0);
 
   if (goodRelays.length < MIN_GOOD_RELAYS) {
@@ -138,12 +130,10 @@ async function nostr(message, EVENT_ID) {
     selectedRelays.push(...extraRelays);
   }
 
-  // Remove duplicates
   const finalRelays = [...new Set(selectedRelays)];
 
   console.log("Selected Nostr relays:", finalRelays);
 
-  // Event template
   const eventTemplate = {
     kind: 1,
     created_at: Math.floor(Date.now() / 1000),
@@ -151,13 +141,11 @@ async function nostr(message, EVENT_ID) {
     content: message,
   };
 
-  // Manual hex → Uint8Array conversion
   const hex = process.env.NOSTR_PRIVATE_KEY;
   const privkey = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  // Fan-out with relay-health scoring + redundancy
   for (const relay of finalRelays) {
     const score = getRelayScore(relay);
 
@@ -189,7 +177,6 @@ async function nostr(message, EVENT_ID) {
 export async function broadcast(message, platforms) {
   const EVENT_ID = `VAI-${Date.now()}-${Math.floor(Math.random() * 999999)}`;
 
-  // --- Swarm Coordination ---
   const hash = swarmHash(message, EVENT_ID);
 
   if (hasSeenHash(hash)) {
@@ -199,6 +186,12 @@ export async function broadcast(message, platforms) {
 
   if (!hash.endsWith("0")) {
     console.log(`Swarm coordination: skipping broadcast (hash=${hash})`);
+    rememberHash(hash);
+    return;
+  }
+
+  if (!swarmBackoff(hash)) {
+    console.log(`Swarm backoff: throttling broadcast (hash=${hash})`);
     rememberHash(hash);
     return;
   }
