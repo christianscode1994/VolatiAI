@@ -6,7 +6,7 @@ import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
 
 // --------------------------------------
-//  RELAY HEALTH SCORING (NEW)
+//  RELAY HEALTH SCORING
 // --------------------------------------
 
 const relayHealth = {}; // { relayUrl: score }
@@ -62,7 +62,7 @@ async function mastodon(message) {
 }
 
 // --------------------------------------
-//  NOSTR BROADCASTER (UPDATED)
+//  NOSTR BROADCASTER (HEALTH + REDUNDANCY)
 // --------------------------------------
 
 async function nostr(message, EVENT_ID) {
@@ -81,6 +81,28 @@ async function nostr(message, EVENT_ID) {
   // Sort relays by health score (descending)
   relays.sort((a, b) => getRelayScore(b) - getRelayScore(a));
 
+  const MIN_GOOD_RELAYS = 3;   // always send to at least 3 good relays
+  const MAX_TOTAL_RELAYS = 6;  // never send to more than 6 relays
+
+  // Start with top relays
+  let selectedRelays = relays.slice(0, MAX_TOTAL_RELAYS);
+
+  // Ensure minimum number of good relays
+  const goodRelays = selectedRelays.filter(r => getRelayScore(r) >= 0);
+
+  if (goodRelays.length < MIN_GOOD_RELAYS) {
+    const extraRelays = relays
+      .filter(r => !goodRelays.includes(r))
+      .slice(0, MIN_GOOD_RELAYS - goodRelays.length);
+
+    selectedRelays.push(...extraRelays);
+  }
+
+  // Remove duplicates
+  const finalRelays = [...new Set(selectedRelays)];
+
+  console.log("Selected Nostr relays:", finalRelays);
+
   // Event template
   const eventTemplate = {
     kind: 1,
@@ -95,11 +117,11 @@ async function nostr(message, EVENT_ID) {
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  // Fan-out with relay-health scoring
-  for (const relay of relays) {
+  // Fan-out with relay-health scoring + redundancy
+  for (const relay of finalRelays) {
     const score = getRelayScore(relay);
 
-    // Skip unhealthy relays
+    // Skip extremely unhealthy relays
     if (score <= -3) {
       console.log(`Skipping unhealthy relay (${score}): ${relay}`);
       continue;
