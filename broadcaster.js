@@ -1,12 +1,27 @@
+// broadcaster.js
 import axios from "axios";
 import pkg from "@atproto/api";
 const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
 
-// -----------------------------
-//  ADAPTERS (now accept message)
-// -----------------------------
+// --------------------------------------
+//  RELAY HEALTH SCORING (NEW)
+// --------------------------------------
+
+const relayHealth = {}; // { relayUrl: score }
+
+function scoreRelay(relay, delta) {
+  relayHealth[relay] = Math.max(-5, Math.min(5, (relayHealth[relay] ?? 0) + delta));
+}
+
+function getRelayScore(relay) {
+  return relayHealth[relay] ?? 0;
+}
+
+// --------------------------------------
+//  PLATFORM ADAPTERS
+// --------------------------------------
 
 async function slack(message) {
   if (!process.env.SLACK_WEBHOOK_URL) return;
@@ -46,10 +61,13 @@ async function mastodon(message) {
   await M.post("statuses", { status: message });
 }
 
+// --------------------------------------
+//  NOSTR BROADCASTER (UPDATED)
+// --------------------------------------
+
 async function nostr(message, EVENT_ID) {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
-  // Multi-relay list (comma-separated)
   const relays = (process.env.NOSTR_RELAYS || "")
     .split(",")
     .map(r => r.trim())
@@ -60,11 +78,14 @@ async function nostr(message, EVENT_ID) {
     return;
   }
 
-  // Event template with cross-relay event ID tag
+  // Sort relays by health score (descending)
+  relays.sort((a, b) => getRelayScore(b) - getRelayScore(a));
+
+  // Event template
   const eventTemplate = {
     kind: 1,
     created_at: Math.floor(Date.now() / 1000),
-    tags: [["e", EVENT_ID]], // correlation tag
+    tags: [["e", EVENT_ID]],
     content: message,
   };
 
@@ -74,8 +95,16 @@ async function nostr(message, EVENT_ID) {
 
   const event = finalizeEvent(eventTemplate, privkey);
 
-  // Fan-out to all relays
+  // Fan-out with relay-health scoring
   for (const relay of relays) {
+    const score = getRelayScore(relay);
+
+    // Skip unhealthy relays
+    if (score <= -3) {
+      console.log(`Skipping unhealthy relay (${score}): ${relay}`);
+      continue;
+    }
+
     const url = relay
       .replace("wss://", "https://")
       .replace("ws://", "https://")
@@ -84,14 +113,16 @@ async function nostr(message, EVENT_ID) {
     try {
       await axios.post(url, event);
       console.log(`Nostr relay OK: ${relay}`);
+      scoreRelay(relay, +1);
     } catch (err) {
       console.log(`Nostr relay FAIL: ${relay}`);
+      scoreRelay(relay, -2);
     }
   }
 }
 
 // --------------------------------------
-//  EXPORTABLE BROADCAST FUNCTION (NEW)
+//  EXPORTABLE BROADCAST FUNCTION
 // --------------------------------------
 
 export async function broadcast(message, platforms) {
