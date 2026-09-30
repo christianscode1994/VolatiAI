@@ -35,17 +35,21 @@ jobs:
           NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}
           NOSTR_RELAYS: ${{ secrets.NOSTR_RELAYS }}
 
-          # Signal APIs (you can add/remove as needed)
+          # Signal APIs
           VOLATILITY_API_URL: ${{ secrets.VOLATILITY_API_URL }}
           SENTIMENT_API_URL: ${{ secrets.SENTIMENT_API_URL }}
           DEV_ACTIVITY_API_URL: ${{ secrets.DEV_ACTIVITY_API_URL }}
           DEPTH_API_URL: ${{ secrets.DEPTH_API_URL }}
 
-          # Optional thresholds
+          # Thresholds
           VOLATILITY_THRESHOLD: ${{ secrets.VOLATILITY_THRESHOLD }}
           SENTIMENT_POS_THRESHOLD: ${{ secrets.SENTIMENT_POS_THRESHOLD }}
           SENTIMENT_NEG_THRESHOLD: ${{ secrets.SENTIMENT_NEG_THRESHOLD }}
           DEV_ACTIVITY_THRESHOLD: ${{ secrets.DEV_ACTIVITY_THRESHOLD }}
           DEPTH_THRESHOLD: ${{ secrets.DEPTH_THRESHOLD }}
+
+          # Multi-signal batching flags
+          BATCHING_ENABLED: "true"
+          MAX_BATCH_SIZE: "20"
 
         run: node workflows/signal_broadcast.js
