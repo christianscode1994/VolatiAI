@@ -1,0 +1,105 @@
+# VolatiAI Swarm Configuration
+# ============================
+
+swarm:
+  coordination_suffixes: ["0", "a", "b"]
+  backoff_threshold_signal: 0.40
+  backoff_threshold_scheduler: 0.50
+  memory_limit_signal: 200
+  memory_limit_broadcast: 50
+
+routing:
+  depin_priority:
+    - nostr
+    - mastodon
+    - bluesky
+
+platforms:
+  default:
+    - nostr
+    - mastodon
+    - bluesky
+    - telegram
+    - discord
+    - slack
+
+collectors:
+  volatility:
+    enabled: true
+    interval_minutes: 5
+    assets:
+      - bitcoin
+      - ethereum
+    platforms:
+      - nostr
+      - mastodon
+
+  sentiment:
+    enabled: true
+    interval_minutes: 10
+    keywords:
+      - solana
+      - ethereum
+    platforms:
+      - telegram
+      - discord
+
+  dev_activity:
+    enabled: true
+    interval_minutes: 15
+    repos:
+      - solana-labs/solana
+      - ethereum/go-ethereum
+    platforms:
+      - bluesky
+
+  depth:
+    enabled: true
+    interval_minutes: 20
+    assets:
+      - eth
+      - btc
+    platforms:
+      - slack
+
+  chain:
+    enabled: true
+    interval_minutes: 30
+    addresses:
+      - "0x123..."
+      - "0xabc..."
+    platforms:
+      - nostr
+
+scoring:
+  thresholds:
+    minimum_score: 5
+  weights:
+    volatility: 1.0
+    sentiment: 1.0
+    dev_activity: 1.0
+    depth: 1.0
+    anomaly_bonus: 10
+
+anomaly_detection:
+  keywords:
+    - spike
+    - crash
+    - exploit
+    - halt
+    - liquidation
+    - rug
+    - attack
+
+chain_watcher:
+  enabled: true
+  log_only: true
+
+nostr:
+  relays:
+    - wss://relay.damus.io
+    - wss://nostr.wine
+    - wss://nos.lol
+    - wss://relay.snort.social
+  min_good_relays: 3
+  max_total_relays: 6
