@@ -9,12 +9,16 @@ import {
 } from "./collectors/index.js";
 
 import { processSignal } from "./signalEngine.js";
+import {
+  swarmConfig,
+  collectorConfig
+} from "./config.js";
 
 // --------------------------------------
 //  SWARM SCHEDULER MEMORY
 // --------------------------------------
 
-const schedulerMemory = []; // last 200 scheduler hashes
+const schedulerMemory = [];
 
 function schedulerHash(taskName, payload) {
   return crypto
@@ -25,7 +29,7 @@ function schedulerHash(taskName, payload) {
 
 function rememberSchedulerHash(hash) {
   schedulerMemory.push(hash);
-  if (schedulerMemory.length > 200) schedulerMemory.shift();
+  if (schedulerMemory.length > swarmConfig.memoryLimitSignal) schedulerMemory.shift();
 }
 
 function hasSeenSchedulerHash(hash) {
@@ -33,46 +37,43 @@ function hasSeenSchedulerHash(hash) {
 }
 
 // --------------------------------------
-//  SWARM COORDINATION FOR SCHEDULER
+//  SWARM COORDINATION
 // --------------------------------------
 
 function shouldRunTask(hash) {
-  // Only run if hash ends with 0–3 (40% of nodes)
-  return /[0-3]$/.test(hash);
+  const suffixes = swarmConfig.coordinationSuffixes;
+  const lastChar = hash.slice(-1);
+  return suffixes.includes(lastChar);
 }
 
 // --------------------------------------
-//  SWARM BACKOFF FOR TASK STORMS
+//  SWARM BACKOFF
 // --------------------------------------
 
 function schedulerBackoff(hash) {
   const num = parseInt(hash.slice(0, 8), 16);
   const normalized = num / 0xffffffff;
-  const threshold = 0.50; // allow ~50% of tasks
-  return normalized < threshold;
+  return normalized < swarmConfig.backoffScheduler;
 }
 
 // --------------------------------------
-//  TASK RUNNER WRAPPER (SWARM-AWARE)
+//  SWARM-AWARE TASK RUNNER
 // --------------------------------------
 
 async function runTask(taskName, payload, fn) {
   const hash = schedulerHash(taskName, payload);
 
-  // Memory dedupe
   if (hasSeenSchedulerHash(hash)) {
     console.log(`Scheduler memory: duplicate task skipped (${taskName})`);
     return;
   }
 
-  // Coordination
   if (!shouldRunTask(hash)) {
     console.log(`Scheduler coordination: skipping task (${taskName})`);
     rememberSchedulerHash(hash);
     return;
   }
 
-  // Backoff
   if (!schedulerBackoff(hash)) {
     console.log(`Scheduler backoff: throttling task (${taskName})`);
     rememberSchedulerHash(hash);
@@ -81,12 +82,11 @@ async function runTask(taskName, payload, fn) {
 
   rememberSchedulerHash(hash);
 
-  // Execute task
   await fn(payload);
 }
 
 // --------------------------------------
-//  COLLECTOR TASKS
+//  COLLECTOR TASK WRAPPERS
 // --------------------------------------
 
 async function runVolatilityTask({ asset, platforms }) {
@@ -115,34 +115,89 @@ async function runChainTask({ address, platforms }) {
 }
 
 // --------------------------------------
-//  INTERVAL SCHEDULER
+//  DYNAMIC SCHEDULER
 // --------------------------------------
 
 export function startScheduler() {
-  console.log("VolatiAI swarm scheduler started.");
+  console.log("VolatiAI dynamic swarm scheduler started.");
 
-  // Every 5 minutes — volatility
-  setInterval(() => {
-    runTask("volatility", { asset: "bitcoin", platforms: ["nostr", "mastodon"] }, runVolatilityTask);
-  }, 5 * 60 * 1000);
+  // VOLATILITY
+  if (collectorConfig.volatility.enabled) {
+    const interval = collectorConfig.volatility.interval_minutes * 60 * 1000;
+    const platforms = collectorConfig.volatility.platforms;
 
-  // Every 10 minutes — sentiment
-  setInterval(() => {
-    runTask("sentiment", { keyword: "solana", platforms: ["telegram", "discord"] }, runSentimentTask);
-  }, 10 * 60 * 1000);
+    collectorConfig.volatility.assets.forEach(asset => {
+      setInterval(() => {
+        runTask(
+          `volatility:${asset}`,
+          { asset, platforms },
+          runVolatilityTask
+        );
+      }, interval);
+    });
+  }
 
-  // Every 15 minutes — dev activity
-  setInterval(() => {
-    runTask("devActivity", { repo: "solana-labs/solana", platforms: ["bluesky"] }, runDevActivityTask);
-  }, 15 * 60 * 1000);
+  // SENTIMENT
+  if (collectorConfig.sentiment.enabled) {
+    const interval = collectorConfig.sentiment.interval_minutes * 60 * 1000;
+    const platforms = collectorConfig.sentiment.platforms;
 
-  // Every 20 minutes — depth
-  setInterval(() => {
-    runTask("depth", { asset: "eth", platforms: ["slack"] }, runDepthTask);
-  }, 20 * 60 * 1000);
+    collectorConfig.sentiment.keywords.forEach(keyword => {
+      setInterval(() => {
+        runTask(
+          `sentiment:${keyword}`,
+          { keyword, platforms },
+          runSentimentTask
+        );
+      }, interval);
+    });
+  }
 
-  // Every 30 minutes — chain events
-  setInterval(() => {
-    runTask("chain", { address: "0x123...", platforms: ["nostr"] }, runChainTask);
-  }, 30 * 60 * 1000);
+  // DEV ACTIVITY
+  if (collectorConfig.dev_activity.enabled) {
+    const interval = collectorConfig.dev_activity.interval_minutes * 60 * 1000;
+    const platforms = collectorConfig.dev_activity.platforms;
+
+    collectorConfig.dev_activity.repos.forEach(repo => {
+      setInterval(() => {
+        runTask(
+          `dev:${repo}`,
+          { repo, platforms },
+          runDevActivityTask
+        );
+      }, interval);
+    });
+  }
+
+  // DEPTH
+  if (collectorConfig.depth.enabled) {
+    const interval = collectorConfig.depth.interval_minutes * 60 * 1000;
+    const platforms = collectorConfig.depth.platforms;
+
+    collectorConfig.depth.assets.forEach(asset => {
+      setInterval(() => {
+        runTask(
+          `depth:${asset}`,
+          { asset, platforms },
+          runDepthTask
+        );
+      }, interval);
+    });
+  }
+
+  // CHAIN EVENTS
+  if (collectorConfig.chain.enabled) {
+    const interval = collectorConfig.chain.interval_minutes * 60 * 1000;
+    const platforms = collectorConfig.chain.platforms;
+
+    collectorConfig.chain.addresses.forEach(address => {
+      setInterval(() => {
+        runTask(
+          `chain:${address}`,
+          { address, platforms },
+          runChainTask
+        );
+      }, interval);
+    });
+  }
 }
