@@ -18,14 +18,25 @@ export async function devActivitySignal() {
     const threshold = Number(process.env.DEV_ACTIVITY_THRESHOLD ?? 20);
 
     if (Number.isNaN(commits) || commits < threshold) {
-      return null;
+      return null; // no signal triggered
+    }
+
+    // --- Severity Escalation ---
+    let severity = "info";
+
+    if (commits >= threshold * 2.5) {
+      severity = "critical";
+    } else if (commits >= threshold * 1.5) {
+      severity = "warning";
+    } else {
+      severity = "info";
     }
 
     return {
       type: "devActivity",
-      severity: commits > threshold * 2 ? "surge" : "elevated",
-      summary: `Developer activity spike: ${commits} commits in last 24h.`,
-      data: { commits },
+      severity,
+      summary: `Developer activity spike: ${commits} commits in last 24h (threshold=${threshold}).`,
+      data: { commits, threshold },
     };
   } catch (err) {
     console.log("DevActivity signal error:", err.message);
