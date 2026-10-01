@@ -5,7 +5,10 @@ import {
   routingConfig,
   collectorConfig,
   scoringConfig,
-  nostrConfig
+  nostrConfig,
+  personaConfig,
+  antiDetectionConfig,
+  topicEngineConfig
 } from "./config.js";
 
 function printBanner() {
@@ -44,6 +47,17 @@ function printConfigSummary() {
   console.log("Weights:", scoringConfig.weights);
   console.log("Anomaly Keywords:", scoringConfig.anomalyKeywords);
 
+  console.log("\nPersona:");
+  console.log("Default Persona:", personaConfig.default);
+
+  console.log("\nAnti-Detection:");
+  console.log("Jitter Min (ms):", antiDetectionConfig.jitterMinMs);
+  console.log("Jitter Max (ms):", antiDetectionConfig.jitterMaxMs);
+  console.log("Skip Probability:", antiDetectionConfig.skipProbability);
+
+  console.log("\nTopic Engine:");
+  console.log("Minimum Topic Score:", topicEngineConfig.minimumTopicScore);
+
   console.log("\nNostr Relays:", nostrConfig.relays);
   console.log("--------------------------------------\n");
 }
@@ -71,7 +85,7 @@ export function bootstrap() {
   console.log("VolatiAI swarm node is now running.");
 }
 
-// Auto‑start if executed directly
+// Auto-start if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   bootstrap();
 }
