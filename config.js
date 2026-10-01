@@ -37,6 +37,9 @@ function validateConfig(cfg) {
   ensure("collectors", cfg.collectors);
   ensure("scoring", cfg.scoring);
   ensure("nostr", cfg.nostr);
+  ensure("persona", cfg.persona);
+  ensure("anti_detection", cfg.anti_detection);
+  ensure("topic_engine", cfg.topic_engine);
 }
 
 try {
@@ -47,7 +50,7 @@ try {
 }
 
 // --------------------------------------
-//  EXPORT CONFIG
+//  EXPORT CONFIG SECTIONS
 // --------------------------------------
 
 export const swarmConfig = {
@@ -66,7 +69,7 @@ export const routingConfig = {
 export const collectorConfig = config.collectors;
 
 export const scoringConfig = {
-  minimumScore: config.scoring.thresholds.minimum_score,
+  minimumScore: config.scoring.minimum_score,
   weights: config.scoring.weights,
   anomalyKeywords: config.anomaly_detection.keywords
 };
@@ -82,11 +85,32 @@ export const nostrConfig = {
   maxTotalRelays: config.nostr.max_total_relays
 };
 
+export const personaConfig = {
+  default: config.persona.default
+};
+
+export const antiDetectionConfig = {
+  jitterMinMs: config.anti_detection.jitter_min_ms,
+  jitterMaxMs: config.anti_detection.jitter_max_ms,
+  skipProbability: config.anti_detection.skip_probability
+};
+
+export const topicEngineConfig = {
+  minimumTopicScore: config.topic_engine.minimum_topic_score
+};
+
+// --------------------------------------
+//  DEFAULT EXPORT
+// --------------------------------------
+
 export default {
   swarmConfig,
   routingConfig,
   collectorConfig,
   scoringConfig,
   chainWatcherConfig,
-  nostrConfig
+  nostrConfig,
+  personaConfig,
+  antiDetectionConfig,
+  topicEngineConfig
 };
