@@ -93,3 +93,69 @@ The activation flow is intentionally simple:
 ### **1. User enters VAI‑LIC key**
 A short code such as:
 
+
+### **2. Local validation**
+VolatiAI checks:
+
+- format  
+- checksum  
+- offline signature  
+
+No servers are contacted.
+
+### **3. Local unlock**
+If valid, VolatiAI unlocks:
+
+- full agent swarm  
+- full sector matrix  
+- full intelligence layer  
+- dashboards  
+- offline mode  
+- updates (local)  
+
+### **4. No persistence beyond local storage**
+Keys are stored in:
+
+- a local config file  
+- encrypted or hashed  
+- never transmitted  
+
+---
+
+# 🛡️ Anti‑Compliance Activation Design
+
+The activation system avoids all compliance triggers:
+
+### **No identity**
+No accounts, emails, usernames, or profiles.
+
+### **No telemetry**
+No analytics, usage tracking, or logs.
+
+### **No backend**
+No servers, databases, or hosted services.
+
+### **No financial compliance**
+Activation keys are not tied to payments or subscriptions.
+
+### **No data retention**
+Nothing is stored beyond the local machine.
+
+### **No authentication**
+No OAuth, no tokens, no sessions.
+
+### **No corporate drag**
+VolatiAI remains a tool, not a service.
+
+---
+
+# 🧱 Activation Storage
+
+Activation keys are stored locally in:
+
+
+
+
+
+
+
