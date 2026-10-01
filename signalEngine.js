@@ -2,11 +2,22 @@
 import crypto from "crypto";
 import { broadcast } from "./broadcaster.js";
 
+import {
+  swarmConfig,
+  scoringConfig,
+  routingConfig
+} from "./config.js";
+
+import { applyPersona } from "./persona.js";
+import { antiDetectionPause, shouldSkipPost } from "./antiDetection.js";
+import { shouldPublishTopic } from "./topicEngine.js";
+import { formatForPlatform } from "./contentFormatter.js";
+
 // --------------------------------------
 //  SWARM SIGNAL MEMORY (INPUT-SIDE)
 // --------------------------------------
 
-const signalMemory = []; // last 200 signal hashes
+const signalMemory = [];
 
 function signalHash(signal) {
   return crypto
@@ -17,7 +28,8 @@ function signalHash(signal) {
 
 function rememberSignal(hash) {
   signalMemory.push(hash);
-  if (signalMemory.length > 200) signalMemory.shift();
+  if (signalMemory.length > swarmConfig.memoryLimitSignal)
+    signalMemory.shift();
 }
 
 function hasSeenSignal(hash) {
@@ -25,37 +37,32 @@ function hasSeenSignal(hash) {
 }
 
 // --------------------------------------
-//  SWARM COORDINATION FOR SIGNAL PROCESSING
+//  SWARM COORDINATION
 // --------------------------------------
-//
-// Only some nodes process a given signal.
-// Same idea as broadcaster, but input-side.
-//
 
 function shouldProcessSignal(hash) {
-  // Example rule: only process if hash ends with "a" or "b"
-  return /[ab]$/.test(hash);
+  const suffixes = swarmConfig.coordinationSuffixes;
+  const lastChar = hash.slice(-1);
+  return suffixes.includes(lastChar);
 }
 
 // --------------------------------------
-//  SWARM-WIDE BACKOFF FOR SIGNAL STORMS
+//  SWARM BACKOFF
 // --------------------------------------
 
 function signalBackoff(hash) {
   const num = parseInt(hash.slice(0, 8), 16);
   const normalized = num / 0xffffffff;
-  const threshold = 0.40; // allow ~40% of signals
-  return normalized < threshold;
+  return normalized < swarmConfig.backoffSignal;
 }
 
 // --------------------------------------
-//  ANOMALY DETECTION (INPUT-SIDE)
+//  ANOMALY DETECTION
 // --------------------------------------
 
 function isSignalAnomalous(signal) {
   const text = (signal.summary || "").toLowerCase();
-  const keywords = ["spike", "crash", "exploit", "halt", "liquidation", "rug", "attack"];
-  return keywords.some(k => text.includes(k));
+  return scoringConfig.anomalyKeywords.some(k => text.includes(k));
 }
 
 // --------------------------------------
@@ -65,11 +72,10 @@ function isSignalAnomalous(signal) {
 async function chainWatcher(signal) {
   if (!isSignalAnomalous(signal)) return;
   console.log(`Chain watcher triggered for signal: ${signal.summary}`);
-  // Later: integrate on-chain APIs/indexers
 }
 
 // --------------------------------------
-//  DePIN-AWARE ROUTING (INPUT-SIDE)
+//  DePIN-AWARE ROUTING
 // --------------------------------------
 
 function platformsForSignal(signal, platforms) {
@@ -78,8 +84,9 @@ function platformsForSignal(signal, platforms) {
 
   if (!depinKeywords.some(k => text.includes(k))) return platforms;
 
-  const priority = ["nostr", "mastodon", "bluesky"];
+  const priority = routingConfig.depinPriority;
   const rest = platforms.filter(p => !priority.includes(p));
+
   return [...priority.filter(p => platforms.includes(p)), ...rest];
 }
 
@@ -90,25 +97,25 @@ function platformsForSignal(signal, platforms) {
 function scoreSignal(signal) {
   let score = 0;
 
-  // Example scoring inputs (customize as needed)
-  if (signal.volatility) score += signal.volatility;
-  if (signal.sentiment) score += Math.abs(signal.sentiment);
-  if (signal.devActivity) score += signal.devActivity;
-  if (signal.depth) score += signal.depth;
+  const w = scoringConfig.weights;
 
-  // Hard bump for anomalies
-  if (isSignalAnomalous(signal)) score += 10;
+  if (signal.volatility) score += w.volatility * signal.volatility;
+  if (signal.sentiment) score += w.sentiment * Math.abs(signal.sentiment);
+  if (signal.devActivity) score += w.devActivity * signal.devActivity;
+  if (signal.depth) score += w.depth * signal.depth;
+
+  if (isSignalAnomalous(signal)) score += w.anomaly_bonus;
 
   return score;
 }
 
 // --------------------------------------
-//  SIGNAL → MESSAGE RENDERER
+//  MESSAGE RENDERER
 // --------------------------------------
 
 function renderSignalMessage(signal, score) {
-  return `⚡ VolatiAI Signal
-Severity Score: ${score}
+  return `VolatiAI Signal
+Severity: ${score}
 Summary: ${signal.summary}
 Data: ${JSON.stringify(signal.data || {}, null, 2)}`;
 }
@@ -120,29 +127,35 @@ Data: ${JSON.stringify(signal.data || {}, null, 2)}`;
 export async function processSignal(signal, platforms) {
   const hash = signalHash(signal);
 
-  // --- Swarm Memory ---
+  // --- Memory dedupe ---
   if (hasSeenSignal(hash)) {
-    console.log(`Swarm signal memory: duplicate, skipping (hash=${hash})`);
+    console.log(`Swarm memory: duplicate, skipping (${hash})`);
     return;
   }
 
-  // --- Swarm Coordination ---
+  // --- Coordination ---
   if (!shouldProcessSignal(hash)) {
-    console.log(`Swarm signal coordination: skipping (hash=${hash})`);
+    console.log(`Swarm coordination: skipping (${hash})`);
     rememberSignal(hash);
     return;
   }
 
-  // --- Swarm Backoff ---
+  // --- Backoff ---
   if (!signalBackoff(hash)) {
-    console.log(`Swarm signal backoff: throttling (hash=${hash})`);
+    console.log(`Swarm backoff: throttling (${hash})`);
     rememberSignal(hash);
     return;
   }
 
   rememberSignal(hash);
 
-  // --- Anomaly Detection + Chain Watcher ---
+  // --- Topic filtering ---
+  if (!shouldPublishTopic(signal)) {
+    console.log(`TopicEngine: signal not strong enough, skipping.`);
+    return;
+  }
+
+  // --- Anomaly detection ---
   if (isSignalAnomalous(signal)) {
     console.log("Swarm anomaly detected.");
     await chainWatcher(signal);
@@ -150,18 +163,35 @@ export async function processSignal(signal, platforms) {
 
   // --- Scoring ---
   const score = scoreSignal(signal);
-
-  if (score < 5) {
-    console.log(`Swarm signal: score too low (${score}), skipping.`);
+  if (score < scoringConfig.minimumScore) {
+    console.log(`Score too low (${score}), skipping.`);
     return;
   }
 
-  // --- Render Message ---
-  const message = renderSignalMessage(signal, score);
+  // --- Anti-detection random skip ---
+  if (shouldSkipPost()) {
+    console.log("AntiDetection: random skip triggered.");
+    return;
+  }
 
-  // --- DePIN Routing ---
+  // --- Anti-detection pause ---
+  await antiDetectionPause();
+
+  // --- Render base message ---
+  const baseMessage = renderSignalMessage(signal, score);
+
+  // --- Persona layer ---
+  const personaMessage = applyPersona("default", baseMessage);
+
+  // --- Format per platform ---
   const routedPlatforms = platformsForSignal(signal, platforms);
+  const formattedMessages = routedPlatforms.map(p => ({
+    platform: p,
+    content: formatForPlatform(p, signal, score)
+  }));
 
   // --- Broadcast ---
-  await broadcast(message, routedPlatforms);
+  for (const msg of formattedMessages) {
+    await broadcast(msg.content, [msg.platform]);
+  }
 }
