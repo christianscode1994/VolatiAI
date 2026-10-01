@@ -70,9 +70,45 @@ VolatiAI avoids entire categories of risk:
 
 By not storing or transmitting data, VolatiAI eliminates the need for compliance frameworks.
 
+# 🧱 Local File Security
+
+VolatiAI stores only minimal files:
+
+
+
 ---
 
 # 🧱 Local File Security
+
+config/activation.json
+config/settings.json
+config/runner.json
+public/intel.json
+public/latest.json
+public/intel.html
+public/summary.html
+
+
+
+These files contain:
+- no personal data  
+- no identifiers  
+- no secrets  
+
+Users may delete them at any time.
+
+---
+
+# 🧭 Summary
+
+VolatiAI’s security model is built on simplicity, locality, and absence.  
+No servers. No accounts. No telemetry. No compliance drag.
+
+VolatiAI is secure because it **does not store or transmit anything worth stealing**.
+
+
+
+
 
 VolatiAI stores only minimal files:
 
