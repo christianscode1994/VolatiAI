@@ -7,24 +7,53 @@
 
 ---
 
-VolatiAI is a **serverless, autonomous, multi‑signal crypto intelligence engine** powered by **swarmer agents**.  
-These agents operate in parallel, fuse heterogeneous signals, and generate unified intelligence snapshots without any tiering, pricing, or access segmentation.
+VolatiAI is a **serverless, autonomous, multi‑signal crypto intelligence engine** powered by **swarmer agents** running on **Cloudflare Serverless Workers**.
+
+It uses **1000+ APIs across 50+ intelligence sectors**, fusing heterogeneous signals into unified intelligence snapshots without any pricing tiers, segmentation, or hosted services.
 
 VolatiAI combines:
 
 - **Market volatility**
 - **Social sentiment**
 - **Exchange depth**
-- **Developer activity signals**
+- **Developer activity**
 - **Multi‑chain RPC truth**
+- **Cross‑sector intelligence from 1000+ APIs**
 
-to detect **early trend formation**, **narrative acceleration**, and **microstructure anomalies** across crypto ecosystems.
+to detect **early trend formation**, **narrative acceleration**, **ecosystem growth**, and **microstructure anomalies**.
 
 It also supports **full offline mode** using cached snapshots and local fallback agents.
 
 ---
 
-## Autonomous swarmer agents
+## ⚙️ Cloudflare Serverless Workers
+
+VolatiAI’s swarmer agents run on Cloudflare’s global serverless compute network:
+
+- Zero‑infrastructure  
+- Zero‑maintenance  
+- Millisecond‑latency API aggregation  
+- Automatic scaling  
+- Global edge execution  
+
+Each agent can call **hundreds of APIs per second**, across:
+
+- Market data  
+- Social sentiment  
+- Developer ecosystems  
+- Chain RPCs  
+- DePIN networks  
+- AI ecosystems  
+- Web3 infra  
+- Macro indicators  
+- Risk signals  
+- Alternative data  
+
+This enables **real‑time multi‑sector fusion**.
+
+---
+
+## 🚀 Autonomous Swarmer Agents
 
 VolatiAI uses a distributed swarm of autonomous agents, each specializing in a specific intelligence domain:
 
@@ -33,12 +62,14 @@ VolatiAI uses a distributed swarm of autonomous agents, each specializing in a s
 - **Developer Agent** — GitHub activity, repo velocity, DSI  
 - **Depth Agent** — multi‑exchange orderbook analysis  
 - **Truth Agent** — RPC consistency scoring across chains  
+- **Sector Agents** — 50+ sectors via 1000+ APIs  
+- **Fallback Agents** — offline mode using cached snapshots  
 
-These agents operate independently, then converge through a **fusion layer** to produce unified intelligence snapshots.
+Agents operate independently, then converge through a **fusion layer**.
 
 ---
 
-## How VolatiAI works
+## 🧠 How VolatiAI Works
 
 ```text
 ╔══════════════════════════════════════╗
@@ -48,6 +79,7 @@ These agents operate independently, then converge through a **fusion layer** to 
 ║  • Developer Agent                   ║
 ║  • Depth Agent                       ║
 ║  • Truth Agent                       ║
+║  • 50+ Sector Agents (1000+ APIs)    ║
 ╚═══════════════╦══════════════════════╝
                 │
                 ▼
@@ -58,6 +90,7 @@ These agents operate independently, then converge through a **fusion layer** to 
 ║  • Developer Sentiment Index (DSI)   ║
 ║  • Depth Stress Score                ║
 ║  • RPC Truth Score                   ║
+║  • Cross‑sector API fusion           ║
 ╚═══════════════╦══════════════════════╝
                 │
                 ▼
@@ -75,30 +108,39 @@ These agents operate independently, then converge through a **fusion layer** to 
 ║  • Whale Pressure                    ║
 ║  • Spoofing Probability              ║
 ║  • Chain Truth Divergence            ║
-╚═══════════════╦══════════════════════╝
-                │
-                ▼
-╔══════════════════════════════════════╗
-║             Dashboards               ║
-║  • Unified HTML dashboard            ║
-║  • GitHub Pages hosting              ║
+║  • Sector Growth Signals             ║
 ╚══════════════════════════════════════╝
-Intelligence layer
+
+
+📈 Intelligence Layer
 VolatiAI builds a multi‑signal intelligence engine on top of raw data:
 
-Trend Acceleration Engine  
-Detects early momentum shifts across volatility, sentiment, and developer activity.
+Trend Acceleration Engine
+Detects early momentum shifts across volatility, sentiment, developer activity, and sector signals.
 
-Narrative Timeline Engine  
+Narrative Timeline Engine
 Tracks emerging and decaying narratives across social + developer ecosystems.
 
-Microstructure Engine  
+Microstructure Engine
 Analyzes orderbook depth to estimate whale pressure, spoofing probability, and liquidity stress.
 
-RPC Truth Engine  
+RPC Truth Engine
 Cross‑checks multiple RPC providers to compute a chain‑level consistency score.
 
-Developer Sentiment Index (DSI)
+Sector Intelligence Engine
+Uses 1000+ APIs to detect:
+
+Ecosystem growth
+
+DePIN expansion
+
+AI adoption
+
+Infrastructure stress
+
+Macro‑crypto correlations
+
+📊 Developer Sentiment Index (DSI)
 A 0–100 score measuring:
 
 Stars
@@ -123,7 +165,7 @@ AI/DePIN narrative formation
 
 Pre‑market hype cycles
 
-Outputs
+📦 Outputs
 VolatiAI produces a single unified output format:
 
 public/intel.json — machine‑readable intelligence snapshot
@@ -139,13 +181,13 @@ No segmentation.
 No pricing.
 No corporate structure.
 
-Run locally
+🖥️ Run Locally
 bash
 pip install -r requirements.txt
 python -m src.main
 This runs the full autonomous swarmer engine with unified outputs.
 
-Dashboards
+📊 Dashboards
 Dashboards are automatically regenerated via GitHub Actions and published to GitHub Pages.
 
 They include:
@@ -164,8 +206,14 @@ Spoofing probability
 
 RPC truth score
 
-Architecture
+Sector growth indicators
+
+🧩 Architecture Summary
 Autonomous swarmer agents
+
+1000+ APIs across 50+ sectors
+
+Cloudflare Serverless Workers
 
 Scoring + fusion layer
 
@@ -177,7 +225,7 @@ GitHub Pages hosting
 
 Optional Telegram alerts
 
-What VolatiAI detects
+🔍 What VolatiAI Detects
 Emerging narratives
 
 Trend acceleration
@@ -186,29 +234,34 @@ Whale pressure
 
 Spoofing probability
 
-
----
-
-### Legal & Privacy Notice
-
-VolatiAI is a downloadable software tool.  
-It does not collect, store, or transmit personal data.  
-It does not provide hosted services, user accounts, subscriptions, or access tiers.
-
-Activation keys (VAI‑LIC) are used solely to verify legitimate purchase from
-authorized platforms. They do not represent a subscription, financial asset,
-token, or entitlement to online services.
-
-VolatiAI operates fully offline and locally.  
-No analytics, telemetry, or usage tracking is performed.
-
-By using VolatiAI, you agree to the minimal Activation Terms, Privacy Note, and
-License Agreement included in the repository.
-
-
-
-
-
 Chain data divergence
 
 Developer ecosystem growth
+
+Sector‑level growth signals
+
+Multi‑chain truth inconsistencies
+
+⚖️ Legal & Privacy Notice
+VolatiAI is a downloadable software tool.
+It does not collect, store, or transmit personal data.
+It does not provide hosted services, user accounts, subscriptions, or access tiers.
+
+Activation keys (VAI‑LIC) verify legitimate purchase from authorized platforms.
+They are not subscriptions, tokens, financial assets, or entitlements to online services.
+
+VolatiAI operates fully offline and locally:
+
+No analytics
+
+No telemetry
+
+No usage tracking
+
+By using VolatiAI, you agree to the minimal Activation Terms, Privacy Note, and License Agreement included in the repository.
+
+
+
+
+
+
