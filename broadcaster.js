@@ -6,11 +6,22 @@ import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
 import crypto from "crypto";
 
+import {
+  swarmConfig,
+  routingConfig,
+  nostrConfig
+} from "./config.js";
+
+import { applyPersona } from "./persona.js";
+import { antiDetectionPause, shouldSkipPost, throttlePlatform } from "./antiDetection.js";
+import { formatForPlatform } from "./contentFormatter.js";
+import { shouldThisNodePost } from "./swarmMesh.js";
+
 // --------------------------------------
 //  RELAY HEALTH SCORING
 // --------------------------------------
 
-const relayHealth = {}; // { relayUrl: score }
+const relayHealth = {};
 
 function scoreRelay(relay, delta) {
   relayHealth[relay] = Math.max(-5, Math.min(5, (relayHealth[relay] ?? 0) + delta));
@@ -24,11 +35,12 @@ function getRelayScore(relay) {
 //  SWARM MEMORY (SERVERLESS)
 // --------------------------------------
 
-const swarmMemory = []; // last 50 event hashes
+const swarmMemory = [];
 
 function rememberHash(hash) {
   swarmMemory.push(hash);
-  if (swarmMemory.length > 50) swarmMemory.shift();
+  if (swarmMemory.length > swarmConfig.memoryLimitBroadcast)
+    swarmMemory.shift();
 }
 
 function hasSeenHash(hash) {
@@ -49,18 +61,22 @@ function swarmHash(message, EVENT_ID) {
 function swarmBackoff(hash) {
   const num = parseInt(hash.slice(0, 8), 16);
   const normalized = num / 0xffffffff;
-  const threshold = 0.30; // allow ~30% through
-  return normalized < threshold;
+  return normalized < swarmConfig.backoffScheduler;
+}
+
+function shouldBroadcast(hash) {
+  const suffixes = swarmConfig.coordinationSuffixes;
+  const lastChar = hash.slice(-1);
+  return suffixes.includes(lastChar);
 }
 
 // --------------------------------------
-//  SWARM-WIDE ANOMALY DETECTION
+//  ANOMALY DETECTION
 // --------------------------------------
 
 function isAnomalous(message) {
   const lower = message.toLowerCase();
-  const keywords = ["spike", "crash", "exploit", "halt", "liquidation", "rug", "attack"];
-  return keywords.some(k => lower.includes(k));
+  return routingConfig.depinPriority.some(k => lower.includes(k));
 }
 
 // --------------------------------------
@@ -70,7 +86,6 @@ function isAnomalous(message) {
 async function chainWatcher(message, EVENT_ID) {
   if (!isAnomalous(message)) return;
   console.log(`Chain watcher triggered for EVENT_ID=${EVENT_ID}: ${message}`);
-  // Wire to on-chain APIs/indexers later.
 }
 
 // --------------------------------------
@@ -83,8 +98,9 @@ function preferredPlatformsFor(message, platforms) {
 
   if (!depinKeywords.some(k => lower.includes(k))) return platforms;
 
-  const priority = ["nostr", "mastodon", "bluesky"];
+  const priority = routingConfig.depinPriority;
   const rest = platforms.filter(p => !priority.includes(p));
+
   return [...priority.filter(p => platforms.includes(p)), ...rest];
 }
 
@@ -137,10 +153,7 @@ async function mastodon(message) {
 async function nostr(message, EVENT_ID) {
   if (!process.env.NOSTR_PRIVATE_KEY) return;
 
-  const relays = (process.env.NOSTR_RELAYS || "")
-    .split(",")
-    .map(r => r.trim())
-    .filter(Boolean);
+  const relays = nostrConfig.relays;
 
   if (relays.length === 0) {
     console.log("No Nostr relays configured.");
@@ -149,8 +162,8 @@ async function nostr(message, EVENT_ID) {
 
   relays.sort((a, b) => getRelayScore(b) - getRelayScore(a));
 
-  const MIN_GOOD_RELAYS = 3;
-  const MAX_TOTAL_RELAYS = 6;
+  const MIN_GOOD_RELAYS = nostrConfig.minGoodRelays;
+  const MAX_TOTAL_RELAYS = nostrConfig.maxTotalRelays;
 
   let selectedRelays = relays.slice(0, MAX_TOTAL_RELAYS);
   const goodRelays = selectedRelays.filter(r => getRelayScore(r) >= 0);
@@ -212,17 +225,28 @@ export async function broadcast(message, platforms) {
 
   const hash = swarmHash(message, EVENT_ID);
 
+  // --- Swarm memory dedupe ---
   if (hasSeenHash(hash)) {
     console.log(`Swarm memory: duplicate detected, skipping (hash=${hash})`);
     return;
   }
 
-  if (!hash.endsWith("0")) {
+  // --- Swarm coordination ---
+  if (!shouldBroadcast(hash)) {
     console.log(`Swarm coordination: skipping broadcast (hash=${hash})`);
     rememberHash(hash);
     return;
   }
 
+  // --- Swarm mesh coordination ---
+  const nodeId = process.env.NODE_ID || "node-1";
+  if (!shouldThisNodePost(nodeId, hash)) {
+    console.log(`SwarmMesh: another node will post this.`);
+    rememberHash(hash);
+    return;
+  }
+
+  // --- Backoff ---
   if (!swarmBackoff(hash)) {
     console.log(`Swarm backoff: throttling broadcast (hash=${hash})`);
     rememberHash(hash);
@@ -231,23 +255,39 @@ export async function broadcast(message, platforms) {
 
   rememberHash(hash);
 
-  if (isAnomalous(message)) {
-    console.log("Swarm anomaly detected in message.");
-    await chainWatcher(message, EVENT_ID);
+  // --- Anti-detection random skip ---
+  if (shouldSkipPost()) {
+    console.log("AntiDetection: random skip triggered.");
+    return;
   }
 
-  const routedPlatforms = preferredPlatformsFor(message, platforms);
+  // --- Anti-detection pause ---
+  await antiDetectionPause();
+
+  // --- Persona layer ---
+  const personaMessage = applyPersona("default", message);
+
+  // --- DePIN routing ---
+  const routedPlatforms = preferredPlatformsFor(personaMessage, platforms);
 
   console.log(`Broadcasting… (EVENT_ID: ${EVENT_ID})`);
-  console.log(`Message: ${message}`);
+  console.log(`Message: ${personaMessage}`);
   console.log(`Platforms: ${routedPlatforms.join(", ")}`);
 
-  if (routedPlatforms.includes("slack")) await slack(message);
-  if (routedPlatforms.includes("discord")) await discord(message);
-  if (routedPlatforms.includes("telegram")) await telegram(message);
-  if (routedPlatforms.includes("bluesky")) await bluesky(message);
-  if (routedPlatforms.includes("mastodon")) await mastodon(message);
-  if (routedPlatforms.includes("nostr")) await nostr(message, EVENT_ID);
+  // --- Platform formatting + throttling ---
+  for (const platform of routedPlatforms) {
+    const formatted = formatForPlatform(platform, { summary: personaMessage }, 0);
+    const throttle = throttlePlatform(platform);
+
+    await new Promise(r => setTimeout(r, throttle * 500));
+
+    if (platform === "slack") await slack(formatted);
+    if (platform === "discord") await discord(formatted);
+    if (platform === "telegram") await telegram(formatted);
+    if (platform === "bluesky") await bluesky(formatted);
+    if (platform === "mastodon") await mastodon(formatted);
+    if (platform === "nostr") await nostr(formatted, EVENT_ID);
+  }
 
   console.log("Broadcast complete.");
 }
