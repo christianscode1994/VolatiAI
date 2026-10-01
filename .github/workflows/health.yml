@@ -1,0 +1,33 @@
+name: VolatiAI Health Checker
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes
+  workflow_dispatch:
+
+jobs:
+  run-health-checker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run health checker
+        run: node local_runner/health.js
+
+      - name: Commit health results
+        run: |
+          git config user.name "volati-bot"
+          git config user.email "bot@example.com"
+          git add public/health.json public/health.html
+          git commit -m "Update VolatiAI health dashboard" || echo "No changes"
+          git push
