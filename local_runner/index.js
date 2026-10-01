@@ -9,6 +9,7 @@ import fetch from "node-fetch";
 import { fuseSignals } from "./fusion.js";
 import { intelligenceModel } from "./intelligence.js";
 import { writeHtml } from "./html.js";
+import { runHealthCheck } from "./health.js";
 
 // Import bots
 import { postToSlack } from "./bots/slack.js";
@@ -149,6 +150,10 @@ async function run() {
 
   console.log("Writing HTML...");
   writeHtml(intel, sectorsRaw);
+
+  // ⭐ NEW: Health Checker
+  console.log("Running health checker...");
+  await runHealthCheck(sectorUrls);
 
   const msg = formatMessage(intel);
 
