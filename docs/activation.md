@@ -153,6 +153,152 @@ VolatiAI remains a tool, not a service.
 
 Activation keys are stored locally in:
 
+config/activation.json
+
+
+
+This file contains:
+
+```json
+{
+  "activated": true,
+  "license": "VAI-LIC-XXXX-XXXX-XXXX"
+}
+
+This file:
+
+stays on the user’s machine
+
+is never uploaded
+
+is never synced
+
+is never transmitted
+
+is only used for local unlock
+
+🔄 Activation Reset Instructions
+If a user wants to reset activation:
+
+Delete the file:
+
+Kod
+config/activation.json
+Restart VolatiAI
+
+Enter a new activation key
+
+Resetting activation never contacts a server and does not require internet access.
+
+
+📴 Offline Mode Explanation
+VolatiAI supports full offline mode:
+
+activation works offline
+
+agents run offline (local subset)
+
+intelligence layer runs offline
+
+dashboards work offline
+
+no cloud calls are required
+
+Offline mode is ideal for:
+
+air‑gapped machines
+
+private research environments
+
+secure networks
+
+personal local setups
+
+VolatiAI remains fully functional without internet access.
+
+🛠️ Activation Troubleshooting
+Invalid Key
+Check for typos
+
+Ensure correct format
+
+Ensure correct checksum
+
+Activation Not Persisting
+Ensure config/activation.json is writable
+
+Ensure the directory exists
+
+Ensure no antivirus is blocking local writes
+
+Key Not Recognized
+Delete config/activation.json and re‑enter the key
+
+Offline Validation Failure
+Ensure the key is complete
+
+Ensure the key matches the expected offline signature
+
+🔐 Activation Security Notes
+VolatiAI’s activation system is intentionally minimal:
+
+keys may be hashed locally
+
+keys may be encrypted locally
+
+no remote validation
+
+no telemetry
+
+no identity
+
+no tracking
+
+Security is focused on local integrity, not cloud enforcement.
+
+VolatiAI is a tool, not a service.
+
+❓ Activation FAQ
+Do I need internet to activate VolatiAI?
+No. Activation is fully offline.
+
+Does VolatiAI track or log my activation?
+No. Nothing is transmitted or logged.
+
+Can I move my activation to another machine?
+Yes — simply copy your activation key.
+
+Can activation break if I reinstall VolatiAI?
+Only if you delete config/activation.json.
+Re‑enter your key to restore activation.
+
+Does activation create an account?
+No. VolatiAI has no accounts, no identity, no login.
+
+Is activation a subscription?
+No. It is a one‑time local unlock.
+
+🧭 Summary
+VolatiAI’s activation system is intentionally:
+
+offline
+
+local
+
+serverless
+
+stateless
+
+anti‑compliance
+
+lightweight
+
+non‑tracking
+
+Activation keys verify legitimacy without creating accounts, subscriptions, telemetry, or compliance obligations.
+
+VolatiAI remains a tool, not a service — free from corporate gravity, infrastructure drag, and regulatory overhead.
+
 
 
 
