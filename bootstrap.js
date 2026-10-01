@@ -20,7 +20,9 @@ function printBanner() {
  ╚████╔╝ ╚██████╔╝███████╗██║  ██║   ██║   ██║███████╗
   ╚═══╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝╚══════╝
 
-        VolatiAI — Serverless Swarm Intelligence Node
+
+                 VolatiAI — Serverless Swarm Intelligence Node
+
   `);
 }
 
