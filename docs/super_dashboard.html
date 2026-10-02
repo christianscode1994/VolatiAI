@@ -157,9 +157,7 @@
       <div class="panel">
         <h2>Global Intelligence & Reliability</h2>
         <p>Latest intelligence snapshot + global reliability score.</p>
-        <div class="metrics-grid" id="global-metrics">
-          <!-- Filled by JS -->
-        </div>
+        <div class="metrics-grid" id="global-metrics"></div>
         <pre id="intel-json"></pre>
       </div>
 
@@ -277,8 +275,6 @@
         `).join("");
 
         intelJsonEl.textContent = JSON.stringify(latest, null, 2);
-      } else {
-        metricsEl.innerHTML = `<p style="color: var(--muted);">Missing latest.json or reliability.json.</p>`;
       }
 
       // Sector reliability
@@ -305,8 +301,6 @@
             </tr>
           `;
         }).join("");
-      } else {
-        sectorSummaryEl.innerHTML = `<p style="color: var(--muted);">No sectorReliability data.</p>`;
       }
 
       // Worker table
@@ -325,17 +319,15 @@
             </tr>
           `;
         }).join("");
-      } else {
-        workerTableBody.innerHTML = `<tr><td colspan="6" style="color: var(--muted);">No workers data.</td></tr>`;
       }
 
-      // Trend chart (simple canvas line chart)
+      // Trend chart
       const trendCanvas = document.getElementById("trend-canvas");
       const trendMeta = document.getElementById("trend-meta");
 
       if (Array.isArray(history) && history.length > 1) {
         const ctx = trendCanvas.getContext("2d");
-        const points = history.slice(-50); // last N points
+        const points = history.slice(-50);
         const values = points.map(p => p.avgReliability);
         const times = points.map(p => p.timestamp);
         const minVal = Math.min(...values);
@@ -349,13 +341,6 @@
 
         ctx.fillStyle = "#020617";
         ctx.fillRect(0, 0, w, h);
-
-        ctx.strokeStyle = "#1f2937";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, h - 20);
-        ctx.lineTo(w, h - 20);
-        ctx.stroke();
 
         ctx.strokeStyle = "#22c55e";
         ctx.lineWidth = 2;
@@ -372,7 +357,7 @@
         trendMeta.textContent =
           `Points: ${points.length} · Min: ${minVal.toFixed(2)} · Max: ${maxVal.toFixed(2)} · Latest: ${values[values.length - 1].toFixed(2)}`;
       } else {
-        trendMeta.textContent = "Not enough history in reliability_history.json to draw trend.";
+        trendMeta.textContent = "Not enough history to draw trend.";
       }
     }
 
