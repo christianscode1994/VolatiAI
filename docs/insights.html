@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VolatiAI · Insights & Anomalies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    p { font-size: 13px; color: #9ca3af; }
+    ul { font-size: 12px; }
+    li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <h1>VolatiAI Insights</h1>
+  <p>Simple anomaly detection from <code>reliability_history.json</code> and <code>latest.json</code>.</p>
+
+  <h2>Detected Anomalies</h2>
+  <ul id="anomalies"></ul>
+
+  <script>
+    async function loadInsights() {
+      const anomaliesEl = document.getElementById("anomalies");
+      anomaliesEl.innerHTML = "";
+
+      try {
+        const [historyRes, latestRes] = await Promise.all([
+          fetch("reliability_history.json"),
+          fetch("latest.json")
+        ]);
+
+        const history = await historyRes.json();
+        const latest = await latestRes.json();
+
+        const items = [];
+
+        if (Array.isArray(history) && history.length > 5) {
+          const values = history.map(h => h.avgReliability);
+          const mean = values.reduce((a, b) => a + b, 0) / values.length;
+          const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
+          const std = Math.sqrt(variance);
+          const last = values[values.length - 1];
+
+          if (Math.abs(last - mean) > 2 * std) {
+            items.push(`Global reliability spike: ${last.toFixed(2)} (mean ${mean.toFixed(2)}, std ${std.toFixed(2)})`);
+          }
+        }
+
+        if (latest.spoofing_probability > 0.7) {
+          items.push(`High spoofing probability: ${latest.spoofing_probability.toFixed(3)}`);
+        }
+        if (latest.whale_pressure > 0.7) {
+          items.push(`Elevated whale pressure: ${latest.whale_pressure.toFixed(3)}`);
+        }
+        if (latest.trend_acceleration > 0.7) {
+          items.push(`Strong trend acceleration: ${latest.trend_acceleration.toFixed(3)}`);
+        }
+
+        if (!items.length) {
+          anomaliesEl.innerHTML = "<li>No anomalies detected.</li>";
+        } else {
+          anomaliesEl.innerHTML = items.map(a => `<li>${a}</li>`).join("");
+        }
+      } catch (e) {
+        anomaliesEl.innerHTML = "<li>Failed to load insights data.</li>";
+      }
+    }
+
+    loadInsights();
+    setInterval(loadInsights, 60000);
+  </script>
+</body>
+</html>
