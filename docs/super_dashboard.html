@@ -286,6 +286,13 @@
         <ul id="narrative-list"></ul>
       </div>
     </div>
+
+    <div class="panel">
+  <h2>Global Heatmap</h2>
+  <p>Geographic reliability and latency overview from <code>geo.json</code>.</p>
+  <canvas id="heatmap-canvas"></canvas>
+</div>
+    
   </main>
 
   <script>
@@ -597,6 +604,53 @@
         narrativeEl.innerHTML = "<li>No narrative data available.</li>";
       }
     }
+
+
+    const geo = await safeFetch("geo.json");
+
+const heatmapCanvas = document.getElementById("heatmap-canvas");
+const hctx = heatmapCanvas.getContext("2d");
+
+function drawHeatmap(geo) {
+  const w = heatmapCanvas.width;
+  const h = heatmapCanvas.height;
+
+  hctx.clearRect(0, 0, w, h);
+  hctx.fillStyle = "#020617";
+  hctx.fillRect(0, 0, w, h);
+
+  // Simple projection: region → approximate coordinates
+  const regions = {
+    "North America": { x: 0.25, y: 0.35 },
+    "South America": { x: 0.30, y: 0.70 },
+    "Europe":        { x: 0.55, y: 0.30 },
+    "Africa":        { x: 0.55, y: 0.60 },
+    "Asia":          { x: 0.75, y: 0.40 },
+    "Oceania":       { x: 0.85, y: 0.75 }
+  };
+
+  geo.forEach(w => {
+    const region = regions[w.region] || { x: 0.5, y: 0.5 };
+    const x = region.x * w;
+    const y = region.y * h;
+
+    const reliability = w.reliability;
+    const color =
+      reliability >= 0.8 ? "#22c55e" :
+      reliability >= 0.5 ? "#eab308" :
+      "#ef4444";
+
+    hctx.fillStyle = color;
+    hctx.beginPath();
+    hctx.arc(x, y, 8, 0, Math.PI * 2);
+    hctx.fill();
+  });
+}
+
+if (Array.isArray(geo)) {
+  drawHeatmap(geo);
+}
+    
 
     let REFRESH_INTERVAL = 30000;
     setInterval(initDashboard, REFRESH_INTERVAL);
