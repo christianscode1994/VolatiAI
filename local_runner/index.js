@@ -11,7 +11,11 @@ import { intelligenceModel } from "./intelligence.js";
 import { writeHtml } from "./html.js";
 import { runHealthCheck } from "./health.js";
 import { runReliabilityAnalysis } from "./reliability.js";
+import { runSectorReliability } from "./sector_reliability.js";
+
+// Import alerts
 import { sendAlerts } from "./alerts.js";
+import { sendSectorAlerts } from "./alerts.js";
 
 // Import bots
 import { postToSlack } from "./bots/slack.js";
@@ -161,9 +165,16 @@ async function run() {
   console.log("Running reliability scoring...");
   await runReliabilityAnalysis();
 
-  // ⭐ NEW: Slack Alerts
+  // ⭐ NEW: Sector Reliability Breakdown
+  console.log("Running sector reliability breakdown...");
+  await runSectorReliability();
+
+  // ⭐ NEW: Alerts
   console.log("Sending alerts...");
   await sendAlerts();
+
+  console.log("Sending sector alerts...");
+  await sendSectorAlerts();
 
   const msg = formatMessage(intel);
 
