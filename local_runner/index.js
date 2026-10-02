@@ -12,13 +12,9 @@ import { writeHtml } from "./html.js";
 import { runHealthCheck } from "./health.js";
 import { runReliabilityAnalysis } from "./reliability.js";
 import { runSectorReliability } from "./sector_reliability.js";
-import { updateSectorTrends } from "./sector_trends.js";
-import { generateLatencyHeatmap } from "./latency_heatmap.js";
-import { generatePublicDashboard } from "./public_dashboard.js";
 
 // Import alerts
-import { sendAlerts } from "./alerts.js";
-import { sendSectorAlerts } from "./alerts.js";
+import { sendAlerts, sendSectorAlerts } from "./alerts.js";
 
 // Import bots
 import { postToSlack } from "./bots/slack.js";
@@ -114,7 +110,7 @@ async function fetchAllSectors() {
   );
 }
 
-// 5. Write snapshots to /public
+// 5. Write snapshots to /public (GitHub Pages / static dashboard)
 function writeSnapshots(intel, sectorsRaw) {
   const outDir = path.join(process.cwd(), "public");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
@@ -157,34 +153,22 @@ async function run() {
   console.log("Writing snapshots...");
   writeSnapshots(intel, sectorsRaw);
 
-  console.log("Writing HTML...");
+  console.log("Writing HTML (intel + health + reliability dashboards)...");
   writeHtml(intel, sectorsRaw);
 
   // ⭐ NEW: Health Checker
   console.log("Running health checker...");
   await runHealthCheck(sectorUrls);
 
-  // ⭐ NEW: Reliability Scoring
+  // ⭐ NEW: Global Reliability Scoring
   console.log("Running reliability scoring...");
   await runReliabilityAnalysis();
 
-  // ⭐ NEW: Sector Reliability Breakdown
+  // ⭐ NEW: Sector Reliability Breakdown + Trend
   console.log("Running sector reliability breakdown...");
-  const sectorData = await runSectorReliability();
+  await runSectorReliability();
 
-  // ⭐ NEW: Sector Trends (24h / 7d)
-  console.log("Updating sector trends...");
-  await updateSectorTrends(sectorData);
-
-  // ⭐ NEW: Latency Heatmap
-  console.log("Generating latency heatmap...");
-  await generateLatencyHeatmap();
-
-  // ⭐ NEW: Public Dashboard
-  console.log("Generating public dashboard...");
-  await generatePublicDashboard();
-
-  // ⭐ NEW: Alerts
+  // ⭐ NEW: Alerts (Workers + Sectors)
   console.log("Sending alerts...");
   await sendAlerts();
 
