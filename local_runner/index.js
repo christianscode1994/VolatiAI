@@ -10,6 +10,8 @@ import { fuseSignals } from "./fusion.js";
 import { intelligenceModel } from "./intelligence.js";
 import { writeHtml } from "./html.js";
 import { runHealthCheck } from "./health.js";
+import { runReliabilityAnalysis } from "./reliability.js";
+import { sendAlerts } from "./alerts.js";
 
 // Import bots
 import { postToSlack } from "./bots/slack.js";
@@ -154,6 +156,14 @@ async function run() {
   // ⭐ NEW: Health Checker
   console.log("Running health checker...");
   await runHealthCheck(sectorUrls);
+
+  // ⭐ NEW: Reliability Scoring
+  console.log("Running reliability scoring...");
+  await runReliabilityAnalysis();
+
+  // ⭐ NEW: Slack Alerts
+  console.log("Sending alerts...");
+  await sendAlerts();
 
   const msg = formatMessage(intel);
 
