@@ -3,6 +3,29 @@
 import fs from "fs";
 import path from "path";
 
+// GLOBAL RELIABILITY FORMULA
+export function computeGlobalReliability(workers) {
+  const total = workers.length;
+
+  const okCount = workers.filter(w => w.status === "OK").length;
+  const jsonCount = workers.filter(w => w.jsonValid).length;
+
+  const avgLatency =
+    workers.reduce((a, b) => a + b.latency_ms, 0) / total;
+
+  const latencyThreshold = 2000; // 2 seconds
+  const latencyScore = Math.max(0, 1 - avgLatency / latencyThreshold);
+
+  const R1 = okCount / total;        // uptime reliability
+  const R2 = jsonCount / total;      // JSON reliability
+  const R3 = latencyScore;           // latency reliability
+
+  const GRS = 0.6 * R1 + 0.25 * R2 + 0.15 * R3;
+
+  return Number(GRS.toFixed(3));
+}
+
+// MAIN RELIABILITY ANALYSIS
 export function runReliabilityAnalysis() {
   const healthPath = path.join(process.cwd(), "public", "health.json");
   const intelPath = path.join(process.cwd(), "public", "intel.json");
@@ -31,12 +54,11 @@ export function runReliabilityAnalysis() {
     };
   });
 
-  const avgReliability =
-    workers.reduce((a, b) => a + b.reliability, 0) / workers.length;
+  const globalReliability = computeGlobalReliability(workers);
 
   const output = {
     timestamp: Date.now(),
-    avgReliability: Number(avgReliability.toFixed(2)),
+    globalReliability,
     workers,
     intelligence: intel.intelligence
   };
@@ -45,6 +67,7 @@ export function runReliabilityAnalysis() {
   return output;
 }
 
+// WRITE OUTPUT FILES
 function writeReliabilityFiles(data) {
   const outDir = path.join(process.cwd(), "public");
 
@@ -74,7 +97,7 @@ function writeReliabilityFiles(data) {
   <h1>VolatiAI Reliability Dashboard</h1>
   <p>Updated: ${new Date(data.timestamp).toISOString()}</p>
 
-  <h2>Global Reliability Score: ${data.avgReliability}</h2>
+  <h2>Global Reliability Score: ${data.globalReliability}</h2>
 
   <h2>Intelligence Snapshot</h2>
   <pre>${JSON.stringify(data.intelligence, null, 2)}</pre>
