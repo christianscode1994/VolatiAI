@@ -12,6 +12,9 @@ import { writeHtml } from "./html.js";
 import { runHealthCheck } from "./health.js";
 import { runReliabilityAnalysis } from "./reliability.js";
 import { runSectorReliability } from "./sector_reliability.js";
+import { updateSectorTrends } from "./sector_trends.js";
+import { generateLatencyHeatmap } from "./latency_heatmap.js";
+import { generatePublicDashboard } from "./public_dashboard.js";
 
 // Import alerts
 import { sendAlerts } from "./alerts.js";
@@ -167,7 +170,19 @@ async function run() {
 
   // ⭐ NEW: Sector Reliability Breakdown
   console.log("Running sector reliability breakdown...");
-  await runSectorReliability();
+  const sectorData = await runSectorReliability();
+
+  // ⭐ NEW: Sector Trends (24h / 7d)
+  console.log("Updating sector trends...");
+  await updateSectorTrends(sectorData);
+
+  // ⭐ NEW: Latency Heatmap
+  console.log("Generating latency heatmap...");
+  await generateLatencyHeatmap();
+
+  // ⭐ NEW: Public Dashboard
+  console.log("Generating public dashboard...");
+  await generatePublicDashboard();
 
   // ⭐ NEW: Alerts
   console.log("Sending alerts...");
