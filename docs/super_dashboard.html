@@ -272,7 +272,18 @@
         <ul id="anomalies"></ul>
       </div>
     </div>
+
+    <div class="panel">
+  <h2>Autonomous Alerts</h2>
+  <p>Generated from latest, reliability history, and uptime history.</p>
+  <ul id="alerts-list"></ul>
+</div>
+
+
+    
   </main>
+
+  
 
   <script>
     async function safeFetch(path) {
@@ -534,6 +545,23 @@
         anomaliesEl.innerHTML = "<li>Failed to compute anomalies.</li>";
       }
     }
+
+    const alerts = await safeFetch("alerts.json");
+
+const alertsList = document.getElementById("alerts-list");
+if (Array.isArray(alerts) && alerts.length) {
+  alertsList.innerHTML = alerts.map(a => `
+    <li>
+      <strong>[${a.severity.toUpperCase()}]</strong> ${a.message}
+      <br /><span style="font-size:11px;color:var(--muted);">
+        signal: ${a.signal} · source: ${a.source}
+      </span>
+    </li>
+  `).join("");
+} else {
+  alertsList.innerHTML = "<li>No active alerts.</li>";
+}
+
 
     // Auto-refresh every 30s
     let REFRESH_INTERVAL = 30000;
