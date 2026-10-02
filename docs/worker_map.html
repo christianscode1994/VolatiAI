@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VolatiAI · Live Worker Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    p { font-size: 13px; color: #9ca3af; }
+    .map {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .card {
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      background: #0b1120;
+      padding: 10px;
+      font-size: 12px;
+    }
+    .url { font-size: 11px; color: #9ca3af; word-break: break-all; }
+    .status-ok { color: #22c55e; }
+    .status-bad { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <h1>Live Worker Map</h1>
+  <p>Visual overview of all sector Workers from <code>reliability.json</code>.</p>
+
+  <div id="map" class="map"></div>
+
+  <script>
+    async function loadMap() {
+      try {
+        const res = await fetch("reliability.json");
+        const data = await res.json();
+        const workers = data.workers || [];
+
+        const map = document.getElementById("map");
+        map.innerHTML = workers.map(w => {
+          const ok = w.status === "OK" && w.jsonValid && w.latency_ms < 500;
+          return `
+            <div class="card">
+              <div><strong>${w.sector}</strong></div>
+              <div class="url">${w.url}</div>
+              <div>
+                Status:
+                <span class="${ok ? "status-ok" : "status-bad"}">
+                  ${w.status} · ${w.jsonValid ? "JSON OK" : "JSON ERR"} · ${w.latency_ms} ms
+                </span>
+              </div>
+              <div>Reliability: ${w.reliability}</div>
+            </div>
+          `;
+        }).join("");
+      } catch (e) {
+        document.getElementById("map").textContent = "Failed to load reliability.json";
+      }
+    }
+
+    loadMap();
+    setInterval(loadMap, 30000);
+  </script>
+</body>
+</html>
