@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VolatiAI · Worker Uptime Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    p { font-size: 13px; color: #9ca3af; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 11px;
+    }
+    th, td {
+      border: 1px solid #111827;
+      padding: 6px 5px;
+      text-align: left;
+    }
+    th { background: #0b1120; }
+  </style>
+</head>
+<body>
+  <h1>Worker Uptime Tracker</h1>
+  <p>Aggregated uptime percentages from <code>uptime_history.json</code>.</p>
+
+  <table id="uptime-table">
+    <thead>
+      <tr>
+        <th>Worker</th>
+        <th>Sector</th>
+        <th>Uptime (%)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadUptime() {
+      try {
+        const res = await fetch("uptime_history.json");
+        const history = await res.json(); // [{timestamp, workers:[{url,sector,up}]}, ...]
+
+        const map = {};
+        history.forEach(entry => {
+          (entry.workers || []).forEach(w => {
+            if (!map[w.url]) {
+              map[w.url] = { url: w.url, sector: w.sector, upSamples: 0, totalSamples: 0 };
+            }
+            map[w.url].totalSamples += 1;
+            if (w.up) map[w.url].upSamples += 1;
+          });
+        });
+
+        const rows = Object.values(map).map(w => {
+          const uptime = w.totalSamples ? (w.upSamples / w.totalSamples) * 100 : 0;
+          return `
+            <tr>
+              <td>${w.url}</td>
+              <td>${w.sector}</td>
+              <td>${uptime.toFixed(1)}</td>
+            </tr>
+          `;
+        }).join("");
+
+        document.querySelector("#uptime-table tbody").innerHTML = rows;
+      } catch (e) {
+        document.querySelector("#uptime-table tbody").innerHTML =
+          `<tr><td colspan="3">Failed to load uptime_history.json</td></tr>`;
+      }
+    }
+
+    loadUptime();
+    setInterval(loadUptime, 60000);
+  </script>
+</body>
+</html>
