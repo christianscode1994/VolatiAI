@@ -228,7 +228,6 @@
       const reliability = await safeFetch("reliability.json");
       const history = await safeFetch("reliability_history.json");
 
-      // Global metrics
       const metricsEl = document.getElementById("global-metrics");
       const intelJsonEl = document.getElementById("intel-json");
 
@@ -277,7 +276,6 @@
         intelJsonEl.textContent = JSON.stringify(latest, null, 2);
       }
 
-      // Sector reliability
       const sectorSummaryEl = document.getElementById("sector-summary");
       const sectorTableBody = document.querySelector("#sector-table tbody");
 
@@ -303,7 +301,6 @@
         }).join("");
       }
 
-      // Worker table
       const workerTableBody = document.querySelector("#worker-table tbody");
       if (reliability && Array.isArray(reliability.workers)) {
         workerTableBody.innerHTML = reliability.workers.map(w => {
@@ -321,7 +318,6 @@
         }).join("");
       }
 
-      // Trend chart
       const trendCanvas = document.getElementById("trend-canvas");
       const trendMeta = document.getElementById("trend-meta");
 
