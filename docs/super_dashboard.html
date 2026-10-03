@@ -331,7 +331,40 @@
   <canvas id="sector-flow-canvas"></canvas>
 </div>
 
-    
+
+
+    <div class="panel">
+  <h2>Unified Legend & Controls</h2>
+  <p>Controls for Global Heatmap and Sector Flow Engine.</p>
+
+  <div id="legend">
+    <div><strong>Reliability Colors:</strong></div>
+    <div style="margin-top:6px;">
+      <span style="color:#22c55e;">●</span> High (≥ 0.8)<br>
+      <span style="color:#eab308;">●</span> Medium (0.4–0.8)<br>
+      <span style="color:#ef4444;">●</span> Low (< 0.4)
+    </div>
+
+    <div style="margin-top:12px;"><strong>Sector Colors:</strong></div>
+    <div style="margin-top:6px;">
+      <span style="color:#4f46e5;">●</span> market<br>
+      <span style="color:#22c55e;">●</span> sentiment<br>
+      <span style="color:#eab308;">●</span> developer<br>
+      <span style="color:#ef4444;">●</span> depth<br>
+      <span style="color:#14b8a6;">●</span> truth
+    </div>
+
+    <div style="margin-top:12px;"><strong>Controls:</strong></div>
+    <div style="margin-top:6px;">
+      <label><input type="checkbox" id="toggleHeatmap" checked> Show Global Heatmap</label><br>
+      <label><input type="checkbox" id="toggleFlow" checked> Show Sector Flow</label><br>
+      <label><input type="checkbox" id="toggleGlow" checked> Glow Effects</label><br>
+      <label><input type="checkbox" id="toggleCurves" checked> Curved Arrows</label><br>
+      <label><input type="range" id="animSpeed" min="0.2" max="3" step="0.1" value="1"> Animation Speed</label>
+    </div>
+  </div>
+</div>
+
     
     
     
@@ -1051,6 +1084,66 @@ function drawAnimatedSectorFlow(flows) {
 if (Array.isArray(sectorFlow)) {
   drawAnimatedSectorFlow(sectorFlow);
 }
+
+  
+    // Unified Controls
+const toggleHeatmap = document.getElementById("toggleHeatmap");
+const toggleFlow = document.getElementById("toggleFlow");
+const toggleGlow = document.getElementById("toggleGlow");
+const toggleCurves = document.getElementById("toggleCurves");
+const animSpeed = document.getElementById("animSpeed");
+
+// Global state
+let SHOW_HEATMAP = true;
+let SHOW_FLOW = true;
+let GLOW = true;
+let CURVES = true;
+let SPEED = 1.0;
+
+// Bind controls
+toggleHeatmap.onchange = () => {
+  SHOW_HEATMAP = toggleHeatmap.checked;
+  document.getElementById("heatmap-svg-container").style.display =
+    SHOW_HEATMAP ? "block" : "none";
+};
+
+toggleFlow.onchange = () => {
+  SHOW_FLOW = toggleFlow.checked;
+  document.getElementById("sector-flow-canvas").style.display =
+    SHOW_FLOW ? "block" : "none";
+};
+
+toggleGlow.onchange = () => {
+  GLOW = toggleGlow.checked;
+};
+
+toggleCurves.onchange = () => {
+  CURVES = toggleCurves.checked;
+};
+
+animSpeed.oninput = () => {
+  SPEED = parseFloat(animSpeed.value);
+};
+
+// Modify your Sector Flow animation loop
+// Replace: t += 0.01;
+// With:
+t += 0.01 * SPEED;
+
+// Modify glow usage:
+// Replace: fctx.shadowBlur = 14;
+// With:
+fctx.shadowBlur = GLOW ? 14 : 0;
+
+// Modify curved vs straight arrows:
+// Replace quadraticCurveTo with conditional:
+if (CURVES) {
+  fctx.quadraticCurveTo(cp.x, cp.y, to.x, to.y);
+} else {
+  fctx.lineTo(to.x, to.y);
+}
+
+
 
     
 
