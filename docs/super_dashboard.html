@@ -365,8 +365,66 @@
   </div>
 </div>
 
+
+    <div class="panel">
+  <h2>Unified Mini‑Map Overlay</h2>
+  <p>Combined view of workers and sector flows.</p>
+  <canvas id="unified-minimap-canvas"></canvas>
+</div>
+
+
+<div style="margin-top:8px;">
+  <label>Zoom:
+    <input type="range" id="heatmapZoom" min="0.5" max="3" step="0.1" value="1">
+  </label>
+  <label style="margin-left:12px;">Pan X:
+    <input type="range" id="heatmapPanX" min="-200" max="200" step="10" value="0">
+  </label>
+  <label style="margin-left:12px;">Pan Y:
+    <input type="range" id="heatmapPanY" min="-150" max="150" step="10" value="0">
+  </label>
+</div>
+
+
+<div class="panel">
+  <h2>Focus Sector Mode</h2>
+  <p>Dim all other sectors and highlight one across all panels.</p>
+
+  <label>
+    <strong>Select sector:</strong>
+    <select id="focusSector">
+      <option value="none">None (show all)</option>
+      <option value="market">market</option>
+      <option value="sentiment">sentiment</option>
+      <option value="developer">developer</option>
+      <option value="depth">depth</option>
+      <option value="truth">truth</option>
+    </select>
+  </label>
+</div>
     
+    <div style="margin-top:12px;"><strong>Sector Colors:</strong></div>
+<div style="margin-top:6px;">
+  <span class="sector-hover" data-sector="market" style="color:#4f46e5;cursor:pointer;">● market</span><br>
+  <span class="sector-hover" data-sector="sentiment" style="color:#22c55e;cursor:pointer;">● sentiment</span><br>
+  <span class="sector-hover" data-sector="developer" style="color:#eab308;cursor:pointer;">● developer</span><br>
+  <span class="sector-hover" data-sector="depth" style="color:#ef4444;cursor:pointer;">● depth</span><br>
+  <span class="sector-hover" data-sector="truth" style="color:#14b8a6;cursor:pointer;">● truth</span>
+</div>
+
+<div class="panel">
+  <h2>Analysis Session Recorder</h2>
+  <p>Record focus/hover interactions into a JSON analysis session.</p>
+
+  <button id="recStart">Start Recording</button>
+  <button id="recStop" disabled>Stop Recording</button>
+  <button id="recDownload" disabled>Download Session</button>
+
+  <p id="recStatus" style="margin-top:10px;color:#22c55e;"></p>
+</div>
+
     
+
     
   </main>
 
@@ -1143,8 +1201,312 @@ if (CURVES) {
   fctx.lineTo(to.x, to.y);
 }
 
+let HEATMAP_ZOOM = 1.0;
+let HEATMAP_PAN_X = 0;
+let HEATMAP_PAN_Y = 0;
+
+document.getElementById("heatmapZoom").oninput = e => {
+  HEATMAP_ZOOM = parseFloat(e.target.value);
+  createHeatmapSVG(geo);
+};
+document.getElementById("heatmapPanX").oninput = e => {
+  HEATMAP_PAN_X = parseFloat(e.target.value);
+  createHeatmapSVG(geo);
+};
+document.getElementById("heatmapPanY").oninput = e => {
+  HEATMAP_PAN_Y = parseFloat(e.target.value);
+  createHeatmapSVG(geo);
+};
+
+const { x, y } = lonLatToMercatorXY(w.lon, w.lat, width, height);
+const zx = x * HEATMAP_ZOOM + HEATMAP_PAN_X;
+const zy = y * HEATMAP_ZOOM + HEATMAP_PAN_Y;
+
+circle.setAttribute("cx", zx);
+circle.setAttribute("cy", zy);
+pulse.setAttribute("cx", zx);
+pulse.setAttribute("cy", zy);
 
 
+    let FOCUS_SECTOR = "none";
+
+document.getElementById("focusSector").onchange = e => {
+  FOCUS_SECTOR = e.target.value;
+  initDashboard(); // re-render everything with focus applied
+};
+
+const dim = (FOCUS_SECTOR !== "none" && w.sector !== FOCUS_SECTOR);
+
+circle.setAttribute("fill", dim ? "#1f2937" : color);
+circle.setAttribute("fill-opacity", dim ? "0.25" : "0.85");
+
+pulse.setAttribute("fill", dim ? "#1f2937" : color);
+pulse.setAttribute("fill-opacity", dim ? "0.10" : "0.25");
+
+
+const dim = (FOCUS_SECTOR !== "none" &&
+             f.from !== FOCUS_SECTOR &&
+             f.to !== FOCUS_SECTOR);
+
+fctx.strokeStyle = dim ? "rgba(50,50,50,0.4)" : color;
+fctx.shadowColor = dim ? "transparent" : color;
+
+    const dim = (FOCUS_SECTOR !== "none" && g.sector !== FOCUS_SECTOR);
+
+uctx.fillStyle = dim ? "rgba(80,80,80,0.4)" : color;
+uctx.shadowColor = dim ? "transparent" : color;
+
+const dim = (FOCUS_SECTOR !== "none" &&
+             f.from !== FOCUS_SECTOR &&
+             f.to !== FOCUS_SECTOR);
+
+uctx.strokeStyle = dim ? "rgba(80,80,80,0.3)" : color;
+uctx.shadowColor = dim ? "transparent" : color;
+
+const dim = (FOCUS_SECTOR !== "none" && w.sector !== FOCUS_SECTOR);
+
+return `
+  <div class="map-card" style="opacity:${dim ? 0.3 : 1};">
+    ...
+  </div>
+`;
+    
+
+const dim = (FOCUS_SECTOR !== "none" && w.sector !== FOCUS_SECTOR);
+
+return `
+  <tr class="${cls}" style="opacity:${dim ? 0.3 : 1};">
+    ...
+  </tr>
+`;
+
+
+const dim = (FOCUS_SECTOR !== "none" &&
+             !n.actors.includes(FOCUS_SECTOR));
+
+narrativeEl.style.opacity = dim ? 0.3 : 1;
+
+
+
+const dim = (FOCUS_SECTOR !== "none" &&
+             a.source !== FOCUS_SECTOR);
+
+return `
+  <li style="opacity:${dim ? 0.3 : 1};">
+    ...
+  </li>
+`;
+
+const dim = (FOCUS_SECTOR !== "none" &&
+             !a.includes(FOCUS_SECTOR));
+
+anomaliesEl.style.opacity = dim ? 0.3 : 1;
+
+    
+const dimFocus = (FOCUS_SECTOR !== "none" && w.sector !== FOCUS_SECTOR);
+const highlightHover = (HOVER_SECTOR !== "none" && w.sector === HOVER_SECTOR);
+
+const dim = dimFocus && !highlightHover;
+
+circle.setAttribute("fill", dim ? "#1f2937" : color);
+circle.setAttribute("fill-opacity", highlightHover ? "1.0" : (dim ? "0.25" : "0.85"));
+    
+    
+const involvesFocus = (FOCUS_SECTOR === "none" ||
+                       f.from === FOCUS_SECTOR || f.to === FOCUS_SECTOR);
+const involvesHover = (HOVER_SECTOR !== "none" &&
+                       (f.from === HOVER_SECTOR || f.to === HOVER_SECTOR));
+
+const dim = !involvesFocus && !involvesHover;
+const strong = involvesHover;
+
+fctx.strokeStyle = dim ? "rgba(50,50,50,0.4)" : color;
+fctx.lineWidth = (2 + strength * 4) * (strong ? 1.4 : 1.0);
+fctx.shadowColor = dim ? "transparent" : color;
+
+
+let FOCUS_SECTOR = "none";
+let PREV_FOCUS_SECTOR = "none";
+let FOCUS_TRANSITION_T = 0;
+
+document.getElementById("focusSector").onchange = e => {
+  PREV_FOCUS_SECTOR = FOCUS_SECTOR;
+  FOCUS_SECTOR = e.target.value;
+  FOCUS_TRANSITION_T = 0;
+  animateFocusTransition();
+};
+
+
+function animateFocusTransition() {
+  const duration = 0.6; // seconds
+  const start = performance.now();
+
+  function step(now) {
+    const elapsed = (now - start) / 1000;
+    FOCUS_TRANSITION_T = Math.min(elapsed / duration, 1);
+
+    initDashboard(); // panels use FOCUS_TRANSITION_T for subtle effects
+
+    if (elapsed < duration) {
+      requestAnimationFrame(step);
+    } else {
+      FOCUS_TRANSITION_T = 1;
+      initDashboard();
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+
+const isFocus = (FOCUS_SECTOR !== "none" && w.sector === FOCUS_SECTOR);
+const pulseScale = isFocus ? (1 + 0.3 * (1 - FOCUS_TRANSITION_T)) : 1;
+
+const radius = (4 + reliability * 6) * pulseScale;
+circle.setAttribute("r", radius);
+
+const involvesFocus = (FOCUS_SECTOR !== "none" &&
+                       (f.from === FOCUS_SECTOR || f.to === FOCUS_SECTOR));
+
+const glowFactor = involvesFocus ? (FOCUS_TRANSITION_T) : 0.3;
+
+fctx.shadowBlur = GLOW ? 14 * glowFactor : 0;
+
+const panelEl = document.querySelector(".panel-narrative");
+if (panelEl) {
+  panelEl.style.opacity = 0.6 + 0.4 * FOCUS_TRANSITION_T;
+}
+
+let RECORDING = false;
+let RECORD_LOG = [];
+let RECORD_START_TIME = null;
+
+function logEvent(type, data = {}) {
+  if (!RECORDING) return;
+
+  RECORD_LOG.push({
+    type,
+    timestamp: Date.now() - RECORD_START_TIME,
+    ...data
+  });
+}
+
+const recStart = document.getElementById("recStart");
+const recStop = document.getElementById("recStop");
+const recDownload = document.getElementById("recDownload");
+const recStatus = document.getElementById("recStatus");
+
+recStart.onclick = () => {
+  RECORDING = true;
+  RECORD_LOG = [];
+  RECORD_START_TIME = Date.now();
+  recStatus.textContent = "Recording…";
+  recStart.disabled = true;
+  recStop.disabled = false;
+  recDownload.disabled = true;
+
+  logEvent("session_start");
+};
+
+recStop.onclick = () => {
+  RECORDING = false;
+  recStatus.textContent = "Recording stopped.";
+  recStart.disabled = false;
+  recStop.disabled = true;
+  recDownload.disabled = false;
+
+  logEvent("session_stop");
+};
+
+recDownload.onclick = () => {
+  const blob = new Blob([JSON.stringify(RECORD_LOG, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `analysis_session_${new Date().toISOString()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById("focusSector").onchange = e => {
+  PREV_FOCUS_SECTOR = FOCUS_SECTOR;
+  FOCUS_SECTOR = e.target.value;
+  FOCUS_TRANSITION_T = 0;
+
+  logEvent("focus_change", {
+    from: PREV_FOCUS_SECTOR,
+    to: FOCUS_SECTOR
+  });
+
+  animateFocusTransition();
+};
+
+document.querySelectorAll(".sector-hover").forEach(el => {
+  el.onmouseenter = () => {
+    HOVER_SECTOR = el.dataset.sector;
+    logEvent("hover_start", { sector: HOVER_SECTOR });
+    initDashboard();
+  };
+  el.onmouseleave = () => {
+    logEvent("hover_end", { sector: HOVER_SECTOR });
+    HOVER_SECTOR = "none";
+    initDashboard();
+  };
+});
+
+logEvent("narrative_snapshot", {
+  arc_strength: latest.narrative.arc_strength,
+  actors: latest.narrative.actors
+});
+
+
+logEvent("reliability_snapshot", {
+  workers: reliability.workers
+});
+
+
+logEvent("flow_snapshot", {
+  flows: sectorFlow
+});
+
+
+
+
+    
+
+
+
+
+
+
+    
+
+
+
+    
+
+    
+
+    
+
+
+    
+    
+
+    
+
+    
+
+
+    
+
+    
+    
+
+
+    
     
 
     toggle.onclick = () => {
