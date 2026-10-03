@@ -18,6 +18,16 @@
       --good: #064e3b;
     }
     * { box-sizing: border-box; }
+
+    <svg id="world-svg" viewBox="0 0 1000 500" style="display:none;">
+  <!-- Minimal world outline (you can replace with a full topojson export later) -->
+  <rect x="0" y="0" width="1000" height="500" fill="#020617" />
+  <path d="M50,250 C200,100 400,80 600,120 C800,160 900,220 950,260
+           C900,300 800,360 600,380 C400,400 200,380 50,300 Z"
+        fill="#0b1120" stroke="#1f2937" stroke-width="1" />
+</svg>
+
+    
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
@@ -292,6 +302,15 @@
   <p>Geographic reliability and latency overview from <code>geo.json</code>.</p>
   <canvas id="heatmap-canvas"></canvas>
 </div>
+
+    <div class="panel">
+  <h2>Global Heatmap</h2>
+  <p>Animated Mercator SVG showing worker reliability and latency.</p>
+  <div id="heatmap-svg-container" style="width:100%;height:260px;"></div>
+</div>
+
+
+    
 
     <div class="panel">
   <h2>Sector Flow (Visual)</h2>
@@ -745,6 +764,88 @@ if (Array.isArray(sectorFlow)) {
     const root = document.documentElement;
     const toggle = document.getElementById("themeToggle");
     let dark = true;
+
+    const geo = await safeFetch("geo.json");
+
+function lonLatToMercatorXY(lon, lat, width, height) {
+  const lambda = lon * Math.PI / 180;
+  const phi = lat * Math.PI / 180;
+  const x = (lambda + Math.PI) / (2 * Math.PI) * width;
+  const y = (height / 2) - (width / (2 * Math.PI)) * Math.log(Math.tan(Math.PI / 4 + phi / 2));
+  return { x, y };
+}
+
+function createHeatmapSVG(geo) {
+  const container = document.getElementById("heatmap-svg-container");
+  container.innerHTML = "";
+
+  const base = document.getElementById("world-svg");
+  const svg = base.cloneNode(true);
+  svg.style.display = "block";
+
+  const width = 1000;
+  const height = 500;
+
+  geo.forEach((w, idx) => {
+    if (typeof w.lon !== "number" || typeof w.lat !== "number") return;
+
+    const { x, y } = lonLatToMercatorXY(w.lon, w.lat, width, height);
+
+    const reliability = w.reliability || 0;
+    const latency = w.latency_ms || 0;
+
+    const color =
+      reliability >= 0.8 ? "#22c55e" :
+      reliability >= 0.5 ? "#eab308" :
+      "#ef4444";
+
+    const radius = 4 + reliability * 6;
+
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", radius);
+    circle.setAttribute("fill", color);
+    circle.setAttribute("fill-opacity", "0.85");
+
+    // Animated pulse
+    const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    pulse.setAttribute("cx", x);
+    pulse.setAttribute("cy", y);
+    pulse.setAttribute("r", radius);
+    pulse.setAttribute("fill", color);
+    pulse.setAttribute("fill-opacity", "0.25");
+
+    const animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+    animate.setAttribute("attributeName", "r");
+    animate.setAttribute("from", radius.toString());
+    animate.setAttribute("to", (radius + 12).toString());
+    animate.setAttribute("dur", (2 + latency / 500).toFixed(2) + "s");
+    animate.setAttribute("repeatCount", "indefinite");
+    animate.setAttribute("begin", (idx * 0.2).toFixed(2) + "s");
+    pulse.appendChild(animate);
+
+    const animateOpacity = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+    animateOpacity.setAttribute("attributeName", "fill-opacity");
+    animateOpacity.setAttribute("from", "0.25");
+    animateOpacity.setAttribute("to", "0");
+    animateOpacity.setAttribute("dur", (2 + latency / 500).toFixed(2) + "s");
+    animateOpacity.setAttribute("repeatCount", "indefinite");
+    animateOpacity.setAttribute("begin", (idx * 0.2).toFixed(2) + "s");
+    pulse.appendChild(animateOpacity);
+
+    svg.appendChild(pulse);
+    svg.appendChild(circle);
+  });
+
+  container.appendChild(svg);
+}
+
+if (Array.isArray(geo)) {
+  createHeatmapSVG(geo);
+}
+
+    
 
     toggle.onclick = () => {
       dark = !dark;
