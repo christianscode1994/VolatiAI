@@ -292,6 +292,14 @@
   <p>Geographic reliability and latency overview from <code>geo.json</code>.</p>
   <canvas id="heatmap-canvas"></canvas>
 </div>
+
+    <div class="panel">
+  <h2>Sector Flow (Visual)</h2>
+  <p>Arrows showing capital / narrative flow between sectors.</p>
+  <canvas id="sector-flow-canvas"></canvas>
+</div>
+
+    
     
   </main>
 
@@ -650,6 +658,85 @@ function drawHeatmap(geo) {
 if (Array.isArray(geo)) {
   drawHeatmap(geo);
 }
+
+
+    const sectorFlow = await safeFetch("sector_flow.json");
+const flowCanvas = document.getElementById("sector-flow-canvas");
+const fctx = flowCanvas.getContext("2d");
+
+function drawSectorFlow(flows) {
+  const w = flowCanvas.width;
+  const h = flowCanvas.height;
+
+  fctx.clearRect(0, 0, w, h);
+  fctx.fillStyle = "#020617";
+  fctx.fillRect(0, 0, w, h);
+
+  const sectors = ["market", "sentiment", "developer", "depth", "truth"];
+  const positions = {
+    market:    { x: w * 0.15, y: h * 0.50 },
+    sentiment: { x: w * 0.35, y: h * 0.30 },
+    developer: { x: w * 0.55, y: h * 0.50 },
+    depth:     { x: w * 0.75, y: h * 0.30 },
+    truth:     { x: w * 0.85, y: h * 0.60 }
+  };
+
+  // Draw nodes
+  sectors.forEach(sec => {
+    const { x, y } = positions[sec];
+    fctx.fillStyle = "#4f46e5";
+    fctx.beginPath();
+    fctx.arc(x, y, 18, 0, Math.PI * 2);
+    fctx.fill();
+
+    fctx.fillStyle = "#e5e7eb";
+    fctx.font = "12px system-ui";
+    fctx.fillText(sec, x - 20, y + 35);
+  });
+
+  // Draw arrows
+  flows.forEach(f => {
+    const from = positions[f.from];
+    const to = positions[f.to];
+
+    const strength = f.flow_strength;
+    const color =
+      strength >= 0.7 ? "#22c55e" :
+      strength >= 0.4 ? "#eab308" :
+      "#ef4444";
+
+    fctx.strokeStyle = color;
+    fctx.lineWidth = 2 + strength * 3;
+
+    fctx.beginPath();
+    fctx.moveTo(from.x, from.y);
+    fctx.lineTo(to.x, to.y);
+    fctx.stroke();
+
+    // Arrowhead
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const headLen = 10 + strength * 5;
+
+    fctx.beginPath();
+    fctx.moveTo(to.x, to.y);
+    fctx.lineTo(
+      to.x - headLen * Math.cos(angle - Math.PI / 6),
+      to.y - headLen * Math.sin(angle - Math.PI / 6)
+    );
+    fctx.lineTo(
+      to.x - headLen * Math.cos(angle + Math.PI / 6),
+      to.y - headLen * Math.sin(angle + Math.PI / 6)
+    );
+    fctx.closePath();
+    fctx.fillStyle = color;
+    fctx.fill();
+  });
+}
+
+if (Array.isArray(sectorFlow)) {
+  drawSectorFlow(sectorFlow);
+}
+
     
 
     let REFRESH_INTERVAL = 30000;
