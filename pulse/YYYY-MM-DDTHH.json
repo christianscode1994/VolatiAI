@@ -1,0 +1,18 @@
+const RAW_PULSE =
+  "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/pulse/";
+
+async function loadPulse() {
+  const now = new Date();
+  const iso = now.toISOString().slice(0, 13); // YYYY-MM-DDTHH
+  const url = `${RAW_PULSE}${iso}.json`;
+
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const pulse = await res.json();
+      console.log("Pulse Mode Snapshot:", pulse);
+    }
+  } catch (e) {
+    console.warn("Pulse snapshot not available yet");
+  }
+}
