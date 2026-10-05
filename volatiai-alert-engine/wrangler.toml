@@ -1,0 +1,9 @@
+name = "volatiai-alert-engine"
+main = "src/index.js"
+compatibility_date = "2026-10-05"
+
+[triggers]
+crons = ["*/15 * * * *"] # every 15 minutes
+
+[secrets]
+# ALERT_WEBHOOK_URL
