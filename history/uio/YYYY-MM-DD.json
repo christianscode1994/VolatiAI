@@ -22,3 +22,19 @@ async function loadTrend() {
   console.log("Trend Data:", trend);
   return trend;
 }
+const trend = await loadTrend();
+
+new Chart(document.getElementById("trendChart"), {
+  type: "line",
+  data: {
+    labels: trend.map(t => t.date),
+    datasets: [
+      {
+        label: "Global Risk Trend",
+        data: trend.map(t => t.snapshot.risk.global),
+        borderColor: "#4a6cf7",
+        fill: false
+      }
+    ]
+  }
+});
