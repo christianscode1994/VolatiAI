@@ -1,0 +1,24 @@
+const RAW_HISTORY =
+  "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/history/uio/";
+
+async function loadTrend() {
+  const days = 7; // last 7 days
+  const trend = [];
+
+  for (let i = 0; i < days; i++) {
+    const d = new Date(Date.now() - i * 86400000);
+    const iso = d.toISOString().slice(0, 10);
+    const url = `${RAW_HISTORY}${iso}.json`;
+
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const snapshot = await res.json();
+        trend.push({ date: iso, snapshot });
+      }
+    } catch {}
+  }
+
+  console.log("Trend Data:", trend);
+  return trend;
+}
