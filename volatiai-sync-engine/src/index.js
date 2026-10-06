@@ -144,3 +144,206 @@ async function runSync(env) {
     await commitFile(env, file);
   }
 }
+
+function buildRiskSpikeSignal(uio, history) {
+  const latest = uio.risk.global;
+  const prev = history.length
+    ? history[history.length - 1].uio.risk.global
+    : latest;
+
+  const delta = latest - prev;
+  const threshold = 0.8;
+  const spikeDelta = 0.05;
+
+  if (latest > threshold && delta > spikeDelta) {
+    return {
+      path: "signals/risk_spike.json",
+      content: JSON.stringify(
+        {
+          type: "risk_spike",
+          timestamp: new Date().toISOString(),
+          severity: "high",
+          metric: "risk.global",
+          value: latest,
+          threshold,
+          delta,
+          context: uio.risk.by_sector
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 3)
+            .map(s => s.sector)
+        },
+        null,
+        2
+      )
+    };
+  }
+
+  return {
+    path: "signals/risk_spike.json",
+    content: JSON.stringify(
+      {
+        type: "risk_spike",
+        timestamp: new Date().toISOString(),
+        active: false
+      },
+      null,
+      2
+    )
+  };
+}
+
+function buildOpportunitySurgeSignal(uio, history) {
+  const latestTop = [...uio.opportunities].sort(
+    (a, b) => b.score - a.score
+  )[0];
+  const prevTop = history.length
+    ? [...history[history.length - 1].uio.opportunities].sort(
+        (a, b) => b.score - a.score
+      )[0]
+    : latestTop;
+
+  const delta = latestTop.score - prevTop.score;
+  const surgeDelta = 0.05;
+
+  if (delta > surgeDelta) {
+    return {
+      path: "signals/opportunity_surge.json",
+      content: JSON.stringify(
+        {
+          type: "opportunity_surge",
+          timestamp: new Date().toISOString(),
+          sector: latestTop.sector,
+          score: latestTop.score,
+          delta,
+          drivers: latestTop.drivers ?? []
+        },
+        null,
+        2
+      )
+    };
+  }
+
+  return {
+    path: "signals/opportunity_surge.json",
+    content: JSON.stringify(
+      {
+        type: "opportunity_surge",
+        timestamp: new Date().toISOString(),
+        active: false
+      },
+      null,
+      2
+    )
+  };
+}
+
+function buildNarrativeFlipSignal(uio, history) {
+  const latest = uio.narrative.polarity; // assume -1..+1
+  const prev = history.length
+    ? history[history.length - 1].uio.narrative.polarity
+    : latest;
+
+  if (latest * prev < 0) {
+    return {
+      path: "signals/narrative_flip.json",
+      content: JSON.stringify(
+        {
+          type: "narrative_flip",
+          timestamp: new Date().toISOString(),
+          from: prev,
+          to: latest,
+          arcs: uio.narrative.arcs
+            .slice(0, 5)
+            .map(a => ({ topic: a.topic, direction: a.direction }))
+        },
+        null,
+        2
+      )
+    };
+  }
+
+  return {
+    path: "signals/narrative_flip.json",
+    content: JSON.stringify(
+      {
+        type: "narrative_flip",
+        timestamp: new Date().toISOString(),
+        active: false
+      },
+      null,
+      2
+    )
+  };
+}
+
+function buildFlowReversalSignal(uio) {
+  const reversals = uio.flows.dynamics.filter(d => d.reversal);
+  const countThreshold = 5;
+
+  if (reversals.length >= countThreshold) {
+    return {
+      path: "signals/flow_reversal.json",
+      content: JSON.stringify(
+        {
+          type: "flow_reversal",
+          timestamp: new Date().toISOString(),
+          count: reversals.length,
+          sectors: reversals.slice(0, 10).map(d => d.sector)
+        },
+        null,
+        2
+      )
+    };
+  }
+
+  return {
+    path: "signals/flow_reversal.json",
+    content: JSON.stringify(
+      {
+        type: "flow_reversal",
+        timestamp: new Date().toISOString(),
+        active: false
+      },
+      null,
+      2
+    )
+  };
+}
+
+function buildSystemicHotspotSignal(uio) {
+  const systemic = uio.risk.systemic;
+  const threshold = 0.75;
+
+  if (systemic > threshold) {
+    return {
+      path: "signals/systemic_hotspot.json",
+      content: JSON.stringify(
+        {
+          type: "systemic_hotspot",
+          timestamp: new Date().toISOString(),
+          value: systemic,
+          threshold,
+          hotspots: uio.risk.by_sector
+            .filter(s => s.score > threshold)
+            .map(s => ({ sector: s.sector, score: s.score }))
+        },
+        null,
+        2
+      )
+    };
+  }
+
+  return {
+    path: "signals/systemic_hotspot.json",
+    content: JSON.stringify(
+      {
+        type: "systemic_hotspot",
+        timestamp: new Date().toISOString(),
+        active: false
+      },
+      null,
+      2
+    )
+  };
+}
+
