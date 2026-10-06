@@ -1,6 +1,15 @@
+// -------------------------------------------------------------
+// RAW PATHS
+// -------------------------------------------------------------
 const RAW_UIO =
   "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/data/outputs/uio.json";
 
+const RAW_HISTORY =
+  "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/history/uio/";
+
+// -------------------------------------------------------------
+// Worker Entrypoints
+// -------------------------------------------------------------
 export default {
   async scheduled(event, env, ctx) {
     await runSync(env);
@@ -11,18 +20,32 @@ export default {
   }
 };
 
-// -----------------------------
+// -------------------------------------------------------------
 // Fetch latest UIO
-// -----------------------------
+// -------------------------------------------------------------
 async function fetchUIO() {
   const res = await fetch(RAW_UIO);
   if (!res.ok) throw new Error("Failed to fetch uio.json");
   return res.json();
 }
 
-// -----------------------------
+// -------------------------------------------------------------
+// Fetch recent history (7 days)
+// -------------------------------------------------------------
+async function fetchRecentHistory(days = 7) {
+  const out = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(Date.now() - i * 86400000);
+    const iso = d.toISOString().slice(0, 10);
+    const res = await fetch(`${RAW_HISTORY}${iso}.json`);
+    if (res.ok) out.push(await res.json());
+  }
+  return out.reverse();
+}
+
+// -------------------------------------------------------------
 // Build Pulse Snapshot
-// -----------------------------
+// -------------------------------------------------------------
 function buildPulse(uio, now) {
   const isoHour = now.toISOString().slice(0, 13); // YYYY-MM-DDTHH
   return {
@@ -41,9 +64,9 @@ function buildPulse(uio, now) {
   };
 }
 
-// -----------------------------
+// -------------------------------------------------------------
 // Build Daily History Snapshot
-// -----------------------------
+// -------------------------------------------------------------
 function buildHistory(uio, now) {
   const isoDate = now.toISOString().slice(0, 10); // YYYY-MM-DD
   return {
@@ -59,9 +82,9 @@ function buildHistory(uio, now) {
   };
 }
 
-// -----------------------------
+// -------------------------------------------------------------
 // Build Insight Cards
-// -----------------------------
+// -------------------------------------------------------------
 function buildInsights(uio) {
   const topRisk = [...uio.risk.by_sector].sort((a, b) => b.score - a.score)[0];
   const topOpp = [...uio.opportunities].sort((a, b) => b.score - a.score)[0];
@@ -96,55 +119,9 @@ function buildInsights(uio) {
   ];
 }
 
-// -----------------------------
-// Commit file to GitHub
-// -----------------------------
-async function commitFile(env, file) {
-  const [owner, repo] = env.GITHUB_REPO.split("/");
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`;
-
-  const contentB64 = btoa(file.content);
-
-  const body = {
-    message: `Sync Engine: update ${file.path}`,
-    content: contentB64,
-    branch: env.GITHUB_BRANCH
-  };
-
-  const res = await fetch(url, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("GitHub commit failed:", file.path, text);
-  }
-}
-
-// -----------------------------
-// Orchestrate Sync
-// -----------------------------
-async function runSync(env) {
-  const now = new Date();
-  const uio = await fetchUIO();
-
-  const pulse = buildPulse(uio, now);
-  const history = buildHistory(uio, now);
-  const insights = buildInsights(uio);
-
-  const files = [pulse, history, ...insights];
-
-  for (const file of files) {
-    await commitFile(env, file);
-  }
-}
-
+// -------------------------------------------------------------
+// SIGNAL: Risk Spike
+// -------------------------------------------------------------
 function buildRiskSpikeSignal(uio, history) {
   const latest = uio.risk.global;
   const prev = history.length
@@ -192,6 +169,9 @@ function buildRiskSpikeSignal(uio, history) {
   };
 }
 
+// -------------------------------------------------------------
+// SIGNAL: Opportunity Surge
+// -------------------------------------------------------------
 function buildOpportunitySurgeSignal(uio, history) {
   const latestTop = [...uio.opportunities].sort(
     (a, b) => b.score - a.score
@@ -237,8 +217,11 @@ function buildOpportunitySurgeSignal(uio, history) {
   };
 }
 
+// -------------------------------------------------------------
+// SIGNAL: Narrative Flip
+// -------------------------------------------------------------
 function buildNarrativeFlipSignal(uio, history) {
-  const latest = uio.narrative.polarity; // assume -1..+1
+  const latest = uio.narrative.polarity;
   const prev = history.length
     ? history[history.length - 1].uio.narrative.polarity
     : latest;
@@ -276,6 +259,9 @@ function buildNarrativeFlipSignal(uio, history) {
   };
 }
 
+// -------------------------------------------------------------
+// SIGNAL: Flow Reversal
+// -------------------------------------------------------------
 function buildFlowReversalSignal(uio) {
   const reversals = uio.flows.dynamics.filter(d => d.reversal);
   const countThreshold = 5;
@@ -310,6 +296,9 @@ function buildFlowReversalSignal(uio) {
   };
 }
 
+// -------------------------------------------------------------
+// SIGNAL: Systemic Hotspot
+// -------------------------------------------------------------
 function buildSystemicHotspotSignal(uio) {
   const systemic = uio.risk.systemic;
   const threshold = 0.75;
@@ -347,3 +336,60 @@ function buildSystemicHotspotSignal(uio) {
   };
 }
 
+// -------------------------------------------------------------
+// Commit file to GitHub
+// -------------------------------------------------------------
+async function commitFile(env, file) {
+  const [owner, repo] = env.GITHUB_REPO.split("/");
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`;
+
+  const contentB64 = btoa(file.content);
+
+  const body = {
+    message: `Sync Engine: update ${file.path}`,
+    content: contentB64,
+    branch: env.GITHUB_BRANCH
+  };
+
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("GitHub commit failed:", file.path, text);
+  }
+}
+
+// -------------------------------------------------------------
+// Orchestrate Sync (FINAL)
+// -------------------------------------------------------------
+async function runSync(env) {
+  const now = new Date();
+  const uio = await fetchUIO();
+  const history = await fetchRecentHistory(7);
+
+  const pulse = buildPulse(uio, now);
+  const historyFile = buildHistory(uio, now);
+  const insights = buildInsights(uio);
+
+  const signals = [
+    buildRiskSpikeSignal(uio, history),
+    buildOpportunitySurgeSignal(uio, history),
+    buildNarrativeFlipSignal(uio, history),
+    buildFlowReversalSignal(uio),
+    buildSystemicHotspotSignal(uio)
+  ];
+
+  const files = [pulse, historyFile, ...insights, ...signals];
+
+  for (const file of files) {
+    await commitFile(env, file);
+  }
+}
