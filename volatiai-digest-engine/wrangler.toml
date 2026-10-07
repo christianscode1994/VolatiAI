@@ -1,0 +1,6 @@
+name = "volatiai-digest-engine"
+main = "src/index.js"
+compatibility_date = "2026-10-05"
+
+[triggers]
+crons = ["0 8 * * *"]   # every day at 08:00
