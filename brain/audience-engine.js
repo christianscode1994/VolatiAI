@@ -25,19 +25,7 @@ What do you think?
 
 `;
 
-export function forDiscord(signal) {
 
-  return `
-
-# ${signal.theme}
-
-${signal.narrative}
-
-What do you think?
-
-`;
-
-}
 
 
 export function forSlack(signal) {
