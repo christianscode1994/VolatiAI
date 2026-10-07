@@ -1,0 +1,30 @@
+name: VolatiAI Intelligence
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  intelligence:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      - name: Generate Intelligence
+        run: node brain/intelligence-engine.js
+
+      - name: Upload Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: intelligence
+          path: output/intelligence.json
