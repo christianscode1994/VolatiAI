@@ -90,5 +90,4 @@ export async function run(
   return current;
 }
 
-export co*st brainRunner =
-  new BrainRunner*);
+*);
