@@ -64,5 +64,31 @@ e*port class BrainRunner {
   }
 }
 
+import { registry }
+from "./registry.js";
+
+export async function run(
+  packet
+) {
+
+  let current =
+    structuredClone(
+      packet
+    );
+
+  for (
+    const engine of
+    registry.getAll()
+  ) {
+
+    current =
+      await engine.execute(
+        current
+      );
+  }
+
+  return current;
+}
+
 export co*st brainRunner =
   new BrainRunner*);
