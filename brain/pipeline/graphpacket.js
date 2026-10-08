@@ -40,6 +40,21 @@ export function createGraphPacket({
   };
 }
 
+metadata: {
+
+  type:
+    "claim",
+
+  source:
+    "nostr",
+
+  domain:
+    "agents",
+
+  actor:
+    "npub..."
+}
+
 export function clonePacket(packet) {
   return structuredClone(packet);
 }
