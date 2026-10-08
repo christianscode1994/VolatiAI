@@ -90,4 +90,43 @@ export async function run(
   return current;
 }
 
+
+import {
+  router
+}
+from "./packet-router.js";
+
+export async function run(
+  packet
+) {
+
+  const type =
+    packet.metadata
+      ?.type ||
+    "default";
+
+  const pipeline =
+    router.getPipeline(
+      type
+    );
+
+  let current =
+    structuredClone(
+      packet
+    );
+
+  for (
+    const engine of
+    pipeline
+  ) {
+
+    current =
+      await engine.execute(
+        current
+      );
+  }
+
+  return current;
+}
+
 *);
