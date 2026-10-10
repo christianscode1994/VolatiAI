@@ -21,3 +21,9 @@ export * from "./counterfactual/counterfactual-engine.js";
 export * from "./reflection/reflection-engine.js";
 export * from "./strategy/strategy-engine.js";
 export * from "./curiosity/curiosity-engine.js";
+
+export * from "./traversal/traversal-engine.js";
+export * from "./clustering/cluster-engine.js";
+export * from "./synthesis/synthesis-engine.js";
+export * from "./belief/belief-
+
