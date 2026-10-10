@@ -27,3 +27,9 @@ export * from "./clustering/cluster-engine.js";
 export * from "./synthesis/synthesis-engine.js";
 export * from "./belief/belief-
 
+
+export * from './dynamic/index.js';
+export * from './world/index.js';
+export * from './narrative/index.js';
+export * from './hypothesis/index.js';
+
