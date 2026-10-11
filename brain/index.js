@@ -33,3 +33,13 @@ export * from './world/index.js';
 export * from './narrative/index.js';
 export * from './hypothesis/index.js';
 
+
+export * from "./explainability/explainability-engine.js";
+export * from "./verification/verification-engine.js";
+export * from "./multiworld/multiworld-engine.js";
+export * from "./learning/learning-engine.js";
+export * from "./autonomous/autonomous-engine.js";
+export * from "./competition/competition-engine.js";
+
+
+
