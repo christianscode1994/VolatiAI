@@ -3,8 +3,11 @@
 import fs from "fs";
 import path from "path";
 
-export async function runHealthCheck(sectorUrls) {
+export async function runHealthCheck(sectorUrls = []) {
   const results = [];
+
+  console.log("Running VolatiAI health check...");
+  console.log("CWD:", process.cwd());
 
   for (const url of sectorUrls) {
     const start = performance.now();
@@ -39,14 +42,14 @@ export async function runHealthCheck(sectorUrls) {
         } catch (err) {
           status = "INVALID_JSON";
           jsonValid = false;
-          error = err.toString();
+          error = String(err);
         }
       }
     } catch (err) {
       status = "FETCH_ERROR";
       jsonValid = false;
       latency = performance.now() - start;
-      error = err.toString();
+      error = String(err);
     }
 
     results.push({
@@ -60,21 +63,25 @@ export async function runHealthCheck(sectorUrls) {
 
   writeHealthFiles(results);
 
+  console.log(
+    `Health check complete. Generated reports for ${results.length} worker(s).`
+  );
+
   return results;
 }
 
 function writeHealthFiles(results) {
   const outDir = path.join(process.cwd(), "public");
 
-  if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir, {
-      recursive: true
-    });
-  }
+  fs.mkdirSync(outDir, {
+    recursive: true
+  });
 
-  // JSON output
+  const jsonPath = path.join(outDir, "health.json");
+  const htmlPath = path.join(outDir, "health.html");
+
   fs.writeFileSync(
-    path.join(outDir, "health.json"),
+    jsonPath,
     JSON.stringify(
       {
         timestamp: Date.now(),
@@ -82,21 +89,42 @@ function writeHealthFiles(results) {
       },
       null,
       2
-    )
+    ),
+    "utf8"
   );
 
-  // HTML dashboard
   const html = `
 <!doctype html>
 <html>
 <head>
+  <meta charset="utf-8">
   <title>VolatiAI Health Dashboard</title>
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    th { background: #eee; }
-    .OK { background: #d4ffd4; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    .OK {
+      background: #d4ffd4;
+    }
+
     .FETCH_ERROR,
     .HTTP_ERROR,
     .INVALID_JSON {
@@ -104,8 +132,10 @@ function writeHealthFiles(results) {
     }
   </style>
 </head>
+
 <body>
   <h1>VolatiAI Health Dashboard</h1>
+
   <p>Updated: ${new Date().toISOString()}</p>
 
   <table>
@@ -120,14 +150,14 @@ function writeHealthFiles(results) {
     ${results
       .map(
         (r) => `
-      <tr class="${r.status}">
-        <td>${r.url}</td>
-        <td>${r.status}</td>
-        <td>${r.latency_ms}</td>
-        <td>${r.jsonValid}</td>
-        <td>${r.error || ""}</td>
-      </tr>
-    `
+        <tr class="${r.status}">
+          <td>${r.url}</td>
+          <td>${r.status}</td>
+          <td>${r.latency_ms}</td>
+          <td>${r.jsonValid}</td>
+          <td>${r.error ?? ""}</td>
+        </tr>
+      `
       )
       .join("")}
   </table>
@@ -135,8 +165,8 @@ function writeHealthFiles(results) {
 </html>
 `;
 
-  fs.writeFileSync(
-    path.join(outDir, "health.html"),
-    html
-  );
+  fs.writeFileSync(htmlPath, html, "utf8");
+
+  console.log("Generated:", jsonPath);
+  console.log("Generated:", htmlPath);
 }
