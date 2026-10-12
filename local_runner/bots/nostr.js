@@ -1,7 +1,6 @@
 // nostr.js — VolatiAI Nostr Bot
 
-import { finalizeEvent } from "nostr-tools";
-import { Relay } from "nostr-tools";
+import { finalizeEvent, Relay } from "nostr-tools";
 
 export async function postToNostr(message) {
   const privkey = process.env.NOSTR_PRIVATE_KEY;
@@ -15,7 +14,7 @@ export async function postToNostr(message) {
     return;
   }
 
-  // Private key should be a hex string
+  // Convert hex private key to Uint8Array
   const privateKeyBytes = Uint8Array.from(
     privkey.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
   );
@@ -41,4 +40,7 @@ export async function postToNostr(message) {
 
       relay.close();
     } catch (err) {
-      console.
+      console.error(`Relay error (${url}):`, err);
+    }
+  }
+}
