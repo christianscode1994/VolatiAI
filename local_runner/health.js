@@ -2,20 +2,31 @@
 
 import fs from "fs";
 import path from "path";
-import fetch from "node-fetch";
 
 export async function runHealthCheck(sectorUrls) {
   const results = [];
 
   for (const url of sectorUrls) {
     const start = performance.now();
+
     let status = "OK";
     let latency = 0;
     let jsonValid = true;
     let error = null;
 
     try {
-      const res = await fetch(url, { timeout: 8000 });
+      const controller = new AbortController();
+
+      const timeout = setTimeout(() => {
+        controller.abort();
+      }, 8000);
+
+      const res = await fetch(url, {
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
       latency = performance.now() - start;
 
       if (!res.ok) {
@@ -48,6 +59,7 @@ export async function runHealthCheck(sectorUrls) {
   }
 
   writeHealthFiles(results);
+
   return results;
 }
 
@@ -55,7 +67,9 @@ function writeHealthFiles(results) {
   const outDir = path.join(process.cwd(), "public");
 
   if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir);
+    fs.mkdirSync(outDir, {
+      recursive: true
+    });
   }
 
   // JSON output
@@ -78,17 +92,22 @@ function writeHealthFiles(results) {
 <head>
   <title>VolatiAI Health Dashboard</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #ccc; padding: 8px; }
     th { background: #eee; }
     .OK { background: #d4ffd4; }
-    .FETCH_ERROR, .HTTP_ERROR, .INVALID_JSON { background: #ffd4d4; }
+    .FETCH_ERROR,
+    .HTTP_ERROR,
+    .INVALID_JSON {
+      background: #ffd4d4;
+    }
   </style>
 </head>
 <body>
-  <h1>VolatiAI Sector Health Dashboard</h1>
+  <h1>VolatiAI Health Dashboard</h1>
   <p>Updated: ${new Date().toISOString()}</p>
+
   <table>
     <tr>
       <th>Worker URL</th>
@@ -97,6 +116,7 @@ function writeHealthFiles(results) {
       <th>JSON Valid</th>
       <th>Error</th>
     </tr>
+
     ${results
       .map(
         (r) => `
@@ -115,5 +135,8 @@ function writeHealthFiles(results) {
 </html>
 `;
 
-  fs.writeFileSync(path.join(outDir, "health.html"), html);
+  fs.writeFileSync(
+    path.join(outDir, "health.html"),
+    html
+  );
 }
