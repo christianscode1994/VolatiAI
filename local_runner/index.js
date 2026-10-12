@@ -3,7 +3,6 @@
 
 import fs from "fs";
 import path from "path";
-import fetch from "node-fetch";
 
 // Import layers
 import { fuseSignals } from "./fusion.js";
@@ -117,7 +116,15 @@ function writeSnapshots(intel, sectorsRaw) {
 
   fs.writeFileSync(
     path.join(outDir, "intel.json"),
-    JSON.stringify({ timestamp: Date.now(), intelligence: intel, sectors: sectorsRaw }, null, 2)
+    JSON.stringify(
+      {
+        timestamp: Date.now(),
+        intelligence: intel,
+        sectors: sectorsRaw
+      },
+      null,
+      2
+    )
   );
 
   fs.writeFileSync(
