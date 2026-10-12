@@ -24,11 +24,15 @@ export async function runHealthCheck(sectorUrls = []) {
         controller.abort();
       }, 8000);
 
-      const res = await fetch(url, {
-        signal: controller.signal
-      });
+      let res;
 
-      clearTimeout(timeout);
+      try {
+        res = await fetch(url, {
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
 
       latency = performance.now() - start;
 
@@ -132,7 +136,6 @@ function writeHealthFiles(results) {
     }
   </style>
 </head>
-
 <body>
   <h1>VolatiAI Health Dashboard</h1>
 
@@ -147,19 +150,15 @@ function writeHealthFiles(results) {
       <th>Error</th>
     </tr>
 
-    ${results
-      .map(
-        (r) => `
-        <tr class="${r.status}">
-          <td>${r.url}</td>
-          <td>${r.status}</td>
-          <td>${r.latency_ms}</td>
-          <td>${r.jsonValid}</td>
-          <td>${r.error ?? ""}</td>
-        </tr>
-      `
-      )
-      .join("")}
+    ${results.map(r => `
+      <tr class="${r.status}">
+        <td>${r.url}</td>
+        <td>${r.status}</td>
+        <td>${r.latency_ms}</td>
+        <td>${r.jsonValid}</td>
+        <td>${r.error ?? ""}</td>
+      </tr>
+    `).join("")}
   </table>
 </body>
 </html>
@@ -169,4 +168,27 @@ function writeHealthFiles(results) {
 
   console.log("Generated:", jsonPath);
   console.log("Generated:", htmlPath);
+}
+
+// Run directly from CLI
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const sectorUrls = [
+    process.env.SECTOR_URL_1,
+    process.env.SECTOR_URL_2,
+    process.env.SECTOR_URL_3,
+    process.env.SECTOR_URL_4,
+    process.env.SECTOR_URL_5
+  ].filter(Boolean);
+
+  try {
+    await runHealthCheck(sectorUrls);
+
+    console.log(
+      `Health check completed successfully for ${sectorUrls.length} sector(s).`
+    );
+  } catch (err) {
+    console.error("Health check failed:");
+    console.error(err);
+    process.exit(1);
+  }
 }
