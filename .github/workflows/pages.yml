@@ -2,8 +2,14 @@ name: Deploy VolatiAI Dashboards to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
@@ -24,31 +30,53 @@ jobs:
       - name: Run local runner (generate dashboards)
         run: node local_runner/index.js
 
+      - name: Verify generated files
+        run: |
+          pwd
+          ls -la
+          ls -la public || true
+          find . -name "*.json"
+          find . -name "*.html"
+
+      - name: Create docs folder
+        run: mkdir -p docs
+
       - name: Copy public outputs to docs
         run: |
-          cp public/*.json docs/
-          cp public/*.html docs/
+          cp -f public/*.json docs/ || true
+          cp -f public/*.html docs/ || true
 
       - name: Commit updated docs
         run: |
           git config user.name "volati-bot"
           git config user.email "bot@example.com"
-          git add docs/*.json docs/*.html
-          git commit -m "Update VolatiAI public dashboards" || echo "No changes"
+
+          git add docs
+
+          git commit -m "[skip ci] Update VolatiAI public dashboards" || echo "No changes"
+
           git push
 
-      - name: Deploy to GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
 
   publish:
     needs: deploy
+
     runs-on: ubuntu-latest
+
     permissions:
       pages: write
       id-token: write
 
+    environment:
+      name: github-pages
+
     steps:
-      - name: Publish
+      - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
