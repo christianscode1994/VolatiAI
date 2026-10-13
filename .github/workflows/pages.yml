@@ -122,6 +122,9 @@ jobs:
 
           git commit -m "[skip ci] Update VolatiAI public dashboards"
 
+          git fetch origin main
+          git rebase origin/main
+
           git push origin HEAD:main
 
       - name: Setup Pages
@@ -146,3 +149,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+``
