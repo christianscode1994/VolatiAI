@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -106,16 +108,23 @@ jobs:
           echo "=== FINAL DOCS CONTENTS ==="
           ls -lh docs
 
-      - name: Commit updated docs
+      - name: Commit and Push Updated Docs
         run: |
           git config user.name "volati-bot"
           git config user.email "bot@example.com"
 
           git add docs
 
-          git commit -m "[skip ci] Update VolatiAI public dashboards" || echo "No changes to commit"
+          git diff --staged --quiet && {
+            echo "No changes to commit"
+            exit 0
+          }
 
-          git push
+          git commit -m "[skip ci] Update VolatiAI public dashboards"
+
+          git pull --rebase origin main
+
+          git push origin HEAD:main
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
