@@ -113,9 +113,6 @@ jobs:
           git config user.name "volati-bot"
           git config user.email "bot@example.com"
 
-          # Sync with latest main before committing
-          git pull --rebase origin main
-
           git add docs
 
           if git diff --cached --quiet; then
