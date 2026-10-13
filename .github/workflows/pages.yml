@@ -50,8 +50,21 @@ jobs:
           find docs -type f -exec du -h {} + | sort -hr
 
           echo ""
-          echo "=== LARGEST FILES REPO ==="
+          echo "=== LARGEST FILES IN REPO ==="
           find . -type f -exec du -h {} + | sort -hr | head -20
+
+      - name: Inspect Intel Files
+        run: |
+          echo "=== INTEL FILES ==="
+          ls -lh docs/intel* || true
+
+          echo ""
+          echo "=== INTEL LINE COUNTS ==="
+          wc -l docs/intel.json docs/intel.html || true
+
+          echo ""
+          echo "=== INTEL FILE BYTE COUNTS ==="
+          wc -c docs/intel.json docs/intel.html || true
 
       - name: Validate GitHub Limits
         run: |
@@ -84,7 +97,6 @@ jobs:
 
   publish:
     needs: deploy
-
     runs-on: ubuntu-latest
 
     permissions:
