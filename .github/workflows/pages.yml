@@ -50,8 +50,8 @@ jobs:
 
       - name: Copy public outputs to docs
         run: |
-          cp -f public/*.json docs/ || true
-          cp -f public/*.html docs/ || true
+          cp -f public/*.json docs/ 2>/dev/null || true
+          cp -f public/*.html docs/ 2>/dev/null || true
 
       - name: File Size Report
         run: |
@@ -77,7 +77,7 @@ jobs:
 
       - name: Remove Oversized Intel Files
         run: |
-          LIMIT=$((95*1024*1024))
+          LIMIT=$((95 * 1024 * 1024))
 
           for file in docs/intel.json docs/intel.html
           do
@@ -113,16 +113,17 @@ jobs:
           git config user.name "volati-bot"
           git config user.email "bot@example.com"
 
+          # Sync with latest main before committing
+          git pull --rebase origin main
+
           git add docs
 
-          git diff --staged --quiet && {
+          if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
-          }
+          fi
 
           git commit -m "[skip ci] Update VolatiAI public dashboards"
-
-          git pull --rebase origin main
 
           git push origin HEAD:main
 
