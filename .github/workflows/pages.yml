@@ -32,8 +32,15 @@ jobs:
 
       - name: Verify generated files
         run: |
+          echo "=== Working Directory ==="
           pwd
+
+          echo ""
+          echo "=== Repository Contents ==="
           ls -la
+
+          echo ""
+          echo "=== Public Directory ==="
           ls -la public || true
 
       - name: Create docs folder
@@ -50,7 +57,7 @@ jobs:
           find docs -type f -exec du -h {} + | sort -hr
 
           echo ""
-          echo "=== LARGEST FILES IN REPO ==="
+          echo "=== TOP 20 LARGEST FILES IN REPO ==="
           find . -type f -exec du -h {} + | sort -hr | head -20
 
       - name: Inspect Intel Files
@@ -63,8 +70,26 @@ jobs:
           wc -l docs/intel.json docs/intel.html || true
 
           echo ""
-          echo "=== INTEL FILE BYTE COUNTS ==="
+          echo "=== INTEL BYTE COUNTS ==="
           wc -c docs/intel.json docs/intel.html || true
+
+      - name: Remove Oversized Intel Files
+        run: |
+          LIMIT=$((95*1024*1024))
+
+          for file in docs/intel.json docs/intel.html
+          do
+            if [ -f "$file" ]; then
+              SIZE=$(stat -c%s "$file")
+
+              echo "$file size: $SIZE bytes"
+
+              if [ "$SIZE" -gt "$LIMIT" ]; then
+                echo "Removing oversized file: $file"
+                rm -f "$file"
+              fi
+            fi
+          done
 
       - name: Validate GitHub Limits
         run: |
@@ -76,6 +101,11 @@ jobs:
             exit 1
           fi
 
+      - name: Final File Listing
+        run: |
+          echo "=== FINAL DOCS CONTENTS ==="
+          ls -lh docs
+
       - name: Commit updated docs
         run: |
           git config user.name "volati-bot"
@@ -83,14 +113,14 @@ jobs:
 
           git add docs
 
-          git commit -m "[skip ci] Update VolatiAI public dashboards" || echo "No changes"
+          git commit -m "[skip ci] Update VolatiAI public dashboards" || echo "No changes to commit"
 
           git push
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload Pages artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
