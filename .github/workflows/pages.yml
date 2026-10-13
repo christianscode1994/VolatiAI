@@ -35,8 +35,6 @@ jobs:
           pwd
           ls -la
           ls -la public || true
-          find . -name "*.json"
-          find . -name "*.html"
 
       - name: Create docs folder
         run: mkdir -p docs
@@ -45,6 +43,25 @@ jobs:
         run: |
           cp -f public/*.json docs/ || true
           cp -f public/*.html docs/ || true
+
+      - name: File Size Report
+        run: |
+          echo "=== DOCS FILE SIZES ==="
+          find docs -type f -exec du -h {} + | sort -hr
+
+          echo ""
+          echo "=== LARGEST FILES REPO ==="
+          find . -type f -exec du -h {} + | sort -hr | head -20
+
+      - name: Validate GitHub Limits
+        run: |
+          LARGE=$(find docs -type f -size +95M)
+
+          if [ -n "$LARGE" ]; then
+            echo "ERROR: Files exceed GitHub safe limit:"
+            echo "$LARGE"
+            exit 1
+          fi
 
       - name: Commit updated docs
         run: |
