@@ -80,8 +80,6 @@ const sectorUrls = [
   "https://sector-currency-ex.fourieranalys.workers.dev",
   "https://sector-kryptovaluta.fourieranalys.workers.dev",
   "https://sector-moln.fourieranalys.workers.dev",
-
-  // ⭐ NEW SECTORS YOU PROVIDED ⭐
   "https://sector-opensoruce.fourieranalys.workers.dev",
   "https://sector-opendata.fourieranalys.workers.dev",
   "https://sector-nyhet.fourieranalys.workers.dev",
@@ -93,17 +91,38 @@ const sectorUrls = [
   "https://sector-geocode.fourieranalys.workers.dev",
   "https://sector-spel.fourieranalys.workers.dev"
 ];
+``
 
 // 2. Fetch all sector Workers in parallel
 async function fetchAllSectors() {
   return Promise.all(
     sectorUrls.map(async (url) => {
       try {
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          headers: {
+            "User-Agent": "VolatiAI/1.0"
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
         const json = await res.json();
-        return { url, data: json };
+
+        return {
+          url,
+          success: true,
+          data: json
+        };
       } catch (err) {
-        return { url, error: err.toString() };
+        console.error(`Worker failed: ${url}`, err);
+
+        return {
+          url,
+          success: false,
+          error: String(err)
+        };
       }
     })
   );
@@ -112,37 +131,43 @@ async function fetchAllSectors() {
 // 5. Write snapshots to /public (GitHub Pages / static dashboard)
 function writeSnapshots(intel, sectorsRaw) {
   const outDir = path.join(process.cwd(), "public");
-  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
+
+  // Ensure directory exists
+  fs.mkdirSync(outDir, { recursive: true });
+
+  const snapshot = {
+    timestamp: Date.now(),
+    intelligence: intel,
+    sectors: sectorsRaw
+  };
 
   fs.writeFileSync(
     path.join(outDir, "intel.json"),
-    JSON.stringify(
-      {
-        timestamp: Date.now(),
-        intelligence: intel,
-        sectors: sectorsRaw
-      },
-      null,
-      2
-    )
+    JSON.stringify(snapshot, null, 2),
+    "utf8"
   );
 
   fs.writeFileSync(
     path.join(outDir, "latest.json"),
-    JSON.stringify(intel, null, 2)
+    JSON.stringify(intel, null, 2),
+    "utf8"
   );
+
+  console.log("Snapshots written successfully.");
 }
 
 // Format bot message
 function formatMessage(intel) {
   return [
-    `VolatiAI snapshot — ${new Date(intel.timestamp).toISOString()}`,
-    `• Trend acceleration: ${intel.trend_acceleration.toFixed(3)}`,
-    `• Narrative velocity: ${intel.narrative_velocity.toFixed(3)}`,
-    `• Whale pressure: ${intel.whale_pressure.toFixed(3)}`,
-    `• Spoofing probability: ${intel.spoofing_probability.toFixed(3)}`,
-    `• Chain truth: ${intel.chain_truth.toFixed(3)}`,
-    `• Sector growth: ${intel.sector_growth.toFixed(3)}`
+    `VolatiAI snapshot — ${new Date(
+      intel.timestamp || Date.now()
+    ).toISOString()}`,
+    `• Trend acceleration: ${(intel.trend_acceleration ?? 0).toFixed(3)}`,
+    `• Narrative velocity: ${(intel.narrative_velocity ?? 0).toFixed(3)}`,
+    `• Whale pressure: ${(intel.whale_pressure ?? 0).toFixed(3)}`,
+    `• Spoofing probability: ${(intel.spoofing_probability ?? 0).toFixed(3)}`,
+    `• Chain truth: ${(intel.chain_truth ?? 0).toFixed(3)}`,
+    `• Sector growth: ${(intel.sector_growth ?? 0).toFixed(3)}`
   ].join("\n");
 }
 
@@ -157,25 +182,26 @@ async function run() {
   console.log("Running intelligence model...");
   const intel = intelligenceModel(fused);
 
+  // Ensure timestamp exists
+  intel.timestamp = intel.timestamp || Date.now();
+
   console.log("Writing snapshots...");
   writeSnapshots(intel, sectorsRaw);
 
-  console.log("Writing HTML (intel + health + reliability dashboards)...");
-  writeHtml(intel, sectorsRaw);
+  console.log(
+    "Writing HTML (intel + health + reliability dashboards)..."
+  );
+  await writeHtml(intel, sectorsRaw);
 
-  // ⭐ NEW: Health Checker
   console.log("Running health checker...");
   await runHealthCheck(sectorUrls);
 
-  // ⭐ NEW: Global Reliability Scoring
   console.log("Running reliability scoring...");
   await runReliabilityAnalysis();
 
-  // ⭐ NEW: Sector Reliability Breakdown + Trend
   console.log("Running sector reliability breakdown...");
   await runSectorReliability();
 
-  // ⭐ NEW: Alerts (Workers + Sectors)
   console.log("Sending alerts...");
   await sendAlerts();
 
@@ -185,14 +211,21 @@ async function run() {
   const msg = formatMessage(intel);
 
   console.log("Broadcasting to bots...");
-  await postToSlack(msg);
-  await postToTelegram(msg);
-  await postToBluesky(msg);
-  await postToMastodon(msg);
-  await postToDiscord(msg);
-  await postToNostr(msg);
+
+  await Promise.allSettled([
+    postToSlack(msg),
+    postToTelegram(msg),
+    postToBluesky(msg),
+    postToMastodon(msg),
+    postToDiscord(msg),
+    postToNostr(msg)
+  ]);
 
   console.log("Local Runner complete.");
 }
 
-run();
+// Start runner
+run().catch((err) => {
+  console.error("Fatal runner error:", err);
+  process.exit(1);
+});
