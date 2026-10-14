@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   deploy:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
 
     steps:
@@ -24,11 +25,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Sync latest main
-        run: |
-          git fetch origin main
-          git reset --hard origin/main
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -40,19 +36,6 @@ jobs:
 
       - name: Run local runner (generate dashboards)
         run: node local_runner/index.js
-
-      - name: Verify generated files
-        run: |
-          echo "=== Working Directory ==="
-          pwd
-
-          echo ""
-          echo "=== Repository Contents ==="
-          ls -la
-
-          echo ""
-          echo "=== Public Directory ==="
-          ls -la public || true
 
       - name: Create docs folder
         run: mkdir -p docs
@@ -66,23 +49,6 @@ jobs:
         run: |
           echo "=== DOCS FILE SIZES ==="
           find docs -type f -exec du -h {} + | sort -hr
-
-          echo ""
-          echo "=== TOP 20 LARGEST FILES IN REPO ==="
-          find . -type f -exec du -h {} + | sort -hr | head -20
-
-      - name: Inspect Intel Files
-        run: |
-          echo "=== INTEL FILES ==="
-          ls -lh docs/intel* || true
-
-          echo ""
-          echo "=== INTEL LINE COUNTS ==="
-          wc -l docs/intel.json docs/intel.html || true
-
-          echo ""
-          echo "=== INTEL BYTE COUNTS ==="
-          wc -c docs/intel.json docs/intel.html || true
 
       - name: Remove Oversized Intel Files
         run: |
@@ -107,7 +73,7 @@ jobs:
           LARGE=$(find docs -type f -size +95M)
 
           if [ -n "$LARGE" ]; then
-            echo "ERROR: Files exceed GitHub safe limit:"
+            echo "ERROR: Files exceed GitHub limit:"
             echo "$LARGE"
             exit 1
           fi
@@ -115,17 +81,14 @@ jobs:
       - name: Final File Listing
         run: |
           echo "=== FINAL DOCS CONTENTS ==="
-          ls -lh docs
-
-      - name: Git Status
-        run: git status
+          ls -lah docs
 
       - name: Commit and Push Updated Docs
         run: |
           git config user.name "volati-bot"
           git config user.email "bot@example.com"
 
-          git add docs/
+          git add docs
 
           if git diff --cached --quiet; then
             echo "No changes detected"
@@ -134,7 +97,23 @@ jobs:
 
           git commit -m "[skip ci] Update VolatiAI public dashboards"
 
-          git push origin HEAD:main
+          for attempt in 1 2 3
+          do
+            echo "Sync attempt $attempt"
+
+            if git pull --rebase origin main; then
+              if git push origin HEAD:main; then
+                echo "Push successful"
+                exit 0
+              fi
+            fi
+
+            echo "Retrying..."
+            sleep 5
+          done
+
+          echo "Failed to push after 3 attempts"
+          exit 1
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
