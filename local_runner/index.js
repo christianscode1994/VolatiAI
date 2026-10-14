@@ -143,7 +143,6 @@ function writeSnapshots(intel, sectorsRaw) {
   chain_integrity: intel.chain_truth ?? 0,
   score: intel.sector_growth ?? 0
 },
-``
 
   dsi: Array.isArray(intel.dsi) ? intel.dsi : [],
 rpc_truth: Array.isArray(intel.rpc_truth) ? intel.rpc_truth : [],
