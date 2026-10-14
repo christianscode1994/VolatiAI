@@ -1,6 +1,19 @@
 async function loadJSON(path) {
   const res = await fetch(path);
-  return await res.json();
+
+  if (!res.ok) {
+    throw new Error(`${path}: HTTP ${res.status}`);
+  }
+
+  const text = await res.text();
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.error(`Invalid JSON in ${path}`);
+    console.error(text.substring(0, 500));
+    throw err;
+  }
 }
 
 async function initDashboard() {
@@ -27,8 +40,15 @@ async function initDashboard() {
     renderSwarmClusters(swarm);
     renderSwarmAgents(swarm);
   } catch (err) {
-    console.error("Dashboard init failed:", err);
-  }
+  console.error("Dashboard init failed:", err);
+
+  document.body.innerHTML = `
+    <div style="padding:40px;font-family:sans-serif">
+      <h2>Dashboard failed to load</h2>
+      <pre>${err.message}</pre>
+    </div>
+  `;
+}
 }
 
 function renderSnapshotTime(intel) {
