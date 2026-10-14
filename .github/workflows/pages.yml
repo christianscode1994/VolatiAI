@@ -25,6 +25,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Sync latest main
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -112,27 +117,22 @@ jobs:
           echo "=== FINAL DOCS CONTENTS ==="
           ls -lh docs
 
+      - name: Git Status
+        run: git status
+
       - name: Commit and Push Updated Docs
         run: |
           git config user.name "volati-bot"
           git config user.email "bot@example.com"
 
-          git add docs
+          git add docs/
 
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes detected"
             exit 0
           fi
 
           git commit -m "[skip ci] Update VolatiAI public dashboards"
-
-          git fetch origin main
-
-          if ! git rebase origin/main; then
-            echo "Rebase failed"
-            git rebase --abort || true
-            exit 1
-          fi
 
           git push origin HEAD:main
 
