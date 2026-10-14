@@ -139,16 +139,17 @@ function writeSnapshots(intel, sectorsRaw) {
   ts: new Date().toISOString(),
 
   global: {
-    direction: intel.direction || "neutral",
-    chain_integrity: intel.chain_truth || 0,
-    score: intel.sector_growth || 0
-  },
+  direction: intel.direction ?? "neutral",
+  chain_integrity: intel.chain_truth ?? 0,
+  score: intel.sector_growth ?? 0
+},
+``
 
-  dsi: intel.dsi || [],
-  rpc_truth: intel.rpc_truth || [],
-  depth: intel.depth || [],
-  devactivity: intel.devactivity || [],
-  narratives: intel.narratives || []
+  dsi: Array.isArray(intel.dsi) ? intel.dsi : [],
+rpc_truth: Array.isArray(intel.rpc_truth) ? intel.rpc_truth : [],
+depth: Array.isArray(intel.depth) ? intel.depth : [],
+devactivity: Array.isArray(intel.devactivity) ? intel.devactivity : [],
+narratives: Array.isArray(intel.narratives) ? intel.narratives : []
 };
 
 fs.writeFileSync(
