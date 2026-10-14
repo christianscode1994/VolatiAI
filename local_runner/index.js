@@ -135,17 +135,27 @@ function writeSnapshots(intel, sectorsRaw) {
   // Ensure directory exists
   fs.mkdirSync(outDir, { recursive: true });
 
-  const snapshot = {
-    timestamp: Date.now(),
-    intelligence: intel,
-    sectors: sectorsRaw
-  };
+  const dashboardIntel = {
+  ts: new Date().toISOString(),
 
-  fs.writeFileSync(
-    path.join(outDir, "intel.json"),
-    JSON.stringify(snapshot, null, 2),
-    "utf8"
-  );
+  global: {
+    direction: intel.direction || "neutral",
+    chain_integrity: intel.chain_truth || 0,
+    score: intel.sector_growth || 0
+  },
+
+  dsi: intel.dsi || [],
+  rpc_truth: intel.rpc_truth || [],
+  depth: intel.depth || [],
+  devactivity: intel.devactivity || [],
+  narratives: intel.narratives || []
+};
+
+fs.writeFileSync(
+  path.join(outDir, "intel.json"),
+  JSON.stringify(dashboardIntel, null, 2),
+  "utf8"
+);
 
   fs.writeFileSync(
     path.join(outDir, "latest.json"),
