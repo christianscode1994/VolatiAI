@@ -1,85 +1,303 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>VolatiAI · Worker Uptime Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     body {
       margin: 0;
+      padding: 20px;
       font-family: system-ui, -apple-system, sans-serif;
       background: #020617;
       color: #e5e7eb;
-      padding: 20px;
     }
-    h1 { font-size: 22px; margin-bottom: 6px; }
-    p { font-size: 13px; color: #9ca3af; }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .meta {
+      margin: 12px 0;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 12px;
-      font-size: 11px;
+      font-size: 12px;
+      background: #0b1120;
     }
-    th, td {
+
+    th,
+    td {
       border: 1px solid #111827;
-      padding: 6px 5px;
+      padding: 8px 6px;
       text-align: left;
     }
-    th { background: #0b1120; }
+
+    th {
+      background: #111827;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .online {
+      color: #22c55e;
+    }
+
+    .offline {
+      color: #ef4444;
+    }
+
+    .good {
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    .warn {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    .bad {
+      color: #ef4444;
+      font-weight: 600;
+    }
   </style>
 </head>
+
 <body>
+
   <h1>Worker Uptime Tracker</h1>
-  <p>Aggregated uptime percentages from <code>uptime_history.json</code>.</p>
+
+  <p>
+    Aggregated uptime percentages from
+    <code>uptime_history.json</code>
+  </p>
+
+  <div class="meta">
+    Workers:
+    <span id="worker-count">0</span>
+    |
+    Average uptime:
+    <span id="avg-uptime">0%</span>
+    |
+    Updated:
+    <span id="last-update">--</span>
+  </div>
 
   <table id="uptime-table">
+
     <thead>
       <tr>
+        <th>Status</th>
         <th>Worker</th>
         <th>Sector</th>
         <th>Uptime (%)</th>
+        <th>Samples</th>
       </tr>
     </thead>
+
     <tbody></tbody>
+
   </table>
 
   <script>
+
     async function loadUptime() {
+
       try {
-        const res = await fetch("uptime_history.json");
-        const history = await res.json(); // [{timestamp, workers:[{url,sector,up}]}, ...]
+
+        const res = await fetch(
+          `uptime_history.json?t=${Date.now()}`
+        );
+
+        if (!res.ok) {
+          throw new Error(
+            `HTTP ${res.status}`
+          );
+        }
+
+        const history =
+          await res.json();
 
         const map = {};
+
         history.forEach(entry => {
-          (entry.workers || []).forEach(w => {
-            if (!map[w.url]) {
-              map[w.url] = { url: w.url, sector: w.sector, upSamples: 0, totalSamples: 0 };
+
+          (entry.workers || [])
+          .forEach(worker => {
+
+            if (!worker?.url) {
+              return;
             }
-            map[w.url].totalSamples += 1;
-            if (w.up) map[w.url].upSamples += 1;
+
+            if (!map[worker.url]) {
+
+              map[worker.url] = {
+                url: worker.url,
+                sector:
+                  worker.sector ||
+                  "unknown",
+                upSamples: 0,
+                totalSamples: 0,
+                lastStatus: false
+              };
+
+            }
+
+            map[worker.url]
+              .totalSamples++;
+
+            if (worker.up) {
+              map[worker.url]
+                .upSamples++;
+            }
+
+            map[worker.url]
+              .lastStatus =
+                Boolean(worker.up);
+
           });
+
         });
 
-        const rows = Object.values(map).map(w => {
-          const uptime = w.totalSamples ? (w.upSamples / w.totalSamples) * 100 : 0;
-          return `
-            <tr>
-              <td>${w.url}</td>
-              <td>${w.sector}</td>
-              <td>${uptime.toFixed(1)}</td>
-            </tr>
-          `;
-        }).join("");
+        const workers =
+          Object.values(map);
 
-        document.querySelector("#uptime-table tbody").innerHTML = rows;
-      } catch (e) {
-        document.querySelector("#uptime-table tbody").innerHTML =
-          `<tr><td colspan="3">Failed to load uptime_history.json</td></tr>`;
+        workers.forEach(w => {
+
+          w.uptime =
+            w.totalSamples
+              ? (
+                  w.upSamples /
+                  w.totalSamples
+                ) * 100
+              : 0;
+
+        });
+
+        workers.sort(
+          (a, b) =>
+            b.uptime - a.uptime
+        );
+
+        const avgUptime =
+          workers.length
+            ? workers.reduce(
+                (sum, w) =>
+                  sum + w.uptime,
+                0
+              ) / workers.length
+            : 0;
+
+        document.getElementById(
+          "worker-count"
+        ).textContent =
+          workers.length;
+
+        document.getElementById(
+          "avg-uptime"
+        ).textContent =
+          avgUptime.toFixed(2) + "%";
+
+        document.getElementById(
+          "last-update"
+        ).textContent =
+          new Date()
+            .toLocaleTimeString();
+
+        const rows =
+          workers.map(w => {
+
+            let uptimeClass =
+              "bad";
+
+            if (w.uptime >= 99) {
+              uptimeClass =
+                "good";
+            } else if (
+              w.uptime >= 90
+            ) {
+              uptimeClass =
+                "warn";
+            }
+
+            return `
+              <tr>
+                <td class="${
+                  w.lastStatus
+                    ? "online"
+                    : "offline"
+                }">
+                  ${
+                    w.lastStatus
+                      ? "● Online"
+                      : "● Offline"
+                  }
+                </td>
+
+                <td>${w.url}</td>
+
+                <td>${w.sector}</td>
+
+                <td class="${uptimeClass}">
+                  ${w.uptime.toFixed(2)}
+                </td>
+
+                <td>
+                  ${w.totalSamples}
+                </td>
+              </tr>
+            `;
+
+          })
+          .join("");
+
+        document.querySelector(
+          "#uptime-table tbody"
+        ).innerHTML =
+          rows;
+
+      } catch (err) {
+
+        console.error(err);
+
+        document.querySelector(
+          "#uptime-table tbody"
+        ).innerHTML =
+          `
+          <tr>
+            <td colspan="5">
+              Failed to load
+              uptime_history.json
+            </td>
+          </tr>
+          `;
       }
+
     }
 
     loadUptime();
-    setInterval(loadUptime, 60000);
+
+    setInterval(
+      loadUptime,
+      60000
+    );
+
   </script>
+
 </body>
 </html>
