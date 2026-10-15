@@ -1627,23 +1627,25 @@ let GLOW = true;
 let CURVES = true;
 let SPEED = 1.0;
 
-/* ------------------ CONTROL BINDINGS ------------------ */
+/* ==========================================================
+   CONTROL BINDINGS
+========================================================== */
 
 if (toggleHeatmap) {
   toggleHeatmap.onchange = () => {
     SHOW_HEATMAP = toggleHeatmap.checked;
 
     const heatmapContainer =
-      document.getElementById(
-        "heatmap-svg-container"
-      );
+      document.getElementById("heatmap-svg-container");
 
     if (heatmapContainer) {
       heatmapContainer.style.display =
-        SHOW_HEATMAP
-          ? "block"
-          : "none";
+        SHOW_HEATMAP ? "block" : "none";
     }
+
+    logEvent("toggle_heatmap", {
+      enabled: SHOW_HEATMAP
+    });
   };
 }
 
@@ -1652,272 +1654,579 @@ if (toggleFlow) {
     SHOW_FLOW = toggleFlow.checked;
 
     const flowCanvas =
-      document.getElementById(
-        "sector-flow-canvas"
-      );
+      document.getElementById("sector-flow-canvas");
 
     if (flowCanvas) {
       flowCanvas.style.display =
-        SHOW_FLOW
-          ? "block"
-          : "none";
+        SHOW_FLOW ? "block" : "none";
     }
+
+    logEvent("toggle_flow", {
+      enabled: SHOW_FLOW
+    });
   };
 }
 
 if (toggleGlow) {
   toggleGlow.onchange = () => {
     GLOW = toggleGlow.checked;
+
+    logEvent("toggle_glow", {
+      enabled: GLOW
+    });
   };
 }
 
 if (toggleCurves) {
   toggleCurves.onchange = () => {
     CURVES = toggleCurves.checked;
+
+    logEvent("toggle_curves", {
+      enabled: CURVES
+    });
   };
 }
 
 if (animSpeed) {
   animSpeed.oninput = () => {
-    const speed =
-      parseFloat(animSpeed.value);
+    const speed = parseFloat(animSpeed.value);
 
     SPEED =
       Number.isFinite(speed)
         ? speed
         : 1.0;
+
+    logEvent("speed_change", {
+      speed: SPEED
+    });
   };
 }
 
-// These replacements must be applied INSIDE your animation loops,
-// not at top-level. They are shown here as reference only:
-//
-// t += 0.01 * SPEED;
-// fctx.shadowBlur = GLOW ? 14 : 0;
-// if (CURVES) fctx.quadraticCurveTo(cp.x, cp.y, to.x, to.y);
-// else fctx.lineTo(to.x, to.y);
+/*
+Inside animation loops:
 
-// Heatmap zoom/pan
+t += 0.01 * SPEED;
+
+fctx.shadowBlur = GLOW ? 14 : 0;
+
+if (CURVES) {
+  fctx.quadraticCurveTo(cp.x, cp.y, to.x, to.y);
+} else {
+  fctx.lineTo(to.x, to.y);
+}
+*/
+
+
+/* ==========================================================
+   HEATMAP ZOOM / PAN
+========================================================== */
+
 let HEATMAP_ZOOM = 1.0;
 let HEATMAP_PAN_X = 0;
 let HEATMAP_PAN_Y = 0;
 
 const heatmapZoom =
-  document.getElementById(
-    "heatmapZoom"
-  );
+  document.getElementById("heatmapZoom");
+
+const heatmapPanX =
+  document.getElementById("heatmapPanX");
+
+const heatmapPanY =
+  document.getElementById("heatmapPanY");
 
 if (heatmapZoom) {
   heatmapZoom.oninput = e => {
     HEATMAP_ZOOM =
-      parseFloat(e.target.value);
+      parseFloat(e.target.value) || 1.0;
 
     if (Array.isArray(geo)) {
       createHeatmapSVG(geo);
     }
   };
-} e => {
-  HEATMAP_ZOOM = parseFloat(e.target.value);
-  createHeatmapSVG(geo);
-};
-document.getElementById("heatmapPanX").oninput = e => {
-  HEATMAP_PAN_X = parseFloat(e.target.value);
-  createHeatmapSVG(geo);
-};
-document.getElementById("heatmapPanY").oninput = e => {
-  HEATMAP_PAN_Y = parseFloat(e.target.value);
-  createHeatmapSVG(geo);
-};
+}
 
-// Inside createHeatmapSVG, replace x,y with zoomed/panned versions:
-//
-// const { x, y } = lonLatToMercatorXY(w.lon, w.lat, width, height);
-// const zx = x * HEATMAP_ZOOM + HEATMAP_PAN_X;
-// const zy = y * HEATMAP_ZOOM + HEATMAP_PAN_Y;
-//
-// circle.setAttribute("cx", zx);
-// circle.setAttribute("cy", zy);
-// pulse.setAttribute("cx", zx);
-// pulse.setAttribute("cy", zy);
+if (heatmapPanX) {
+  heatmapPanX.oninput = e => {
+    HEATMAP_PAN_X =
+      parseFloat(e.target.value) || 0;
 
-// Focus sector mode
+    if (Array.isArray(geo)) {
+      createHeatmapSVG(geo);
+    }
+  };
+}
+
+if (heatmapPanY) {
+  heatmapPanY.oninput = e => {
+    HEATMAP_PAN_Y =
+      parseFloat(e.target.value) || 0;
+
+    if (Array.isArray(geo)) {
+      createHeatmapSVG(geo);
+    }
+  };
+}
+
+/*
+Inside createHeatmapSVG()
+
+const { x, y } =
+  lonLatToMercatorXY(
+    w.lon,
+    w.lat,
+    width,
+    height
+  );
+
+const zx =
+  x * HEATMAP_ZOOM +
+  HEATMAP_PAN_X;
+
+const zy =
+  y * HEATMAP_ZOOM +
+  HEATMAP_PAN_Y;
+
+circle.setAttribute("cx", zx);
+circle.setAttribute("cy", zy);
+
+pulse.setAttribute("cx", zx);
+pulse.setAttribute("cy", zy);
+*/
+
+
+/* ==========================================================
+   FOCUS MODE
+========================================================== */
+
 let FOCUS_SECTOR = "none";
 let PREV_FOCUS_SECTOR = "none";
 let FOCUS_TRANSITION_T = 0;
 
-document.getElementById("focusSector").onchange = e => {
-  PREV_FOCUS_SECTOR = FOCUS_SECTOR;
-  FOCUS_SECTOR = e.target.value;
-  FOCUS_TRANSITION_T = 0;
-  animateFocusTransition();
+const focusSectorEl =
+  document.getElementById("focusSector");
 
-  logEvent("focus_change", {
-    from: PREV_FOCUS_SECTOR,
-    to: FOCUS_SECTOR
-  });
-};
+if (focusSectorEl) {
+  focusSectorEl.onchange = e => {
+    PREV_FOCUS_SECTOR =
+      FOCUS_SECTOR;
 
-// Focus transition animation
-function animateFocusTransition() {
-  const duration = 0.6;
-  const start = performance.now();
+    FOCUS_SECTOR =
+      e.target.value;
 
-  function step(now) {
-    const elapsed = (now - start) / 1000;
-    FOCUS_TRANSITION_T = Math.min(elapsed / duration, 1);
+    FOCUS_TRANSITION_T = 0;
 
-    renderFocusUpdate();
+    animateFocusTransition();
 
-    function renderFocusUpdate() {
-  createHeatmapSVG(geo);
+    logEvent("focus_change", {
+      from: PREV_FOCUS_SECTOR,
+      to: FOCUS_SECTOR
+    });
+  };
+}
 
-  if (Array.isArray(sectorFlow2)) {
-    drawAnimatedSectorFlow(sectorFlow2);
+
+/* ==========================================================
+   FOCUS ANIMATION
+========================================================== */
+
+function renderFocusUpdate() {
+
+  if (Array.isArray(geo)) {
+    createHeatmapSVG(geo);
+  }
+
+  const flows =
+    sectorFlow2 ||
+    sectorFlow ||
+    [];
+
+  if (Array.isArray(flows)) {
+    drawAnimatedSectorFlow(flows);
+  }
+
+  const panelEl =
+    document.querySelector(
+      ".panel-narrative"
+    );
+
+  if (panelEl) {
+    panelEl.style.opacity =
+      0.6 +
+      0.4 * FOCUS_TRANSITION_T;
   }
 }
 
+function animateFocusTransition() {
+
+  const duration = 0.6;
+
+  const start =
+    performance.now();
+
+  function step(now) {
+
+    const elapsed =
+      (now - start) / 1000;
+
+    FOCUS_TRANSITION_T =
+      Math.min(
+        elapsed / duration,
+        1
+      );
+
+    renderFocusUpdate();
+
     if (elapsed < duration) {
-      requestAnimationFrame(step);
+
+      requestAnimationFrame(
+        step
+      );
+
     } else {
+
       FOCUS_TRANSITION_T = 1;
-      initDashboard();
+
+      if (typeof initDashboard === "function") {
+        initDashboard();
+      }
     }
   }
 
   requestAnimationFrame(step);
 }
 
-// Hover sector mode
+
+/* ==========================================================
+   HOVER MODE
+========================================================== */
+
 let HOVER_SECTOR = "none";
 
-document.querySelectorAll(".sector-hover").forEach(el => {
-  el.onmouseenter = () => {
-    HOVER_SECTOR = el.dataset.sector;
-    logEvent("hover_start", { sector: HOVER_SECTOR });
-    initDashboard();
-  };
-  el.onmouseleave = () => {
-    logEvent("hover_end", { sector: HOVER_SECTOR });
-    HOVER_SECTOR = "none";
-    initDashboard();
-  };
-});
+document
+  .querySelectorAll(
+    ".sector-hover"
+  )
+  .forEach(el => {
 
-// Focus + hover dimming logic (used inside renderers)
-//
-// const dimFocus = (FOCUS_SECTOR !== "none" && w.sector !== FOCUS_SECTOR);
-// const highlightHover = (HOVER_SECTOR !== "none" && w.sector === HOVER_SECTOR);
-// const dim = dimFocus && !highlightHover;
-//
-// circle.setAttribute("fill", dim ? "#1f2937" : color);
-// circle.setAttribute("fill-opacity", highlightHover ? "1.0" : (dim ? "0.25" : "0.85"));
-//
-// For flows:
-//
-// const involvesFocus = (FOCUS_SECTOR === "none" || f.from === FOCUS_SECTOR || f.to === FOCUS_SECTOR);
-// const involvesHover = (HOVER_SECTOR !== "none" && (f.from === HOVER_SECTOR || f.to === HOVER_SECTOR));
-// const dim = !involvesFocus && !involvesHover;
-// const strong = involvesHover;
-//
-// fctx.strokeStyle = dim ? "rgba(50,50,50,0.4)" : color;
-// fctx.lineWidth = (2 + strength * 4) * (strong ? 1.4 : 1.0);
-// fctx.shadowColor = dim ? "transparent" : color;
+    el.onmouseenter = () => {
 
-// Narrative panel focus fade
-const panelEl = document.querySelector(".panel-narrative");
-if (panelEl) {
-  panelEl.style.opacity = 0.6 + 0.4 * FOCUS_TRANSITION_T;
-}
+      HOVER_SECTOR =
+        el.dataset.sector ||
+        "none";
 
-// Recording mode
+      logEvent(
+        "hover_start",
+        {
+          sector:
+            HOVER_SECTOR
+        }
+      );
+
+      if (
+        typeof initDashboard ===
+        "function"
+      ) {
+        initDashboard();
+      }
+    };
+
+    el.onmouseleave = () => {
+
+      logEvent(
+        "hover_end",
+        {
+          sector:
+            HOVER_SECTOR
+        }
+      );
+
+      HOVER_SECTOR =
+        "none";
+
+      if (
+        typeof initDashboard ===
+        "function"
+      ) {
+        initDashboard();
+      }
+    };
+  });
+
+
+/* ==========================================================
+   RECORDING MODE
+========================================================== */
+
 let RECORDING = false;
 let RECORD_LOG = [];
 let RECORD_START_TIME = null;
 
-function logEvent(type, data = {}) {
-  if (!RECORDING) return;
+function logEvent(
+  type,
+  data = {}
+) {
+
+  if (
+    !RECORDING ||
+    !RECORD_START_TIME
+  ) {
+    return;
+  }
+
   RECORD_LOG.push({
     type,
-    timestamp: Date.now() - RECORD_START_TIME,
+    timestamp:
+      Date.now() -
+      RECORD_START_TIME,
     ...data
   });
 }
 
-const recStart = document.getElementById("recStart");
-const recStop = document.getElementById("recStop");
-const recDownload = document.getElementById("recDownload");
-const recStatus = document.getElementById("recStatus");
+const recStart =
+  document.getElementById(
+    "recStart"
+  );
 
-recStart.onclick = () => {
-  RECORDING = true;
-  RECORD_LOG = [];
-  RECORD_START_TIME = Date.now();
-  recStatus.textContent = "Recording…";
-  recStart.disabled = true;
-  recStop.disabled = false;
-  recDownload.disabled = true;
+const recStop =
+  document.getElementById(
+    "recStop"
+  );
 
-  logEvent("session_start");
-};
+const recDownload =
+  document.getElementById(
+    "recDownload"
+  );
 
-recStop.onclick = () => {
-  RECORDING = false;
-  recStatus.textContent = "Recording stopped.";
-  recStart.disabled = false;
-  recStop.disabled = true;
-  recDownload.disabled = false;
+const recStatus =
+  document.getElementById(
+    "recStatus"
+  );
 
-  logEvent("session_stop");
-};
+if (
+  recStart &&
+  recStop &&
+  recDownload &&
+  recStatus
+) {
 
-recDownload.onclick = () => {
-  const blob = new Blob([JSON.stringify(RECORD_LOG, null, 2)], {
-    type: "application/json"
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `analysis_session_${new Date().toISOString()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
+  recStart.onclick = () => {
 
-// Snapshots
-logEvent("narrative_snapshot", {
-  arc_strength: latest.narrative.arc_strength,
-  actors: latest.narrative.actors
-});
+    RECORDING = true;
 
-logEvent("reliability_snapshot", {
-  workers: reliability.workers
-});
+    RECORD_LOG = [];
 
-logEvent("flow_snapshot", {
-  flows: sectorFlow
-});
+    RECORD_START_TIME =
+      Date.now();
 
-// Theme toggle
-toggle.onclick = () => {
-  dark = !dark;
-  if (dark) {
-    root.style.setProperty("--bg", "#020617");
-    root.style.setProperty("--fg", "#e5e7eb");
-    root.style.setProperty("--card", "#0b1120");
-    root.style.setProperty("--border", "#1f2937");
-    root.style.setProperty("--muted", "#9ca3af");
-    document.body.style.background =
-      "radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%)";
-  } else {
-    root.style.setProperty("--bg", "#f9fafb");
-    root.style.setProperty("--fg", "#111827");
-    root.style.setProperty("--card", "#ffffff");
-    root.style.setProperty("--border", "#e5e7eb");
-    root.style.setProperty("--muted", "#6b7280");
-    document.body.style.background = "#f9fafb";
-  }
-};
+    recStatus.textContent =
+      "Recording...";
 
-initDashboard();
-</script>
-</body>
-</html>
+    recStart.disabled = true;
+    recStop.disabled = false;
+    recDownload.disabled = true;
+
+    logEvent(
+      "session_start"
+    );
+  };
+
+  recStop.onclick = () => {
+
+    logEvent(
+      "session_stop"
+    );
+
+    RECORDING = false;
+
+    recStatus.textContent =
+      "Recording stopped.";
+
+    recStart.disabled =
+      false;
+
+    recStop.disabled =
+      true;
+
+    recDownload.disabled =
+      false;
+  };
+
+  recDownload.onclick =
+    () => {
+
+      const blob =
+        new Blob(
+          [
+            JSON.stringify(
+              RECORD_LOG,
+              null,
+              2
+            )
+          ],
+          {
+            type:
+              "application/json"
+          }
+        );
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+      const a =
+        document.createElement(
+          "a"
+        );
+
+      a.href = url;
+
+      a.download =
+        `analysis_session_${new Date().toISOString()}.json`;
+
+      a.click();
+
+      URL.revokeObjectURL(
+        url
+      );
+    };
+}
+
+
+/* ==========================================================
+   SNAPSHOTS
+========================================================== */
+
+if (latest?.narrative) {
+
+  logEvent(
+    "narrative_snapshot",
+    {
+      arc_strength:
+        latest.narrative
+          .arc_strength,
+
+      actors:
+        latest.narrative
+          .actors
+    }
+  );
+}
+
+if (reliability) {
+
+  logEvent(
+    "reliability_snapshot",
+    {
+      workers:
+        reliability.workers
+    }
+  );
+}
+
+if (
+  typeof sectorFlow !==
+  "undefined"
+) {
+
+  logEvent(
+    "flow_snapshot",
+    {
+      flows: sectorFlow
+    }
+  );
+}
+
+
+/* ==========================================================
+   THEME TOGGLE
+========================================================== */
+
+if (toggle) {
+
+  toggle.onclick =
+    () => {
+
+      dark = !dark;
+
+      if (dark) {
+
+        root.style.setProperty(
+          "--bg",
+          "#020617"
+        );
+
+        root.style.setProperty(
+          "--fg",
+          "#e5e7eb"
+        );
+
+        root.style.setProperty(
+          "--card",
+          "#0b1120"
+        );
+
+        root.style.setProperty(
+          "--border",
+          "#1f2937"
+        );
+
+        root.style.setProperty(
+          "--muted",
+          "#9ca3af"
+        );
+
+        document.body.style.background =
+          "radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%)";
+
+      } else {
+
+        root.style.setProperty(
+          "--bg",
+          "#f9fafb"
+        );
+
+        root.style.setProperty(
+          "--fg",
+          "#111827"
+        );
+
+        root.style.setProperty(
+          "--card",
+          "#ffffff"
+        );
+
+        root.style.setProperty(
+          "--border",
+          "#e5e7eb"
+        );
+
+        root.style.setProperty(
+          "--muted",
+          "#6b7280"
+        );
+
+        document.body.style.background =
+          "#f9fafb";
+      }
+
+      logEvent(
+        "theme_change",
+        {
+          dark
+        }
+      );
+    };
+}
+
+
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+if (
+  typeof initDashboard ===
+  "function"
+) {
+  initDashboard();
+}
