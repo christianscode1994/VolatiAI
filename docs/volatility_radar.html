@@ -1,98 +1,782 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>VolatiAI · Sector Volatility Radar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #020617;
-      color: #e5e7eb;
-      padding: 20px;
-    }
-    h1 { font-size: 22px; margin-bottom: 6px; }
-    p { font-size: 13px; color: #9ca3af; }
-    canvas {
-      width: 100%;
-      max-width: 480px;
-      height: 480px;
-      margin-top: 20px;
-      background: #0b1120;
-      border-radius: 12px;
-      border: 1px solid #1f2937;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>VolatiAI · Sector Volatility Radar</title>
+
+<style>
+
+:root{
+  --bg:#020617;
+  --card:#0b1120;
+  --border:#1f2937;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --green:#22c55e;
+  --yellow:#f59e0b;
+  --red:#ef4444;
+}
+
+body{
+  margin:0;
+  padding:24px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,sans-serif;
+}
+
+h1{
+  margin-top:0;
+}
+
+.subtitle{
+  color:var(--muted);
+  margin-bottom:20px;
+}
+
+.dashboard{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+.panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+}
+
+.chart-panel{
+  flex:2;
+  min-width:700px;
+}
+
+.side-panel{
+  flex:1;
+  min-width:280px;
+}
+
+canvas{
+  width:100%;
+  max-width:900px;
+  display:block;
+}
+
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:8px;
+  background:var(--red);
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+#legend{
+  margin-top:20px;
+}
+
+.legend-item{
+  padding:8px;
+  margin-bottom:6px;
+  border-radius:8px;
+  background:#111827;
+  font-size:13px;
+}
+
+#tooltip{
+  position:absolute;
+  display:none;
+  pointer-events:none;
+  min-width:220px;
+  z-index:99999;
+  background:rgba(2,6,23,0.97);
+  border:1px solid #1f2937;
+  border-radius:12px;
+  padding:10px;
+  color:#e5e7eb;
+  box-shadow:0 10px 25px rgba(0,0,0,.45);
+}
+
+.tooltip-title{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.meta{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.error{
+  color:#ef4444;
+}
+
+</style>
 </head>
 <body>
-  <h1>Sector Volatility Radar</h1>
-  <p>Static, serverless radar chart computed from <code>sector_reliability.json</code>.</p>
 
-  <canvas id="radar"></canvas>
+<h1>Sector Volatility Radar</h1>
 
-  <script>
-    async function load() {
-      const res = await fetch("sector_reliability.json");
-      const data = await res.json();
+<div class="subtitle">
+Live radar generated from sector_reliability.json
+</div>
 
-      const sectors = data.sectorReliability.map(s => s.sector);
-      const values = data.sectorReliability.map(s => s.avgReliability);
+<div class="dashboard">
 
-      const canvas = document.getElementById("radar");
-      const ctx = canvas.getContext("2d");
+  <div class="panel chart-panel">
 
-      const w = canvas.width;
-      const h = canvas.height;
-      const cx = w / 2;
-      const cy = h / 2;
-      const radius = Math.min(w, h) * 0.35;
+    <canvas
+      id="radar"
+      width="900"
+      height="900">
+    </canvas>
 
-      ctx.clearRect(0, 0, w, h);
+    <div class="meta">
+      Last refresh:
+      <span id="lastUpdate">--</span>
+    </div>
 
-      ctx.strokeStyle = "#1f2937";
-      ctx.lineWidth = 1;
+    <div style="margin-top:15px">
+      <button id="exportBtn">
+        Export PNG
+      </button>
+    </div>
 
-      for (let r = radius; r > 0; r -= radius / 4) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.stroke();
-      }
+  </div>
 
-      const angleStep = (Math.PI * 2) / sectors.length;
+  <div class="panel side-panel">
 
-      ctx.strokeStyle = "#22c55e";
-      ctx.fillStyle = "rgba(34,197,94,0.25)";
-      ctx.lineWidth = 2;
+    <h3>Volatility Ranking</h3>
 
-      ctx.beginPath();
-      sectors.forEach((sector, i) => {
-        const angle = i * angleStep - Math.PI / 2;
-        const value = values[i];
-        const r = radius * value;
+    <div id="legend"></div>
 
-        const x = cx + r * Math.cos(angle);
-        const y = cy + r * Math.sin(angle);
+  </div>
 
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
+</div>
 
-      ctx.fillStyle = "#e5e7eb";
-      ctx.font = "12px system-ui";
+<div id="tooltip"></div>
 
-      sectors.forEach((sector, i) => {
-        const angle = i * angleStep - Math.PI / 2;
-        const x = cx + (radius + 20) * Math.cos(angle);
-        const y = cy + (radius + 20) * Math.sin(angle);
-        ctx.fillText(sector, x - 20, y);
-      });
+<script>
+
+const canvas =
+document.getElementById("radar");
+
+const ctx =
+canvas.getContext("2d");
+
+const tooltip =
+document.getElementById("tooltip");
+
+let radarPoints = [];
+
+let previousData = {};
+
+let cachedSectors = [];
+let cachedValues = [];
+
+async function loadRadar() {
+
+  try {
+
+    const res =
+      await fetch(
+        "sector_reliability.json?t=" +
+        Date.now()
+      );
+
+    if (!res.ok) {
+      throw new Error(
+        `HTTP ${res.status}`
+      );
     }
 
-    load();
-  </script>
+    const json =
+      await res.json();
+
+    if (
+      !json ||
+      !Array.isArray(
+        json.sectorReliability
+      )
+    ) {
+      throw new Error(
+        "Invalid JSON format"
+      );
+    }
+
+    const sectors =
+      json.sectorReliability.map(
+        x => x.sector
+      );
+
+    const values =
+      json.sectorReliability.map(
+        x =>
+          1 -
+          Number(
+            x.avgReliability
+          )
+      );
+
+    cachedSectors = sectors;
+    cachedValues = values;
+
+    buildRanking(
+      json.sectorReliability
+    );
+
+    document.getElementById(
+      "lastUpdate"
+    ).textContent =
+      new Date()
+      .toLocaleTimeString();
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    document
+      .getElementById(
+        "legend"
+      )
+      .innerHTML =
+      `
+      <div class="error">
+        Failed loading
+        sector_reliability.json
+      </div>
+      `;
+  }
+}
+
+function buildRanking(data) {
+
+  const ranked =
+    data.map(item => ({
+      sector:
+        item.sector,
+
+      volatility:
+        (
+          1 -
+          Number(
+            item.avgReliability
+          )
+        ) * 100
+    }));
+
+  ranked.sort(
+    (a,b) =>
+      b.volatility -
+      a.volatility
+  );
+
+  const html =
+    ranked.map(
+      (item,index) =>
+      `
+      <div class="legend-item">
+        #${index + 1}
+        ${item.sector}
+        <strong>
+          ${item.volatility.toFixed(1)}%
+        </strong>
+      </div>
+      `
+    ).join("");
+
+  document
+    .getElementById(
+      "legend"
+    )
+    .innerHTML = html;
+}
+
+function drawRadar(
+  sectors,
+  values
+){
+
+  if (
+    !sectors ||
+    sectors.length === 0
+  ) {
+    return;
+  }
+
+  const w =
+    canvas.width;
+
+  const h =
+    canvas.height;
+
+  const cx =
+    w / 2;
+
+  const cy =
+    h / 2;
+
+  const radius =
+    Math.min(
+      w,
+      h
+    ) * 0.34;
+
+  ctx.clearRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+  const count =
+    sectors.length;
+
+  const angleStep =
+    (Math.PI * 2) /
+    count;
+
+  for (
+    let ring = 1;
+    ring <= 5;
+    ring++
+  ) {
+
+    const r =
+      radius *
+      (ring / 5);
+
+    let color =
+      "#1f2937";
+
+    if (ring === 5)
+      color =
+        "rgba(239,68,68,0.35)";
+
+    else if (ring === 4)
+      color =
+        "rgba(245,158,11,0.35)";
+
+    else if (ring === 1)
+      color =
+        "rgba(34,197,94,0.35)";
+
+    ctx.strokeStyle =
+      color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      cx,
+      cy,
+      r,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle =
+    "#1f2937";
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    const angle =
+      i *
+      angleStep -
+      Math.PI / 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      cx,
+      cy
+    );
+
+    ctx.lineTo(
+      cx +
+      radius *
+      Math.cos(angle),
+
+      cy +
+      radius *
+      Math.sin(angle)
+    );
+
+    ctx.stroke();
+  }
+
+  const gradient =
+    ctx.createRadialGradient(
+      cx,
+      cy,
+      0,
+      cx,
+      cy,
+      radius
+    );
+
+  gradient.addColorStop(
+    0,
+    "rgba(239,68,68,.55)"
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(239,68,68,.05)"
+  );
+
+  ctx.beginPath();
+
+  radarPoints = [];
+
+  values.forEach(
+    (value,i) => {
+
+      const angle =
+        i *
+        angleStep -
+        Math.PI / 2;
+
+      const r =
+        radius *
+        Math.max(
+          0,
+          Math.min(
+            value,
+            1
+          )
+        );
+
+      const x =
+        cx +
+        r *
+        Math.cos(angle);
+
+      const y =
+        cy +
+        r *
+        Math.sin(angle);
+
+      radarPoints.push({
+        sector:
+          sectors[i],
+        value,
+        x,
+        y
+      });
+
+      if(i === 0){
+        ctx.moveTo(x,y);
+      }else{
+        ctx.lineTo(x,y);
+      }
+
+    }
+  );
+
+  ctx.closePath();
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.strokeStyle =
+    "#ef4444";
+
+  ctx.lineWidth = 3;
+
+  ctx.fill();
+  ctx.stroke();
+
+  radarPoints.forEach(
+    (p,i) => {
+
+      const pulse =
+        8 +
+        Math.sin(
+          performance.now()
+          * 0.005 + i
+        ) * 3;
+
+      ctx.shadowColor =
+        "#ef4444";
+
+      ctx.shadowBlur = 15;
+
+      ctx.fillStyle =
+        "#ef4444";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        6,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+
+      ctx.strokeStyle =
+        "rgba(239,68,68,.35)";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        pulse,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.stroke();
+
+      ctx.fillStyle =
+        "#e5e7eb";
+
+      ctx.font =
+        "12px system-ui";
+
+      ctx.fillText(
+        (
+          p.value * 100
+        ).toFixed(0) + "%",
+        p.x + 10,
+        p.y
+      );
+
+    }
+  );
+
+  ctx.fillStyle =
+    "#e5e7eb";
+
+  ctx.font =
+    "14px system-ui";
+
+  sectors.forEach(
+    (sector,i) => {
+
+      const angle =
+        i *
+        angleStep -
+        Math.PI / 2;
+
+      const labelR =
+        radius + 50;
+
+      const x =
+        cx +
+        labelR *
+        Math.cos(angle);
+
+      const y =
+        cy +
+        labelR *
+        Math.sin(angle);
+
+      ctx.fillText(
+        sector,
+        x - 25,
+        y
+      );
+
+    }
+  );
+}
+
+function animate() {
+
+  drawRadar(
+    cachedSectors,
+    cachedValues
+  );
+
+  requestAnimationFrame(
+    animate
+  );
+}
+
+canvas.addEventListener(
+  "mousemove",
+  e => {
+
+    const rect =
+      canvas.getBoundingClientRect();
+
+    const mx =
+      (e.clientX -
+      rect.left) *
+      (canvas.width /
+      rect.width);
+
+    const my =
+      (e.clientY -
+      rect.top) *
+      (canvas.height /
+      rect.height);
+
+    let found = null;
+
+    radarPoints.forEach(
+      p => {
+
+        const d =
+          Math.hypot(
+            mx - p.x,
+            my - p.y
+          );
+
+        if (d < 14)
+          found = p;
+
+      }
+    );
+
+    if (!found) {
+
+      tooltip.style.display =
+        "none";
+
+      return;
+    }
+
+    const current =
+      found.value * 100;
+
+    const old =
+      previousData[
+        found.sector
+      ];
+
+    const delta =
+      old == null
+      ? 0
+      : current - old;
+
+    let arrow = "→";
+
+    if(delta > 0)
+      arrow = "↑";
+
+    if(delta < 0)
+      arrow = "↓";
+
+    tooltip.style.display =
+      "block";
+
+    tooltip.style.left =
+      e.pageX + 15 +
+      "px";
+
+    tooltip.style.top =
+      e.pageY + 15 +
+      "px";
+
+    tooltip.innerHTML =
+    `
+    <div class="tooltip-title">
+      ${found.sector}
+    </div>
+
+    <div>
+      Volatility:
+      <strong>
+        ${current.toFixed(2)}%
+      </strong>
+    </div>
+
+    <div>
+      Change:
+      ${arrow}
+      ${delta.toFixed(2)}%
+    </div>
+
+    <div>
+      Reliability:
+      ${(100-current).toFixed(2)}%
+    </div>
+    `;
+  }
+);
+
+canvas.addEventListener(
+  "mouseleave",
+  () => {
+
+    tooltip.style.display =
+      "none";
+
+  }
+);
+
+document
+.getElementById(
+  "exportBtn"
+)
+.onclick = () => {
+
+  const a =
+    document.createElement(
+      "a"
+    );
+
+  a.href =
+    canvas.toDataURL(
+      "image/png"
+    );
+
+  a.download =
+    "volatiai_volatility_radar.png";
+
+  a.click();
+};
+
+loadRadar();
+
+animate();
+
+setInterval(
+  async () => {
+
+    radarPoints.forEach(
+      p => {
+
+        previousData[
+          p.sector
+        ] =
+          p.value * 100;
+
+      }
+    );
+
+    await loadRadar();
+
+  },
+  60000
+);
+
+</script>
+
 </body>
 </html>
