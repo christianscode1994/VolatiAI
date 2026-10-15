@@ -2,105 +2,235 @@
 
 from typing import Dict, Any, Optional
 
+SCHEMA_VERSION = "2.0"
+
+DEFAULT_WEIGHTS = {
+    "binance": 0.40,
+    "bybit": 0.25,
+    "coinbase": 0.20,
+    "kraken": 0.15,
+}
+
+TOP_LEVELS = 20
+
+
 def _normalize_depth(depth: Any) -> Optional[Dict[str, Any]]:
     """
-    Normalize depth data from any exchange into:
+    Normalize exchange depth into:
+
     {
         "asks": [...],
         "bids": [...]
     }
 
-    Returns None if depth is unusable.
+    Supports:
+    - asks/bids
+    - a/b
+    - data.asks/data.bids
+    - result.asks/result.bids
     """
 
-    # If depth is None → skip
     if depth is None:
         return None
 
-    # If depth is already a dict with asks/bids → good
-    if isinstance(depth, dict):
-        asks = depth.get("asks") or depth.get("a")
-        bids = depth.get("bids") or depth.get("b")
-
-        # If dict but missing keys → unusable
-        if asks is None or bids is None:
-            return None
-
-        return {"asks": asks, "bids": bids}
-
-    # If depth is a list → some exchanges return raw lists
-    # Example: [["price", "size"], ...]
-    if isinstance(depth, list):
-        # We cannot know which side is asks/bids → skip
+    if not isinstance(depth, dict):
         return None
 
-    # Anything else → skip
-    return None
+    nested = (
+        depth.get("data")
+        or depth.get("result")
+        or depth
+    )
+
+    if not isinstance(nested, dict):
+        return None
+
+    asks = nested.get("asks") or nested.get("a")
+    bids = nested.get("bids") or nested.get("b")
+
+    if asks is None or bids is None:
+        return None
+
+    if not isinstance(asks, list):
+        return None
+
+    if not isinstance(bids, list):
+        return None
+
+    return {
+        "asks": asks,
+        "bids": bids,
+    }
+
+
+def _sum_side(side) -> float:
+
+    total = 0.0
+
+    for level in side[:TOP_LEVELS]:
+
+        try:
+
+            price = float(level[0])
+            size = float(level[1])
+
+            if price <= 0:
+                continue
+
+            if size <= 0:
+                continue
+
+            total += price * size
+
+        except Exception:
+            continue
+
+    return total
 
 
 def _depth_imbalance(depth: Any) -> Optional[float]:
     """
-    Returns buy-side vs sell-side imbalance in [−1, 1].
-    >0 = buy pressure, <0 = sell pressure.
+    Returns imbalance in range [-1, 1].
+
+    +1 = maximum buy pressure
+    0 = neutral
+    -1 = maximum sell pressure
     """
 
     depth = _normalize_depth(depth)
+
     if depth is None:
         return None
 
-    asks = depth["asks"]
-    bids = depth["bids"]
+    notional_asks = _sum_side(depth["asks"])
+    notional_bids = _sum_side(depth["bids"])
 
-    def _sum_side(side):
-        total = 0.0
-        for level in side:
-            try:
-                price = float(level[0])
-                size = float(level[1])
-                total += price * size
-            except Exception:
-                continue
-        return total
+    total = notional_asks + notional_bids
 
-    notional_asks = _sum_side(asks)
-    notional_bids = _sum_side(bids)
-
-    if notional_asks + notional_bids == 0:
+    if total <= 0:
         return None
 
-    return (notional_bids - notional_asks) / (notional_bids + notional_asks)
+    imbalance = (
+        notional_bids - notional_asks
+    ) / total
+
+    return max(
+        min(imbalance, 1.0),
+        -1.0
+    )
 
 
-def compute_whale_pressure(exchanges: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
-    """
-    Compute whale pressure index from multi-exchange depth.
-    """
+def _coverage(exchange_count: int) -> str:
+
+    if exchange_count >= 4:
+        return "high"
+
+    if exchange_count >= 2:
+        return "medium"
+
+    if exchange_count >= 1:
+        return "low"
+
+    return "none"
+
+
+def _signal(index: Optional[int]) -> str:
+
+    if index is None:
+        return "unknown"
+
+    if index >= 70:
+        return "bullish"
+
+    if index <= 30:
+        return "bearish"
+
+    return "neutral"
+
+
+def compute_whale_pressure(
+    exchanges: Dict[str, Dict[str, Any]]
+) -> Dict[str, Any]:
 
     imbalances = {}
 
+    weighted_sum = 0.0
+    total_weight = 0.0
+
     for name, data in exchanges.items():
+
         if not isinstance(data, dict):
             continue
 
         depth = data.get("depth")
+
         imbalance = _depth_imbalance(depth)
 
-        imbalances[name] = imbalance
+        if imbalance is None:
+            continue
 
-    valid = [v for v in imbalances.values() if v is not None]
+        imbalances[name] = round(
+            imbalance,
+            6
+        )
 
-    if not valid:
-        agg = None
-    else:
-        agg = sum(valid) / len(valid)
+        weight = DEFAULT_WEIGHTS.get(
+            name.lower(),
+            1.0
+        )
 
-    if agg is None:
+        weighted_sum += imbalance * weight
+        total_weight += weight
+
+    exchange_count = len(imbalances)
+
+    if total_
+        aggregate = None
         index = None
+
     else:
-        index = int((agg + 1) * 50)  # −1→0, 0→50, +1→100
+
+        aggregate = (
+            weighted_sum /
+            total_weight
+        )
+
+        index = int(
+            round(
+                (aggregate + 1) * 50
+            )
+        )
+
+        index = max(
+            0,
+            min(index, 100)
+        )
 
     return {
-        "per_exchange_imbalance": imbalances,
-        "aggregate_imbalance": agg,
-        "whale_pressure_index": index,
+
+        "schema_version":
+            SCHEMA_VERSION,
+
+        "per_exchange_imbalance":
+            imbalances,
+
+        "aggregate_imbalance":
+            round(aggregate, 6)
+            if aggregate is not None
+            else None,
+
+        "whale_pressure_index":
+            index,
+
+        "signal":
+            _signal(index),
+
+        "exchange_count":
+            exchange_count,
+
+        "coverage":
+            _coverage(exchange_count),
+
+        "top_levels_used":
+            TOP_LEVELS,
     }
