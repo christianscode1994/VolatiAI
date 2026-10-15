@@ -1,74 +1,1411 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <title>VolatiAI · Live Worker Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #020617;
-      color: #e5e7eb;
-      padding: 20px;
-    }
-    h1 { font-size: 22px; margin-bottom: 6px; }
-    p { font-size: 13px; color: #9ca3af; }
-    .map {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 10px;
-      margin-top: 16px;
-    }
-    .card {
-      border-radius: 12px;
-      border: 1px solid #1f2937;
-      background: #0b1120;
-      padding: 10px;
-      font-size: 12px;
-    }
-    .url { font-size: 11px; color: #9ca3af; word-break: break-all; }
-    .status-ok { color: #22c55e; }
-    .status-bad { color: #ef4444; }
-  </style>
+
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>
+VolatiAI · Global Worker Operations Center
+</title>
+
+<style>
+
+:root{
+
+ --bg:#020617;
+ --panel:#0b1120;
+ --border:#1f2937;
+
+ --text:#e5e7eb;
+ --muted:#9ca3af;
+
+ --green:#22c55e;
+ --yellow:#f59e0b;
+ --red:#ef4444;
+ --blue:#38bdf8;
+
+}
+
+*{
+ box-sizing:border-box;
+}
+
+body{
+
+ margin:0;
+ padding:24px;
+
+ background:var(--bg);
+ color:var(--text);
+
+ font-family:
+ system-ui,
+ -apple-system,
+ sans-serif;
+
+}
+
+h1{
+ margin:0;
+}
+
+.subtitle{
+
+ color:var(--muted);
+
+ margin-top:8px;
+ margin-bottom:20px;
+
+}
+
+.toolbar{
+
+ display:flex;
+ flex-wrap:wrap;
+
+ gap:12px;
+
+ margin-bottom:20px;
+}
+
+input,
+select,
+button{
+
+ background:var(--panel);
+
+ color:var(--text);
+
+ border:1px solid var(--border);
+
+ border-radius:10px;
+
+ padding:10px;
+}
+
+button{
+ cursor:pointer;
+}
+
+button:hover{
+ opacity:.9;
+}
+
+.stats{
+
+ display:grid;
+
+ grid-template-columns:
+ repeat(
+ auto-fit,
+ minmax(180px,1fr)
+ );
+
+ gap:12px;
+
+ margin-bottom:20px;
+}
+
+.stat{
+
+ background:var(--panel);
+
+ border:1px solid var(--border);
+
+ border-radius:12px;
+
+ padding:14px;
+
+}
+
+.stat-label{
+
+ font-size:12px;
+ color:var(--muted);
+
+}
+
+.stat-value{
+
+ font-size:28px;
+ font-weight:700;
+
+ margin-top:5px;
+
+}
+
+.layout{
+
+ display:grid;
+
+ grid-template-columns:
+ 3fr 1fr;
+
+ gap:20px;
+}
+
+.map{
+
+ display:grid;
+
+ grid-template-columns:
+ repeat(
+ auto-fill,
+ minmax(300px,1fr)
+ );
+
+ gap:12px;
+}
+
+.card{
+
+ background:var(--panel);
+
+ border:1px solid var(--border);
+
+ border-radius:14px;
+
+ padding:12px;
+
+ transition:
+ transform .15s ease,
+ border-color .15s ease;
+}
+
+.card:hover{
+
+ transform:
+ translateY(-2px);
+
+ border-color:
+ #334155;
+}
+
+.url{
+
+ font-size:11px;
+
+ color:var(--muted);
+
+ word-break:break-word;
+
+ margin-top:5px;
+}
+
+.metric{
+
+ margin-top:8px;
+
+ font-size:12px;
+}
+
+.progress{
+
+ width:100%;
+
+ height:8px;
+
+ background:#111827;
+
+ border-radius:999px;
+
+ overflow:hidden;
+
+ margin-top:6px;
+}
+
+.progress-fill{
+
+ height:100%;
+
+ background:var(--green);
+}
+
+.dot{
+
+ width:10px;
+ height:10px;
+
+ border-radius:50%;
+
+ display:inline-block;
+
+ margin-right:6px;
+}
+
+.online{
+
+ background:var(--green);
+
+ box-shadow:
+ 0 0 10px var(--green);
+}
+
+.warning{
+
+ background:var(--yellow);
+
+ box-shadow:
+ 0 0 10px var(--yellow);
+}
+
+.offline{
+
+ background:var(--red);
+
+ box-shadow:
+ 0 0 10px var(--red);
+}
+
+.panel{
+
+ background:var(--panel);
+
+ border:1px solid var(--border);
+
+ border-radius:12px;
+
+ padding:16px;
+}
+
+.panel h3{
+ margin-top:0;
+}
+
+.rank-item{
+
+ padding:8px;
+
+ border-bottom:
+ 1px solid var(--border);
+}
+
+.rank-item:last-child{
+ border-bottom:none;
+}
+
+.alert{
+
+ color:var(--red);
+
+ margin-bottom:8px;
+}
+
+#sectorHeatmap{
+
+ display:grid;
+
+ grid-template-columns:
+ repeat(
+ auto-fit,
+ minmax(180px,1fr)
+ );
+
+ gap:10px;
+}
+
+.heat-cell{
+
+ border-radius:12px;
+
+ padding:12px;
+
+ color:white;
+
+ position:relative;
+
+ overflow:hidden;
+}
+
+.heat-title{
+
+ font-weight:700;
+ margin-bottom:6px;
+}
+
+.mini-chart{
+
+ width:100%;
+ height:45px;
+
+ margin-top:8px;
+}
+
+.footer{
+
+ margin-top:25px;
+
+ font-size:12px;
+
+ color:var(--muted);
+}
+
+canvas{
+ max-width:100%;
+}
+
+@media(max-width:1200px){
+
+ .layout{
+
+  grid-template-columns:
+  1fr;
+ }
+
+}
+
+</style>
+
 </head>
+
 <body>
-  <h1>Live Worker Map</h1>
-  <p>Visual overview of all sector Workers from <code>reliability.json</code>.</p>
 
-  <div id="map" class="map"></div>
+<h1>
+Global Worker Operations Center
+</h1>
 
-  <script>
-    async function loadMap() {
-      try {
-        const res = await fetch("reliability.json");
-        const data = await res.json();
-        const workers = data.workers || [];
+<div class="subtitle">
+Live monitoring from reliability.json
+</div>
 
-        const map = document.getElementById("map");
-        map.innerHTML = workers.map(w => {
-          const ok = w.status === "OK" && w.jsonValid && w.latency_ms < 500;
-          return `
-            <div class="card">
-              <div><strong>${w.sector}</strong></div>
-              <div class="url">${w.url}</div>
-              <div>
-                Status:
-                <span class="${ok ? "status-ok" : "status-bad"}">
-                  ${w.status} · ${w.jsonValid ? "JSON OK" : "JSON ERR"} · ${w.latency_ms} ms
-                </span>
-              </div>
-              <div>Reliability: ${w.reliability}</div>
-            </div>
-          `;
-        }).join("");
-      } catch (e) {
-        document.getElementById("map").textContent = "Failed to load reliability.json";
-      }
+<div class="toolbar">
+
+<input
+ id="search"
+ placeholder="Search workers..."
+>
+
+<select id="sectorFilter">
+
+ <option value="all">
+ All Sectors
+ </option>
+
+</select>
+
+<button id="exportBtn">
+Export JSON
+</button>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-label">
+Workers
+</div>
+<div
+ id="workerCount"
+ class="stat-value">
+0
+</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">
+Healthy
+</div>
+<div
+ id="healthyCount"
+ class="stat-value">
+0
+</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">
+Average Reliability
+</div>
+<div
+ id="avgReliability"
+ class="stat-value">
+0%
+</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">
+Average Latency
+</div>
+<div
+ id="avgLatency"
+ class="stat-value">
+0 ms
+</div>
+</div>
+
+</div>
+
+<div class="layout">
+
+<div>
+
+<div
+ id="map"
+ class="map">
+</div>
+
+</div>
+
+<div>
+
+<div class="panel">
+
+<h3>
+Top Reliability
+</h3>
+
+<div id="ranking">
+</div>
+
+</div>
+
+<div
+ class="panel"
+ style="margin-top:12px;">
+
+<h3>
+Alerts
+</h3>
+
+<div id="alerts">
+No alerts
+</div>
+
+</div>
+
+<div
+ class="panel"
+ style="margin-top:12px;">
+
+<h3>
+Sector Heatmap
+</h3>
+
+<div id="sectorHeatmap">
+</div>
+
+</div>
+
+<div
+ class="panel"
+ style="margin-top:12px;">
+
+<h3>
+Latency Trend
+</h3>
+
+<canvas
+ id="latencyChart"
+ width="400"
+ height="240">
+</canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">
+
+Last refresh:
+<span id="lastRefresh">
+--
+</span>
+
+<script>
+
+let workersData = [];
+
+let sectorHistory = {};
+
+let latencyHistory = [];
+
+function reliabilityColor(v){
+
+  if(v >= 0.95){
+    return "#22c55e";
+  }
+
+  if(v >= 0.80){
+    return "#f59e0b";
+  }
+
+  return "#ef4444";
+}
+
+function heatColor(v){
+
+  v = Math.max(
+    0,
+    Math.min(1,v)
+  );
+
+  const r =
+    Math.floor(
+      255 * (1 - v)
+    );
+
+  const g =
+    Math.floor(
+      255 * v
+    );
+
+  return `rgb(${r},${g},50)`;
+}
+
+function statusClass(worker){
+
+  if(
+    worker.status === "OK"
+    &&
+    worker.jsonValid
+    &&
+    worker.latency_ms < 500
+    &&
+    Number(worker.reliability || 0) >= 0.90
+  ){
+    return "online";
+  }
+
+  if(
+    worker.status === "OK"
+  ){
+    return "warning";
+  }
+
+  return "offline";
+}
+
+async function loadMap(){
+
+  try{
+
+    const res =
+      await fetch(
+        `reliability.json?t=${Date.now()}`
+      );
+
+    if(!res.ok){
+      throw new Error(
+        `HTTP ${res.status}`
+      );
     }
 
-    loadMap();
-    setInterval(loadMap, 30000);
-  </script>
+    const data =
+      await res.json();
+
+    workersData =
+      data.workers || [];
+
+    updateHistory();
+
+    renderDashboard();
+
+    document
+      .getElementById(
+        "lastRefresh"
+      )
+      .textContent =
+      new Date()
+      .toLocaleTimeString();
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    document
+      .getElementById(
+        "map"
+      )
+      .innerHTML =
+      `
+      <div class="alert">
+        Failed loading reliability.json
+      </div>
+      `;
+  }
+}
+
+function updateHistory(){
+
+  workersData.forEach(
+    worker => {
+
+      const sector =
+        worker.sector ||
+        "Unknown";
+
+      const reliability =
+        Number(
+          worker.reliability || 0
+        );
+
+      if(
+        !sectorHistory[
+          sector
+        ]
+      ){
+        sectorHistory[
+          sector
+        ] = [];
+      }
+
+      sectorHistory[
+        sector
+      ].push({
+
+        time: Date.now(),
+
+        reliability
+
+      });
+
+      if(
+        sectorHistory[
+          sector
+        ].length > 100
+      ){
+        sectorHistory[
+          sector
+        ].shift();
+      }
+
+    }
+  );
+
+  const avgLatency =
+    workersData.length
+    ?
+    workersData.reduce(
+      (s,w)=>
+      s +
+      Number(
+        w.latency_ms || 0
+      ),
+      0
+    ) /
+    workersData.length
+    :
+    0;
+
+  latencyHistory.push({
+
+    time:
+      new Date()
+      .toLocaleTimeString(),
+
+    value:
+      avgLatency
+
+  });
+
+  if(
+    latencyHistory
+    .length > 100
+  ){
+    latencyHistory
+    .shift();
+  }
+
+}
+
+function renderDashboard(){
+
+  const search =
+  document
+    .getElementById(
+      "search"
+    )
+    .value
+    .toLowerCase();
+
+  const sectorFilter =
+  document
+    .getElementById(
+      "sectorFilter"
+    )
+    .value;
+
+  let workers =
+    workersData.filter(
+      worker => {
+
+        const text =
+        (
+          worker.url +
+          " " +
+          worker.sector
+        )
+        .toLowerCase();
+
+        const matchesSearch =
+          text.includes(
+            search
+          );
+
+        const matchesSector =
+          sectorFilter ===
+          "all"
+          ||
+          worker.sector ===
+          sectorFilter;
+
+        return (
+          matchesSearch
+          &&
+          matchesSector
+        );
+
+      }
+    );
+
+  document
+    .getElementById(
+      "workerCount"
+    )
+    .textContent =
+    workers.length;
+
+  const healthy =
+    workers.filter(
+      worker =>
+      statusClass(
+        worker
+      ) === "online"
+    );
+
+  document
+    .getElementById(
+      "healthyCount"
+    )
+    .textContent =
+    healthy.length;
+
+  const avgReliability =
+    workers.length
+    ?
+    workers.reduce(
+      (sum,w)=>
+      sum +
+      Number(
+        w.reliability || 0
+      ),
+      0
+    ) /
+    workers.length
+    :
+    0;
+
+  document
+    .getElementById(
+      "avgReliability"
+    )
+    .textContent =
+    (
+      avgReliability * 100
+    )
+    .toFixed(1)
+    + "%";
+
+  const avgLatency =
+    workers.length
+    ?
+    workers.reduce(
+      (sum,w)=>
+      sum +
+      Number(
+        w.latency_ms || 0
+      ),
+      0
+    ) /
+    workers.length
+    :
+    0;
+
+  document
+    .getElementById(
+      "avgLatency"
+    )
+    .textContent =
+    avgLatency.toFixed(0)
+    + " ms";
+
+  workers.sort(
+    (a,b)=>
+    Number(
+      b.reliability || 0
+    )
+    -
+    Number(
+      a.reliability || 0
+    )
+  );
+
+  renderWorkers(
+    workers
+  );
+
+  buildRanking();
+
+  buildAlerts();
+
+  buildSectorFilter();
+
+  buildSectorHeatmap();
+
+  drawLatencyChart();
+}
+
+function renderWorkers(workers){
+
+  const container =
+    document
+      .getElementById(
+        "map"
+      );
+
+  container.innerHTML =
+    workers
+    .map(worker => {
+
+      const r =
+        Number(
+          worker.reliability || 0
+        );
+
+      const status =
+        statusClass(
+          worker
+        );
+
+      return `
+      <div class="card">
+
+        <div>
+          <strong>
+            ${worker.sector}
+          </strong>
+        </div>
+
+        <div class="url">
+          ${worker.url}
+        </div>
+
+        <div class="metric">
+
+          <span class="dot ${status}">
+          </span>
+
+          ${worker.status}
+
+        </div>
+
+        <div class="metric">
+
+          Reliability:
+
+          <span
+          style="
+          color:${reliabilityColor(r)}
+          ">
+
+          ${(r*100).toFixed(1)}%
+
+          </span>
+
+        </div>
+
+        <div class="metric">
+          Latency:
+          ${worker.latency_ms} ms
+        </div>
+
+        <div class="metric">
+          JSON:
+          ${
+            worker.jsonValid
+            ? "VALID"
+            : "ERROR"
+          }
+        </div>
+
+        <div class="progress">
+
+          <div
+            class="progress-fill"
+            style="
+            width:${r*100}%
+            ">
+          </div>
+
+        </div>
+
+      </div>
+      `;
+
+    })
+    .join("");
+}
+
+function buildRanking(){
+
+  const ranked =
+    [...workersData]
+    .sort(
+      (a,b)=>
+      Number(
+        b.reliability || 0
+      )
+      -
+      Number(
+        a.reliability || 0
+      )
+    );
+
+  document
+    .getElementById(
+      "ranking"
+    )
+    .innerHTML =
+    ranked
+    .slice(0,10)
+    .map(
+      (worker,index)=>
+      `
+      <div class="rank-item">
+
+        #${index+1}
+
+        ${worker.sector}
+
+        ·
+
+        ${(worker.reliability*100).toFixed(1)}%
+
+      </div>
+      `
+    )
+    .join("");
+}
+
+function buildAlerts(){
+
+  const alerts =
+    workersData.filter(
+      worker =>
+      statusClass(
+        worker
+      ) === "offline"
+    );
+
+  const el =
+    document
+      .getElementById(
+        "alerts"
+      );
+
+  if(!alerts.length){
+
+    el.innerHTML =
+      "No alerts";
+
+    return;
+  }
+
+  el.innerHTML =
+    alerts.map(
+      a =>
+      `
+      <div class="alert">
+
+        ${a.sector}
+
+        (${a.status})
+
+      </div>
+      `
+    )
+    .join("");
+}
+
+function buildSectorFilter(){
+
+  const select =
+  document
+    .getElementById(
+      "sectorFilter"
+    );
+
+  const current =
+    select.value;
+
+  const sectors =
+  [
+    ...new Set(
+      workersData.map(
+        w=>w.sector
+      )
+    )
+  ];
+
+  select.innerHTML =
+  `
+  <option value="all">
+    All Sectors
+  </option>
+  `
+  +
+  sectors.map(
+    s =>
+    `
+    <option value="${s}">
+      ${s}
+    </option>
+    `
+  )
+  .join("");
+
+  select.value =
+    current;
+}
+
+function buildSectorHeatmap(){
+
+  const sectors = {};
+
+  workersData.forEach(
+    worker => {
+
+      if(
+        !sectors[
+          worker.sector
+        ]
+      ){
+        sectors[
+          worker.sector
+        ] = [];
+      }
+
+      sectors[
+        worker.sector
+      ].push(
+        Number(
+          worker.reliability || 0
+        )
+      );
+
+    }
+  );
+
+  const html =
+  Object.entries(
+    sectors
+  )
+  .map(
+    ([sector,list]) => {
+
+      const avg =
+        list.reduce(
+          (a,b)=>a+b,
+          0
+        ) /
+        list.length;
+
+      return `
+
+      <div
+      class="heat-cell"
+      style="
+      background:
+      ${heatColor(avg)}
+      ">
+
+        <div class="heat-title">
+          ${sector}
+        </div>
+
+        <div>
+
+          Reliability
+
+          ${(avg*100)
+          .toFixed(1)}%
+
+        </div>
+
+        <canvas
+          class="mini-chart"
+          id="mini_${sector.replace(/\s/g,'_')}"
+          width="160"
+          height="45">
+        </canvas>
+
+      </div>
+
+      `;
+
+    }
+  )
+  .join("");
+
+  document
+    .getElementById(
+      "sectorHeatmap"
+    )
+    .innerHTML =
+    html;
+
+  drawSectorHistory();
+}
+
+function drawSectorHistory(){
+
+  Object
+  .keys(
+    sectorHistory
+  )
+  .forEach(
+    sector => {
+
+      const id =
+      `mini_${sector.replace(/\s/g,'_')}`;
+
+      const canvas =
+      document
+        .getElementById(
+          id
+        );
+
+      if(
+        !canvas
+      ){
+        return;
+      }
+
+      const ctx =
+      canvas.getContext(
+        "2d"
+      );
+
+      const history =
+      sectorHistory[
+        sector
+      ];
+
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      if(
+        history.length < 2
+      ){
+        return;
+      }
+
+      ctx.beginPath();
+
+      history.forEach(
+        (point,index)=>{
+
+          const x =
+          (
+          index /
+          (
+           history.length - 1
+          )
+          )
+          *
+          canvas.width;
+
+          const y =
+          canvas.height -
+          (
+            point.reliability
+            *
+            canvas.height
+          );
+
+          if(index===0){
+            ctx.moveTo(x,y);
+          }
+          else{
+            ctx.lineTo(x,y);
+          }
+
+        }
+      );
+
+      ctx.strokeStyle =
+      "white";
+
+      ctx.lineWidth = 2;
+
+      ctx.stroke();
+
+    }
+  );
+}
+
+function drawLatencyChart(){
+
+  const canvas =
+    document
+      .getElementById(
+        "latencyChart"
+      );
+
+  const ctx =
+    canvas.getContext(
+      "2d"
+    );
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  if(
+    latencyHistory.length < 2
+  ){
+    return;
+  }
+
+  const maxLatency =
+  Math.max(
+    ...latencyHistory.map(
+      p=>p.value
+    ),
+    1
+  );
+
+  ctx.beginPath();
+
+  latencyHistory.forEach(
+    (point,index)=>{
+
+      const x =
+      (
+        index /
+        (
+          latencyHistory.length-1
+        )
+      )
+      *
+      canvas.width;
+
+      const y =
+      canvas.height -
+      (
+        point.value /
+        maxLatency
+      )
+      *
+      canvas.height;
+
+      if(index===0){
+        ctx.moveTo(x,y);
+      }
+      else{
+        ctx.lineTo(x,y);
+      }
+
+    }
+  );
+
+  ctx.strokeStyle =
+    "#38bdf8";
+
+  ctx.lineWidth = 3;
+
+  ctx.stroke();
+}
+
+document
+.getElementById(
+  "search"
+)
+.addEventListener(
+  "input",
+  renderDashboard
+);
+
+document
+.getElementById(
+  "sectorFilter"
+)
+.addEventListener(
+  "change",
+  renderDashboard
+);
+
+document
+.getElementById(
+  "exportBtn"
+)
+.onclick = () => {
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          workersData,
+          null,
+          2
+        )
+      ],
+      {
+        type:
+        "application/json"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+  const a =
+    document
+      .createElement(
+        "a"
+      );
+
+  a.href =
+    url;
+
+  a.download =
+    "workers_export.json";
+
+  a.click();
+
+  URL.revokeObjectURL(
+    url
+  );
+};
+
+loadMap();
+
+setInterval(
+  loadMap,
+  30000
+);
+
+</script>
+
 </body>
 </html>
+
+</div>
