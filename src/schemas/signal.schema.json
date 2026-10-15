@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+  "title": "VolatiAI Signal",
+
+  "type": "object",
+
+  "required": [
+    "id",
+    "type",
+    "title",
+    "source",
+    "score",
+    "sentiment",
+    "importance"
+  ],
+
+  "properties": {
+
+    "id": {
+      "type": "string"
+    },
+
+    "type": {
+      "type": "string"
+    },
+
+    "title": {
+      "type": "string"
+    },
+
+    "url": {
+      "type": "string"
+    },
+
+    "source": {
+      "type": "string"
+    },
+
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+
+    "sentiment": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+
+    "importance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    }
+  }
+}
