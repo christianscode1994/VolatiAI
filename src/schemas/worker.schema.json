@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VolatiAI Worker",
+
+  "type": "object",
+
+  "required": [
+    "schema_version",
+    "sector",
+    "worker",
+    "timestamp",
+    "quality",
+    "confidence",
+    "sector_score",
+    "sources",
+    "summary",
+    "metrics",
+    "signals",
+    "status"
+  ],
+
+  "properties": {
+
+    "schema_version": {
+      "type": "string"
+    },
+
+    "sector": {
+      "type": "string"
+    },
+
+    "worker": {
+      "type": "string"
+    },
+
+    "timestamp": {
+      "type": "string"
+    },
+
+    "quality": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+
+    "sector_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+
+    "status": {
+      "enum": [
+        "ok",
+        "partial",
+        "error"
+      ]
+    },
+
+    "sources": {
+      "type": "object",
+      "required": [
+        "considered",
+        "used",
+        "failed"
+      ]
+    },
+
+    "summary": {
+      "type": "object"
+    },
+
+    "metrics": {
+      "type": "object"
+    },
+
+    "signals": {
+      "type": "array"
+    }
+  }
+}
