@@ -25,16 +25,10 @@ def score_text(text: str) -> float:
     return float(score)
 
 
-def compute_sentiment(titles):
+def _score_titles(titles):
     """
-    Compute sentiment for a single list of titles.
-
-    Returns:
-    {
-        "score": total_score,
-        "avg": average_score,
-        "count": item_count
-    }
+    Internal: score a single list of titles.
+    Returns a flat {score, avg, count} block.
     """
 
     if not titles:
@@ -50,17 +44,52 @@ def compute_sentiment(titles):
     ]
 
     total = sum(scores)
-
-    avg = (
-        total / len(scores)
-        if scores
-        else 0.0
-    )
+    avg = total / len(scores) if scores else 0.0
 
     return {
         "score": round(float(total), 4),
         "avg": round(float(avg), 4),
         "count": len(scores),
+    }
+
+
+def compute_sentiment(hn_titles=None):
+    """
+    Compute sentiment from available sources.
+
+    Sources: hn (only). Reddit removed.
+
+    Returns:
+    {
+        "hn":       {score, avg, count},
+        "combined": {score, avg, count}
+    }
+    """
+
+    hn_titles = hn_titles or []
+
+    hn_block = _score_titles(hn_titles)
+
+    # Only average sources that actually returned data.
+    present = []
+    if hn_block["count"]:
+        present.append(hn_block["avg"])
+
+    combined_avg = (
+        sum(present) / len(present)
+        if present
+        else 0.0
+    )
+
+    combined_block = {
+        "score": round(float(sum(present)), 4) if present else 0.0,
+        "avg": round(float(combined_avg), 4),
+        "count": hn_block["count"],
+    }
+
+    return {
+        "hn": hn_block,
+        "combined": combined_block,
     }
 
 
