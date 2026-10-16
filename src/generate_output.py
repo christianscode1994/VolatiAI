@@ -16,15 +16,24 @@ def build_payload(
 ):
     now = datetime.utcnow().isoformat() + "Z"
 
+    hn_block = sentiment_hn.get("hn", {})
+    combined = sentiment_hn.get("combined", hn_block)
+
     payload = {
         "timestamp": now,
         "top_by_volatility": coins_vol,
         "sentiment": {
             "hn": {
-                "score": sentiment_hn["score"],
-                "avg": sentiment_hn["avg"],
-                "count": sentiment_hn["count"],
-                "label": sentiment_label(sentiment_hn["avg"]),
+                "score": hn_block.get("score", 0.0),
+                "avg": hn_block.get("avg", 0.0),
+                "count": hn_block.get("count", 0),
+                "label": sentiment_label(hn_block.get("avg", 0.0)),
+            },
+            "combined": {
+                "score": combined.get("score", 0.0),
+                "avg": combined.get("avg", 0.0),
+                "count": combined.get("count", 0),
+                "label": sentiment_label(combined.get("avg", 0.0)),
             },
         },
         "exchanges": exchanges or {},
