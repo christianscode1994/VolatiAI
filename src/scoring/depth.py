@@ -1,16 +1,77 @@
-def depth_score(market_data):
+# src/scoring/depth.py
+
+from typing import Dict, Any
+
+
+def depth_score(
+    liquidity_data: Dict[str, Any]
+) -> float:
     """
-    Uses multi-exchange depth (Kraken, Binance, etc.) to compute a 0–100 liquidity score.
+    Convert liquidity collector output
+    into a normalized 0-100 score.
     """
-    btc = market_data.get("btc", {})
-    kr = btc.get("kraken", {})
-    # you’ll add binance, coinbase, etc.
 
-    bids = kr.get("bids", [])
-    asks = kr.get("asks", [])
+    if not liquidity_data:
+        return 0.0
 
-    bid_liq = sum(b[1] for b in bids[:20]) if bids else 0
-    ask_liq = sum(a[1] for a in asks[:20]) if asks else 0
-    total_liq = bid_liq + ask_liq
+    # New collector format
+    score = liquidity_data.get(
+        "score"
+    )
 
-    return min(total_liq / 1000 * 100, 100)  # tune this
+    if isinstance(
+        score,
+        (int, float)
+    ):
+        return round(
+            max(
+                0.0,
+                min(
+                    float(score) * 100,
+                    100.0
+                )
+            ),
+            2
+        )
+
+    # Legacy format fallback
+
+    bids = liquidity_data.get(
+        "bids",
+        []
+    )
+
+    asks = liquidity_data.get(
+        "asks",
+        []
+    )
+
+    try:
+
+        bid_liq = sum(
+            float(b[1])
+            for b in bids[:20]
+        )
+
+        ask_liq = sum(
+            float(a[1])
+            for a in asks[:20]
+        )
+
+        total_liq = (
+            bid_liq + ask_liq
+        )
+
+        return round(
+            min(
+                total_liq
+                / 1000
+                * 100,
+                100
+            ),
+            2
+        )
+
+    except Exception:
+        return 0.0
+``
