@@ -1,14 +1,13 @@
 import json
+import os
 import time
 from datetime import datetime
 
-from src.tools_reddit import Reddit
 from src.tools_hn import HackerNews
 from src.offline import snap, mode
 
 from src.compute_sentiment import compute_sentiment, sentiment_label
 
-rd = Reddit()
 hn = HackerNews()
 
 
@@ -74,17 +73,15 @@ def run():
 
 
 def run_online():
-    # Fetch titles
-    reddit_titles = safe_call(lambda: rd.top_titles(limit=50), default=[])
+    # Fetch titles (HN only — Reddit removed)
     hn_titles = safe_call(lambda: hn.top_titles(limit=50), default=[])
 
     status = {
-        "reddit": "ok" if reddit_titles else "fail",
         "hn": "ok" if hn_titles else "fail"
     }
 
     # Compute sentiment
-    sentiment = compute_sentiment(reddit_titles, hn_titles)
+    sentiment = compute_sentiment(hn_titles=hn_titles)
 
     avg = sentiment["combined"]["avg"]
     score = score_sentiment(avg)
@@ -113,7 +110,6 @@ def run_online():
         "score": score_block["composite"],
         "anomaly": anomaly,
         "raw": {
-            "reddit": reddit_titles,
             "hn": hn_titles,
             "sentiment": sentiment
         }
@@ -127,7 +123,6 @@ def run_online():
     return {
         "snapshot": stamp(
             {
-                "reddit": reddit_titles,
                 "hn": hn_titles,
                 "sentiment": sentiment
             },
@@ -145,7 +140,6 @@ def run_offline():
 
 
 def write_outputs(data):
-    import os
     os.makedirs("public", exist_ok=True)
 
     with open("public/sentiment.json", "w") as f:
