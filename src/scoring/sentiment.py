@@ -11,7 +11,6 @@ def sentiment_score(
     available source averages.
 
     Supported sources:
-    - reddit
     - hn
     - pushshift
     """
@@ -19,7 +18,6 @@ def sentiment_score(
     scores = []
 
     for source in (
-        "reddit",
         "hn",
         "pushshift",
     ):
@@ -50,9 +48,11 @@ def sentiment_score(
         / len(scores)
     )
 
+    # avg is documented as roughly [-3, 3] elsewhere in the codebase,
+    # so normalize over that range instead of [-1, 1].
     normalized = (
-        (average_sentiment + 1)
-        / 2
+        (average_sentiment + 3)
+        / 6
     ) * 100
 
     normalized = max(
