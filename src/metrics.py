@@ -153,10 +153,12 @@ def extract_metric_values(
 
         if metric == "volatility":
 
-            assets = snap.get(
-                "top_by_volatility",
-                []
-            )
+            if isinstance(snap, list):
+                assets = snap
+            elif isinstance(snap, dict):
+                assets = snap.get("top_by_volatility", [])
+            else:
+                continue
 
             if not isinstance(assets, list):
                 continue
@@ -177,7 +179,7 @@ def extract_metric_values(
                     continue
 
                 pct = asset.get(
-                    "price_change_percentage_24h"
+                    "price_change_24h"
                 )
 
                 if numeric(pct):

@@ -64,7 +64,7 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     if write_snaps:
         try:
             write_snapshot("volatility", volatility)
-            write_snapshot("sentiment", {"hn": sentiment_hn})
+            write_snapshot("sentiment", sentiment_hn)
             write_snapshot("market", market)
             write_snapshot("metrics", metrics)
         except Exception as e:
