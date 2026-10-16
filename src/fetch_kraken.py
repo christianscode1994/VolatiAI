@@ -3,28 +3,50 @@ from .config import KRAKEN_PAIR
 
 KRAKEN_API = "https://api.kraken.com/0/public"
 
-def kraken_ticker(pair: str = KRAKEN_PAIR):
-    url = f"{KRAKEN_API}/Ticker"
-    r = requests.get(url, params={"pair": pair}, timeout=10)
+
+def _kraken_get(path: str, params: dict) -> dict:
+    """Shared GET with proper error handling."""
+    r = requests.get(f"{KRAKEN_API}{path}", params=params, timeout=10)
     r.raise_for_status()
-    data = r.json()["result"]
-    key = list(data.keys())[0]
-    return data[key]
+    body = r.json()
+
+    if body.get("error"):
+        raise RuntimeError(f"Kraken error: {body['error']}")
+
+    return body.get("result", {})
+
+
+def _first_pair(result: dict) -> dict:
+    """Kraken keys results by pair name; strip 'last' and return the pair block."""
+    result = {k: v for k, v in result.items() if k != "last"}
+    if not result:
+        return {}
+    return result[next(iter(result))]
+
+
+def _normalize(pair: str) -> str:
+    """Kraken wants XBTUSD, not XBT/USD."""
+    return pair.replace("/", "").replace("-", "").upper()
+
+
+def kraken_ticker(pair: str = KRAKEN_PAIR):
+    result = _kraken_get("/Ticker", {"pair": _normalize(pair)})
+    return _first_pair(result)
+
 
 def kraken_depth(pair: str = KRAKEN_PAIR, count: int = 20):
-    url = f"{KRAKEN_API}/Depth"
-    r = requests.get(url, params={"pair": pair, "count": count}, timeout=10)
-    r.raise_for_status()
-    data = r.json()["result"]
-    key = list(data.keys())[0]
-    return data[key]
+    result = _kraken_get("/Depth", {"pair": _normalize(pair), "count": count})
+    return _first_pair(result)
+
 
 def kraken_ohlc(pair: str = KRAKEN_PAIR, interval: int = 15):
-    url = f"{KRAKEN_API}/OHLC"
-    r = requests.get(url, params={"pair": pair, "interval": interval}, timeout=10)
-    r.raise_for_status()
-    data = r.json()["result"]
-    key = list(data.keys())[0]
-    candles = data[key]
-    last = data["last"]
+    result = _kraken_get("/OHLC", {"pair": _normalize(pair), "interval": interval})
+
+    last = result.get("last")
+    candles_block = {k: v for k, v in result.items() if k != "last"}
+
+    if not candles_block:
+        return {"candles": [], "last": last}
+
+    candles = candles_block[next(iter(candles_block))]
     return {"candles": candles, "last": last}
