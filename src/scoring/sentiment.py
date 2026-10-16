@@ -1,16 +1,66 @@
-def sentiment_score(sentiment_data):
-    """
-    sentiment_data: dict from sentiment_agent (pro_sentiment.json)
-    Expected: counts of positive/negative/neutral posts from Reddit, HN, Nitter.
-    Returns: 0–100 sentiment score (bullishness).
-    """
-    reddit = sentiment_data.get("reddit", {})
-    hn = sentiment_data.get("hackernews", {})
-    x = sentiment_data.get("nitter", {})
+# src/scoring/sentiment.py
 
-    pos = reddit.get("positive", 0) + hn.get("positive", 0) + x.get("positive", 0)
-    neg = reddit.get("negative", 0) + hn.get("negative", 0) + x.get("negative", 0)
-    total = max(pos + neg, 1)
+from typing import Dict, Any
 
-    ratio = pos / total  # 0–1
-    return round(ratio * 100, 2)
+
+def sentiment_score(
+    sentiment_data: Dict[str, Any]
+) -> float:
+    """
+    Computes a 0-100 sentiment score using
+    available source averages.
+
+    Supported sources:
+    - reddit
+    - hn
+    - pushshift
+    """
+
+    scores = []
+
+    for source in (
+        "reddit",
+        "hn",
+        "pushshift",
+    ):
+
+        block = sentiment_data.get(
+            source,
+            {}
+        )
+
+        if not isinstance(block, dict):
+            continue
+
+        avg = block.get("avg")
+
+        if isinstance(
+            avg,
+            (int, float),
+        ):
+            scores.append(
+                float(avg)
+            )
+
+    if not scores:
+        return 50.0
+
+    average_sentiment = (
+        sum(scores)
+        / len(scores)
+    )
+
+    normalized = (
+        (average_sentiment + 1)
+        / 2
+    ) * 100
+
+    normalized = max(
+        0,
+        min(100, normalized)
+    )
+
+    return round(
+        normalized,
+        2,
+    )
