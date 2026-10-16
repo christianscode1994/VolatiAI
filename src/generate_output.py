@@ -1,36 +1,25 @@
 import json
 from datetime import datetime
+
 from .compute_sentiment import sentiment_label
+
 
 def build_payload(
     coins_vol,
-    sentiment_reddit,
     sentiment_hn,
-    kraken_data=None,
-    binance_data=None,
-    coinbase_data=None,
-    crypto_com_data=None,
-    bybit_data=None,
-    okx_data=None,
+    exchanges=None,
     whales=None,
     spoofing=None,
     liquidity=None,
     arbitrage=None,
     depth_heatmaps=None,
 ):
-
     now = datetime.utcnow().isoformat() + "Z"
 
     payload = {
         "timestamp": now,
         "top_by_volatility": coins_vol,
         "sentiment": {
-            "reddit": {
-                "score": sentiment_reddit["score"],
-                "avg": sentiment_reddit["avg"],
-                "count": sentiment_reddit["count"],
-                "label": sentiment_label(sentiment_reddit["avg"]),
-            },
             "hn": {
                 "score": sentiment_hn["score"],
                 "avg": sentiment_hn["avg"],
@@ -38,14 +27,7 @@ def build_payload(
                 "label": sentiment_label(sentiment_hn["avg"]),
             },
         },
-        "exchanges": {
-            "kraken": kraken_data,
-            "binance": binance_data,
-            "coinbase": coinbase_data,
-            "crypto_com": crypto_com_data,
-            "bybit": bybit_data,
-            "okx": okx_data,
-        },
+        "exchanges": exchanges or {},
         "whales": whales,
         "spoofing": spoofing,
         "liquidity": liquidity,
@@ -64,14 +46,19 @@ def write_json(path, payload):
 def write_html(path, payload):
     ts = payload["timestamp"]
     coins = payload["top_by_volatility"]
-    sent = payload["sentiment"]
-    exchanges = payload["exchanges"]
+    sent = payload.get("sentiment", {})
+    exchanges = payload.get("exchanges", {}) or {}
 
     whales = payload.get("whales")
     spoofing = payload.get("spoofing")
     liquidity = payload.get("liquidity")
     arbitrage = payload.get("arbitrage")
     depth_heatmaps = payload.get("depth_heatmaps")
+
+    hn = sent.get("hn", {})
+    hn_label = hn.get("label", "n/a")
+    hn_avg = hn.get("avg", 0.0)
+    hn_count = hn.get("count", 0)
 
     html = f"""<!DOCTYPE html>
 <html>
@@ -92,8 +79,7 @@ def write_html(path, payload):
   <p>Updated: {ts}</p>
 
   <h2>Sentiment</h2>
-  <p><span class="label">Reddit:</span> {sent['reddit']['label']} (avg {sent['reddit']['avg']:.2f}, n={sent['reddit']['count']})</p>
-  <p><span class="label">Hacker News:</span> {sent['hn']['label']} (avg {sent['hn']['avg']:.2f}, n={sent['hn']['count']})</p>
+  <p><span class="label">Hacker News:</span> {hn_label} (avg {hn_avg:.2f}, n={hn_count})</p>
 """
 
     # Whale Intelligence
@@ -158,16 +144,17 @@ def write_html(path, payload):
     </tr>
 """
     for i, c in enumerate(coins, start=1):
+        vol = c.get("volatility", 0.0)
         html += f"""    <tr>
       <td>{i}</td>
-      <td>{c['name']}</td>
-      <td>{c['symbol']}</td>
-      <td>{c['current_price']}</td>
-      <td>{c['volatility']:.3f}</td>
+      <td>{c.get('name', '')}</td>
+      <td>{c.get('symbol', '')}</td>
+      <td>{c.get('current_price', '')}</td>
+      <td>{vol:.3f}</td>
       <td>{c.get('price_change_1h')}</td>
       <td>{c.get('price_change_24h')}</td>
       <td>{c.get('price_change_7d')}</td>
-      <td>{c['market_cap']}</td>
+      <td>{c.get('market_cap', '')}</td>
     </tr>
 """
 
