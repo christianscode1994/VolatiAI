@@ -1,61 +1,123 @@
 // collectors/sentiment.js
+
 import axios from "axios";
 import { randomDelay } from "../postingPatterns.js";
 import { collectorConfig } from "../config.js";
 
-// --------------------------------------
-//  SENTIMENT COLLECTOR (CONFIG‑DRIVEN)
-// --------------------------------------
-//
-// Uses CryptoPanic trending + news sentiment as a proxy.
-// This avoids dead APIs and gives real crypto sentiment.
-//
-
 export async function collectSentiment(keyword) {
   try {
-    // Anti‑detection jitter before API call
+    // Anti-bot jitter
     await randomDelay(300, 1200);
 
-    const apiKey = collectorConfig.sentiment.api_key || "demo";
+    const apiKey =
+      collectorConfig?.sentiment?.api_key ||
+      "demo";
 
-    const trendingUrl = `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&filter=trending&currencies=${keyword}`;
-    const newsUrl = `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&filter=news&currencies=${keyword}`;
+    const trendingUrl =
+      `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&filter=trending&currencies=${keyword}`;
+
+    const newsUrl =
+      `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&filter=news&currencies=${keyword}`;
 
     const [trendingRes, newsRes] = await Promise.all([
       axios.get(trendingUrl),
-      axios.get(newsUrl)
+      axios.get(newsUrl),
     ]);
 
-    const trending = trendingRes.data?.results || [];
-    const news = newsRes.data?.results || [];
+    const trending =
+      trendingRes?.data?.results || [];
 
-    // Basic sentiment scoring heuristic
-    const trendingScore = trending.length ? 1 : 0;
-    const newsScore = news.length ? 1 : 0;
+    const news =
+      newsRes?.data?.results || [];
 
-    const sentimentScore = trendingScore + newsScore;
+    const trendingScore =
+      trending.length > 0 ? 1 : 0;
 
-    const summary =
-      sentimentScore > 1
-        ? `Sentiment spike detected for ${keyword}`
-        : `Sentiment normal for ${keyword}`;
+    const newsScore =
+      news.length > 0 ? 1 : 0;
+
+    const score =
+      trendingScore + newsScore;
+
+    const count =
+      trending.length + news.length;
+
+    const avg =
+      count > 0
+        ? score / count
+        : 0;
 
     return {
-      type: "sentiment",
-      summary,
+      metric: "sentiment",
+
+      timestamp: new Date().toISOString(),
+
+      score: Number(score),
+
+      avg: Number(avg.toFixed(4)),
+
+      count,
+
+      label:
+        avg > 0.5
+          ? "bullish"
+          : avg < -0.5
+            ? "bearish"
+            : "neutral",
+
+      summary:
+        score > 1
+          ? `Sentiment spike detected for ${keyword}`
+          : `Sentiment normal for ${keyword}`,
+
       data: {
         keyword,
-        trendingCount: trending.length,
-        newsCount: news.length,
-        sentimentScore
+
+        trendingCount:
+          trending.length,
+
+        newsCount:
+          news.length,
       },
-      volatility: 0,
-      sentiment: sentimentScore,
-      devActivity: 0,
-      depth: 0
+
+      sources: {
+        cryptopanic: true,
+      },
     };
+
   } catch (err) {
-    console.log(`Sentiment collector error for ${keyword}:`, err.message);
-    return null;
+
+    console.error(
+      `Sentiment collector error for ${keyword}:`,
+      err?.message || err
+    );
+
+    return {
+      metric: "sentiment",
+
+      timestamp: new Date().toISOString(),
+
+      score: 0,
+
+      avg: 0,
+
+      count: 0,
+
+      label: "neutral",
+
+      error:
+        err?.message ||
+        "Unknown sentiment error",
+
+      data: {
+        keyword,
+        trendingCount: 0,
+        newsCount: 0,
+      },
+
+      sources: {
+        cryptopanic: true,
+      },
+    };
   }
 }
