@@ -33,6 +33,7 @@ STABLECOINS = {
 # Helpers
 # --------------------------------------------------
 
+
 def numeric(value: Any) -> bool:
     if not isinstance(value, (int, float)):
         return False
@@ -44,7 +45,7 @@ def numeric(value: Any) -> bool:
         return False
 
     if isinf(value):
-        return False
+        return(False)
 
     return True
 
@@ -56,6 +57,7 @@ def safe_mean(values: List[float]) -> Optional[float]:
 # --------------------------------------------------
 # Metric Extraction
 # --------------------------------------------------
+
 
 def extract_metric_values(
     metric: str,
@@ -190,6 +192,7 @@ def extract_metric_values(
 # Aggregation
 # --------------------------------------------------
 
+
 def aggregate_metric(
     metric: str,
     snapshots: List[Dict[str, Any]]
@@ -235,6 +238,7 @@ def aggregate_all_metrics(
 # Composite Score
 # --------------------------------------------------
 
+
 def volatai_score(
     agg: Dict[str, Dict[str, Any]],
     weights: Dict[str, float] = DEFAULT_WEIGHTS,
@@ -271,6 +275,7 @@ def volatai_score(
 # Confidence Score
 # --------------------------------------------------
 
+
 def confidence_score(
     agg: Dict[str, Dict[str, Any]]
 ) -> float:
@@ -299,6 +304,7 @@ def confidence_score(
 # Health Status
 # --------------------------------------------------
 
+
 def collector_health(
     agg: Dict[str, Dict[str, Any]]
 ) -> Dict[str, str]:
@@ -323,6 +329,7 @@ def collector_health(
 # --------------------------------------------------
 # Alerts
 # --------------------------------------------------
+
 
 def detect_alerts(
     agg: Dict[str, Dict[str, Any]]
@@ -350,6 +357,12 @@ def detect_alerts(
         .get("mean")
     )
 
+    sentiment = (
+        agg.get("sentiment", {})
+        .get("mean")
+    )
+
+    # Whale pressure
     if (
         whales is not None
         and whales > 0.8
@@ -358,6 +371,7 @@ def detect_alerts(
             "High whale pressure detected"
         )
 
+    # Spoofing
     if (
         spoofing is not None
         and spoofing > 0.7
@@ -366,6 +380,7 @@ def detect_alerts(
             "Elevated spoofing activity"
         )
 
+    # Low liquidity
     if (
         liquidity is not None
         and liquidity < 0.3
@@ -374,6 +389,24 @@ def detect_alerts(
             "Liquidity risk detected"
         )
 
+    # Volatility: use absolute percentage; threshold chosen as 10% (tunable)
     if (
         volatility is not None
-        and volatility
+        and abs(volatility) > 10.0
+    ):
+        alerts.append(
+            "High market volatility detected"
+        )
+
+    # Sentiment: negative sentiment triggers alert; positive sentiment noted but optional
+    if sentiment is not None:
+        if sentiment < -0.3:
+            alerts.append(
+                "Negative market sentiment detected"
+            )
+        elif sentiment > 0.3:
+            alerts.append(
+                "Positive market sentiment"
+            )
+
+    return alerts
