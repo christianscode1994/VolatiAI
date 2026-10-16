@@ -6,7 +6,7 @@ import logging
 from .fetch_data import fetch_top_market_data, fetch_hn_titles
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
-from .generate_output import build_payload
+from .generate_output import build_payload, write_json, write_html
 from .history import write_snapshot, SnapshotReader
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger("volatai")
 
 
-def run_once(write_snaps: bool = False, show_dashboard: bool = False):
+def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     logger.info("Running unified VolatiAI engine")
 
     # ---- Market + sentiment (Reddit removed) ----
@@ -51,16 +51,16 @@ def run_once(write_snaps: bool = False, show_dashboard: bool = False):
         "whale_activity": build_whale_activity(rpc, 50, from_block, to_block),
     }
 
-    # ---- Unified payload (no reddit arg) ----
-    payload = build_payload(market, sentiment_hn)
+    # ---- Unified payload (computed volatility, HN only) ----
+    payload = build_payload(volatility, sentiment_hn)
 
-    # ---- Metrics ----
+    # ---- Metrics (from snapshots) ----
     snapshot_reader = SnapshotReader()
     metrics = aggregate_all_metrics(snapshot_reader)
     score = volatai_score(metrics)
     alerts = detect_alerts(metrics)
 
-    # ---- Optional snapshots ----
+    # ---- Persist snapshots so next run's metrics have data ----
     if write_snaps:
         try:
             write_snapshot("volatility", volatility)
@@ -90,62 +90,16 @@ def run_once(write_snaps: bool = False, show_dashboard: bool = False):
         },
     }
 
-    # ---- Unified JSON output ----
-    with open(PUBLIC_DIR / "latest.json", "w") as f:
-        json.dump(latest, f, indent=2)
-
-    # ---- Unified HTML summary ----
-    html = f"""
-    <html>
-    <head><title>VolatiAI Summary</title></head>
-    <body>
-        <h1>VolatiAI Intelligence Summary</h1>
-        <p>Latest block: {latest_block}</p>
-
-        <h2>Top by Volatility</h2>
-        <pre>{json.dumps(payload.get('top_by_volatility'), indent=2)}</pre>
-
-        <h2>Sentiment</h2>
-        <pre>{json.dumps(payload.get('sentiment'), indent=2)}</pre>
-
-        <h2>Exchanges</h2>
-        <pre>{json.dumps(payload.get('exchanges'), indent=2)}</pre>
-
-        <h2>Whales</h2>
-        <pre>{json.dumps(payload.get('whales'), indent=2)}</pre>
-
-        <h2>Spoofing</h2>
-        <pre>{json.dumps(payload.get('spoofing'), indent=2)}</pre>
-
-        <h2>Liquidity</h2>
-        <pre>{json.dumps(payload.get('liquidity'), indent=2)}</pre>
-
-        <h2>Arbitrage</h2>
-        <pre>{json.dumps(payload.get('arbitrage'), indent=2)}</pre>
-
-        <h2>Depth Heatmaps</h2>
-        <pre>{json.dumps(payload.get('depth_heatmaps'), indent=2)}</pre>
-
-        <h2>On-Chain</h2>
-        <pre>{json.dumps(onchain, indent=2)}</pre>
-
-        <h2>Score</h2>
-        <pre>{score}</pre>
-
-        <h2>Alerts</h2>
-        <pre>{json.dumps(alerts, indent=2)}</pre>
-    </body>
-    </html>
-    """
-
-    with open(PUBLIC_DIR / "summary.html", "w") as f:
-        f.write(html)
+    # ---- Unified outputs ----
+    write_json(PUBLIC_DIR / "latest.json", latest)
+    write_html(PUBLIC_DIR / "summary.html", payload)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--snaps", action="store_true")
+    parser.add_argument("--no-snaps", action="store_true",
+                        help="Skip writing snapshots this run")
     parser.add_argument("--dashboard", action="store_true")
     args = parser.parse_args()
 
-    run_once(write_snaps=args.snaps, show_dashboard=args.dashboard)
+    run_once(write_snaps=not args.no_snaps, show_dashboard=args.dashboard)
