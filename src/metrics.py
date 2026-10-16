@@ -1,5 +1,6 @@
 from typing import List, Dict, Any, Optional
 from statistics import mean
+from math import isnan, isinf
 
 METRICS = [
     "whales",
@@ -17,17 +18,39 @@ DEFAULT_WEIGHTS = {
     "volatility": 0.15,
 }
 
+STABLECOINS = {
+    "usdt",
+    "usdc",
+    "dai",
+    "fdusd",
+    "usde",
+    "tusd",
+    "usdp",
+}
+
 
 # --------------------------------------------------
 # Helpers
 # --------------------------------------------------
 
-def safe_mean(values: List[float]) -> Optional[float]:
-    return mean(values) if values else None
-
-
 def numeric(value: Any) -> bool:
-    return isinstance(value, (int, float))
+    if not isinstance(value, (int, float)):
+        return False
+
+    if isinstance(value, bool):
+        return False
+
+    if isnan(value):
+        return False
+
+    if isinf(value):
+        return False
+
+    return True
+
+
+def safe_mean(values: List[float]) -> Optional[float]:
+    return round(mean(values), 4) if values else None
 
 
 # --------------------------------------------------
@@ -39,32 +62,126 @@ def extract_metric_values(
     snapshots: List[Dict[str, Any]]
 ) -> List[float]:
 
-    values = []
+    values: List[float] = []
 
     for snap in snapshots:
 
-        value = None
+        # ----------------------------------------
+        # WHALES / SPOOFING
+        # ----------------------------------------
 
-        if metric in ("whales", "spoofing", "liquidity"):
-            value = snap.get("score")
+        if metric in ("whales", "spoofing"):
 
-        elif metric == "sentiment":
-            value = snap.get("avg")
+            score = snap.get("score")
 
-            if value is None:
-                value = snap.get("score")
+            if numeric(score):
+                values.append(float(score))
 
-        elif metric == "volatility":
-            value = snap.get("price_change_percentage_24h")
+            continue
 
-            if value is None:
-                value = snap.get("score")
+        # ----------------------------------------
+        # LIQUIDITY
+        # ----------------------------------------
 
-        else:
-            value = snap.get("score")
+        if metric == "liquidity":
 
-        if numeric(value):
-            values.append(float(value))
+            score = snap.get("score")
+
+            # New schema:
+            # { "score": 82.3 }
+
+            if numeric(score):
+                values.append(float(score))
+                continue
+
+            # Legacy schema:
+            # {
+            #   "score": {
+            #       "aggregate": {
+            #           "liquidity_score": 82.3
+            #       }
+            #   }
+            # }
+
+            if isinstance(score, dict):
+
+                aggregate = score.get(
+                    "aggregate",
+                    {}
+                )
+
+                liquidity_score = aggregate.get(
+                    "liquidity_score"
+                )
+
+                if numeric(liquidity_score):
+                    values.append(
+                        float(liquidity_score)
+                    )
+
+            continue
+
+        # ----------------------------------------
+        # SENTIMENT
+        # ----------------------------------------
+
+        if metric == "sentiment":
+
+            for source in (
+                "reddit",
+                "hn",
+                "pushshift",
+            ):
+
+                block = snap.get(source)
+
+                if not isinstance(block, dict):
+                    continue
+
+                avg = block.get("avg")
+
+                if numeric(avg):
+                    values.append(float(avg))
+
+            continue
+
+        # ----------------------------------------
+        # VOLATILITY
+        # ----------------------------------------
+
+        if metric == "volatility":
+
+            assets = snap.get(
+                "top_by_volatility",
+                []
+            )
+
+            if not isinstance(assets, list):
+                continue
+
+            for asset in assets:
+
+                if not isinstance(asset, dict):
+                    continue
+
+                symbol = (
+                    asset.get("symbol", "")
+                    .lower()
+                    .strip()
+                )
+
+                # Ignore stablecoins
+                if symbol in STABLECOINS:
+                    continue
+
+                pct = asset.get(
+                    "price_change_percentage_24h"
+                )
+
+                if numeric(pct):
+                    values.append(float(pct))
+
+            continue
 
     return values
 
@@ -78,7 +195,10 @@ def aggregate_metric(
     snapshots: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
 
-    values = extract_metric_values(metric, snapshots)
+    values = extract_metric_values(
+        metric,
+        snapshots,
+    )
 
     return {
         "metric": metric,
@@ -94,9 +214,10 @@ def aggregate_all_metrics(
     days: int = 7
 ) -> Dict[str, Dict[str, Any]]:
 
-    aggregated = {}
+    aggregated: Dict[str, Dict[str, Any]] = {}
 
     for metric in METRICS:
+
         snapshots = snapshot_reader.read_snapshots(
             metric,
             days
@@ -104,23 +225,23 @@ def aggregate_all_metrics(
 
         aggregated[metric] = aggregate_metric(
             metric,
-            snapshots
+            snapshots,
         )
 
     return aggregated
 
 
 # --------------------------------------------------
-# VolatiAI Composite Score
+# Composite Score
 # --------------------------------------------------
 
 def volatai_score(
     agg: Dict[str, Dict[str, Any]],
-    weights: Dict[str, float] = DEFAULT_WEIGHTS
+    weights: Dict[str, float] = DEFAULT_WEIGHTS,
 ) -> Optional[float]:
 
     total = 0.0
-    used_weight = 0.0
+    active_weight = 0.0
 
     for metric, weight in weights.items():
 
@@ -135,12 +256,15 @@ def volatai_score(
             continue
 
         total += metric_mean * weight
-        used_weight += weight
+        active_weight += weight
 
-    if used_weight == 0:
+    if active_weight == 0:
         return None
 
-    return round(total / used_weight, 4)
+    return round(
+        total / active_weight,
+        4,
+    )
 
 
 # --------------------------------------------------
@@ -151,19 +275,24 @@ def confidence_score(
     agg: Dict[str, Dict[str, Any]]
 ) -> float:
 
-    total = len(METRICS)
+    total_metrics = len(METRICS)
 
-    if total == 0:
+    if total_metrics == 0:
         return 0.0
 
-    available = sum(
+    available_metrics = sum(
         1
         for metric in METRICS
-        if agg.get(metric)
-        and agg[metric].get("count", 0) > 0
+        if (
+            agg.get(metric)
+            and agg[metric].get("count", 0) > 0
+        )
     )
 
-    return round(available / total, 2)
+    return round(
+        available_metrics / total_metrics,
+        2,
+    )
 
 
 # --------------------------------------------------
@@ -174,16 +303,21 @@ def collector_health(
     agg: Dict[str, Dict[str, Any]]
 ) -> Dict[str, str]:
 
-    return {
-        metric:
-        (
-            "ok"
-            if agg.get(metric)
-            and agg[metric].get("count", 0) > 0
-            else "failed"
-        )
-        for metric in METRICS
-    }
+    health: Dict[str, str] = {}
+
+    for metric in METRICS:
+
+        metric_data = agg.get(metric)
+
+        if (
+            metric_data
+            and metric_data.get("count", 0) > 0
+        ):
+            health[metric] = "ok"
+        else:
+            health[metric] = "failed"
+
+    return health
 
 
 # --------------------------------------------------
@@ -194,23 +328,52 @@ def detect_alerts(
     agg: Dict[str, Dict[str, Any]]
 ) -> List[str]:
 
-    alerts = []
+    alerts: List[str] = []
 
-    whales = agg.get("whales", {}).get("mean")
-    spoofing = agg.get("spoofing", {}).get("mean")
-    liquidity = agg.get("liquidity", {}).get("mean")
-    volatility = agg.get("volatility", {}).get("mean")
+    whales = (
+        agg.get("whales", {})
+        .get("mean")
+    )
 
-    if whales is not None and whales > 0.8:
-        alerts.append("High whale pressure detected")
+    spoofing = (
+        agg.get("spoofing", {})
+        .get("mean")
+    )
 
-    if spoofing is not None and spoofing > 0.7:
-        alerts.append("Elevated spoofing activity")
+    liquidity = (
+        agg.get("liquidity", {})
+        .get("mean")
+    )
 
-    if liquidity is not None and liquidity < 0.3:
-        alerts.append("Liquidity risk detected")
+    volatility = (
+        agg.get("volatility", {})
+        .get("mean")
+    )
 
-    if volatility is not None and volatility > 10:
-        alerts.append("Volatility spike detected")
+    if (
+        whales is not None
+        and whales > 0.8
+    ):
+        alerts.append(
+            "High whale pressure detected"
+        )
 
-    return alerts
+    if (
+        spoofing is not None
+        and spoofing > 0.7
+    ):
+        alerts.append(
+            "Elevated spoofing activity"
+        )
+
+    if (
+        liquidity is not None
+        and liquidity < 0.3
+    ):
+        alerts.append(
+            "Liquidity risk detected"
+        )
+
+    if (
+        volatility is not None
+        and volatility
