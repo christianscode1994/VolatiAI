@@ -1,45 +1,89 @@
 // collectors/chain.js
+
 import axios from "axios";
 import { randomDelay } from "../postingPatterns.js";
 import { collectorConfig } from "../config.js";
 
-// --------------------------------------
-//  CHAIN EVENT COLLECTOR (CONFIG‑DRIVEN)
-// --------------------------------------
-//
-// Fetches recent transactions + detects anomalies.
-// Adds anti‑detection jitter + threshold logic.
-// Fully normalized for signalEngine.
-//
-
 export async function collectChainEvents(address) {
   try {
-    // Anti‑detection jitter before API call
     await randomDelay(300, 1200);
 
-    const apiKey = collectorConfig.chain.api_key || "";
+    const apiKey =
+      collectorConfig?.chain?.api_key || "";
+
     const url =
-      `https://api.etherscan.io/api?module=account&action=txlist` +
-      `&address=${address}&sort=desc` +
+      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&sort=desc` +
       (apiKey ? `&apikey=${apiKey}` : "");
 
-    const { data } = await axios.get(url, {
-      headers: {
-        "User-Agent": "VolatiAI-Swarm",
-        "Accept": "application/json"
+    const { data } = await axios.get(
+      url,
+      {
+        headers: {
+          "User-Agent": "VolatiAI-Swarm",
+          "Accept": "application/json"
+        }
       }
-    });
+    );
 
-    const txs = Array.isArray(data?.result) ? data.result : [];
-    const recent = txs.slice(0, collectorConfig.chain.recent_count || 5);
+    const transactions =
+      Array.isArray(data?.result)
+        ? data.result
+        : [];
 
-    // Detect anomalies: failed tx, high gas, unusual value
-    const anomalies = recent.filter(tx => {
-      const failed = tx.isError === "1";
-      const highGas = Number(tx.gasUsed) > (collectorConfig.chain.gas_threshold || 200000);
-      const bigValue = Number(tx.value) > (collectorConfig.chain.value_threshold || 1e18); // 1 ETH default
-      return failed || highGas || bigValue;
-    });
+    const recentCount =
+      Number(
+        collectorConfig?.chain?.recent_count
+        ?? 5
+      );
+
+    const recent =
+      transactions.slice(
+        0,
+        recentCount
+      );
+
+    const gasThreshold =
+      Number(
+        collectorConfig?.chain
+          ?.gas_threshold
+        ?? 200000
+      );
+
+    const valueThreshold =
+      Number(
+        collectorConfig?.chain
+          ?.value_threshold
+        ?? 1e18
+      );
+
+    const anomalies =
+      recent.filter(tx => {
+
+        const failed =
+          tx?.isError === "1";
+
+        const highGas =
+          Number(tx?.gasUsed || 0)
+          > gasThreshold;
+
+        const largeValue =
+          Number(tx?.value || 0)
+          > valueThreshold;
+
+        return (
+          failed ||
+          highGas ||
+          largeValue
+        );
+      });
+
+    const score =
+      anomalies.length;
+
+    const label =
+      anomalies.length > 0
+        ? "anomaly"
+        : "normal";
 
     const summary =
       anomalies.length > 0
@@ -47,24 +91,74 @@ export async function collectChainEvents(address) {
         : `Chain activity normal for ${address}`;
 
     return {
-      type: "chain",
+      metric: "onchain",
+
+      timestamp:
+        new Date().toISOString(),
+
+      score,
+
+      label,
+
       summary,
+
+      address,
+
+      recentCount:
+        recent.length,
+
+      anomalyCount:
+        anomalies.length,
+
       data: {
         address,
         recent,
         anomalies,
+
         thresholds: {
-          gas: collectorConfig.chain.gas_threshold,
-          value: collectorConfig.chain.value_threshold
+          gas:
+            gasThreshold,
+
+          value:
+            valueThreshold
         }
       },
-      volatility: 0,
-      sentiment: 0,
-      devActivity: 0,
-      depth: 0
+
+      sources: {
+        etherscan: true
+      }
     };
+
   } catch (err) {
-    console.log(`Chain collector error for ${address}:`, err.message);
-    return null;
+
+    console.error(
+      `Chain collector error for ${address}:`,
+      err?.message || err
+    );
+
+    return {
+      metric: "onchain",
+
+      timestamp:
+        new Date().toISOString(),
+
+      score: 0,
+
+      label: "error",
+
+      address,
+
+      recentCount: 0,
+
+      anomalyCount: 0,
+
+      error:
+        err?.message ||
+        "Unknown chain error",
+
+      sources: {
+        etherscan: true
+      }
+    };
   }
 }
