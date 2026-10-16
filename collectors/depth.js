@@ -1,44 +1,92 @@
 // collectors/depth.js
+
 import axios from "axios";
 import { randomDelay } from "../postingPatterns.js";
 import { collectorConfig } from "../config.js";
 
-// --------------------------------------
-//  DEPTH COLLECTOR (CONFIG‑DRIVEN)
-// --------------------------------------
-//
-// Measures bid/ask depth + imbalance from Binance.
-// Adds anti‑detection jitter + threshold logic.
-// Fully normalized for signalEngine.
-//
-
 export async function collectDepth(asset) {
   try {
-    // Anti‑detection jitter before API call
     await randomDelay(300, 1200);
 
-    const symbol = `${asset.toUpperCase()}USDT`;
-    const url = `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=100`;
+    const symbol =
+      `${asset.toUpperCase()}USDT`;
 
-    const { data } = await axios.get(url, {
-      headers: {
-        "User-Agent": "VolatiAI-Swarm",
-        "Accept": "application/json"
+    const url =
+      `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=100`;
+
+    const { data } = await axios.get(
+      url,
+      {
+        headers: {
+          "User-Agent": "VolatiAI-Swarm",
+          "Accept": "application/json"
+        }
       }
-    });
+    );
 
-    if (!data || !data.bids || !data.asks) {
-      console.log(`Depth collector: insufficient data for ${asset}`);
-      return null;
+    if (
+      !data ||
+      !Array.isArray(data.bids) ||
+      !Array.isArray(data.asks)
+    ) {
+      return {
+        metric: "liquidity",
+        timestamp:
+          new Date().toISOString(),
+
+        score: 0,
+
+        asset,
+
+        bids: 0,
+        asks: 0,
+        depthTotal: 0,
+        imbalance: 0,
+
+        label: "unavailable"
+      };
     }
 
-    const bids = data.bids.reduce((acc, b) => acc + parseFloat(b[1]), 0);
-    const asks = data.asks.reduce((acc, a) => acc + parseFloat(a[1]), 0);
+    const bids = data.bids.reduce(
+      (acc, bid) =>
+        acc + Number(bid[1] || 0),
+      0
+    );
 
-    const depthTotal = bids + asks;
-    const imbalance = bids - asks;
+    const asks = data.asks.reduce(
+      (acc, ask) =>
+        acc + Number(ask[1] || 0),
+      0
+    );
 
-    const threshold = Number(collectorConfig.depth.threshold ?? 0);
+    const depthTotal =
+      bids + asks;
+
+    const imbalance =
+      bids - asks;
+
+    const threshold =
+      Number(
+        collectorConfig?.depth
+          ?.threshold ?? 0
+      );
+
+    let score = 0;
+
+    if (depthTotal > 0) {
+      score =
+        Math.abs(imbalance)
+        / depthTotal;
+    }
+
+    score = Number(
+      (1 - score).toFixed(4)
+    );
+
+    const label =
+      Math.abs(imbalance) > threshold
+        ? "imbalanced"
+        : "balanced";
 
     const summary =
       Math.abs(imbalance) > threshold
@@ -46,8 +94,37 @@ export async function collectDepth(asset) {
         : `${asset.toUpperCase()} depth normal`;
 
     return {
-      type: "depth",
+      metric: "liquidity",
+
+      timestamp:
+        new Date().toISOString(),
+
+      score,
+
+      label,
+
       summary,
+
+      asset,
+
+      bids: Number(
+        bids.toFixed(4)
+      ),
+
+      asks: Number(
+        asks.toFixed(4)
+      ),
+
+      depthTotal: Number(
+        depthTotal.toFixed(4)
+      ),
+
+      imbalance: Number(
+        imbalance.toFixed(4)
+      ),
+
+      threshold,
+
       data: {
         asset,
         bids,
@@ -56,13 +133,38 @@ export async function collectDepth(asset) {
         imbalance,
         threshold
       },
-      volatility: 0,
-      sentiment: 0,
-      devActivity: 0,
-      depth: depthTotal
+
+      sources: {
+        binance: true
+      }
     };
+
   } catch (err) {
-    console.log(`Depth collector error for ${asset}:`, err.message);
-    return null;
+
+    console.error(
+      `Depth collector error for ${asset}:`,
+      err?.message || err
+    );
+
+    return {
+      metric: "liquidity",
+
+      timestamp:
+        new Date().toISOString(),
+
+      score: 0,
+
+      asset,
+
+      label: "error",
+
+      error:
+        err?.message ||
+        "Unknown depth error",
+
+      sources: {
+        binance: true
+      }
+    };
   }
 }
