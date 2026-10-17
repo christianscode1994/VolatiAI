@@ -39,6 +39,15 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run VolatiAI engine
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          PUBLIC_ETH_RPC: ${{ secrets.PUBLIC_ETH_RPC }}
+          PUBLIC_AVAX_RPC: ${{ secrets.PUBLIC_AVAX_RPC }}
+          PUBLIC_BSC_RPC: ${{ secrets.PUBLIC_BSC_RPC }}
+          PUBLIC_POLYGON_RPC: ${{ secrets.PUBLIC_POLYGON_RPC }}
+          PUBLIC_SOLANA_RPC: ${{ secrets.PUBLIC_SOLANA_RPC }}
+          ALCHEMY_URL: ${{ secrets.ALCHEMY_URL }}
+          INFURA_URL: ${{ secrets.INFURA_URL }}
         run: python -m src.main
 
       - name: Copy output to docs
