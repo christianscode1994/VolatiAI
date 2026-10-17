@@ -107,7 +107,7 @@ def summarize_stablecoin_flows(from_block: int, to_block: int,
                 "transfers": len(transfers),
                 "volume": round(volume, 2),
                 "sampled": len(transfers) >= max_pages * 100,
-                "sample_window": f"{len(transfers)} most recent transfers",
+                "sample_window": "last 20 min, " + str(len(transfers)) + " transfers",
             }
         except Exception as e:
             result[symbol] = {"transfers": 0, "volume": 0.0, "error": str(e)[:80]}
