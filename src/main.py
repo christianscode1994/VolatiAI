@@ -6,7 +6,6 @@ import logging
 from .fetch_data import fetch_top_market_data, fetch_hn_titles
 from .fetch_kraken import kraken_ticker, kraken_depth
 from .fetch_okx import okx_ticker, okx_depth
-from .fetch_bybit import bybit_ticker, bybit_depth
 
 from .compute_whales import compute_whale_pressure
 from .compute_spoofing import compute_spoofing_for_exchanges
@@ -37,7 +36,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger("volatai")
 
-
 def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     logger.info("Running unified VolatiAI engine")
 
@@ -66,7 +64,7 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     for name, tick_fn, depth_fn in [
         ("kraken", kraken_ticker, kraken_depth),
         ("okx", okx_ticker, okx_depth),
-        ("bybit", bybit_ticker, bybit_depth),
+        # bybit: removed — API geo-blocks/rate-limits from cloud IPs
     ]:
         try:
             ticker = tick_fn()
@@ -173,7 +171,6 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     # ---- Unified outputs ----
     write_json(PUBLIC_DIR / "latest.json", latest)
     write_html(PUBLIC_DIR / "summary.html", payload, score=score)
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
