@@ -50,17 +50,17 @@ DEV_TRACKED = [
     ("wormhole",   "wormhole-foundation/wormhole",                "bridges"),
     ("axelar",     "axelarnetwork/axelar",                        "bridges"),
 
-    # === NFT infrastructure (10) ===
-    ("opensea_seaport",   "ProjectOpenSea/seaport",                    "nft_infra"),
-    ("opensea_operator",  "ProjectOpenSea/operator-filter-registry",   "nft_infra"),
-    ("reservoir",         "reservoirprotocol/indexer",                  "nft_infra"),
-    ("looksrare",         "looksrare/looksrare",                        "nft_infra"),
-    ("rarible",           "rarible/protocol",                           "nft_infra"),
-    ("openzeppelin",      "OpenZeppelin/openzeppelin-contracts",        "nft_infra"),
-    ("erc721a",           "chiru-labs/ERC721A",                        "nft_infra"),
-    ("manifold",          "manifoldxyz/contracts",                      "nft_infra"),
-    ("zora",              "ourzora/zora-protocol",                      "nft_infra"),
-    ("nftfi",             "nftfi/nftfi",                                "nft_infra"),
+    # === NFT infrastructure (10) — all verified 200 or 301→200 ===
+    ("opensea_seaport",       "ProjectOpenSea/seaport",                     "nft_infra"),
+    ("opensea_seaport_sol",   "ProjectOpenSea/seaport-sol",                 "nft_infra"),
+    ("opensea_operator",      "ProjectOpenSea/operator-filter-registry",    "nft_infra"),
+    ("opensea_js",            "ProjectOpenSea/opensea-js",                  "nft_infra"),
+    ("zora_protocol",         "ourzora/zora-protocol",                      "nft_infra"),
+    ("zora_1155",             "ourzora/zora-1155-contracts",                "nft_infra"),
+    ("immutable_contracts",   "immutable/contracts",                        "nft_infra"),
+    ("immutable_zkevm",       "immutable/zkevm-contracts",                  "nft_infra"),
+    ("openzeppelin",          "OpenZeppelin/openzeppelin-contracts",        "nft_infra"),
+    ("erc721a",               "chiru-labs/ERC721A",                         "nft_infra"),
 ]
 
 
@@ -69,6 +69,5 @@ NFT_TRACKED = [
     ("degods",             "solana"),
     ("tensorians",         "solana"),
     ("okay_bears",         "solana"),
-    ("smb_gen2",          "solana"),
+    ("smb_gen2",           "solana"),
 ]
-    
