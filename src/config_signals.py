@@ -49,6 +49,19 @@ DEV_TRACKED = [
     # === Bridges (2) ===
     ("wormhole",   "wormhole-foundation/wormhole",                "bridges"),
     ("axelar",     "axelarnetwork/axelar",                        "bridges"),
+
+    # === NFT infrastructure (10) ===
+    ("opensea_seaport",   "ProjectOpenSea/seaport",                    "nft_infra"),
+    ("opensea_operator",  "ProjectOpenSea/operator-filter-registry",   "nft_infra"),
+    ("reservoir",         "reservoirprotocol/indexer",                  "nft_infra"),
+    ("looksrare",         "looksrare/looksrare",                        "nft_infra"),
+    ("rarible",           "rarible/protocol",                           "nft_infra"),
+    ("openzeppelin",      "OpenZeppelin/openzeppelin-contracts",        "nft_infra"),
+    ("erc721a",           "chiru-labs/ERC721A",                        "nft_infra"),
+    ("manifold",          "manifoldxyz/contracts",                      "nft_infra"),
+    ("zora",              "ourzora/zora-protocol",                      "nft_infra"),
+    ("nftfi",             "nftfi/nftfi",                                "nft_infra"),
+]
 ]
 
 
