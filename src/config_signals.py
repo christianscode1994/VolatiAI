@@ -57,6 +57,6 @@ NFT_TRACKED = [
     ("degods",             "solana"),
     ("tensorians",         "solana"),
     ("okay_bears",         "solana"),
-    ("pudgypenguins",      "solana"),
+    ("smb_gen2",          "solana"),
 ]
     
