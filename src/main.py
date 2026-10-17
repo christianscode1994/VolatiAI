@@ -13,6 +13,7 @@ from .compute_liquidity import compute_liquidity_snapshot
 from .compute_arbitrage import compute_arbitrage_deltas
 from .compute_depth_heatmap import compute_depth_heatmaps
 from .compute_dev_sentiment import compute_dev_sentiment
+from .compute_nft_activity import compute_nft_activity
 
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
@@ -93,6 +94,18 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         exchanges[name] = {"ticker": ticker, "depth": depth}
         logger.info("Exchange %s: ticker + %s", name, "depth" if depth else "no depth")
 
+    nft_activity = None
+    try:
+        nft_activity = compute_nft_activity()
+        logger.info(
+            "NFT activity: %s collections, $%s SOL vol24h (signal=%s)",
+            nft_activity.get("collections_active"),
+            nft_activity.get("volume_24h_total_sol"),
+            nft_activity.get("signal"),
+        )
+    except Exception as e:
+        logger.warning("NFT activity failed: %s", e)
+
     # ---- Unified payload ----
     # ---- Market microstructure (needs exchanges with depth) ----
     whales = None
@@ -154,6 +167,7 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         arbitrage=arbitrage,
         depth_heatmaps=depth_heatmaps,
         dev_activity=dev_activity,
+        nft_activity=nft_activity,
     )
 
     # ---- Metrics (from snapshots) ----

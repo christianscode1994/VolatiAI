@@ -50,3 +50,13 @@ DEV_TRACKED = [
     ("wormhole",   "wormhole-foundation/wormhole",                "bridges"),
     ("axelar",     "axelarnetwork/axelar",                        "bridges"),
 ]
+
+
+NFT_TRACKED = [
+    ("mad_lads",           "solana"),
+    ("degods",             "solana"),
+    ("tensorians",         "solana"),
+    ("okay_bears",         "solana"),
+    ("pudgypenguins",      "solana"),
+]
+    

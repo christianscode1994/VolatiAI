@@ -5,12 +5,13 @@ from src.nft.solana.magiceden_activity import get_activity
 from src.nft.evm.metadata import get_evm_nft_metadata
 from src.nft.evm.transfers import get_evm_nft_transfers
 
+import os
 RPC_URLS = {
-    "ethereum": "<your-alchemy-or-infura-url>",
-    "polygon": "<rpc>",
-    "base": "<rpc>",
-    "arbitrum": "<rpc>",
-    "optimism": "<rpc>",
+    "ethereum": os.getenv("PUBLIC_ETH_RPC", ""),
+    "polygon": os.getenv("PUBLIC_POLYGON_RPC", ""),
+    "base": os.getenv("PUBLIC_ETH_RPC", ""),
+    "arbitrum": os.getenv("PUBLIC_ETH_RPC", ""),
+    "optimism": os.getenv("PUBLIC_ETH_RPC", ""),
 }
 
 def unified_nft(chain: str, identifier: dict) -> dict:
