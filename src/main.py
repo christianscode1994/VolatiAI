@@ -4,9 +4,9 @@ import json
 import logging
 
 from .fetch_data import fetch_top_market_data, fetch_hn_titles
-from .fetch_kraken import kraken_ticker
-from .fetch_okx import okx_ticker
-from .fetch_bybit import bybit_ticker
+from .fetch_kraken import kraken_ticker, kraken_depth
+from .fetch_okx import okx_ticker, okx_depth
+from .fetch_bybit import bybit_ticker, bybit_depth
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
 from .generate_output import build_payload, write_json, write_html
@@ -54,19 +54,28 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         "whale_activity": build_whale_activity(rpc, 50, from_block, to_block),
     }
 
-    # ---- Exchange tickers (best-effort, per-exchange isolation) ----
+    # ---- Exchange tickers + depth (best-effort, per-exchange isolation) ----
     exchanges = {}
-    for name, fetch in [
-        ("kraken", kraken_ticker),
-        ("okx", okx_ticker),
-        ("bybit", bybit_ticker),
+    for name, tick_fn, depth_fn in [
+        ("kraken", kraken_ticker, kraken_depth),
+        ("okx", okx_ticker, okx_depth),
+        ("bybit", bybit_ticker, bybit_depth),
     ]:
         try:
-            exchanges[name] = {"ticker": fetch(), "depth": None}
-            logger.info("Exchange %s: ok", name)
+            ticker = tick_fn()
         except Exception as e:
-            logger.warning("Exchange %s failed: %s", name, e)
+            logger.warning("Exchange %s ticker failed: %s", name, e)
             exchanges[name] = None
+            continue
+
+        depth = None
+        try:
+            depth = depth_fn()
+        except Exception as e:
+            logger.warning("Exchange %s depth failed: %s", name, e)
+
+        exchanges[name] = {"ticker": ticker, "depth": depth}
+        logger.info("Exchange %s: ticker + %s", name, "depth" if depth else "no depth")
 
     # ---- Unified payload ----
     payload = build_payload(volatility, sentiment_hn, exchanges=exchanges)
