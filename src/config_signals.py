@@ -62,7 +62,6 @@ DEV_TRACKED = [
     ("zora",              "ourzora/zora-protocol",                      "nft_infra"),
     ("nftfi",             "nftfi/nftfi",                                "nft_infra"),
 ]
-]
 
 
 NFT_TRACKED = [
