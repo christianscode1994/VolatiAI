@@ -138,6 +138,14 @@ def write_html(path, payload, score=None):
             pass
         # OKX: last vs open24h
         try:
+            c = ticker.get("c")
+            o = ticker.get("o")
+            if isinstance(c, list) and c and o is not None:
+                last = float(c[0]); op = float(o)
+                return (last - op) / op * 100
+        except Exception:
+            pass
+        try:
             last = float(ticker.get("last") or ticker.get("lastPrice"))
             op = float(ticker.get("open24h"))
             return (last - op) / op * 100
