@@ -172,7 +172,7 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
 
     # ---- Unified outputs ----
     write_json(PUBLIC_DIR / "latest.json", latest)
-    write_html(PUBLIC_DIR / "summary.html", payload)
+    write_html(PUBLIC_DIR / "summary.html", payload, score=score)
 
 
 if __name__ == "__main__":

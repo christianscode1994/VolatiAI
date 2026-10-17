@@ -15,7 +15,7 @@ def _extract_last_price(ticker: Any) -> Optional[float]:
                 pass
 
         # Binance: dict with "bidPrice"/"askPrice" or "lastPrice"
-        for key in ("lastPrice", "bidPrice", "askPrice", "price"):
+        for key in ("lastPrice", "last", "bidPrice", "askPrice", "price"):
             if key in ticker:
                 try:
                     return float(ticker[key])
