@@ -107,6 +107,7 @@ def summarize_stablecoin_flows(from_block: int, to_block: int,
                 "transfers": len(transfers),
                 "volume": round(volume, 2),
                 "sampled": len(transfers) >= max_pages * 100,
+                "sample_window": f"{len(transfers)} most recent transfers",
             }
         except Exception as e:
             result[symbol] = {"transfers": 0, "volume": 0.0, "error": str(e)[:80]}
@@ -140,5 +141,15 @@ def get_whale_transfers(from_block: int, to_block: int,
                 "timestamp": int(t.get("timeStamp", "0")),
                 "block": int(t.get("blockNumber", "0")),
             })
-    whales.sort(key=lambda x: x["value"], reverse=True)
-    return whales[:50]
+    # Dedupe by hash — Etherscan returns overlapping results across pages
+    seen = set()
+    unique_whales = []
+    for w in whales:
+        h = w.get("hash")
+        if not h or h in seen:
+            continue
+        seen.add(h)
+        unique_whales.append(w)
+
+    unique_whales.sort(key=lambda x: x["value"], reverse=True)
+    return unique_whales[:50]
