@@ -43,6 +43,11 @@ def _get(action: str, params: dict, retries: int = 3) -> List[dict]:
             if status == "1":
                 return body.get("result", [])
             if "No transactions found" in message or "No records found" in message:
+                import logging
+                logging.getLogger("volatai.etherscan").info(
+                    "Etherscan: no transactions for contract=%s range=[%s,%s]",
+                    params.get("contractaddress"), params.get("startblock"), params.get("endblock")
+                )
                 return []
             raise RuntimeError(f"Etherscan error: {message} ({body.get('result')})")
         except requests.RequestException:
@@ -53,7 +58,7 @@ def _get(action: str, params: dict, retries: int = 3) -> List[dict]:
 
 
 def get_token_transfers_page(contract: str, from_block: int, to_block: int,
-                             page: int = 1, offset: int = 10000) -> List[dict]:
+                             page: int = 1, offset: int = 100) -> List[dict]:
     return _get("tokentx", {
         "contractaddress": contract,
         "startblock": from_block,
@@ -65,7 +70,7 @@ def get_token_transfers_page(contract: str, from_block: int, to_block: int,
 
 
 def get_token_transfers(contract: str, from_block: int, to_block: int,
-                        max_pages: int = 2) -> List[dict]:
+                        max_pages: int = 20) -> List[dict]:
     all_transfers: List[dict] = []
     for page in range(1, max_pages + 1):
         try:
@@ -84,7 +89,7 @@ def get_token_transfers(contract: str, from_block: int, to_block: int,
 
 
 def summarize_stablecoin_flows(from_block: int, to_block: int,
-                                max_pages: int = 2) -> Dict[str, dict]:
+                                max_pages: int = 20) -> Dict[str, dict]:
     result: Dict[str, dict] = {}
     for symbol, meta in STABLECOIN_CONTRACTS.items():
         try:
@@ -109,7 +114,7 @@ def summarize_stablecoin_flows(from_block: int, to_block: int,
 
 def get_whale_transfers(from_block: int, to_block: int,
                          min_usd: float = 1_000_000.0,
-                         max_pages: int = 2) -> List[dict]:
+                         max_pages: int = 20) -> List[dict]:
     whales: List[dict] = []
     for symbol, meta in STABLECOIN_CONTRACTS.items():
         try:
