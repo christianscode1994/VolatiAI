@@ -1,7 +1,7 @@
-"""Aggregate dev activity across tracked DeFi protocols."""
+"""Aggregate dev activity across tracked crypto protocols, per category."""
 
 import logging
-from typing import Optional
+from collections import defaultdict
 
 from src.config_signals import DEV_TRACKED
 from src.fetch_github import repo_info, repo_commits_since, repo_releases_since
@@ -9,32 +9,38 @@ from src.fetch_github import repo_info, repo_commits_since, repo_releases_since
 logger = logging.getLogger("volatai.dev")
 
 
+def _signal_for_avg(avg_commits: float) -> str:
+    if avg_commits > 25:
+        return "very_high"
+    if avg_commits > 8:
+        return "high"
+    if avg_commits > 2:
+        return "normal"
+    if avg_commits > 0:
+        return "low"
+    return "dormant"
+
+
 def compute_dev_sentiment(days: int = 7) -> dict:
-    """
-    Returns:
-      {
-        "protocols_tracked": N,
-        "protocols_active": N,     # with >=1 commit
-        "protocols_dormant": N,    # 0 commits
-        "commits_total": N,
-        "commits_avg": float,
-        "active_developers": N,
-        "releases_total": N,
-        "top_active": [{protocol, repo, commits}, ...],
-        "dormant": [protocol, ...],
-        "signal": "high" | "normal" | "low" | "dormant"
-      }
-    """
     per_protocol = []
     all_authors = set()
 
-    for name, full_repo in DEV_TRACKED:
+    for entry in DEV_TRACKED:
+        # Support both 2- and 3-tuple entries
+        if len(entry) == 3:
+            name, full_repo, category = entry
+        else:
+            name, full_repo = entry
+            category = "uncategorized"
+
         owner, repo = full_repo.split("/", 1)
         try:
             info = repo_info(owner, repo)
             if not info:
-                logger.debug("dev: %s unreachable", name)
-                per_protocol.append({"protocol": name, "repo": full_repo, "commits": 0, "error": "unreachable"})
+                per_protocol.append({
+                    "protocol": name, "repo": full_repo, "category": category,
+                    "commits": 0, "error": "unreachable",
+                })
                 continue
 
             commits_data = repo_commits_since(owner, repo, days=days)
@@ -43,6 +49,7 @@ def compute_dev_sentiment(days: int = 7) -> dict:
             per_protocol.append({
                 "protocol": name,
                 "repo": full_repo,
+                "category": category,
                 "commits": commits_data["commits"],
                 "releases": releases,
                 "stars": info.get("stars", 0),
@@ -50,20 +57,37 @@ def compute_dev_sentiment(days: int = 7) -> dict:
             all_authors.update(commits_data["authors"])
         except Exception as e:
             logger.warning("dev: %s failed: %s", name, e)
-            per_protocol.append({"protocol": name, "repo": full_repo, "commits": 0, "error": str(e)[:60]})
+            per_protocol.append({
+                "protocol": name, "repo": full_repo, "category": category,
+                "commits": 0, "error": str(e)[:60],
+            })
 
     total_commits = sum(p["commits"] for p in per_protocol)
     active = [p for p in per_protocol if p["commits"] > 0]
     dormant = [p["protocol"] for p in per_protocol if p["commits"] == 0]
     avg_commits = round(total_commits / len(per_protocol), 2) if per_protocol else 0.0
 
-    signal = "dormant"
-    if avg_commits > 20:
-        signal = "high"
-    elif avg_commits > 5:
-        signal = "normal"
-    elif avg_commits > 0:
-        signal = "low"
+    # Aggregate by category
+    categories = defaultdict(lambda: {"tracked": 0, "active": 0, "commits": 0})
+    for p in per_protocol:
+        cat = p["category"]
+        categories[cat]["tracked"] += 1
+        categories[cat]["commits"] += p["commits"]
+        if p["commits"] > 0:
+            categories[cat]["active"] += 1
+
+    by_category = {}
+    for cat, data in categories.items():
+        avg = data["commits"] / data["tracked"] if data["tracked"] else 0.0
+        by_category[cat] = {
+            "tracked": data["tracked"],
+            "active": data["active"],
+            "commits": data["commits"],
+            "avg": round(avg, 2),
+            "signal": _signal_for_avg(avg),
+        }
+
+    hot_layer = max(by_category.items(), key=lambda x: x[1]["commits"])[0] if by_category else None
 
     top = sorted(active, key=lambda p: p["commits"], reverse=True)[:5]
 
@@ -77,6 +101,8 @@ def compute_dev_sentiment(days: int = 7) -> dict:
         "releases_total": sum(p.get("releases", 0) for p in per_protocol),
         "top_active": top,
         "dormant": dormant,
-        "signal": signal,
+        "by_category": by_category,
+        "hot_layer": hot_layer,
+        "signal": _signal_for_avg(avg_commits),
         "window_days": days,
     }
