@@ -7,7 +7,7 @@ from typing import List, Dict, Optional
 import requests
 
 
-ETHERSCAN_API = "https://api.etherscan.io/api"
+ETHERSCAN_API = "https://api.etherscan.io/v2/api"
 
 STABLECOIN_CONTRACTS = {
     "USDT": {"address": "0xdAC17F958D2ee523a2206206994597C13D831ec7", "decimals": 6},
@@ -25,6 +25,7 @@ def _api_key() -> str:
 
 def _get(action: str, params: dict, retries: int = 3) -> List[dict]:
     full = dict(params)
+    full["chainid"] = 1  # Ethereum mainnet (required by V2)
     full["module"] = "account"
     full["action"] = action
     full["apikey"] = _api_key()
@@ -70,7 +71,9 @@ def get_token_transfers(contract: str, from_block: int, to_block: int,
         try:
             batch = get_token_transfers_page(contract, from_block, to_block, page=page)
         except Exception:
-            break
+            if page == 1:
+                raise  # first page failed — propagate so caller knows
+            break      # subsequent pages failing is OK (we have earlier data)
         if not batch:
             break
         all_transfers.extend(batch)
