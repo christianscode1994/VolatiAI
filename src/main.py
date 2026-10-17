@@ -131,6 +131,18 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     except Exception as e:
         logger.warning("Depth heatmaps failed: %s", e)
 
+    dev_activity = None
+    try:
+        dev_activity = compute_dev_sentiment()
+        logger.info(
+            "Dev activity: %s protocols, %s commits (signal=%s)",
+            dev_activity.get("protocols_tracked"),
+            dev_activity.get("commits_total"),
+            dev_activity.get("signal"),
+        )
+    except Exception as e:
+        logger.warning("Dev activity failed: %s", e)
+
     # ---- Unified payload ----
     payload = build_payload(
         volatility,
