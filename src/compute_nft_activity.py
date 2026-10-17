@@ -34,10 +34,10 @@ def compute_nft_activity() -> dict:
                 })
                 continue
 
-            floor = stats.get("floorPrice") or 0
-            volume_24h = stats.get("volume24hr") or 0
+            floor = (stats.get("floorPrice") or 0) / 1e9  # lamports -> SOL
+            volume_24h = (stats.get("volume24hr") or stats.get("volume24Hr") or 0) / 1e9
             listed = stats.get("listedCount") or 0
-            avg_price = stats.get("avgPrice24hr") or 0
+            avg_price = (stats.get("avgPrice24hr") or 0) / 1e9
 
             per_collection.append({
                 "collection": symbol,
@@ -66,5 +66,9 @@ def compute_nft_activity() -> dict:
         "chain_split": dict(chain_split),
         "top_by_volume": top,
         "per_collection": per_collection,
-        "signal": "active" if total_vol > 1000 else ("quiet" if total_vol > 100 else "dormant"),
+        "signal": (
+            "active" if sum(c.get("listed", 0) for c in active) > 1500
+            else "quiet" if sum(c.get("listed", 0) for c in active) > 500
+            else "dormant"
+        ),
     }
