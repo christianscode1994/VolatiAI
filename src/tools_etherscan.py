@@ -141,14 +141,16 @@ def get_whale_transfers(from_block: int, to_block: int,
                 "timestamp": int(t.get("timeStamp", "0")),
                 "block": int(t.get("blockNumber", "0")),
             })
-    # Dedupe by hash — Etherscan returns overlapping results across pages
+    # Dedupe by (hash, from, to, value) — pagination can return the same
+    # transfer event twice, but a batch tx can legitimately have multiple
+    # Transfer events with the same hash and different to/from
     seen = set()
     unique_whales = []
     for w in whales:
-        h = w.get("hash")
-        if not h or h in seen:
+        key = (w.get("hash"), w.get("from"), w.get("to"), w.get("value"))
+        if key[0] is None or key in seen:
             continue
-        seen.add(h)
+        seen.add(key)
         unique_whales.append(w)
 
     unique_whales.sort(key=lambda x: x["value"], reverse=True)

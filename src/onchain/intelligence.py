@@ -59,7 +59,7 @@ def _score_chain_health(gas_price, tx_count):
 # Stablecoin Flows — Etherscan, 24h window
 # ------------------------------------------------------------
 
-BLOCKS_PER_DAY_ETH = 7200  # ~12s/block on Ethereum mainnet
+BLOCKS_PER_DAY_ETH = 100  # ~20 min — sampled window, not full 24h (Etherscan free tier caps offset at 100)
 
 
 def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
