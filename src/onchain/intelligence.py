@@ -1,18 +1,16 @@
-# src/onchain/intelligence.py
-
 """
-VolatiAI On‑Chain Intelligence Module
--------------------------------------
-
-Lightweight analytics for:
-- Chain health
-- Stablecoin flows
-- Whale activity
-
-Compatible with src/onchain/rpc.py
+On-chain analytics:
+- Chain health (Ethereum RPC)
+- Stablecoin flows (Etherscan, ~24h window)
+- Whale activity (Etherscan, stablecoin transfers >= $1M)
 """
+
+import logging
 
 from src.onchain.rpc import RPC
+from src.tools_etherscan import summarize_stablecoin_flows, get_whale_transfers
+
+logger = logging.getLogger("volatai.onchain")
 
 
 # ------------------------------------------------------------
@@ -33,101 +31,83 @@ def build_chain_health(rpc: RPC):
     gas_price = rpc.get_gas_price()
 
     tx_count = len(block.get("transactions", []))
-    timestamp = int(block.get("timestamp", "0"), 16) if isinstance(block.get("timestamp"), str) else block.get("timestamp")
+    timestamp = (
+        int(block.get("timestamp", "0"), 16)
+        if isinstance(block.get("timestamp"), str)
+        else block.get("timestamp")
+    )
 
     return {
         "latest_block": latest_block,
         "gas_price": gas_price,
         "timestamp": timestamp,
         "tx_count": tx_count,
-        "health_score": _score_chain_health(gas_price, tx_count)
+        "health_score": _score_chain_health(gas_price, tx_count),
     }
 
 
 def _score_chain_health(gas_price, tx_count):
-    """
-    Simple heuristic scoring:
-    - low gas + moderate tx count → healthy
-    - high gas + low tx count → stressed
-    """
-
     score = 100
-
     if gas_price > 50_000_000_000:  # 50 gwei
         score -= 30
-
     if tx_count < 100:
         score -= 20
-
     return max(score, 0)
 
 
 # ------------------------------------------------------------
-# Stablecoin Flows
+# Stablecoin Flows — Etherscan, 24h window
 # ------------------------------------------------------------
+
+BLOCKS_PER_DAY_ETH = 7200  # ~12s/block on Ethereum mainnet
+
 
 def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
     """
-    Aggregate stablecoin transfer volume between two blocks.
-    Uses eth_getLogs for ERC‑20 Transfer events.
-    Heavy log queries use PUBLIC_ETH_RPC (provider="ethereum") to avoid Infura rate limits.
+    Aggregate stablecoin transfer volume over the last ~24h using Etherscan.
+
+    Note: `from_block` is accepted for compatibility but superseded —
+    we use to_block - 7200 to guarantee a meaningful window.
+
+    Falls back to zeros-with-error on failure (same JSON shape as before,
+    so consumers won't break).
     """
-
-    tokens = {
-        "USDT": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        "DAI":  "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-    }
-
-    flows = {}
-
-    transfer_topic = "0xddf252ad"  # ERC‑20 Transfer event signature prefix
-
-    for symbol, address in tokens.items():
-        logs = rpc.get_logs(
-            address=address,
-            from_block=from_block,
-            to_block=to_block,
-            topics=[transfer_topic],
-            provider="ethereum"   # use public RPC to avoid 429 Infura rate limits
-        )
-
-        flows[symbol] = {
-            "transfers": len(logs),
-            "volume": sum(int(log.get("data", "0x0"), 16) for log in logs)
+    try:
+        eth_from = max(0, to_block - BLOCKS_PER_DAY_ETH)
+        flows = summarize_stablecoin_flows(eth_from, to_block, max_pages=2)
+        return flows
+    except Exception as e:
+        logger.warning("Etherscan stablecoin flows failed: %s", e)
+        return {
+            "USDT": {"transfers": 0, "volume": 0.0, "error": str(e)[:80]},
+            "USDC": {"transfers": 0, "volume": 0.0, "error": str(e)[:80]},
+            "DAI":  {"transfers": 0, "volume": 0.0, "error": str(e)[:80]},
         }
 
-    return flows
-
 
 # ------------------------------------------------------------
-# Whale Activity
+# Whale Activity — Etherscan, stablecoin transfers >= $1M
 # ------------------------------------------------------------
 
-def build_whale_activity(rpc: RPC, min_value_eth: float, from_block: int, to_block: int):
+def build_whale_activity(
+    rpc: RPC, min_value_eth: float, from_block: int, to_block: int
+):
     """
-    Detect large ETH transfers using eth_getLogs.
-    Heavy log queries use PUBLIC_ETH_RPC (provider="ethereum") to avoid Infura rate limits.
+    Detect large stablecoin transfers (USDT/USDC/DAI >= $1M) over the last 24h.
+
+    Note: `min_value_eth` is accepted for signature compatibility but is
+    superseded by a fixed $1M USD threshold (stablecoins are 1:1 with USD).
     """
-
-    transfer_topic = "0xddf252ad"  # ERC‑20 Transfer signature
-
-    logs = rpc.get_logs(
-        address=None,
-        from_block=from_block,
-        to_block=to_block,
-        topics=[transfer_topic],
-        provider="ethereum"   # use public RPC to avoid 429 Infura rate limits
-    )
-
-    threshold = int(min_value_eth * 10**18)
-
-    whales = [
-        log for log in logs
-        if int(log.get("data", "0x0"), 16) >= threshold
-    ]
-
-    return {
-        "count": len(whales),
-        "transfers": whales
-    }
+    try:
+        eth_from = max(0, to_block - BLOCKS_PER_DAY_ETH)
+        whales = get_whale_transfers(
+            eth_from, to_block, min_usd=1_000_000, max_pages=2
+        )
+        return {
+            "count": len(whales),
+            "transfers": whales,
+            "min_usd": 1_000_000,
+        }
+    except Exception as e:
+        logger.warning("Etherscan whale activity failed: %s", e)
+        return {"count": 0, "transfers": [], "error": str(e)[:80]}
