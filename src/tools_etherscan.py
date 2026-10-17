@@ -1,46 +1,135 @@
 # src/tools_etherscan.py
 
 import os
+import time
+from typing import List, Dict, Optional
+
 import requests
-from typing import Any, Dict, List
 
 
-BASE_URL = "https://api.etherscan.io/api"
+ETHERSCAN_API = "https://api.etherscan.io/api"
+
+STABLECOIN_CONTRACTS = {
+    "USDT": {"address": "0xdAC17F958D2ee523a2206206994597C13D831ec7", "decimals": 6},
+    "USDC": {"address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "decimals": 6},
+    "DAI":  {"address": "0x6B175474E89094C44Da98b954EedeAC495271d0F", "decimals": 18},
+}
 
 
-class Etherscan:
-    def __init__(self, api_key: str | None = None, session: requests.Session | None = None):
-        self.api_key = api_key or os.getenv("ETHERSCAN_API_KEY", "")
-        self.session = session or requests.Session()
+def _api_key() -> str:
+    key = os.getenv("ETHERSCAN_API_KEY")
+    if not key:
+        raise RuntimeError("ETHERSCAN_API_KEY not set")
+    return key
 
-    def _get(self, params: Dict[str, Any]) -> Any:
-        base_params = {"apikey": self.api_key} if self.api_key else {}
-        resp = self.session.get(BASE_URL, params={**params, **base_params}, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-        if data.get("status") == "0" and data.get("message") != "No transactions found":
-            raise RuntimeError(f"Etherscan error: {data.get('result')}")
-        return data["result"]
 
-    def tx_summary(self, address: str | None = None, start_block: int = 0, end_block: int = 99999999) -> Dict[str, Any]:
-        # If no address given, you can plug in a default hot wallet or treasury later.
-        if not address:
-            return {"address": None, "tx_count": 0, "volume_wei": 0}
+def _get(action: str, params: dict, retries: int = 3) -> List[dict]:
+    full = dict(params)
+    full["module"] = "account"
+    full["action"] = action
+    full["apikey"] = _api_key()
 
-        txs: List[Dict[str, Any]] = self._get({
-            "module": "account",
-            "action": "txlist",
-            "address": address,
-            "startblock": start_block,
-            "endblock": end_block,
-            "sort": "desc",
-        })
+    for attempt in range(retries):
+        try:
+            r = requests.get(ETHERSCAN_API, params=full, timeout=20)
+            if r.status_code == 429:
+                time.sleep(2 ** attempt)
+                continue
+            r.raise_for_status()
+            body = r.json()
+            status = str(body.get("status", ""))
+            message = str(body.get("message", ""))
+            if status == "1":
+                return body.get("result", [])
+            if "No transactions found" in message or "No records found" in message:
+                return []
+            raise RuntimeError(f"Etherscan error: {message} ({body.get('result')})")
+        except requests.RequestException:
+            if attempt == retries - 1:
+                raise
+            time.sleep(1.5 * (attempt + 1))
+    return []
 
-        tx_count = len(txs)
-        volume_wei = sum(int(tx["value"]) for tx in txs) if txs else 0
 
-        return {
-            "address": address,
-            "tx_count": tx_count,
-            "volume_wei": volume_wei,
-        }
+def get_token_transfers_page(contract: str, from_block: int, to_block: int,
+                             page: int = 1, offset: int = 10000) -> List[dict]:
+    return _get("tokentx", {
+        "contractaddress": contract,
+        "startblock": from_block,
+        "endblock": to_block,
+        "page": page,
+        "offset": offset,
+        "sort": "desc",
+    })
+
+
+def get_token_transfers(contract: str, from_block: int, to_block: int,
+                        max_pages: int = 2) -> List[dict]:
+    all_transfers: List[dict] = []
+    for page in range(1, max_pages + 1):
+        try:
+            batch = get_token_transfers_page(contract, from_block, to_block, page=page)
+        except Exception:
+            break
+        if not batch:
+            break
+        all_transfers.extend(batch)
+        if len(batch) < 10000:
+            break
+        time.sleep(0.25)
+    return all_transfers
+
+
+def summarize_stablecoin_flows(from_block: int, to_block: int,
+                                max_pages: int = 2) -> Dict[str, dict]:
+    result: Dict[str, dict] = {}
+    for symbol, meta in STABLECOIN_CONTRACTS.items():
+        try:
+            transfers = get_token_transfers(
+                meta["address"], from_block, to_block, max_pages=max_pages
+            )
+            volume = 0.0
+            for t in transfers:
+                try:
+                    volume += float(t.get("value", "0")) / (10 ** meta["decimals"])
+                except (ValueError, TypeError):
+                    continue
+            result[symbol] = {
+                "transfers": len(transfers),
+                "volume": round(volume, 2),
+                "sampled": len(transfers) >= max_pages * 10000,
+            }
+        except Exception as e:
+            result[symbol] = {"transfers": 0, "volume": 0.0, "error": str(e)[:80]}
+    return result
+
+
+def get_whale_transfers(from_block: int, to_block: int,
+                         min_usd: float = 1_000_000.0,
+                         max_pages: int = 2) -> List[dict]:
+    whales: List[dict] = []
+    for symbol, meta in STABLECOIN_CONTRACTS.items():
+        try:
+            transfers = get_token_transfers(
+                meta["address"], from_block, to_block, max_pages=max_pages
+            )
+        except Exception:
+            continue
+        for t in transfers:
+            try:
+                amount = float(t.get("value", "0")) / (10 ** meta["decimals"])
+            except (ValueError, TypeError):
+                continue
+            if amount < min_usd:
+                continue
+            whales.append({
+                "hash": t.get("hash"),
+                "from": t.get("from"),
+                "to": t.get("to"),
+                "token": symbol,
+                "value": round(amount, 2),
+                "timestamp": int(t.get("timeStamp", "0")),
+                "block": int(t.get("blockNumber", "0")),
+            })
+    whales.sort(key=lambda x: x["value"], reverse=True)
+    return whales[:50]

@@ -26,6 +26,7 @@ from src.onchain.intelligence import (
     build_stablecoin_flows,
     build_whale_activity,
 )
+from src.chains.polkadot_health import get_polkadot_health
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -53,8 +54,17 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     from_block = max(0, latest_block - 100)
     to_block = latest_block
 
+    # Polkadot health (Substrate RPC, not EVM)
+    try:
+        polkadot_health = get_polkadot_health()
+        logger.info("Polkadot: block %s, peers %s", polkadot_health.get("latest_block"), polkadot_health.get("peers"))
+    except Exception as e:
+        logger.warning("Polkadot health failed: %s", e)
+        polkadot_health = None
+
     onchain = {
         "chain_health": build_chain_health(rpc),
+        "polkadot": polkadot_health,
         "stablecoin_flows": build_stablecoin_flows(rpc, from_block, to_block),
         "whale_activity": build_whale_activity(rpc, 50, from_block, to_block),
     }
