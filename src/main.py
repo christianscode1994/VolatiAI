@@ -7,6 +7,18 @@ from .fetch_data import fetch_top_market_data, fetch_hn_titles
 from .fetch_kraken import kraken_ticker, kraken_depth
 from .fetch_okx import okx_ticker, okx_depth
 from .fetch_bybit import bybit_ticker, bybit_depth
+
+from .compute_whales import compute_whale_pressure
+from .compute_spoofing import compute_spoofing_for_exchanges
+from .compute_liquidity import compute_liquidity_snapshot
+from .compute_arbitrage import compute_arbitrage_deltas
+from .compute_depth_heatmap import compute_depth_heatmaps
+
+from .compute_whales import compute_whale_pressure
+from .compute_spoofing import compute_spoofing_for_exchanges
+from .compute_liquidity import compute_liquidity_snapshot
+from .compute_arbitrage import compute_arbitrage_deltas
+from .compute_depth_heatmap import compute_depth_heatmaps
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
 from .generate_output import build_payload, write_json, write_html
@@ -78,7 +90,54 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         logger.info("Exchange %s: ticker + %s", name, "depth" if depth else "no depth")
 
     # ---- Unified payload ----
-    payload = build_payload(volatility, sentiment_hn, exchanges=exchanges)
+    # ---- Market microstructure (needs exchanges with depth) ----
+    whales = None
+    spoofing = None
+    liquidity = None
+    arbitrage = None
+    depth_heatmaps = None
+
+    try:
+        whales = compute_whale_pressure(exchanges)
+        logger.info("Whales: ok")
+    except Exception as e:
+        logger.warning("Whales failed: %s", e)
+
+    try:
+        spoofing = compute_spoofing_for_exchanges(exchanges)
+        logger.info("Spoofing: ok")
+    except Exception as e:
+        logger.warning("Spoofing failed: %s", e)
+
+    try:
+        liquidity = compute_liquidity_snapshot(exchanges)
+        logger.info("Liquidity: ok")
+    except Exception as e:
+        logger.warning("Liquidity failed: %s", e)
+
+    try:
+        arbitrage = compute_arbitrage_deltas(exchanges)
+        logger.info("Arbitrage: ok")
+    except Exception as e:
+        logger.warning("Arbitrage failed: %s", e)
+
+    try:
+        depth_heatmaps = compute_depth_heatmaps(exchanges)
+        logger.info("Depth heatmaps: ok")
+    except Exception as e:
+        logger.warning("Depth heatmaps failed: %s", e)
+
+    # ---- Unified payload ----
+    payload = build_payload(
+        volatility,
+        sentiment_hn,
+        exchanges=exchanges,
+        whales=whales,
+        spoofing=spoofing,
+        liquidity=liquidity,
+        arbitrage=arbitrage,
+        depth_heatmaps=depth_heatmaps,
+    )
 
     # ---- Metrics (from snapshots) ----
     snapshot_reader = SnapshotReader()
