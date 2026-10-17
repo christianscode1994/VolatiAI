@@ -74,7 +74,7 @@ def build_stablecoin_flows(rpc: RPC, from_block: int, to_block: int):
     """
     try:
         eth_from = max(0, to_block - BLOCKS_PER_DAY_ETH)
-        flows = summarize_stablecoin_flows(eth_from, to_block, max_pages=2)
+        flows = summarize_stablecoin_flows(eth_from, to_block, max_pages=20)
         return flows
     except Exception as e:
         logger.warning("Etherscan stablecoin flows failed: %s", e)
@@ -101,7 +101,7 @@ def build_whale_activity(
     try:
         eth_from = max(0, to_block - BLOCKS_PER_DAY_ETH)
         whales = get_whale_transfers(
-            eth_from, to_block, min_usd=1_000_000, max_pages=2
+            eth_from, to_block, min_usd=1_000_000, max_pages=200
         )
         return {
             "count": len(whales),
