@@ -141,17 +141,31 @@ def get_whale_transfers(from_block: int, to_block: int,
                 "timestamp": int(t.get("timeStamp", "0")),
                 "block": int(t.get("blockNumber", "0")),
             })
-    # Dedupe by (hash, from, to, value) — pagination can return the same
-    # transfer event twice, but a batch tx can legitimately have multiple
-    # Transfer events with the same hash and different to/from
-    seen = set()
-    unique_whales = []
+    # Group by (hash, token, value) to detect round trips and pagination dups.
+    # A single tx can have multiple Transfer events (batch transfers,
+    # flash loans, DEX swaps). Round trips (A->B and B->A at same value)
+    # should be flagged with net_flow=0 — economically zero movement.
+    from collections import defaultdict
+    groups = defaultdict(list)
     for w in whales:
-        key = (w.get("hash"), w.get("from"), w.get("to"), w.get("value"))
-        if key[0] is None or key in seen:
+        key = (w.get("hash"), w.get("token"), w.get("value"))
+        if key[0] is None:
             continue
-        seen.add(key)
-        unique_whales.append(w)
+        groups[key].append(w)
+
+    unique_whales = []
+    for (hash_val, token, value), group in groups.items():
+        froms = {g.get("from") for g in group}
+        tos = {g.get("to") for g in group}
+        is_round_trip = bool(froms & tos)
+        entry = dict(group[0])
+        entry["legs"] = len(group)
+        if is_round_trip:
+            entry["type"] = "round_trip"
+            entry["net_flow"] = 0
+        else:
+            entry["type"] = "transfer"
+        unique_whales.append(entry)
 
     unique_whales.sort(key=lambda x: x["value"], reverse=True)
     return unique_whales[:50]
