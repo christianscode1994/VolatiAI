@@ -1,47 +1,82 @@
-from datetime import datetime, timezone
+"""Aggregate dev activity across tracked DeFi protocols."""
 
-def normalize(value, max_value):
-    if value is None:
-        return 0
-    return min(100, int((value / max_value) * 100))
+import logging
+from typing import Optional
 
-def recency_score(timestamp):
-    if not timestamp:
-        return 0
-    dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-    diff_hours = (datetime.now(timezone.utc) - dt).total_seconds() / 3600
-    if diff_hours < 1:
-        return 100
-    if diff_hours < 24:
-        return 80
-    if diff_hours < 72:
-        return 60
-    if diff_hours < 168:
-        return 40
-    return 20
+from src.config_signals import DEV_TRACKED
+from src.fetch_github import repo_info, repo_commits_since, repo_releases_since
 
-def compute_dev_sentiment(github_data):
-    if not github_data:
-        return 0
+logger = logging.getLogger("volatai.dev")
 
-    repo = github_data.get("volatiai_repo", {})
-    trending = github_data.get("trending_python", [])
 
-    stars = normalize(repo.get("stars"), 5000)
-    forks = normalize(repo.get("forks"), 2000)
-    watchers = normalize(repo.get("watchers"), 1000)
-    issues = normalize(repo.get("open_issues"), 500)
-    recency = recency_score(repo.get("last_push"))
+def compute_dev_sentiment(days: int = 7) -> dict:
+    """
+    Returns:
+      {
+        "protocols_tracked": N,
+        "protocols_active": N,     # with >=1 commit
+        "protocols_dormant": N,    # 0 commits
+        "commits_total": N,
+        "commits_avg": float,
+        "active_developers": N,
+        "releases_total": N,
+        "top_active": [{protocol, repo, commits}, ...],
+        "dormant": [protocol, ...],
+        "signal": "high" | "normal" | "low" | "dormant"
+      }
+    """
+    per_protocol = []
+    all_authors = set()
 
-    trending_score = normalize(len(trending), 50)
+    for name, full_repo in DEV_TRACKED:
+        owner, repo = full_repo.split("/", 1)
+        try:
+            info = repo_info(owner, repo)
+            if not info:
+                logger.debug("dev: %s unreachable", name)
+                per_protocol.append({"protocol": name, "repo": full_repo, "commits": 0, "error": "unreachable"})
+                continue
 
-    # Weighted score
-    score = (
-        stars * 0.25 +
-        forks * 0.20 +
-        watchers * 0.15 +
-        recency * 0.20 +
-        trending_score * 0.20
-    )
+            commits_data = repo_commits_since(owner, repo, days=days)
+            releases = repo_releases_since(owner, repo, days=days)
 
-    return int(score)
+            per_protocol.append({
+                "protocol": name,
+                "repo": full_repo,
+                "commits": commits_data["commits"],
+                "releases": releases,
+                "stars": info.get("stars", 0),
+            })
+            all_authors.update(commits_data["authors"])
+        except Exception as e:
+            logger.warning("dev: %s failed: %s", name, e)
+            per_protocol.append({"protocol": name, "repo": full_repo, "commits": 0, "error": str(e)[:60]})
+
+    total_commits = sum(p["commits"] for p in per_protocol)
+    active = [p for p in per_protocol if p["commits"] > 0]
+    dormant = [p["protocol"] for p in per_protocol if p["commits"] == 0]
+    avg_commits = round(total_commits / len(per_protocol), 2) if per_protocol else 0.0
+
+    signal = "dormant"
+    if avg_commits > 20:
+        signal = "high"
+    elif avg_commits > 5:
+        signal = "normal"
+    elif avg_commits > 0:
+        signal = "low"
+
+    top = sorted(active, key=lambda p: p["commits"], reverse=True)[:5]
+
+    return {
+        "protocols_tracked": len(per_protocol),
+        "protocols_active": len(active),
+        "protocols_dormant": len(dormant),
+        "commits_total": total_commits,
+        "commits_avg": avg_commits,
+        "active_developers": len(all_authors),
+        "releases_total": sum(p.get("releases", 0) for p in per_protocol),
+        "top_active": top,
+        "dormant": dormant,
+        "signal": signal,
+        "window_days": days,
+    }

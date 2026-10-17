@@ -13,6 +13,7 @@ def build_payload(
     liquidity=None,
     arbitrage=None,
     depth_heatmaps=None,
+    dev_activity=None,
 ):
     now = datetime.utcnow().isoformat() + "Z"
 
@@ -42,6 +43,7 @@ def build_payload(
         "liquidity": liquidity,
         "arbitrage": arbitrage,
         "depth_heatmaps": depth_heatmaps,
+        "dev_activity": dev_activity,
     }
 
     return payload

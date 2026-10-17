@@ -12,6 +12,7 @@ from .compute_spoofing import compute_spoofing_for_exchanges
 from .compute_liquidity import compute_liquidity_snapshot
 from .compute_arbitrage import compute_arbitrage_deltas
 from .compute_depth_heatmap import compute_depth_heatmaps
+from .compute_dev_sentiment import compute_dev_sentiment
 
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
@@ -140,6 +141,7 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         liquidity=liquidity,
         arbitrage=arbitrage,
         depth_heatmaps=depth_heatmaps,
+        dev_activity=dev_activity,
     )
 
     # ---- Metrics (from snapshots) ----
