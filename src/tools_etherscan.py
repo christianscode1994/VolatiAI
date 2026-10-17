@@ -82,7 +82,8 @@ def get_token_transfers(contract: str, from_block: int, to_block: int,
         if not batch:
             break
         all_transfers.extend(batch)
-        if len(batch) < 10000:
+        # Page size is 100 (see get_token_transfers_page offset)
+        if len(batch) < 100:
             break
         time.sleep(0.25)
     return all_transfers
@@ -105,7 +106,7 @@ def summarize_stablecoin_flows(from_block: int, to_block: int,
             result[symbol] = {
                 "transfers": len(transfers),
                 "volume": round(volume, 2),
-                "sampled": len(transfers) >= max_pages * 10000,
+                "sampled": len(transfers) >= max_pages * 100,
             }
         except Exception as e:
             result[symbol] = {"transfers": 0, "volume": 0.0, "error": str(e)[:80]}
