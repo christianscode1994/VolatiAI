@@ -102,8 +102,10 @@ def write_html(path, payload):
     # Spoofing Signals
     if spoofing:
         html += "<h2>Spoofing Signals</h2>"
-        for ex, signals in spoofing.items():
-            html += f"<p>{ex}: {len(signals)} spoofing candidates</p>"
+        per_exchange = spoofing.get("per_exchange", {})
+        for ex, signals in per_exchange.items():
+            count = len(signals) if signals else 0
+            html += f"<p>{ex}: {count} spoofing candidates</p>"
 
     # Liquidity Distribution
     if liquidity:

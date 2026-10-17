@@ -184,7 +184,7 @@ def compute_whale_pressure(
 
     exchange_count = len(imbalances)
 
-    if total_
+    if total_weight == 0:
         aggregate = None
         index = None
 
