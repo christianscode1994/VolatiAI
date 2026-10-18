@@ -51,7 +51,7 @@ def handle_command(cmd):
             snap = json.load(open("private/narrative_latest.json"))
             top = snap["defi_top"][0] if snap.get("defi_top") else {"name": "—", "tvl_b": 0}
             send_message(
-                "\U0001fa99 *Crypto Sentiment*\n"
+                "\U0001fa99 <b>Crypto Sentiment</b>\n"
                 f"FGI: {snap['fgi_value']}/100 ({snap['fgi_class']}, trend {snap['fgi_trend']})\n"
                 f"News: {snap['rss_label']} ({snap['rss_score']:+.3f}, {snap['rss_count']} headlines)\n"
                 f"Top DeFi TVL: {top['name']} (${top['tvl_b']}B)"
