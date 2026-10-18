@@ -1,3 +1,4 @@
+from src.narrative_section import build_narrative_sections
 import json
 from datetime import datetime
 
@@ -224,7 +225,7 @@ def write_html(path, payload, score=None):
   </div>
 """
 
-    html += '  <h2>Market Microstructure</h2>\n  <div class="grid">\n'
+    html += build_narrative_sections() + '\n  <h2>Market Microstructure</h2>\n  <div class="grid">\n'
 
     if whales:
         wp = whales.get("whale_pressure_index")

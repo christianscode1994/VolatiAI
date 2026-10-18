@@ -46,6 +46,20 @@ def handle_command(cmd):
             f"Truth Score: {truth['truth_score']}%"
         )
 
+    elif cmd == "/sentiment":
+        try:
+            snap = json.load(open("private/narrative_latest.json"))
+            top = snap["defi_top"][0] if snap.get("defi_top") else {"name": "—", "tvl_b": 0}
+            send_message(
+                "\U0001fa99 *Crypto Sentiment*\n"
+                f"FGI: {snap['fgi_value']}/100 ({snap['fgi_class']}, trend {snap['fgi_trend']})\n"
+                f"News: {snap['rss_label']} ({snap['rss_score']:+.3f}, {snap['rss_count']} headlines)\n"
+                f"Top DeFi TVL: {top['name']} (${top['tvl_b']}B)"
+            )
+        except FileNotFoundError:
+            send_message("\u26a0\ufe0f Narrative snapshot not ready. Run the pipeline first.")
+
+
     else:
         send_message(
             "❓ *Unknown command*\n"
