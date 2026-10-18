@@ -6,6 +6,8 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 logger = logging.getLogger("volatai.github")
 
