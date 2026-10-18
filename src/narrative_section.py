@@ -124,3 +124,52 @@ def build_narrative_sections():
 ''')
 
     return "".join(parts)
+
+
+def write_narrative_snapshot(path="private/narrative_latest.json"):
+    """Persist the narrative data as JSON for the bot to read.
+    Mirrors the same sources that feed the HTML dashboard."""
+    import json
+    import os
+    from datetime import datetime
+
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+
+    fg = _get("https://cryptocurrency.cv/api/fear-greed") or {}
+    cur = fg.get("current", {})
+    trend = fg.get("trend", {})
+
+    rss_score, rss_count = _fetch_crypto_rss()
+    if rss_score > 0.3:     rss_label = "bull"
+    elif rss_score < -0.3:  rss_label = "bear"
+    else:                   rss_label = "neutral"
+
+    protocols = _get("https://api.llama.fi/protocols", timeout=15) or []
+    protocols = sorted(protocols, key=lambda p: p.get("tvl") or 0, reverse=True)[:5]
+
+    nft_data = _get("https://api.coingecko.com/api/v3/search/trending") or {}
+    nfts = nft_data.get("nfts", [])[:5]
+
+    snap = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "fgi_value":  cur.get("value"),
+        "fgi_class":  cur.get("valueClassification", "Neutral"),
+        "fgi_trend":  trend.get("direction"),
+        "fgi_avg7d":  trend.get("averageValue7d"),
+        "rss_score":  round(rss_score, 4),
+        "rss_label":  rss_label,
+        "rss_count":  rss_count,
+        "defi_top": [
+            {"name": p.get("name"), "category": p.get("category"),
+             "tvl_b": round((p.get("tvl") or 0) / 1e9, 2)}
+            for p in protocols
+        ],
+        "nft_trending": [
+            {"name": n.get("name"), "symbol": n.get("symbol")}
+            for n in nfts
+        ],
+    }
+
+    with open(path, "w") as f:
+        json.dump(snap, f, indent=2, ensure_ascii=False)
+    return snap
