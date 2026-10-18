@@ -14,7 +14,7 @@ def run():
     scores = pro.get("scores", {})
 
     msg = (
-        "📊 *VolatiAI Update*\n"
+        "📊 <b>VolatiAI Update</b>\n"
         f"Trend Index: {scores.get('trend_index')}\n"
         f"Liquidity Index: {scores.get('liquidity_index')}\n"
         f"AI/DePIN Narrative: {scores.get('narrative_index')}\n"
