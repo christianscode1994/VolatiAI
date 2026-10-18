@@ -18,6 +18,7 @@ from .compute_nft_activity import compute_nft_activity
 from .compute_volatility import compute_volatility_summary
 from .compute_sentiment import compute_sentiment
 from .generate_output import build_payload, write_json, write_html
+from .narrative_section import write_narrative_snapshot
 from .history import write_snapshot, SnapshotReader
 from .dashboard import print_dashboard
 from .metrics import aggregate_all_metrics, volatai_score, detect_alerts
@@ -208,6 +209,10 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
 
     # ---- Unified outputs ----
     write_json(PUBLIC_DIR / "latest.json", latest)
+    try:
+        write_narrative_snapshot()
+    except Exception as e:
+        logger.warning("Narrative snapshot failed: %s", e)
     write_html(PUBLIC_DIR / "summary.html", payload, score=score)
 
 if __name__ == "__main__":
