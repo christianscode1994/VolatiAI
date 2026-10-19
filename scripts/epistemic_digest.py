@@ -14,6 +14,9 @@ try:
 except ImportError:
     SSL_CTX = None
 
+DENSE_SECTORS = {"blockchain", "kryptovaluta", "finance", "currency-ex", "weather", "tracking", "shopping"}
+SPARSE_SECTORS = {"develop", "news", "jobs", "open-source", "science-math", "security", "education", "events", "sports-fitness", "vehicles", "books", "music"}
+SLOW_SECTORS = {"environment", "treasuries"}
 WORKERS_BASE = "https://sector-{}.fourieranalys.workers.dev"
 
 
@@ -22,8 +25,19 @@ def load_active_sectors():
         return json.load(f)
 
 
+def sector_url(sector):
+    if sector in DENSE_SECTORS:
+        return f"https://sector-dense.fourieranalys.workers.dev/{sector}/signal"
+    if sector in SPARSE_SECTORS:
+        return f"https://sector-sparse.fourieranalys.workers.dev/{sector}/signal"
+    if sector in SLOW_SECTORS:
+        return f"https://sector-slow.fourieranalys.workers.dev/{sector}/signal"
+    # Fallback for not-yet-consolidated sectors
+    return WORKERS_BASE.format(sector) + "/signal"
+
+
 def fetch_envelope(sector):
-    url = WORKERS_BASE.format(sector) + "/signal"
+    url = sector_url(sector)
     try:
         req = urllib.request.Request(url, headers={"user-agent": "VolatiAI/1.0"})
         with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
