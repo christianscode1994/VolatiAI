@@ -93,13 +93,13 @@ async function collectAll(env) {
   return {
     sources: {
       dominance: await fetchSafe(async () => {
-        const r = await fetch("https://api.coingecko.com/api/v3/global", {
-          headers: { accept: "application/json" },
+        const r = await fetch("https://api.coinlore.net/api/global/", {
+          headers: { accept: "application/json", "user-agent": "VolatiAI/1.0" },
         });
         if (!r.ok) throw new Error(`status ${r.status}`);
         const j = await r.json();
-        if (!j.data || !j.data.market_cap_percentage) throw new Error("no data");
-        return Math.round(j.data.market_cap_percentage.btc * 100) / 100;
+        if (!Array.isArray(j) || !j[0] || !j[0].btc_d) throw new Error("no data");
+        return Math.round(parseFloat(j[0].btc_d) * 100) / 100;
       }),
       fng: await fetchSafe(async () => {
         const r = await fetch("https://api.alternative.me/fng/?limit=1");
@@ -112,13 +112,17 @@ async function collectAll(env) {
         };
       }),
       top10: await fetchSafe(async () => {
-        const r = await fetch(
-          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&price_change_percentage=24h"
-        );
+        const r = await fetch("https://api.coinlore.net/api/tickers/?limit=10", {
+          headers: { accept: "application/json", "user-agent": "VolatiAI/1.0" },
+        });
         if (!r.ok) throw new Error(`status ${r.status}`);
         const j = await r.json();
-        if (!Array.isArray(j) || j.length === 0) throw new Error("empty");
-        const avg = j.reduce((s, c) => s + (c.price_change_percentage_24h || 0), 0) / j.length;
+        if (!j.data || !Array.isArray(j.data) || j.data.length === 0) throw new Error("empty");
+        const changes = j.data
+          .map(c => parseFloat(c.percent_change_24h))
+          .filter(n => !isNaN(n));
+        if (changes.length === 0) throw new Error("no valid changes");
+        const avg = changes.reduce((s, c) => s + c, 0) / changes.length;
         return Math.round(avg * 100) / 100;
       }),
     },
