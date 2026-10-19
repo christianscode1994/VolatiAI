@@ -538,6 +538,455 @@ const COLLECTORS = {
   },
 
 
+  crossref: {
+    event_source: "crossref_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        crossref_latest: await fetchSafe(async () => {
+          const r = await fetch("https://api.crossref.org/works?sort=published&order=desc&rows=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const item = j.message?.items?.[0];
+          if (!item) throw new Error("no items");
+          const title = (item.title?.[0] || 'untitled').slice(0, 100);
+          const doi = item.DOI || 'unknown';
+          return { id: doi, title: title + " (" + doi + ")" };
+        }),
+      },
+    }),
+  },
+
+  openalex: {
+    event_source: "openalex_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        openalex_latest: await fetchSafe(async () => {
+          const r = await fetch("https://api.openalex.org/works?sort=publication_date:desc&per_page=1&mailto=contact@volatiai.local");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const work = j.results?.[0];
+          if (!work) throw new Error("no works");
+          return { id: work.id, title: (work.title || 'untitled').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  semanticscholar: {
+    event_source: "s2_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        s2_latest: await fetchSafe(async () => {
+          const r = await fetch("https://api.semanticscholar.org/graph/v1/paper/search?query=machine%20learning&limit=1&fields=title,paperId");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const paper = j.data?.[0];
+          if (!paper) throw new Error("no papers");
+          return { id: paper.paperId, title: (paper.title || 'untitled').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  aviation: {
+    event_source: "opensky_states",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        opensky_states: await fetchSafe(async () => {
+          const r = await fetch("https://opensky-network.org/api/states/all?lamin=55&lomin=10&lamax=70&lomax=25");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const count = j.states?.length || 0;
+          const bucket = Math.floor(count / 10) * 10;
+          return { id: "flights_" + bucket + "_" + new Date().toISOString().slice(0, 13), title: count + " aircraft over Scandinavia" };
+        }),
+      },
+    }),
+  },
+
+  geocoding: {
+    event_source: "nominatim_search",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        nominatim_search: await fetchSafe(async () => {
+          const r = await fetch("https://nominatim.openstreetmap.org/search?q=VolatiAI&format=json&limit=1", {
+            headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)" }
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const place = j?.[0];
+          if (!place) throw new Error("no place");
+          return { id: place.place_id, title: (place.display_name || 'unknown').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  tv: {
+    event_source: "tvmaze_schedule",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        tvmaze_schedule: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const r = await fetch("https://api.tvmaze.com/schedule?country=US&date=" + today);
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j) || !j.length) throw new Error("no episodes");
+          const ep = j[0];
+          const showName = ep._embedded?.show?.name || 'unknown';
+          const epName = ep.name || 'episode';
+          return { id: String(ep.id), title: showName + " — " + epName };
+        }),
+      },
+    }),
+  },
+
+  musicbrainz: {
+    event_source: "musicbrainz_release",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        musicbrainz_release: await fetchSafe(async () => {
+          const r = await fetch("https://musicbrainz.org/ws/2/release?query=*&limit=1&fmt=json", {
+            headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)" }
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const rel = j.releases?.[0];
+          if (!rel) throw new Error("no releases");
+          const title = (rel.title || 'unknown') + " — " + (rel.artist_credit?.[0]?.name || 'unknown');
+          return { id: rel.id, title: title.slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  "drug-recall": {
+    event_source: "openfda_drug",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        openfda_drug: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/drug/enforcement.json?limit=1&sort=report_date:desc");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const rec = j.results?.[0];
+          if (!rec) throw new Error("no recalls");
+          return {
+            id: rec.recall_number || 'unknown',
+            title: (rec.product_description || 'Drug recall').slice(0, 100) + " — " + (rec.reason_for_recall || '').slice(0, 60),
+          };
+        }),
+      },
+    }),
+  },
+
+  pubmed: {
+    event_source: "pubmed_medicine",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        pubmed_medicine: await fetchSafe(async () => {
+          const s = await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=medicine&retmax=1&sort=pub_date&retmode=json");
+          if (!s.ok) throw new Error("status " + s.status);
+          const sj = await s.json();
+          const id = sj.esearchresult?.idlist?.[0];
+          if (!id) throw new Error("no id");
+          return { id, title: "PubMed " + id };
+        }),
+      },
+    }),
+  },
+
+  sports: {
+    event_source: "sportsdb_events",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        sportsdb_events: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const r = await fetch("https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=" + today + "&s=Soccer");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const ev = j.events?.[0];
+          if (!ev) throw new Error("no events");
+          return { id: ev.idEvent, title: (ev.strEvent || 'Match').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  "sec-filings": {
+    event_source: "sec_8k",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        sec_8k: await fetchSafe(async () => {
+          const r = await fetch("https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&company=&dateb=&owner=include&count=1&output=atom", {
+            headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)" }
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          const titleMatch = text.match(/<title>([^<]+)<\/title>/g);
+          const entryMatch = text.match(/<entry>[\s\S]*?<title>([^<]+)<\/title>/);
+          if (!entryMatch) throw new Error("no entry");
+          const idMatch = text.match(/<id>([^<]+)<\/id>/);
+          return { id: (idMatch ? idMatch[1] : entryMatch[1]).slice(0, 80), title: entryMatch[1].slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+
+  "free-games": {
+    event_source: "gamerpower",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        gamerpower: await fetchSafe(async () => {
+          const r = await fetch("https://www.gamerpower.com/api/giveaways?platform=pc&sort-by=date");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j) || !j.length) throw new Error("no giveaways");
+          const g = j[0];
+          return { id: String(g.id), title: (g.title || 'Free game').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  "free-to-play": {
+    event_source: "freetogame",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        freetogame: await fetchSafe(async () => {
+          const r = await fetch("https://www.freetogame.com/api/games?sort-by=release-date");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j) || !j.length) throw new Error("no games");
+          const game = j[0];
+          return { id: String(game.id), title: (game.title || 'Unknown').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  mtg: {
+    event_source: "scryfall",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        scryfall: await fetchSafe(async () => {
+          const r = await fetch("https://api.scryfall.com/cards/random");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.id || !j.name) throw new Error("no card");
+          // Use card ID + date so it only triggers once per day
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: j.id + "_" + day, title: (j.name || 'Unknown card').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  artic: {
+    event_source: "artic_chicago",
+    ttl: 86400,
+    collectAll: async (env) => ({
+      sources: {
+        artic_chicago: await fetchSafe(async () => {
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const ids = [4, 27992, 65632, 117266, 20684, 14598, 87088, 109819];
+          const objId = ids[dayOfYear % ids.length];
+          const r = await fetch(`https://api.artic.edu/api/v1/artworks/${objId}?fields=id,title,artist_display`);
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const art = j.data;
+          if (!art) throw new Error("no artwork");
+          const artist = (art.artist_display || '').split('\n')[0].slice(0, 40);
+          return { id: `${objId}_${dayOfYear}`, title: (art.title || 'Untitled').slice(0, 100) + (artist ? ' — ' + artist : '') };
+        }),
+      },
+    }),
+  },
+
+  audius: {
+    event_source: "audius_trending",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        audius_trending: await fetchSafe(async () => {
+          const r = await fetch("https://discoveryprovider.audius.co/v1/tracks/trending?limit=1&app_name=VolatiAI");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const track = j.data?.[0];
+          if (!track) throw new Error("no tracks");
+          return { id: track.id, title: (track.title || 'Unknown').slice(0, 100) + ' — ' + (track.user?.name || 'Unknown') };
+        }),
+      },
+    }),
+  },
+
+  gutendex: {
+    event_source: "gutendex_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        gutendex_latest: await fetchSafe(async () => {
+          const r = await fetch("https://gutendex.com/books?sort=descending");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const book = j.results?.[0];
+          if (!book) throw new Error("no books");
+          return { id: String(book.id), title: (book.title || 'Unknown').slice(0, 100) + ' — ' + (book.authors?.[0]?.name || 'Unknown') };
+        }),
+      },
+    }),
+  },
+
+  "depin-network": {
+    event_source: "flux_node_count",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        flux_node_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.runonflux.io/daemon/getfluxnodecount");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          // Flux returns {status, data: {total, ...}} or {status, data: number}
+          const count = typeof j.data === "number"
+            ? j.data
+            : (j.data?.total ?? j.data?.count ?? null);
+          if (count === null || count === undefined) throw new Error("no count in " + JSON.stringify(j.data).slice(0, 100));
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "flux_" + count + "_" + day, title: "Flux nodes: " + Number(count).toLocaleString() };
+        }),
+      },
+    }),
+  },
+
+  "github-trending": {
+    event_source: "github_trending",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        github_trending: await fetchSafe(async () => {
+          const headers = { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github+json" };
+          if (env.GITHUB_TOKEN) headers["authorization"] = "Bearer " + env.GITHUB_TOKEN;
+          const r = await fetch("https://api.github.com/search/repositories?q=stars:>1000&sort=stars&order=desc&per_page=1", { headers });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const repo = j.items?.[0];
+          if (!repo) throw new Error("no repos");
+          return { id: repo.id, title: repo.full_name + " (" + repo.stargazers_count.toLocaleString() + " stars)" };
+        }),
+      },
+    }),
+  },
+
+  "npm-packages": {
+    event_source: "npm_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        npm_latest: await fetchSafe(async () => {
+          const r = await fetch("https://registry.npmjs.org/-/v1/search?text=keywords:ai&size=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const pkg = j.objects?.[0]?.package;
+          if (!pkg) throw new Error("no packages");
+          return { id: pkg.name + "@" + pkg.version, title: pkg.name + " v" + pkg.version };
+        }),
+      },
+    }),
+  },
+
+  "pypi-packages": {
+    event_source: "pypi_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        pypi_latest: await fetchSafe(async () => {
+          // PyPI simple index — grab a recent package from RSS-like endpoint
+          const r = await fetch("https://pypi.org/rss/updates.xml");
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          const itemMatch = text.match(/<item>[\s\S]*?<title>([^<]+)<\/title>/);
+          const linkMatch = text.match(/<item>[\s\S]*?<link>([^<]+)<\/link>/);
+          if (!itemMatch) throw new Error("no items");
+          return {
+            id: (linkMatch ? linkMatch[1] : itemMatch[1]).trim().slice(0, 80),
+            title: itemMatch[1].trim().slice(0, 100),
+          };
+        }),
+      },
+    }),
+  },
+
+  "osv-vulnerabilities": {
+    event_source: "osv_recent",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        osv_recent: await fetchSafe(async () => {
+          // OSV has a query endpoint; use a broad query for recent
+          const r = await fetch("https://api.osv.dev/v1/query", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ package: { name: "lodash", ecosystem: "npm" } }),
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const vuln = j.vulns?.[0];
+          if (!vuln) throw new Error("no vulns");
+          return { id: vuln.id, title: vuln.id + " — " + (vuln.summary || 'vulnerability').slice(0, 80) };
+        }),
+      },
+    }),
+  },
+
+  "huggingface-models": {
+    event_source: "hf_trending",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        hf_trending: await fetchSafe(async () => {
+          const r = await fetch("https://huggingface.co/api/models?sort=downloads&direction=-1&limit=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const model = j[0];
+          if (!model) throw new Error("no models");
+          return { id: model.modelId, title: model.modelId + " (" + (model.downloads || 0).toLocaleString() + " downloads)" };
+        }),
+      },
+    }),
+  },
+
+  "arxiv-cs": {
+    event_source: "arxiv_cs_general",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        arxiv_cs_general: await fetchSafe(async () => {
+          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:cs.*&sortBy=submittedDate&sortOrder=descending&max_results=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          const idM = text.match(/<entry>[\s\S]*?<id>([^<]+)<\/id>/);
+          const titleM = text.match(/<entry>[\s\S]*?<title>([^<]+)<\/title>/);
+          if (!idM || !titleM) throw new Error("no entry");
+          return { id: idM[1].trim(), title: titleM[1].trim().replace(/\s+/g, ' ').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────

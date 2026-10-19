@@ -82,6 +82,39 @@ const COLLECTORS = {
       },
     }),
   },
+  gdp: {
+    config: { metric: "gdp_se", threshold_pct: 2.0, window: "7d", window_days: 30, ttl: 86400 },
+    collectAll: async (env) => ({
+      sources: {
+        gdp_se: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/SWE/indicator/NY.GDP.MKTP.CD?format=json&per_page=1&date=2024");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const val = j[1]?.[0]?.value;
+          if (val === null || val === undefined) throw new Error("no gdp");
+          return Math.round(val / 1e9 * 10) / 10;
+        }),
+      },
+    }),
+  },
+
+
+  unemployment: {
+    config: { metric: "unemployment_se", threshold_pct: 3.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async (env) => ({
+      sources: {
+        unemployment_se: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/SWE/indicator/SL.UEM.TOTL.ZS?format=json&per_page=1&date=2024");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const val = j[1]?.[0]?.value;
+          if (val === null || val === undefined) throw new Error("no data");
+          return Math.round(val * 10) / 10;
+        }),
+      },
+    }),
+  },
+
 };
 
 function json(obj, status = 200) {

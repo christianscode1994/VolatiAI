@@ -15,9 +15,9 @@ try:
 except ImportError:
     SSL_CTX = None
 
-DENSE_SECTORS = {"blockchain", "commodities", "crypto-defi", "currency-ex", "energy", "fed-rate", "finance", "kryptovaluta", "metals", "shopping", "stocks", "tracking", "weather"}
-SPARSE_SECTORS = {"anime", "art-design", "arxiv-ai", "biology", "books", "develop", "earthquakes", "education", "events", "food-drink", "health", "jobs", "music", "news", "open-source", "podcasts", "science", "science-math", "security", "space", "spaceflight", "spaceweather", "sports-fitness", "travel", "vehicles", "wikipedia"}
-SLOW_SECTORS = {"environment", "treasuries"}
+DENSE_SECTORS = {"air-quality", "blockchain", "commodities", "crypto-defi", "currency-ex", "depin-market", "energy", "fed-rate", "finance", "kryptovaluta", "metals", "shopping", "stocks", "tracking", "weather"}
+SPARSE_SECTORS = {"anime", "art-design", "artic", "arxiv-ai", "arxiv-cs", "audius", "aviation", "biology", "books", "crossref", "depin-network", "develop", "drug-recall", "earthquakes", "education", "events", "food-drink", "free-games", "free-to-play", "geocoding", "github-trending", "gutendex", "health", "huggingface-models", "jobs", "mtg", "music", "musicbrainz", "news", "npm-packages", "open-source", "openalex", "osv-vulnerabilities", "podcasts", "pubmed", "pypi-packages", "science", "science-math", "sec-filings", "security", "semanticscholar", "space", "spaceflight", "spaceweather", "sports", "sports-fitness", "travel", "tv", "vehicles", "wikipedia"}
+SLOW_SECTORS = {"environment", "gdp", "treasuries", "unemployment"}
 WORKERS_BASE = "https://sector-{}.fourieranalys.workers.dev"
 
 
