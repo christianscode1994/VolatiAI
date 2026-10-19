@@ -342,6 +342,49 @@ const COLLECTORS = {
   },
 
 
+  "fed-rate": {
+    config: { metric: "fed_funds", threshold_pct: 2.0, threshold_abs: 0.1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        fed_funds: await fetchSafe(async () => {
+          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFF&cosd=2026-01-01");
+          if (!r.ok) throw new Error("status " + r.status);
+          const csv = await r.text();
+          const lines = csv.trim().split("\n").slice(1).filter(l => !l.endsWith(","));
+          if (!lines.length) throw new Error("no data");
+          const last = lines[lines.length - 1].split(",");
+          return parseFloat(last[1]);
+        }),
+      },
+    }),
+  },
+
+  commodities: {
+    config: { metric: "copper", threshold_pct: 3.0, threshold_abs: 0.1, window: "24h", ttl: 3600, context_keys: ["coffee", "corn"] },
+    collectAll: async (env) => ({
+      sources: {
+        copper: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/HG%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
+          if (!price) throw new Error("no price");
+          return Math.round(price * 1000) / 1000;
+        }),
+        coffee: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/KC%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
+        }),
+        corn: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/ZC%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
+        }),
+      },
+    }),
+  },
+
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────

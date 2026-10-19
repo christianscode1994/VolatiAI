@@ -15,8 +15,8 @@ try:
 except ImportError:
     SSL_CTX = None
 
-DENSE_SECTORS = {"blockchain", "kryptovaluta", "finance", "currency-ex", "weather", "tracking", "shopping", "stocks", "energy", "crypto-defi", "metals"}
-SPARSE_SECTORS = {"anime", "art-design", "biology", "books", "develop", "earthquakes", "education", "events", "food-drink", "health", "jobs", "music", "news", "open-source", "podcasts", "science", "science-math", "security", "space", "sports-fitness", "travel", "vehicles"}
+DENSE_SECTORS = {"blockchain", "commodities", "crypto-defi", "currency-ex", "energy", "fed-rate", "finance", "kryptovaluta", "metals", "shopping", "stocks", "tracking", "weather"}
+SPARSE_SECTORS = {"anime", "art-design", "arxiv-ai", "biology", "books", "develop", "earthquakes", "education", "events", "food-drink", "health", "jobs", "music", "news", "open-source", "podcasts", "science", "science-math", "security", "space", "spaceflight", "spaceweather", "sports-fitness", "travel", "vehicles", "wikipedia"}
 SLOW_SECTORS = {"environment", "treasuries"}
 WORKERS_BASE = "https://sector-{}.fourieranalys.workers.dev"
 
