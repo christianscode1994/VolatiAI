@@ -82,11 +82,12 @@ async function collectAll(env) {
   return {
     sources: {
       ethereum_release: await fetchSafe(async () => {
-        const r = await fetch('https://api.github.com/repos/ethereum/go-ethereum/releases?per_page=1', {
-          headers: { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' }
-        });
+        const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };
+        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;
+        const r = await fetch('https://api.github.com/repos/ethereum/go-ethereum/releases?per_page=1', { headers });
+        if (!r.ok) throw new Error('github status ' + r.status);
         const j = await r.json();
-        if (!Array.isArray(j) || !j[0]) throw new Error('no release');
+        if (!Array.isArray(j) || !j[0]) throw new Error('no release array: ' + JSON.stringify(j).slice(0, 100));
         return { id: j[0].id, title: j[0].name || j[0].tag_name, published_at: j[0].published_at };
       })
     },
