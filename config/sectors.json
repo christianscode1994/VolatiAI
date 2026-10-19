@@ -68,5 +68,21 @@
     "collectors": {
       "vscode_release": "const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };\n        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;\n        const r = await fetch('https://api.github.com/repos/microsoft/vscode/releases?per_page=1', { headers });\n        if (!r.ok) throw new Error('github status ' + r.status);\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release');\n        return { id: j[0].id, title: (j[0].name || j[0].tag_name) + ' (vscode)', published_at: j[0].published_at };"
     }
+  },
+  "finance": {
+    "type": "value",
+    "density": "dense",
+    "metric": "treasury_10y",
+    "threshold_pct": 5.0,
+    "threshold_abs": 0.1,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "treasury_10y": "const r = await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const csv = await r.text();\n        const lines = csv.trim().split('\\n').slice(1).filter(l => !l.endsWith(','));\n        if (!lines.length) throw new Error('no data');\n        const last = lines[lines.length - 1].split(',');\n        const val = parseFloat(last[1]);\n        if (isNaN(val)) throw new Error('invalid');\n        return val;",
+      "dxy": "const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,JPY,GBP,CAD,SEK,CHF');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.rates || !j.rates.EUR) throw new Error('no rates');\n        return Math.round((1 / j.rates.EUR) * 10000) / 10000;"
+    },
+    "context_keys": [
+      "dxy"
+    ]
   }
 }
