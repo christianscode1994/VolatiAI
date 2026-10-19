@@ -30,6 +30,8 @@ def sector_url(sector):
         return f"https://sector-dense.fourieranalys.workers.dev/{sector}/signal"
     if sector in SPARSE_SECTORS:
         return f"https://sector-sparse.fourieranalys.workers.dev/{sector}/signal"
+    if sector in SLOW_SECTORS:
+        return f"https://sector-slow.fourieranalys.workers.dev/{sector}/signal"
     return WORKERS_BASE.format(sector) + "/signal"
 
 

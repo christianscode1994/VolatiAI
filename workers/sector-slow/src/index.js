@@ -1,0 +1,138 @@
+// sector-slow: consolidated worker for slow-trend sectors
+// Compares against value WINDOW_DAYS ago (not last call)
+
+const WINDOW_DAYS_DEFAULT = 7;
+
+async function fetchSafe(fn) {
+  try { return { ok: true, data: await fn() }; }
+  catch (e) { return { ok: false, error: String(e).slice(0, 120) }; }
+}
+
+function buildSlowEnvelope(sector, config, result, history) {
+  const sources = result.sources;
+  const healthy = Object.values(sources).filter(s => s.ok).length;
+  const total = Object.keys(sources).length;
+  const failed = Object.entries(sources).filter(([, v]) => !v.ok).map(([k]) => k);
+
+  const metric = sources[config.metric]?.ok ? sources[config.metric].data : null;
+  const windowDays = config.window_days || WINDOW_DAYS_DEFAULT;
+
+  let historical = null, absChange = 0, pct = 0;
+  if (metric !== null && history && history.length > 0) {
+    const cutoff = Date.now() - windowDays * 24 * 60 * 60 * 1000;
+    const old = history.find(h => h.t <= cutoff);
+    if (old && old.v !== null) {
+      historical = old.v;
+      absChange = metric - old.v;
+      pct = old.v === 0 ? 0 : (absChange / old.v) * 100;
+    }
+  }
+
+  const tp = config.threshold_pct || 0;
+  const hasSignal = historical !== null && Math.abs(pct) >= tp;
+  const severity = Math.abs(pct) >= tp * 2 ? "alert" : "notice";
+
+  return {
+    sector, density: "slow",
+    has_signal: hasSignal,
+    severity: hasSignal ? severity : "info",
+    confidence: healthy / Math.max(total, 1),
+    timestamp: new Date().toISOString(),
+    summary: hasSignal
+      ? config.metric + " " + metric + " (" + (pct > 0 ? "+" : "") + pct.toFixed(1) + "% vs " + windowDays + "d ago)"
+      : "quiet",
+    delta: historical !== null
+      ? { metric: config.metric, current: metric, previous: historical, pct_change: pct, window: config.window || "7d" }
+      : { metric: config.metric, current: metric, previous: null, pct_change: null, window: config.window || "7d" },
+    context: { history_points: history ? history.length : 0 },
+    sources: { total, healthy, failed },
+    ttl_seconds: config.ttl || 86400,
+  };
+}
+
+const COLLECTORS = {
+  environment: {
+    config: { metric: "co2_ppm", threshold_pct: 0.3, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async (env) => ({
+      sources: {
+        co2_ppm: await fetchSafe(async () => {
+          const r = await fetch("https://global-warming.org/api/co2-api");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.co2?.length) throw new Error("no co2");
+          const latest = j.co2[j.co2.length - 1];
+          return Math.round(parseFloat(latest.trend) * 100) / 100;
+        }),
+      },
+    }),
+  },
+  treasuries: {
+    config: { metric: "yield_10y", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async (env) => ({
+      sources: {
+        yield_10y: await fetchSafe(async () => {
+          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01");
+          if (!r.ok) throw new Error("status " + r.status);
+          const csv = await r.text();
+          const lines = csv.trim().split("\n").slice(1).filter(l => !l.endsWith(","));
+          if (!lines.length) throw new Error("no data");
+          const last = lines[lines.length - 1].split(",");
+          return parseFloat(last[1]);
+        }),
+      },
+    }),
+  },
+};
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const parts = url.pathname.split("/").filter(Boolean);
+
+    if (parts.length === 0) {
+      return json({ ok: true, density: "slow", sectors: Object.keys(COLLECTORS) });
+    }
+
+    const sectorName = parts[0];
+    const action = parts[1] || "signal";
+    const collector = COLLECTORS[sectorName];
+
+    if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
+
+    if (action === "health") {
+      return json({ ok: true, sector: sectorName, density: "slow" });
+    }
+
+    if (action === "raw") {
+      return json(await collector.collectAll(env));
+    }
+
+    if (action === "signal") {
+      const result = await collector.collectAll(env);
+      const config = collector.config;
+      const kvKey = `${sectorName}_${config.metric}_history`;
+      const raw = await env.SECTOR_KV.get(kvKey);
+      let history = raw ? JSON.parse(raw) : [];
+
+      const envelope = buildSlowEnvelope(sectorName, config, result, history);
+
+      const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
+      if (current !== null && current !== undefined) {
+        history.push({ t: Date.now(), v: current });
+        history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
+        await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
+      }
+
+      return json(envelope);
+    }
+
+    return json({ not: "found" }, 404);
+  },
+};
