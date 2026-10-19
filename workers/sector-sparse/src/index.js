@@ -260,39 +260,41 @@ const COLLECTORS = {
   },
 
   "art-design": {
-    event_source: "artic_latest",
+    event_source: "met_museum",
     ttl: 3600,
     collectAll: async (env) => ({
       sources: {
-        artic_latest: await fetchSafe(async () => {
-          const r = await fetch("https://api.artic.edu/api/v1/artworks/search?q=*&limit=1&fields=id,title,artist_display");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          if (!j.data?.length) throw new Error("no art");
-          const a = j.data[0];
-          return { id: String(a.id), title: (a.title || 'untitled').slice(0, 80) };
+        met_museum: await fetchSafe(async () => {
+          // Fetch random object IDs, take first
+          const idsResp = await fetch("https://collectionapi.metmuseum.org/public/collection/v1/objects");
+          if (!idsResp.ok) throw new Error("ids status " + idsResp.status);
+          const ids = await idsResp.json();
+          if (!ids.objectIDs || !ids.objectIDs.length) throw new Error("no ids");
+          // Skip to a random one to avoid always same object
+          const idx = Math.floor(Math.random() * Math.min(ids.objectIDs.length, 100));
+          const objId = ids.objectIDs[idx];
+          const objResp = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${objId}`);
+          if (!objResp.ok) throw new Error("obj status " + objResp.status);
+          const obj = await objResp.json();
+          if (!obj.objectID || !obj.title) throw new Error("no object");
+          return { id: String(obj.objectID), title: (obj.title || 'untitled').slice(0, 80) };
         }),
       },
     }),
   },
 
   anime: {
-    event_source: "anilist_trending",
+    event_source: "jikan_top",
     ttl: 3600,
     collectAll: async (env) => ({
       sources: {
-        anilist_trending: await fetchSafe(async () => {
-          const query = 'query { Page(perPage: 1) { media(type: ANIME, sort: TRENDING_DESC) { id title { romaji } } } }';
-          const r = await fetch("https://graphql.anilist.co", {
-            method: "POST",
-            headers: { "content-type": "application/json", "accept": "application/json" },
-            body: JSON.stringify({ query }),
-          });
+        jikan_top: await fetchSafe(async () => {
+          const r = await fetch("https://api.jikan.moe/v4/top/anime?limit=1");
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
-          const media = j.data?.Page?.media?.[0];
-          if (!media) throw new Error("no media");
-          return { id: String(media.id), title: media.title?.romaji || 'unknown' };
+          if (!j.data?.length) throw new Error("no anime");
+          const a = j.data[0];
+          return { id: String(a.mal_id), title: (a.title || 'unknown').slice(0, 80) };
         }),
       },
     }),
