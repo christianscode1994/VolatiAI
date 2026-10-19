@@ -446,20 +446,24 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         wikimedia_top: await fetchSafe(async () => {
-          // Use yesterday's data (day must be complete)
           const d = new Date(Date.now() - 86400000);
           const y = d.getUTCFullYear();
           const m = String(d.getUTCMonth() + 1).padStart(2, '0');
           const day = String(d.getUTCDate()).padStart(2, '0');
           const url = "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/" + y + "/" + m + "/" + day;
-          const r = await fetch(url);
+          const r = await fetch(url, {
+            headers: {
+              "User-Agent": "VolatiAI/1.0 (https://github.com/christianscode1994/VolatiAI; contact@volatiai.local)",
+              "Accept": "application/json",
+            },
+          });
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
           const articles = j.items?.[0]?.articles;
           if (!articles?.length) throw new Error("no articles");
-          // Skip Main_Page, find first real article
           const top = articles.find(a => a.article !== 'Main_Page') || articles[0];
-          return { id: top.article + "_" + y + m + day, title: decodeURIComponent(top.article).replace(/_/g, ' ') + " (" + top.views.toLocaleString() + " views)" };
+          const title = decodeURIComponent(top.article).replace(/_/g, ' ');
+          return { id: top.article + "_" + y + m + day, title: title + " (" + top.views.toLocaleString() + " views)" };
         }),
       },
     }),
@@ -502,19 +506,32 @@ const COLLECTORS = {
   },
 
   spaceflight: {
-    event_source: "space_devs_launch",
+    event_source: "launch_library",
     ttl: 3600,
     collectAll: async (env) => ({
       sources: {
-        space_devs_launch: await fetchSafe(async () => {
-          const r = await fetch("https://ll.thespacedevs.com/2.3.0/launch/upcoming/?format=json&limit=1");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          if (!j.results?.length) throw new Error("no launches");
-          const l = j.results[0];
-          const name = (l.name || 'Launch').slice(0, 80);
-          const net = l.net ? l.net.slice(0, 16) : 'TBD';
-          return { id: String(l.id || l.slug), title: name + " (" + net + ")" };
+        launch_library: await fetchSafe(async () => {
+          // Try 2.2.0 first (public), fallback to 2.3.0
+          const urls = [
+            "https://ll.thespacedevs.com/2.2.0/launch/upcoming/?format=json&limit=1",
+            "https://ll.thespacedevs.com/2.3.0/launch/upcoming/?format=json&limit=1",
+          ];
+          let lastErr = "no attempt";
+          for (const url of urls) {
+            try {
+              const r = await fetch(url, {
+                headers: { "User-Agent": "VolatiAI/1.0" }
+              });
+              if (!r.ok) { lastErr = "status " + r.status + " from " + url; continue; }
+              const j = await r.json();
+              if (!j.results?.length) { lastErr = "no results from " + url; continue; }
+              const l = j.results[0];
+              const name = (l.name || 'Launch').slice(0, 80);
+              const net = l.net ? l.net.slice(0, 16) : 'TBD';
+              return { id: String(l.id || l.slug), title: name + " (" + net + ")" };
+            } catch (e) { lastErr = String(e).slice(0, 80); }
+          }
+          throw new Error(lastErr);
         }),
       },
     }),
