@@ -34,6 +34,98 @@ METRIC_ALIASES = {
 }
 
 
+
+# Expected relationships between metrics from different sectors.
+# Based on historical norms that hold most of the time.
+CORRELATION_RULES = [
+    {
+        "id": "sp500_vix",
+        "sector_a": "stocks", "metric_a": "sp500",
+        "sector_b": "tracking", "metric_b": "vix",
+        "expected": "inverse",
+        "min_move_pct": 1.0,
+    },
+    {
+        "id": "gold_dxy",
+        "sector_a": "metals", "metric_a": "gold",
+        "sector_b": "finance", "metric_b": "dxy",
+        "expected": "inverse",
+        "min_move_pct": 0.5,
+    },
+    {
+        "id": "gold_yield",
+        "sector_a": "metals", "metric_a": "gold",
+        "sector_b": "finance", "metric_b": "treasury_10y",
+        "expected": "inverse",
+        "min_move_pct": 0.3,
+    },
+    {
+        "id": "wti_energy",
+        "sector_a": "energy", "metric_a": "wti",
+        "sector_b": "shopping", "metric_b": "wti",
+        "expected": "correlated",
+        "min_move_pct": 1.0,
+    },
+]
+
+
+def find_correlation_anomalies(arbitrations, envelopes_by_sector):
+    """Detect when two related metrics move against their historical norm."""
+    anomalies = []
+
+    # Build sector -> pct_change
+    pct_by_sector = {}
+    for a in arbitrations:
+        env = envelopes_by_sector.get(a["sector"], {})
+        delta = env.get("delta") or {}
+        pct = delta.get("pct_change")
+        current = delta.get("current")
+        if pct is None or current is None:
+            continue
+        pct_by_sector[a["sector"]] = {
+            "pct": pct,
+            "current": current,
+            "metric": delta.get("metric"),
+        }
+
+    for rule in CORRELATION_RULES:
+        a = pct_by_sector.get(rule["sector_a"])
+        b = pct_by_sector.get(rule["sector_b"])
+        if not a or not b:
+            continue
+
+        # Verify each sector actually reports the metric the rule expects
+        if a["metric"] != rule["metric_a"]:
+            continue
+        if b["metric"] != rule["metric_b"]:
+            continue
+
+        # Both must have moved at least min_move_pct
+        if abs(a["pct"]) < rule["min_move_pct"] or abs(b["pct"]) < rule["min_move_pct"]:
+            continue
+
+        same_direction = (a["pct"] > 0) == (b["pct"] > 0)
+
+        # Check if this violates expectation
+        violated = False
+        if rule["expected"] == "inverse" and same_direction:
+            violated = True
+        elif rule["expected"] == "correlated" and not same_direction:
+            violated = True
+
+        if violated:
+            anomalies.append({
+                "rule": rule["id"],
+                "sectors": [rule["sector_a"], rule["sector_b"]],
+                "metrics": [rule["metric_a"], rule["metric_b"]],
+                "pct_changes": [round(a["pct"], 2), round(b["pct"], 2)],
+                "expected": rule["expected"],
+                "observed": "same_direction" if same_direction else "opposite_direction",
+            })
+
+    return anomalies
+
+
 def find_contradictions(arbitrations, envelopes_by_sector):
     """Find claims that contradict each other semantically."""
     contradictions = []
@@ -164,7 +256,7 @@ def arbitrate(graph):
     return results
 
 
-def render(arbitrations, envelopes_by_sector, contradictions=None):
+def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=None):
     lines = ["\U0001F52C <b>VolatiAI Epistemic Digest</b>", ""]
 
     # Conflicts first — they are the most important signal
@@ -184,6 +276,18 @@ def render(arbitrations, envelopes_by_sector, contradictions=None):
                 lines.append(
                     f"\u26A0 {c['metric']}: {a}={ca:+.1f}% vs {b}={cb:+.1f}%"
                 )
+        lines.append("")
+
+    # Correlation anomalies next
+    if anomalies:
+        lines.append("\U0001F500 <b>Correlation anomalies</b>")
+        for a in anomalies:
+            sa, sb = a["sectors"]
+            pa, pb = a["pct_changes"]
+            lines.append(
+                f"\u26A0 {sa}={pa:+.1f}% vs {sb}={pb:+.1f}% "
+                f"(expected {a['expected']})"
+            )
         lines.append("")
 
     by_density = {"dense": [], "sparse": [], "slow": []}
@@ -264,11 +368,17 @@ def main():
         print(f"\nContradictions: {len(contradictions)}")
         for c in contradictions:
             print(f"  {c}")
+
+    anomalies = find_correlation_anomalies(arb, envelopes_by_sector)
+    if anomalies:
+        print(f"\nCorrelation anomalies: {len(anomalies)}")
+        for a in anomalies:
+            print(f"  {a}")
     print("\nArbitration:")
     for a in arb:
         print(f"  {a['sector']:15s} conf={a['confidence']:.3f} sup={a['support']:.1f} dis={a['disputes']:.1f}")
 
-    digest = render(arb, envelopes_by_sector, contradictions)
+    digest = render(arb, envelopes_by_sector, contradictions, anomalies)
     print("\n=== Digest ===")
     print(digest)
 
