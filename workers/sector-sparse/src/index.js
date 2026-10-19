@@ -440,6 +440,87 @@ const COLLECTORS = {
     }),
   },
 
+  wikipedia: {
+    event_source: "wikimedia_top",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        wikimedia_top: await fetchSafe(async () => {
+          // Use yesterday's data (day must be complete)
+          const d = new Date(Date.now() - 86400000);
+          const y = d.getUTCFullYear();
+          const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+          const day = String(d.getUTCDate()).padStart(2, '0');
+          const url = "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/" + y + "/" + m + "/" + day;
+          const r = await fetch(url);
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const articles = j.items?.[0]?.articles;
+          if (!articles?.length) throw new Error("no articles");
+          // Skip Main_Page, find first real article
+          const top = articles.find(a => a.article !== 'Main_Page') || articles[0];
+          return { id: top.article + "_" + y + m + day, title: decodeURIComponent(top.article).replace(/_/g, ' ') + " (" + top.views.toLocaleString() + " views)" };
+        }),
+      },
+    }),
+  },
+
+  "arxiv-ai": {
+    event_source: "arxiv_cs_ai",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        arxiv_cs_ai: await fetchSafe(async () => {
+          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:cs.AI&sortBy=submittedDate&sortOrder=descending&max_results=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          const idM = text.match(/<entry>[\s\S]*?<id>([^<]+)<\/id>/);
+          const titleM = text.match(/<entry>[\s\S]*?<title>([^<]+)<\/title>/);
+          if (!idM || !titleM) throw new Error("no entry");
+          return { id: idM[1].trim(), title: titleM[1].trim().replace(/\s+/g, ' ').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  spaceweather: {
+    event_source: "noaa_swpc",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        noaa_swpc: await fetchSafe(async () => {
+          const r = await fetch("https://services.swpc.noaa.gov/products/alerts.json");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j) || !j.length) throw new Error("no alerts");
+          const latest = j[j.length - 1];
+          const msg = (latest.message || '').split('\n')[0].slice(0, 80);
+          return { id: String(latest.issue_datetime || j.length), title: msg || "NOAA space weather alert" };
+        }),
+      },
+    }),
+  },
+
+  spaceflight: {
+    event_source: "space_devs_launch",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        space_devs_launch: await fetchSafe(async () => {
+          const r = await fetch("https://ll.thespacedevs.com/2.3.0/launch/upcoming/?format=json&limit=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.results?.length) throw new Error("no launches");
+          const l = j.results[0];
+          const name = (l.name || 'Launch').slice(0, 80);
+          const net = l.net ? l.net.slice(0, 16) : 'TBD';
+          return { id: String(l.id || l.slug), title: name + " (" + net + ")" };
+        }),
+      },
+    }),
+  },
+
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────
