@@ -82,12 +82,14 @@ async function collectAll(env) {
   return {
     sources: {
       hn_frontpage: await fetchSafe(async () => {
-        const r = await fetch('https://hnrss.org/frontpage?count=1');
-        if (!r.ok) throw new Error('status ' + r.status);
-        const text = await r.text();
-        const itemMatch = text.match(/<item>[\s\S]*?<link>([^<]+)<\/link>[\s\S]*?<title>([^<]+)<\/title>/);
-        if (!itemMatch) throw new Error('no item');
-        return { id: itemMatch[1].trim(), title: itemMatch[2].trim().replace(/<!\[CDATA\[|\]\]>/g, '').slice(0, 100) };
+        const r = await fetch('https://hacker-news.firebaseio.com/v0/newstories.json');
+        const ids = await r.json();
+        if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');
+        const topId = ids[0];
+        const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + topId + '.json');
+        const story = await detail.json();
+        if (!story || !story.title) throw new Error('no story');
+        return { id: story.id, title: story.title.slice(0, 100) };
       })
     },
   };
