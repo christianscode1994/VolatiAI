@@ -5,7 +5,14 @@ import concurrent.futures
 import json
 import os
 import sys
+import ssl
 import urllib.request
+
+try:
+    import certifi
+    SSL_CTX = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    SSL_CTX = None
 
 WORKERS_BASE = "https://sector-{}.fourieranalys.workers.dev"
 
@@ -19,7 +26,7 @@ def fetch_envelope(sector):
     url = WORKERS_BASE.format(sector) + "/signal"
     try:
         req = urllib.request.Request(url, headers={"user-agent": "VolatiAI/1.0"})
-        with urllib.request.urlopen(req, timeout=10) as r:
+        with urllib.request.urlopen(req, timeout=10, context=SSL_CTX) as r:
             return json.loads(r.read())
     except Exception as e:
         return {"sector": sector, "error": str(e)[:80]}
@@ -103,7 +110,7 @@ def send(token, chat_id, text):
     data = json.dumps({"chat_id": chat_id, "text": text, "parse_mode": "HTML"}).encode()
     req = urllib.request.Request(url, data=data, headers={"content-type": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=15, context=SSL_CTX) as r:
             return json.loads(r.read()).get("ok", False)
     except Exception as e:
         print(f"Telegram error: {e}")
