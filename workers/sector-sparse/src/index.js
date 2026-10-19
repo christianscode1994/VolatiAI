@@ -987,6 +987,90 @@ const COLLECTORS = {
     }),
   },
 
+  "test-data": {
+    event_source: "fakerapi",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        fakerapi: await fetchSafe(async () => {
+          const seed = new Date().toISOString().slice(0, 10);
+          const r = await fetch("https://fakerapi.it/api/v2/persons?_quantity=1&_seed=" + seed);
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const person = j.data?.[0];
+          if (!person) throw new Error("no person");
+          return { id: person.email, title: person.firstname + " " + person.lastname + " (" + person.email + ")" };
+        }),
+      },
+    }),
+  },
+
+  "cloud-status": {
+    event_source: "downstatus",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        downstatus: await fetchSafe(async () => {
+          const services = ["aws", "azure", "gcp", "cloudflare", "vercel"];
+          const results = await Promise.all(services.map(async (svc) => {
+            const r = await fetch("https://isitdownstatus.com/api/status/" + svc);
+            if (!r.ok) throw new Error(svc + " status " + r.status);
+            return await r.json();
+          }));
+          const issues = results.filter(s => s.status !== "operational");
+          if (issues.length === 0) {
+            return { id: "all_ok_" + new Date().toISOString().slice(0, 13), title: "All cloud services operational" };
+          }
+          const summary = issues.map(s => (s.service || s.name || "service") + ": " + s.status).join(", ");
+          return { id: "issues_" + issues.length + "_" + new Date().toISOString().slice(0, 13), title: summary };
+        }),
+      },
+    }),
+  },
+
+  "open-source-packages": {
+    event_source: "deps_dev",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        deps_dev: await fetchSafe(async () => {
+          const r = await fetch("https://api.deps.dev/v3/systems/npm/packages/lodash");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const versions = j.versions || [];
+          const latest = versions.find(v => v.isDefault) || versions[versions.length - 1];
+          if (!latest) throw new Error("no versions");
+          const version = latest.versionKey?.version || latest.version || "unknown";
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "lodash_" + version + "_" + day, title: "lodash " + version + " (latest)" };
+        }),
+      },
+    }),
+  },
+
+  "cve-feed": {
+    event_source: "nvd_recent",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        nvd_recent: await fetchSafe(async () => {
+          const now = new Date();
+          const weekAgo = new Date(now.getTime() - 7 * 86400000);
+          const fmt = (d) => d.toISOString().slice(0, 19) + ".000";
+          const url = "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=" + fmt(weekAgo) + "&pubEndDate=" + fmt(now) + "&resultsPerPage=1";
+          const r = await fetch(url);
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const vulns = j.vulnerabilities || [];
+          if (!vulns.length) throw new Error("no CVEs last 7d");
+          const vuln = vulns[vulns.length - 1].cve;
+          const desc = vuln.descriptions?.[0]?.value || "No description";
+          return { id: vuln.id, title: vuln.id + ": " + desc.slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────
