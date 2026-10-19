@@ -260,24 +260,24 @@ const COLLECTORS = {
   },
 
   "art-design": {
-    event_source: "met_museum",
-    ttl: 3600,
+    event_source: "met_daily",
+    ttl: 86400,
     collectAll: async (env) => ({
       sources: {
-        met_museum: await fetchSafe(async () => {
-          // Fetch random object IDs, take first
-          const idsResp = await fetch("https://collectionapi.metmuseum.org/public/collection/v1/objects");
-          if (!idsResp.ok) throw new Error("ids status " + idsResp.status);
-          const ids = await idsResp.json();
-          if (!ids.objectIDs || !ids.objectIDs.length) throw new Error("no ids");
-          // Skip to a random one to avoid always same object
-          const idx = Math.floor(Math.random() * Math.min(ids.objectIDs.length, 100));
-          const objId = ids.objectIDs[idx];
-          const objResp = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${objId}`);
-          if (!objResp.ok) throw new Error("obj status " + objResp.status);
-          const obj = await objResp.json();
+        met_daily: await fetchSafe(async () => {
+          // Deterministic object per day — triggers once per day max
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const highlights = [45734, 436532, 436121, 436155, 11417, 436947, 437261, 438814, 436839, 437398];
+          const objId = highlights[dayOfYear % highlights.length];
+          const r = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${objId}`);
+          if (!r.ok) throw new Error("status " + r.status);
+          const obj = await r.json();
           if (!obj.objectID || !obj.title) throw new Error("no object");
-          return { id: String(obj.objectID), title: (obj.title || 'untitled').slice(0, 80) };
+          // ID includes date so it changes once per day
+          return {
+            id: `met_${objId}_${new Date().toISOString().slice(0, 10)}`,
+            title: (obj.title || 'untitled').slice(0, 100) + (obj.artistDisplayName ? ' — ' + obj.artistDisplayName.split('\n')[0].slice(0, 40) : ''),
+          };
         }),
       },
     }),
@@ -341,17 +341,20 @@ const COLLECTORS = {
   },
 
   "food-drink": {
-    event_source: "themealdb_random",
+    event_source: "fda_food_recall",
     ttl: 3600,
     collectAll: async (env) => ({
       sources: {
-        themealdb_random: await fetchSafe(async () => {
-          const r = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
+        fda_food_recall: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/food/enforcement.json?limit=1&sort=report_date:desc");
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
-          if (!j.meals?.length) throw new Error("no meals");
-          const m = j.meals[0];
-          return { id: String(m.idMeal), title: (m.strMeal || 'unknown').slice(0, 80) };
+          if (!j.results?.length) throw new Error("no recalls");
+          const rec = j.results[0];
+          return {
+            id: rec.recall_number || rec.event_id || 'unknown',
+            title: (rec.product_description || 'Recall').slice(0, 100) + ' — ' + (rec.reason_for_recall || '').slice(0, 60),
+          };
         }),
       },
     }),
@@ -374,19 +377,22 @@ const COLLECTORS = {
   },
 
   space: {
-    event_source: "iss_location",
-    ttl: 1800,
+    event_source: "astros_in_space",
+    ttl: 86400,
     collectAll: async (env) => ({
       sources: {
-        iss_location: await fetchSafe(async () => {
-          const r = await fetch("http://api.open-notify.org/iss-now.json");
+        astros_in_space: await fetchSafe(async () => {
+          const r = await fetch("http://api.open-notify.org/astros.json");
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
-          if (!j.iss_position) throw new Error("no position");
-          // Group into 5-degree buckets to avoid triggering every 10s
-          const lat = Math.round(parseFloat(j.iss_position.latitude) / 5) * 5;
-          const lon = Math.round(parseFloat(j.iss_position.longitude) / 5) * 5;
-          return { id: `iss_${lat}_${lon}`, title: `ISS over ${lat}°, ${lon}°` };
+          if (!Array.isArray(j.people) || !j.people.length) throw new Error("no astronauts");
+          // Stable ID: sorted list of names (changes only when crew changes)
+          const names = j.people.map(p => p.name).sort();
+          const crewId = names.join('|');
+          return {
+            id: `crew_${crewId.length}_${j.number}`,
+            title: `${j.number} humans in space: ${names.slice(0, 3).join(', ')}${names.length > 3 ? ', +' + (names.length - 3) + ' more' : ''}`,
+          };
         }),
       },
     }),
