@@ -385,6 +385,60 @@ const COLLECTORS = {
   },
 
 
+  "air-quality": {
+    config: { metric: "pm25", threshold_pct: 20.0, threshold_abs: 5.0, window: "24h", ttl: 3600, context_keys: ["no2"] },
+    collectAll: async (env) => ({
+      sources: {
+        pm25: await fetchSafe(async () => {
+          const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=59.33&longitude=18.07&current=pm2_5");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const val = j.current?.pm2_5;
+          if (val === undefined) throw new Error("no pm25");
+          return Math.round(val * 10) / 10;
+        }),
+        no2: await fetchSafe(async () => {
+          const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=59.33&longitude=18.07&current=nitrogen_dioxide");
+          const j = await r.json();
+          return j.current?.nitrogen_dioxide !== undefined ? Math.round(j.current.nitrogen_dioxide * 10) / 10 : null;
+        }),
+      },
+    }),
+  },
+
+
+  "depin-market": {
+    config: { metric: "depin_mcap", threshold_pct: 5.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        depin_mcap: await fetchSafe(async () => {
+          // CoinLore: same source as kryptovaluta sector, known working from CF
+          const r = await fetch("https://api.coinlore.net/api/tickers/?limit=200");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.data || !Array.isArray(j.data)) throw new Error("no data");
+          const depinSymbols = new Set([
+            "FLUX", "FIL", "RNDR", "AKT", "HNT", "THETA", "IO",
+            "AR", "STORJ", "GRASS", "AETHIR", "NOS", "GEOD", "PEAQ"
+          ]);
+          let totalMcap = 0;
+          let count = 0;
+          for (const t of j.data) {
+            if (depinSymbols.has(t.symbol)) {
+              const mcap = parseFloat(t.market_cap_usd || "0");
+              if (!isNaN(mcap) && mcap > 0) {
+                totalMcap += mcap;
+                count++;
+              }
+            }
+          }
+          if (count === 0) throw new Error("no depin coins found");
+          return Math.round(totalMcap);
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
