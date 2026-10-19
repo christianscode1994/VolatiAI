@@ -126,6 +126,7 @@ def main():
     valid = [e for e in envelopes if e and "sector" in e and "error" not in e]
     print(f"Got {len(valid)}/{len(sectors)} envelopes")
 
+    envelopes_by_sector = {e["sector"]: e for e in valid}
     graph = build_graph(valid)
     claims = [n for n in graph["nodes"] if n["type"] == "claim"]
     print(f"Graph: {len(claims)} claims, {len(graph['edges'])} edges")
@@ -136,7 +137,7 @@ def main():
     for a in arb:
         print(f"  {a['sector']:15s} conf={a['confidence']:.3f} sup={a['support']:.1f} dis={a['disputes']:.1f}")
 
-    digest = render(arb)
+    digest = render(arb, envelopes_by_sector)
     print("\n=== Digest ===")
     print(digest)
 
