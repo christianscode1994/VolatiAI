@@ -261,6 +261,87 @@ const COLLECTORS = {
       },
     }),
   },
+  stocks: {
+    config: { metric: "sp500", threshold_pct: 1.0, threshold_abs: 20, window: "24h", ttl: 3600, context_keys: ["nasdaq"] },
+    collectAll: async (env) => ({
+      sources: {
+        sp500: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
+          if (!price) throw new Error("no price");
+          return Math.round(price * 100) / 100;
+        }),
+        nasdaq: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
+        }),
+      },
+    }),
+  },
+
+  energy: {
+    config: { metric: "wti", threshold_pct: 3.0, threshold_abs: 1.5, window: "24h", ttl: 3600, context_keys: ["brent", "natgas"] },
+    collectAll: async (env) => ({
+      sources: {
+        wti: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
+          if (!price) throw new Error("no price");
+          return Math.round(price * 100) / 100;
+        }),
+        brent: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/BZ%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
+        }),
+        natgas: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/NG%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
+        }),
+      },
+    }),
+  },
+
+  "crypto-defi": {
+    config: { metric: "defi_tvl", threshold_pct: 5.0, threshold_abs: 2000000000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        defi_tvl: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/v2/chains");
+          if (!r.ok) throw new Error("status " + r.status);
+          const arr = await r.json();
+          if (!Array.isArray(arr)) throw new Error("no data");
+          return Math.round(arr.reduce((s, c) => s + (c.tvl || 0), 0));
+        }),
+      },
+    }),
+  },
+
+  metals: {
+    config: { metric: "gold", threshold_pct: 1.5, threshold_abs: 30, window: "24h", ttl: 3600, context_keys: ["silver"] },
+    collectAll: async (env) => ({
+      sources: {
+        gold: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
+          if (!price) throw new Error("no price");
+          return Math.round(price * 100) / 100;
+        }),
+        silver: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/SI%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
+          const j = await r.json();
+          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
+        }),
+      },
+    }),
+  },
+
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
