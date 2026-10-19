@@ -318,6 +318,123 @@ const COLLECTORS = {
   },
 
 
+  earthquakes: {
+    event_source: "usgs_significant",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        usgs_significant: await fetchSafe(async () => {
+          const r = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.features?.length) throw new Error("no quakes");
+          const q = j.features[0];
+          const mag = q.properties.mag;
+          const place = q.properties.place || "unknown";
+          return { id: q.id, title: `M${mag} — ${place}` };
+        }),
+      },
+    }),
+  },
+
+  "food-drink": {
+    event_source: "themealdb_random",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        themealdb_random: await fetchSafe(async () => {
+          const r = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.meals?.length) throw new Error("no meals");
+          const m = j.meals[0];
+          return { id: String(m.idMeal), title: (m.strMeal || 'unknown').slice(0, 80) };
+        }),
+      },
+    }),
+  },
+
+  health: {
+    event_source: "disease_sh",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        disease_sh: await fetchSafe(async () => {
+          const r = await fetch("https://disease.sh/v3/covid-19/countries/sweden");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.country) throw new Error("no data");
+          return { id: `se_${j.cases}_${j.deaths}`, title: `Sweden: ${j.cases} cases, ${j.deaths} deaths` };
+        }),
+      },
+    }),
+  },
+
+  space: {
+    event_source: "iss_location",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        iss_location: await fetchSafe(async () => {
+          const r = await fetch("http://api.open-notify.org/iss-now.json");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.iss_position) throw new Error("no position");
+          // Group into 5-degree buckets to avoid triggering every 10s
+          const lat = Math.round(parseFloat(j.iss_position.latitude) / 5) * 5;
+          const lon = Math.round(parseFloat(j.iss_position.longitude) / 5) * 5;
+          return { id: `iss_${lat}_${lon}`, title: `ISS over ${lat}°, ${lon}°` };
+        }),
+      },
+    }),
+  },
+
+  podcasts: {
+    event_source: "npr_podcast",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        npr_podcast: await fetchSafe(async () => {
+          const r = await fetch("https://feeds.npr.org/510289/podcast.xml");
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          const items = text.match(/<item>[\s\S]*?<\/item>/g);
+          if (!items || !items.length) throw new Error("no items");
+          const first = items[0];
+          const titleMatch = first.match(/<title>(?:<!\[CDATA\[)?([^<\]]+)/);
+          const guidMatch = first.match(/<guid[^>]*>([^<]+)<\/guid>/);
+          if (!titleMatch) throw new Error("no title");
+          return {
+            id: (guidMatch ? guidMatch[1] : titleMatch[1]).trim().slice(0, 80),
+            title: titleMatch[1].trim().slice(0, 100),
+          };
+        }),
+      },
+    }),
+  },
+
+  travel: {
+    event_source: "restcountries_all",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        restcountries_all: await fetchSafe(async () => {
+          const r = await fetch("https://restcountries.com/v3.1/all?fields=name,capital,population");
+          if (!r.ok) throw new Error("status " + r.status);
+          const arr = await r.json();
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no countries");
+          // Pick a deterministic country based on day of year to avoid spam
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const c = arr[dayOfYear % arr.length];
+          return {
+            id: c.name?.common || 'unknown',
+            title: `${c.name?.common} — ${c.capital?.[0] || '?'} (${(c.population||0).toLocaleString()})`,
+          };
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────
