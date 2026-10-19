@@ -12,7 +12,10 @@
       "gbp_usd": "const r = await fetch('https://api.frankfurter.app/latest?from=GBP&to=USD');\n        const j = await r.json();\n        return j.rates && j.rates.USD ? Math.round(j.rates.USD * 10000) / 10000 : null;",
       "jpy_usd": "const r = await fetch('https://api.frankfurter.app/latest?from=JPY&to=USD');\n        const j = await r.json();\n        return j.rates && j.rates.USD ? Math.round(j.rates.USD * 100000) / 100000 : null;"
     },
-    "context_keys": ["gbp_usd", "jpy_usd"]
+    "context_keys": [
+      "gbp_usd",
+      "jpy_usd"
+    ]
   },
   "weather": {
     "type": "value",
@@ -26,7 +29,9 @@
       "temp_stockholm": "const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.33&longitude=18.07&current=temperature_2m');\n        const j = await r.json();\n        if (!j.current || j.current.temperature_2m === undefined) throw new Error('no temp');\n        return j.current.temperature_2m;",
       "wind_stockholm": "const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.33&longitude=18.07&current=wind_speed_10m');\n        const j = await r.json();\n        return j.current && j.current.wind_speed_10m !== undefined ? j.current.wind_speed_10m : null;"
     },
-    "context_keys": ["wind_stockholm"]
+    "context_keys": [
+      "wind_stockholm"
+    ]
   },
   "develop": {
     "type": "event",
@@ -34,7 +39,7 @@
     "event_source": "ethereum_release",
     "ttl": 3600,
     "collectors": {
-      "ethereum_release": "const r = await fetch('https://api.github.com/repos/ethereum/go-ethereum/releases?per_page=1', {\n          headers: { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' }\n        });\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release');\n        return { id: j[0].id, title: j[0].name || j[0].tag_name, published_at: j[0].published_at };"
+      "ethereum_release": "const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };\n        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;\n        const r = await fetch('https://api.github.com/repos/ethereum/go-ethereum/releases?per_page=1', { headers });\n        if (!r.ok) throw new Error('github status ' + r.status);\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release array: ' + JSON.stringify(j).slice(0, 100));\n        return { id: j[0].id, title: j[0].name || j[0].tag_name, published_at: j[0].published_at };"
     }
   }
 }
