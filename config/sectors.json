@@ -84,5 +84,50 @@
     "context_keys": [
       "dxy"
     ]
+  },
+  "science-math": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "arxiv_math",
+    "ttl": 3600,
+    "collectors": {
+      "arxiv_math": "const r = await fetch('http://export.arxiv.org/api/query?search_query=cat:math.*&sortBy=submittedDate&sortOrder=descending&max_results=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const idMatch = text.match(/<entry>[\\s\\S]*?<id>([^<]+)<\\/id>/);\n        const titleMatch = text.match(/<entry>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!idMatch || !titleMatch) throw new Error('no entry');\n        return { id: idMatch[1].trim(), title: titleMatch[1].trim().replace(/\\s+/g, ' ').slice(0, 100) };"
+    }
+  },
+  "security": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "cisa_kev",
+    "ttl": 3600,
+    "collectors": {
+      "cisa_kev": "const r = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.vulnerabilities || !j.vulnerabilities.length) throw new Error('no vulns');\n        const latest = j.vulnerabilities[0];\n        return { id: latest.cveID, title: latest.cveID + ' \u2014 ' + (latest.vulnerabilityName || 'CISA KEV') };"
+    }
+  },
+  "education": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "arxiv_education",
+    "ttl": 3600,
+    "collectors": {
+      "arxiv_education": "const r = await fetch('http://export.arxiv.org/api/query?search_query=cat:cs.CY&sortBy=submittedDate&sortOrder=descending&max_results=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const idMatch = text.match(/<entry>[\\s\\S]*?<id>([^<]+)<\\/id>/);\n        const titleMatch = text.match(/<entry>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!idMatch || !titleMatch) throw new Error('no entry');\n        return { id: idMatch[1].trim(), title: titleMatch[1].trim().replace(/\\s+/g, ' ').slice(0, 100) };"
+    }
+  },
+  "sports-fitness": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "bbc_sport",
+    "ttl": 1800,
+    "collectors": {
+      "bbc_sport": "const r = await fetch('https://feeds.bbci.co.uk/sport/rss.xml');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const itemMatch = text.match(/<item>[\\s\\S]*?<link>([^<]+)<\\/link>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!itemMatch) throw new Error('no item');\n        return { id: itemMatch[1].trim(), title: itemMatch[2].trim().replace(/<!\\[CDATA\\[|\\]\\]>/g, '').slice(0, 100) };"
+    }
+  },
+  "events": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "hn_frontpage",
+    "ttl": 1800,
+    "collectors": {
+      "hn_frontpage": "const r = await fetch('https://hnrss.org/frontpage?count=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const itemMatch = text.match(/<item>[\\s\\S]*?<link>([^<]+)<\\/link>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!itemMatch) throw new Error('no item');\n        return { id: itemMatch[1].trim(), title: itemMatch[2].trim().replace(/<!\\[CDATA\\[|\\]\\]>/g, '').slice(0, 100) };"
+    }
   }
 }
