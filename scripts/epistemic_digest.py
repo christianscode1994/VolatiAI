@@ -28,8 +28,7 @@ def load_active_sectors():
 def sector_url(sector):
     if sector in DENSE_SECTORS:
         return f"https://sector-dense.fourieranalys.workers.dev/{sector}/signal"
-    if sector in SPARSE_SECTORS:
-        return f"https://sector-sparse.fourieranalys.workers.dev/{sector}/signal"
+    # Sparse: individual workers (sector-sparse debugging)
     return WORKERS_BASE.format(sector) + "/signal"
 
 
