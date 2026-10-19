@@ -474,20 +474,44 @@ export default {
     }
 
     if (action === "signal") {
-      const result = await collector.collectAll(env);
-      const config = collector.config;
-      const kvKey = `${sectorName}_${config.metric}`;
-      const prevStr = await env.SECTOR_KV.get(kvKey);
-      const prev = prevStr ? parseFloat(prevStr) : null;
-
-      const envelope = buildValueEnvelope(sectorName, config, result, prev);
-
-      const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
-      if (current !== null && current !== undefined) {
-        await env.SECTOR_KV.put(kvKey, String(current), { expirationTtl: config.ttl || 3600 });
+      let stage = "start";
+      try {
+        stage = "collectAll";
+        const result = await collector.collectAll(env);
+        const config = collector.config;
+        if (!config) {
+          return json({ error: "no config", sector: sectorName }, 500);
+        }
+        if (!config.metric) {
+          return json({ error: "no config.metric", sector: sectorName, config_keys: Object.keys(config) }, 500);
+        }
+        stage = "kv_read";
+        const kvKey = sectorName + "_" + config.metric;
+        const prevStr = await env.SECTOR_KV.get(kvKey);
+        const prev = prevStr ? parseFloat(prevStr) : null;
+        stage = "buildValueEnvelope";
+        const envelope = buildValueEnvelope(sectorName, config, result, prev);
+        stage = "kv_write";
+        const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
+        // Only write if value actually changed — saves ~99% of KV writes
+        if (current !== null && current !== undefined && String(current) !== prevStr) {
+          try {
+            await env.SECTOR_KV.put(kvKey, String(current), { expirationTtl: config.ttl || 3600 });
+          } catch (kvErr) {
+            // Log but don't fail the request — KV quota exhausted
+            console.log("KV put failed:", String(kvErr));
+          }
+        }
+        return json(envelope);
+      } catch (e) {
+        return json({
+          error: "signal_failed",
+          stage: stage,
+          sector: sectorName,
+          message: String(e),
+          stack: String((e && e.stack) || "").slice(0, 600)
+        }, 500);
       }
-
-      return json(envelope);
     }
 
     return json({ error: "not found" }, 404);

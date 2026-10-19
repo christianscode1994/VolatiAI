@@ -160,7 +160,11 @@ export default {
       if (current !== null && current !== undefined) {
         history.push({ t: Date.now(), v: current });
         history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
-        await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
+        try {
+          await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
+        } catch (kvErr) {
+          console.log("KV put failed:", String(kvErr));
+        }
       }
 
       return json(envelope);
