@@ -129,5 +129,58 @@
     "collectors": {
       "hn_frontpage": "const r = await fetch('https://hacker-news.firebaseio.com/v0/newstories.json');\n        const ids = await r.json();\n        if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');\n        const topId = ids[0];\n        const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + topId + '.json');\n        const story = await detail.json();\n        if (!story || !story.title) throw new Error('no story');\n        return { id: story.id, title: story.title.slice(0, 100) };"
     }
+  },
+  "vehicles": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "nhtsa_recall",
+    "ttl": 3600,
+    "collectors": {
+      "nhtsa_recall": "const r = await fetch('https://api.nhtsa.gov/recalls/recallsByVehicle?make=honda&model=civic&modelYear=2024');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.results || !j.results.length) throw new Error('no recalls');\n        const r0 = j.results[0];\n        return {\n          id: r0.NHTSACampaignNumber || r0.nhtsaCampaignNumber || 'unknown',\n          title: (r0.Component || 'Recall') + ' \u2014 ' + (r0.Summary || '').slice(0, 80)\n        };"
+    }
+  },
+  "books": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "openlibrary_recent",
+    "ttl": 3600,
+    "collectors": {
+      "openlibrary_recent": "const today = new Date();\n        const q = 'first_publish_year:' + today.getFullYear();\n        const r = await fetch('https://openlibrary.org/search.json?q=' + encodeURIComponent(q) + '&sort=new&limit=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.docs || !j.docs.length) throw new Error('no docs');\n        const b = j.docs[0];\n        return {\n          id: b.key || b.title,\n          title: (b.title || 'unknown') + ' \u2014 ' + (b.author_name ? b.author_name[0] : 'unknown')\n        };"
+    }
+  },
+  "music": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "deezer_chart",
+    "ttl": 3600,
+    "collectors": {
+      "deezer_chart": "const r = await fetch('https://api.deezer.com/chart/0/tracks?limit=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.data || !j.data.length) throw new Error('no tracks');\n        const t = j.data[0];\n        return {\n          id: String(t.id),\n          title: (t.title || 'unknown') + ' \u2014 ' + (t.artist ? t.artist.name : 'unknown')\n        };"
+    }
+  },
+  "tracking": {
+    "type": "value",
+    "density": "dense",
+    "metric": "vix",
+    "threshold_pct": 10.0,
+    "threshold_abs": 1.5,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "vix": "const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d', {\n          headers: { 'user-agent': 'Mozilla/5.0' }\n        });\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        const result = j.chart && j.chart.result && j.chart.result[0];\n        if (!result || !result.meta || !result.meta.regularMarketPrice) throw new Error('no price');\n        return Math.round(result.meta.regularMarketPrice * 100) / 100;"
+    },
+    "context_keys": []
+  },
+  "shopping": {
+    "type": "value",
+    "density": "dense",
+    "metric": "wti",
+    "threshold_pct": 3.0,
+    "threshold_abs": 1.5,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "wti": "const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d', {\n          headers: { 'user-agent': 'Mozilla/5.0' }\n        });\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        const result = j.chart && j.chart.result && j.chart.result[0];\n        if (!result || !result.meta || !result.meta.regularMarketPrice) throw new Error('no price');\n        return Math.round(result.meta.regularMarketPrice * 100) / 100;"
+    },
+    "context_keys": []
   }
 }
