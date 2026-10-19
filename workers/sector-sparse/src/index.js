@@ -241,6 +241,81 @@ const COLLECTORS = {
       },
     }),
   },
+  science: {
+    event_source: "arxiv_physics",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        arxiv_physics: await fetchSafe(async () => {
+          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:physics.*&sortBy=submittedDate&sortOrder=descending&max_results=1");
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          const idM = text.match(/<entry>[\s\S]*?<id>([^<]+)<\/id>/);
+          const titleM = text.match(/<entry>[\s\S]*?<title>([^<]+)<\/title>/);
+          if (!idM || !titleM) throw new Error("no entry");
+          return { id: idM[1].trim(), title: titleM[1].trim().replace(/\s+/g, ' ').slice(0, 100) };
+        }),
+      },
+    }),
+  },
+
+  "art-design": {
+    event_source: "artic_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        artic_latest: await fetchSafe(async () => {
+          const r = await fetch("https://api.artic.edu/api/v1/artworks/search?q=*&limit=1&fields=id,title,artist_display");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.data?.length) throw new Error("no art");
+          const a = j.data[0];
+          return { id: String(a.id), title: (a.title || 'untitled').slice(0, 80) };
+        }),
+      },
+    }),
+  },
+
+  anime: {
+    event_source: "anilist_trending",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        anilist_trending: await fetchSafe(async () => {
+          const query = 'query { Page(perPage: 1) { media(type: ANIME, sort: TRENDING_DESC) { id title { romaji } } } }';
+          const r = await fetch("https://graphql.anilist.co", {
+            method: "POST",
+            headers: { "content-type": "application/json", "accept": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const media = j.data?.Page?.media?.[0];
+          if (!media) throw new Error("no media");
+          return { id: String(media.id), title: media.title?.romaji || 'unknown' };
+        }),
+      },
+    }),
+  },
+
+  biology: {
+    event_source: "pubmed_latest",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        pubmed_latest: await fetchSafe(async () => {
+          const search = await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=biology&retmax=1&sort=pub_date&retmode=json");
+          if (!search.ok) throw new Error("status " + search.status);
+          const sj = await search.json();
+          const id = sj.esearchresult?.idlist?.[0];
+          if (!id) throw new Error("no id");
+          return { id, title: "PubMed " + id };
+        }),
+      },
+    }),
+  },
+
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────
