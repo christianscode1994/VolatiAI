@@ -2,6 +2,7 @@
 """Epistemic digest: fetch envelopes, build graph, arbitrate, render."""
 
 import concurrent.futures
+from datetime import datetime
 import json
 import os
 import sys
@@ -211,6 +212,134 @@ def fetch_envelope(sector):
         return {"sector": sector, "error": str(e)[:80]}
 
 
+
+HISTORY_PATH = "data/digest_history.json"
+MAX_HISTORY_RUNS = 24  # 6 days at 4 runs/day
+
+
+def load_history():
+    try:
+        with open(HISTORY_PATH) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"runs": []}
+
+
+def save_history(history):
+    from pathlib import Path as _Path
+    _Path(HISTORY_PATH).parent.mkdir(parents=True, exist_ok=True)
+    history["runs"] = history["runs"][-MAX_HISTORY_RUNS:]
+    with open(HISTORY_PATH, "w") as f:
+        json.dump(history, f, indent=2)
+
+
+def append_run(history, arb, envelopes_by_sector):
+    timestamp = datetime.utcnow().isoformat() + "Z"
+    sectors = {}
+    for a in arb:
+        env = envelopes_by_sector.get(a["sector"], {})
+        delta = env.get("delta") or {}
+        sectors[a["sector"]] = {
+            "has_signal": a["has_signal"],
+            "confidence": a["confidence"],
+            "delta_current": delta.get("current"),
+            "metric": delta.get("metric"),
+            "pct_change": delta.get("pct_change"),
+        }
+    history["runs"].append({"timestamp": timestamp, "sectors": sectors})
+    return history
+
+
+def detect_trends(history):
+    trends = []
+    runs = history.get("runs", [])
+    if len(runs) < 2:
+        return trends
+
+    # 1. Persistent signal: has_signal true in all of last 3+ runs
+    recent = runs[-5:]
+    for sector in recent[-1]["sectors"]:
+        signals = [
+            r["sectors"].get(sector, {}).get("has_signal")
+            for r in recent
+            if sector in r["sectors"]
+        ]
+        if len(signals) >= 3 and all(signals):
+            trends.append({
+                "type": "persistent_signal",
+                "sector": sector,
+                "runs": len(signals),
+            })
+
+    # 2. Sustained direction: same metric moved same way 3+ consecutive runs
+    for sector in runs[-1]["sectors"]:
+        pcts = []
+        for r in reversed(runs):
+            if sector not in r["sectors"]:
+                break
+            pct = r["sectors"][sector].get("pct_change")
+            if pct is None or abs(pct) < 0.1:
+                break
+            pcts.append(pct)
+            if len(pcts) >= 5:
+                break
+        if len(pcts) >= 3:
+            if all(p > 0 for p in pcts):
+                trends.append({
+                    "type": "sustained_direction",
+                    "sector": sector,
+                    "direction": "up",
+                    "runs": len(pcts),
+                    "pct_values": [round(p, 2) for p in pcts],
+                })
+            elif all(p < 0 for p in pcts):
+                trends.append({
+                    "type": "sustained_direction",
+                    "sector": sector,
+                    "direction": "down",
+                    "runs": len(pcts),
+                    "pct_values": [round(p, 2) for p in pcts],
+                })
+
+    # 3. Silence ended: was quiet 3+ runs, now signaling
+    for sector in runs[-1]["sectors"]:
+        if not runs[-1]["sectors"][sector].get("has_signal"):
+            continue
+        quiet_count = 0
+        for r in reversed(runs[:-1]):
+            if sector not in r["sectors"]:
+                break
+            if not r["sectors"][sector].get("has_signal"):
+                quiet_count += 1
+            else:
+                break
+        if quiet_count >= 3:
+            trends.append({
+                "type": "silence_ended",
+                "sector": sector,
+                "quiet_runs": quiet_count,
+            })
+
+    return trends
+
+
+def render_trends(trends):
+    if not trends:
+        return []
+    lines = ["\U0001F4C8 <b>Trends</b>"]
+    for t in trends:
+        if t["type"] == "persistent_signal":
+            lines.append(f"\u2197 {t['sector']}: signaling {t['runs']} runs in a row")
+        elif t["type"] == "sustained_direction":
+            arrow = "\u2191" if t["direction"] == "up" else "\u2193"
+            vals = ", ".join(f"{v:+.1f}%" for v in t["pct_values"])
+            lines.append(f"{arrow} {t['sector']}: {t['direction']} {t['runs']} runs ({vals})")
+        elif t["type"] == "silence_ended":
+            lines.append(f"\U0001F514 {t['sector']}: silent {t['quiet_runs']} runs, now signaling")
+    lines.append("")
+    return lines
+
+
 def build_graph(envelopes):
     nodes, edges = [], []
     for env in envelopes:
@@ -256,7 +385,7 @@ def arbitrate(graph):
     return results
 
 
-def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=None):
+def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=None, trends=None):
     lines = ["\U0001F52C <b>VolatiAI Epistemic Digest</b>", ""]
 
     # Conflicts first — they are the most important signal
@@ -289,6 +418,10 @@ def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=Non
                 f"(expected {a['expected']})"
             )
         lines.append("")
+
+    # Trends next
+    if trends:
+        lines.extend(render_trends(trends))
 
     by_density = {"dense": [], "sparse": [], "slow": []}
     for a in arbitrations:
@@ -374,11 +507,21 @@ def main():
         print(f"\nCorrelation anomalies: {len(anomalies)}")
         for a in anomalies:
             print(f"  {a}")
+
+    # History + trends
+    history = load_history()
+    history = append_run(history, arb, envelopes_by_sector)
+    trends = detect_trends(history)
+    if trends:
+        print(f"\nTrends: {len(trends)}")
+        for t in trends:
+            print(f"  {t}")
+    save_history(history)
     print("\nArbitration:")
     for a in arb:
         print(f"  {a['sector']:15s} conf={a['confidence']:.3f} sup={a['support']:.1f} dis={a['disputes']:.1f}")
 
-    digest = render(arb, envelopes_by_sector, contradictions, anomalies)
+    digest = render(arb, envelopes_by_sector, contradictions, anomalies, trends)
     print("\n=== Digest ===")
     print(digest)
 
