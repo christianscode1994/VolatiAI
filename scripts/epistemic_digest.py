@@ -25,6 +25,80 @@ def load_active_sectors():
         return json.load(f)
 
 
+
+# Metric aliases: same underlying data, different sector conventions
+METRIC_ALIASES = {
+    "treasury_10y": "us_10y_yield",
+    "yield_10y": "us_10y_yield",
+    "wti_crude": "wti",
+}
+
+
+def find_contradictions(arbitrations, envelopes_by_sector):
+    """Find claims that contradict each other semantically."""
+    contradictions = []
+
+    # Build metric -> [(sector, current, pct_change, confidence)]
+    by_metric = {}
+    for a in arbitrations:
+        env = envelopes_by_sector.get(a["sector"], {})
+        delta = env.get("delta") or {}
+        metric = delta.get("metric")
+        if not metric or metric == "none":
+            continue
+        canonical = METRIC_ALIASES.get(metric, metric)
+        current = delta.get("current")
+        pct = delta.get("pct_change")
+        if current is None:
+            continue
+        by_metric.setdefault(canonical, []).append({
+            "sector": a["sector"],
+            "metric_raw": metric,
+            "current": current,
+            "pct_change": pct,
+            "confidence": a["confidence"],
+        })
+
+    # 1. Same-metric divergence (>10% difference between two reports)
+    for canonical, group in by_metric.items():
+        if len(group) < 2:
+            continue
+        for i in range(len(group)):
+            for j in range(i + 1, len(group)):
+                a, b = group[i], group[j]
+                avg = (abs(a["current"]) + abs(b["current"])) / 2
+                if avg == 0:
+                    continue
+                divergence = abs(a["current"] - b["current"]) / avg
+                if divergence > 0.10:
+                    contradictions.append({
+                        "type": "metric_divergence",
+                        "metric": canonical,
+                        "sectors": [a["sector"], b["sector"]],
+                        "values": [a["current"], b["current"]],
+                        "divergence_pct": round(divergence * 100, 1),
+                    })
+
+    # 2. Directional conflict (same metric, opposite significant moves)
+    for canonical, group in by_metric.items():
+        changes = [g for g in group if g["pct_change"] is not None]
+        if len(changes) < 2:
+            continue
+        for i in range(len(changes)):
+            for j in range(i + 1, len(changes)):
+                a, b = changes[i], changes[j]
+                if abs(a["pct_change"]) > 1 and abs(b["pct_change"]) > 1:
+                    if (a["pct_change"] > 0) != (b["pct_change"] > 0):
+                        contradictions.append({
+                            "type": "directional_conflict",
+                            "metric": canonical,
+                            "sectors": [a["sector"], b["sector"]],
+                            "changes": [round(a["pct_change"], 1), round(b["pct_change"], 1)],
+                        })
+
+    return contradictions
+
+
 def sector_url(sector):
     if sector in DENSE_SECTORS:
         return f"https://sector-dense.fourieranalys.workers.dev/{sector}/signal"
@@ -90,8 +164,28 @@ def arbitrate(graph):
     return results
 
 
-def render(arbitrations, envelopes_by_sector):
+def render(arbitrations, envelopes_by_sector, contradictions=None):
     lines = ["\U0001F52C <b>VolatiAI Epistemic Digest</b>", ""]
+
+    # Conflicts first — they are the most important signal
+    if contradictions:
+        lines.append("\u26A1 <b>Conflicts</b>")
+        for c in contradictions:
+            if c["type"] == "metric_divergence":
+                a, b = c["sectors"]
+                va, vb = c["values"]
+                lines.append(
+                    f"\u26A0 {c['metric']}: {a}={va} vs {b}={vb} "
+                    f"({c['divergence_pct']}% divergence)"
+                )
+            elif c["type"] == "directional_conflict":
+                a, b = c["sectors"]
+                ca, cb = c["changes"]
+                lines.append(
+                    f"\u26A0 {c['metric']}: {a}={ca:+.1f}% vs {b}={cb:+.1f}%"
+                )
+        lines.append("")
+
     by_density = {"dense": [], "sparse": [], "slow": []}
     for a in arbitrations:
         d = a["density"] if a["density"] in by_density else "dense"
@@ -164,11 +258,17 @@ def main():
 
     arb = arbitrate(graph)
     arb.sort(key=lambda x: -x["confidence"])
+
+    contradictions = find_contradictions(arb, envelopes_by_sector)
+    if contradictions:
+        print(f"\nContradictions: {len(contradictions)}")
+        for c in contradictions:
+            print(f"  {c}")
     print("\nArbitration:")
     for a in arb:
         print(f"  {a['sector']:15s} conf={a['confidence']:.3f} sup={a['support']:.1f} dis={a['disputes']:.1f}")
 
-    digest = render(arb, envelopes_by_sector)
+    digest = render(arb, envelopes_by_sector, contradictions)
     print("\n=== Digest ===")
     print(digest)
 
