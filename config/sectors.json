@@ -115,10 +115,10 @@
   "sports-fitness": {
     "type": "event",
     "density": "sparse",
-    "event_source": "bbc_sport",
+    "event_source": "espn_news",
     "ttl": 1800,
     "collectors": {
-      "bbc_sport": "const r = await fetch('https://feeds.bbci.co.uk/sport/rss.xml');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const itemMatch = text.match(/<item>[\\s\\S]*?<link>([^<]+)<\\/link>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!itemMatch) throw new Error('no item');\n        return { id: itemMatch[1].trim(), title: itemMatch[2].trim().replace(/<!\\[CDATA\\[|\\]\\]>/g, '').slice(0, 100) };"
+      "espn_news": "const r = await fetch('https://www.espn.com/espn/rss/news');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const itemMatches = text.match(/<item>[\\s\\S]*?<\\/item>/g);\n        if (!itemMatches || !itemMatches.length) throw new Error('no items');\n        const first = itemMatches[0];\n        const titleMatch = first.match(/<title>(?:<!\\[CDATA\\[)?([^<\\]]+)/);\n        const linkMatch = first.match(/<link>([^<]+)<\\/link>/) || first.match(/<guid[^>]*>([^<]+)<\\/guid>/);\n        if (!titleMatch) throw new Error('no title');\n        return {\n          id: (linkMatch ? linkMatch[1] : titleMatch[1]).trim().slice(0, 80),\n          title: titleMatch[1].trim().slice(0, 100)\n        };"
     }
   },
   "events": {
@@ -127,7 +127,7 @@
     "event_source": "hn_frontpage",
     "ttl": 1800,
     "collectors": {
-      "hn_frontpage": "const r = await fetch('https://hnrss.org/frontpage?count=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const itemMatch = text.match(/<item>[\\s\\S]*?<link>([^<]+)<\\/link>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!itemMatch) throw new Error('no item');\n        return { id: itemMatch[1].trim(), title: itemMatch[2].trim().replace(/<!\\[CDATA\\[|\\]\\]>/g, '').slice(0, 100) };"
+      "hn_frontpage": "const r = await fetch('https://hacker-news.firebaseio.com/v0/newstories.json');\n        const ids = await r.json();\n        if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');\n        const topId = ids[0];\n        const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + topId + '.json');\n        const story = await detail.json();\n        if (!story || !story.title) throw new Error('no story');\n        return { id: story.id, title: story.title.slice(0, 100) };"
     }
   }
 }

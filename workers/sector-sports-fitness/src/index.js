@@ -50,7 +50,7 @@ export default {
       });
     }
 
-    const eventSrc = result.sources["bbc_sport"];
+    const eventSrc = result.sources["espn_news"];
     const event = eventSrc && eventSrc.ok ? eventSrc.data : null;
 
     if (!event || !event.id) {
@@ -81,13 +81,20 @@ export default {
 async function collectAll(env) {
   return {
     sources: {
-      bbc_sport: await fetchSafe(async () => {
-        const r = await fetch('https://feeds.bbci.co.uk/sport/rss.xml');
+      espn_news: await fetchSafe(async () => {
+        const r = await fetch('https://www.espn.com/espn/rss/news');
         if (!r.ok) throw new Error('status ' + r.status);
         const text = await r.text();
-        const itemMatch = text.match(/<item>[\s\S]*?<link>([^<]+)<\/link>[\s\S]*?<title>([^<]+)<\/title>/);
-        if (!itemMatch) throw new Error('no item');
-        return { id: itemMatch[1].trim(), title: itemMatch[2].trim().replace(/<!\[CDATA\[|\]\]>/g, '').slice(0, 100) };
+        const itemMatches = text.match(/<item>[\s\S]*?<\/item>/g);
+        if (!itemMatches || !itemMatches.length) throw new Error('no items');
+        const first = itemMatches[0];
+        const titleMatch = first.match(/<title>(?:<!\[CDATA\[)?([^<\]]+)/);
+        const linkMatch = first.match(/<link>([^<]+)<\/link>/) || first.match(/<guid[^>]*>([^<]+)<\/guid>/);
+        if (!titleMatch) throw new Error('no title');
+        return {
+          id: (linkMatch ? linkMatch[1] : titleMatch[1]).trim().slice(0, 80),
+          title: titleMatch[1].trim().slice(0, 100)
+        };
       })
     },
   };
