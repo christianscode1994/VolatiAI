@@ -1,5 +1,9 @@
 name: Epistemic Digest
 
+concurrency:
+  group: epistemic-digest
+  cancel-in-progress: false
+
 on:
   schedule:
     - cron: "0 */6 * * *"
