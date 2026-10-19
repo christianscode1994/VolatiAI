@@ -41,5 +41,32 @@
     "collectors": {
       "ethereum_release": "const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };\n        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;\n        const r = await fetch('https://api.github.com/repos/ethereum/go-ethereum/releases?per_page=1', { headers });\n        if (!r.ok) throw new Error('github status ' + r.status);\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release array: ' + JSON.stringify(j).slice(0, 100));\n        return { id: j[0].id, title: j[0].name || j[0].tag_name, published_at: j[0].published_at };"
     }
+  },
+  "news": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "hackernews_top",
+    "ttl": 1800,
+    "collectors": {
+      "hackernews_top": "const r = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');\n        const ids = await r.json();\n        if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');\n        const topId = ids[0];\n        const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + topId + '.json');\n        const story = await detail.json();\n        if (!story || !story.title) throw new Error('no story');\n        return { id: story.id, title: story.title, by: story.by };"
+    }
+  },
+  "jobs": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "remoteok_latest",
+    "ttl": 3600,
+    "collectors": {
+      "remoteok_latest": "const r = await fetch('https://remoteok.com/api', {\n          headers: { 'user-agent': 'VolatiAI/1.0' }\n        });\n        if (!r.ok) throw new Error('status ' + r.status);\n        const jobs = await r.json();\n        if (!Array.isArray(jobs) || jobs.length < 2) throw new Error('no jobs');\n        const job = jobs[1];\n        if (!job || !job.id) throw new Error('no job id');\n        return { id: job.id, title: (job.position || 'job') + ' @ ' + (job.company || '?') };"
+    }
+  },
+  "open-source": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "vscode_release",
+    "ttl": 3600,
+    "collectors": {
+      "vscode_release": "const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };\n        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;\n        const r = await fetch('https://api.github.com/repos/microsoft/vscode/releases?per_page=1', { headers });\n        if (!r.ok) throw new Error('github status ' + r.status);\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release');\n        return { id: j[0].id, title: (j[0].name || j[0].tag_name) + ' (vscode)', published_at: j[0].published_at };"
+    }
   }
 }
