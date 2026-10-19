@@ -289,12 +289,24 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         jikan_top: await fetchSafe(async () => {
-          const r = await fetch("https://api.jikan.moe/v4/top/anime?limit=1");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          if (!j.data?.length) throw new Error("no anime");
-          const a = j.data[0];
-          return { id: String(a.mal_id), title: (a.title || 'unknown').slice(0, 80) };
+          // Jikan rate-limits, add simple retry
+          let lastErr = "no attempt";
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+              const r = await fetch("https://api.jikan.moe/v4/top/anime?limit=1");
+              if (r.status === 429) {
+                lastErr = "rate limited";
+                await new Promise(res => setTimeout(res, 1000));
+                continue;
+              }
+              if (!r.ok) throw new Error("status " + r.status);
+              const j = await r.json();
+              if (!j.data?.length) throw new Error("no anime");
+              const a = j.data[0];
+              return { id: String(a.mal_id), title: (a.title || 'unknown').slice(0, 80) };
+            } catch (e) { lastErr = String(e).slice(0, 80); }
+          }
+          throw new Error(lastErr);
         }),
       },
     }),
@@ -414,21 +426,22 @@ const COLLECTORS = {
   },
 
   travel: {
-    event_source: "restcountries_all",
+    event_source: "restcountries_by_region",
     ttl: 3600,
     collectAll: async (env) => ({
       sources: {
-        restcountries_all: await fetchSafe(async () => {
-          const r = await fetch("https://restcountries.com/v3.1/all?fields=name,capital,population");
+        restcountries_by_region: await fetchSafe(async () => {
+          const regions = ["europe", "asia", "africa", "americas", "oceania"];
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const region = regions[dayOfYear % regions.length];
+          const r = await fetch("https://restcountries.com/v3.1/region/" + region + "?fields=name,capital,population");
           if (!r.ok) throw new Error("status " + r.status);
           const arr = await r.json();
           if (!Array.isArray(arr) || !arr.length) throw new Error("no countries");
-          // Pick a deterministic country based on day of year to avoid spam
-          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
           const c = arr[dayOfYear % arr.length];
           return {
             id: c.name?.common || 'unknown',
-            title: `${c.name?.common} — ${c.capital?.[0] || '?'} (${(c.population||0).toLocaleString()})`,
+            title: (c.name?.common || 'unknown') + ' — ' + (c.capital?.[0] || '?') + ' (' + (c.population||0).toLocaleString() + ')',
           };
         }),
       },
