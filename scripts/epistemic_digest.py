@@ -26,7 +26,7 @@ def fetch_envelope(sector):
     url = WORKERS_BASE.format(sector) + "/signal"
     try:
         req = urllib.request.Request(url, headers={"user-agent": "VolatiAI/1.0"})
-        with urllib.request.urlopen(req, timeout=10, context=SSL_CTX) as r:
+        with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
             return json.loads(r.read())
     except Exception as e:
         return {"sector": sector, "error": str(e)[:80]}
