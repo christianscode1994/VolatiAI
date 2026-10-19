@@ -50,35 +50,36 @@ export default {
       });
     }
 
-    const yield10y = result.sources.treasury.ok ? result.sources.treasury.data : null;
+    const metric = result.sources["treasury_10y"] && result.sources["treasury_10y"].ok
+      ? result.sources["treasury_10y"].data
+      : null;
     let prevStr = null;
-    let absChangeBp = 0;
+    let absChange = 0;
     let pct = 0;
-    if (yield10y !== null) {
-      prevStr = await env.SECTOR_KV.get("treasury_10y");
+    if (metric !== null) {
+      prevStr = await env.SECTOR_KV.get("finance_treasury_10y");
       if (prevStr) {
         const prevNum = parseFloat(prevStr);
-        absChangeBp = (yield10y - prevNum) * 100;
-        pct = ((yield10y - prevNum) / prevNum) * 100;
+        absChange = metric - prevNum;
+        pct = prevNum === 0 ? 0 : (absChange / prevNum) * 100;
       }
-      await env.SECTOR_KV.put("treasury_10y", String(yield10y), { expirationTtl: 86400 });
+      await env.SECTOR_KV.put("finance_treasury_10y", String(metric), { expirationTtl: 3600 });
     }
 
-    const MIN_BP = 10;
-    const hasSignal = Math.abs(absChangeBp) >= MIN_BP;
-    const sev = Math.abs(absChangeBp) >= 20 ? "alert" : "notice";
+    const hasSignal = Math.abs(pct) >= 5.0 && Math.abs(absChange) >= 0.1;
+    const sev = Math.abs(pct) >= (5.0 * 3) ? "alert" : "notice";
 
     return envelope({
       has_signal: hasSignal,
       severity: sev,
       summary: hasSignal
-        ? "10Y yield " + yield10y.toFixed(3) + "% (" + (absChangeBp > 0 ? "+" : "") + absChangeBp.toFixed(1) + " bp)"
+        ? "treasury_10y " + metric + " (" + (pct > 0 ? "+" : "") + pct.toFixed(1) + "%)"
         : "quiet",
-      delta: yield10y !== null
-        ? { metric: "treasury_10y", current: yield10y, previous: prevStr ? parseFloat(prevStr) : null, pct_change: pct, window: "24h" }
+      delta: metric !== null
+        ? { metric: "treasury_10y", current: metric, previous: prevStr ? parseFloat(prevStr) : null, pct_change: pct, window: "24h" }
         : null,
       context: {
-        dxy: result.sources.dxy.ok ? result.sources.dxy.data : null,
+        dxy: result.sources["dxy"] && result.sources["dxy"].ok ? result.sources["dxy"].data : null
       },
       sources: {
         total, healthy,
@@ -91,24 +92,24 @@ export default {
 async function collectAll(env) {
   return {
     sources: {
-      treasury: await fetchSafe(async () => {
-        const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01");
-        if (!r.ok) throw new Error("status " + r.status);
+      treasury_10y: await fetchSafe(async () => {
+        const r = await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01');
+        if (!r.ok) throw new Error('status ' + r.status);
         const csv = await r.text();
-        const lines = csv.trim().split("\n").slice(1).filter(l => !l.endsWith(","));
-        if (lines.length === 0) throw new Error("no data");
-        const last = lines[lines.length - 1].split(",");
+        const lines = csv.trim().split('\n').slice(1).filter(l => !l.endsWith(','));
+        if (!lines.length) throw new Error('no data');
+        const last = lines[lines.length - 1].split(',');
         const val = parseFloat(last[1]);
-        if (isNaN(val)) throw new Error("invalid value");
+        if (isNaN(val)) throw new Error('invalid');
         return val;
       }),
       dxy: await fetchSafe(async () => {
-        const r = await fetch("https://api.frankfurter.app/latest?from=USD&to=EUR,JPY,GBP,CAD,SEK,CHF");
-        if (!r.ok) throw new Error("status " + r.status);
+        const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,JPY,GBP,CAD,SEK,CHF');
+        if (!r.ok) throw new Error('status ' + r.status);
         const j = await r.json();
-        if (!j.rates || !j.rates.EUR) throw new Error("no rates");
+        if (!j.rates || !j.rates.EUR) throw new Error('no rates');
         return Math.round((1 / j.rates.EUR) * 10000) / 10000;
-      }),
+      })
     },
   };
 }
