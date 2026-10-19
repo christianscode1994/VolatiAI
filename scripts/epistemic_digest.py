@@ -77,7 +77,7 @@ def arbitrate(graph):
     return results
 
 
-def render(arbitrations):
+def render(arbitrations, envelopes_by_sector):
     lines = ["\U0001F52C <b>VolatiAI Epistemic Digest</b>", ""]
     by_density = {"dense": [], "sparse": [], "slow": []}
     for a in arbitrations:
@@ -91,17 +91,35 @@ def render(arbitrations):
         items = by_density[d]
         if not items:
             continue
-        items.sort(key=lambda x: -x["confidence"])
+
+        active = [a for a in items if a["has_signal"]]
+        quiet = [a for a in items if not a["has_signal"]]
+
         lines.append(f"{icons[d]} <b>{labels[d]}</b>")
-        for a in items:
+
+        active.sort(key=lambda x: -x["confidence"])
+        for a in active:
+            env = envelopes_by_sector.get(a["sector"], {})
+            src_meta = env.get("sources", {})
+            total = src_meta.get("total", 0)
+            failed = src_meta.get("failed", [])
+            healthy = total - len(failed)
+
             pct = int(round(a["confidence"] * 100))
             mark = "\u2713" if a["confidence"] >= 0.99 else "\u26A0"
-            lines.append(f"{mark} {a['sector']} ({pct}%): {a['summary'] or 'quiet'}")
+            src_str = f"{healthy}/{total}"
+            if failed:
+                src_str += f" (missing: {', '.join(failed)})"
+
+            lines.append(f"{mark} <b>{a['sector']}</b> ({pct}%) \u00B7 {src_str}")
+            lines.append(f"   {a['summary']}")
+
+        if quiet:
+            quiet_names = ", ".join(a["sector"] for a in quiet)
+            lines.append(f"\U0001F4A4 {len(quiet)} quiet: {quiet_names}")
+
         lines.append("")
 
-    quiet = [a for a in arbitrations if not a["has_signal"]]
-    if quiet:
-        lines.append(f"\U0001F4A4 Quiet: {len(quiet)} sectors")
     return "\n".join(lines)
 
 
