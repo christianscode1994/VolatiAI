@@ -1,33 +1,17 @@
 name: Test
-
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 3
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install deps
-        run: pip install certifi
-
-      - name: Test contradictions
-        run: python3 scripts/test_contradictions.py
-
-      - name: Test correlations
-        run: python3 scripts/test_correlations.py
-
-      - name: Test trends
-        run: python3 scripts/test_trends.py
-
-      - name: Verify digest syntax
-        run: python3 -c "import ast; ast.parse(open('scripts/epistemic_digest.py').read()); print('syntax ok')"
+        with: { python-version: "3.11" }
+      - run: pip install certifi
+      - run: python3 scripts/test_contradictions.py
+      - run: python3 scripts/test_correlations.py
+      - run: python3 scripts/test_trends.py
+      - run: python3 -c "import ast; ast.parse(open('scripts/epistemic_digest.py').read())"
