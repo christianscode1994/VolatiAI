@@ -630,6 +630,76 @@ const COLLECTORS = {
     }),
   },
 
+  "web3-multichain": {
+    config: { metric: "total_blocks", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: ["stalled_chains"] },
+    collectAll: async (env) => ({
+      sources: {
+        total_blocks: await fetchSafe(async () => {
+          const chains = [
+            { name: "polygon", url: env.PUBLIC_POLYGON_RPC },
+            { name: "bsc", url: env.PUBLIC_BSC_RPC },
+            { name: "avax", url: env.PUBLIC_AVAX_RPC },
+          ];
+          const results = await Promise.all(chains.map(async (c) => {
+            if (!c.url) return { name: c.name, height: null };
+            try {
+              const r = await fetch(c.url, {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
+              });
+              const j = await r.json();
+              return { name: c.name, height: parseInt(j.result, 16) };
+            } catch { return { name: c.name, height: null }; }
+          }));
+          const valid = results.filter(r => r.height !== null);
+          if (!valid.length) throw new Error("no chains responded");
+          const total = valid.reduce((s, c) => s + c.height, 0);
+          const stalled = results.filter(r => r.height === null).map(r => r.name);
+          env.__stalled_chains = stalled.join(",");
+          return total;
+        }),
+        stalled_chains: await fetchSafe(async () => {
+          return (env.__stalled_chains || "").length;
+        }),
+      },
+    }),
+  },
+
+  "web3-eth-supply": {
+    config: { metric: "eth_supply", threshold_pct: 0.1, threshold_abs: 10000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        eth_supply: await fetchSafe(async () => {
+          const r = await fetch("https://api.etherscan.io/v2/api?chainid=1&module=stats&action=ethsupply&apikey=" + env.ETHERSCAN_API_KEY);
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (j.status !== "1") throw new Error(j.result || "etherscan");
+          return Math.round(parseFloat(j.result) / 1e18);
+        }),
+      },
+    }),
+  },
+
+  "web3-blockscout": {
+    config: { metric: "bs_total_blocks", threshold_pct: 0.0, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        bs_total_blocks: await fetchSafe(async () => {
+          // Blockscout stats endpoint
+          const r = await fetch("https://eth.blockscout.com/api/v2/stats", {
+            headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" },
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const total = j.total_blocks;
+          if (!total) throw new Error("no total_blocks");
+          return parseInt(total);
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
