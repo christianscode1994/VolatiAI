@@ -3,6 +3,7 @@
 
 import concurrent.futures
 from datetime import datetime
+from graph_store import snapshot, compare_to_previous
 import json
 import os
 import sys
@@ -517,6 +518,19 @@ def main():
         for t in trends:
             print(f"  {t}")
     save_history(history)
+
+    # Persistent graph snapshot
+    graph_diff = None
+    try:
+        graph_diff = compare_to_previous(graph)
+        snapshot(graph)
+        print(f"\nGraph snapshot: {len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges")
+        if graph_diff.get("changed"):
+            print(f"  Changed claims: {len(graph_diff['changed'])}")
+            for c in graph_diff["changed"][:5]:
+                print(f"    {c['sector']}: '{c['prev_summary']}' → '{c['curr_summary']}'")
+    except Exception as e:
+        print(f"Graph snapshot failed: {e}")
     print("\nArbitration:")
     for a in arb:
         print(f"  {a['sector']:15s} conf={a['confidence']:.3f} sup={a['support']:.1f} dis={a['disputes']:.1f}")
