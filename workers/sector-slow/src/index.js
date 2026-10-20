@@ -50,6 +50,24 @@ function buildSlowEnvelope(sector, config, result, history) {
   };
 }
 
+
+async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
+  let lastErr;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const r = await fetch(url, opts);
+      if (r.ok) return r;
+      lastErr = new Error("status " + r.status);
+    } catch (e) {
+      lastErr = e;
+    }
+    if (attempt < maxRetries - 1) {
+      await new Promise(res => setTimeout(res, 500 * (attempt + 1)));
+    }
+  }
+  throw lastErr;
+}
+
 const COLLECTORS = {
   environment: {
     config: { metric: "co2_ppm", threshold_pct: 0.3, window: "7d", window_days: 7, ttl: 86400 },
@@ -71,13 +89,18 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         yield_10y: await fetchSafe(async () => {
-          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01");
+          // FRED CSV — requires User-Agent header (else 520)
+          const r = await fetchWithRetry("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01", {
+            headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)" }
+          });
           if (!r.ok) throw new Error("status " + r.status);
           const csv = await r.text();
           const lines = csv.trim().split("\n").slice(1).filter(l => !l.endsWith(","));
           if (!lines.length) throw new Error("no data");
           const last = lines[lines.length - 1].split(",");
-          return parseFloat(last[1]);
+          const val = parseFloat(last[1]);
+          if (isNaN(val)) throw new Error("invalid value");
+          return val;
         }),
       },
     }),
