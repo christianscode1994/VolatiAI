@@ -346,7 +346,8 @@ def build_graph(envelopes):
     for env in envelopes:
         if not env or "sector" not in env or "error" in env:
             continue
-        cid = f"claim:{env['sector']}:{env.get('timestamp', '')}"
+        # Stable claim ID — no timestamp, so temporal diff works across runs
+        cid = f"claim:{env['sector']}"
         nodes.append({
             "id": cid, "type": "claim",
             "sector": env["sector"],
