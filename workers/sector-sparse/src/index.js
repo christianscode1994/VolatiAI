@@ -149,18 +149,23 @@ const COLLECTORS = {
   },
 
   events: {
-    event_source: "hn_new",
+    event_source: "hn_significant",
     ttl: 1800,
     collectAll: async (env) => ({
       sources: {
-        hn_new: await fetchSafe(async () => {
-          const r = await fetch('https://hacker-news.firebaseio.com/v0/newstories.json');
+        hn_significant: await fetchSafe(async () => {
+          const r = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json");
           const ids = await r.json();
-          if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');
-          const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + ids[0] + '.json');
-          const s = await detail.json();
-          if (!s || !s.title) throw new Error('no story');
-          return { id: s.id, title: s.title.slice(0, 100) };
+          if (!Array.isArray(ids) || !ids.length) throw new Error("no ids");
+          // Check top 5 stories, find first with score >= 200
+          for (let i = 0; i < Math.min(5, ids.length); i++) {
+            const detail = await fetch("https://hacker-news.firebaseio.com/v0/item/" + ids[i] + ".json");
+            const s = await detail.json();
+            if (s && s.score >= 200 && s.title) {
+              return { id: "hn_" + s.id, title: "[" + s.score + "] " + s.title.slice(0, 90) };
+            }
+          }
+          throw new Error("no significant stories (>200 points) in top 5");
         }),
       },
     }),
@@ -909,22 +914,21 @@ const COLLECTORS = {
   },
 
   "pypi-packages": {
-    event_source: "pypi_latest",
+    event_source: "pypi_trending",
     ttl: 3600,
     collectAll: async (env) => ({
       sources: {
-        pypi_latest: await fetchSafe(async () => {
-          // PyPI simple index — grab a recent package from RSS-like endpoint
-          const r = await fetch("https://pypi.org/rss/updates.xml");
+        pypi_trending: await fetchSafe(async () => {
+          // Use top-downloaded packages (stable) instead of latest (firehose)
+          // Library.io tracks PyPI downloads and provides a JSON API
+          const r = await fetch("https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.min.json");
           if (!r.ok) throw new Error("status " + r.status);
-          const text = await r.text();
-          const itemMatch = text.match(/<item>[\s\S]*?<title>([^<]+)<\/title>/);
-          const linkMatch = text.match(/<item>[\s\S]*?<link>([^<]+)<\/link>/);
-          if (!itemMatch) throw new Error("no items");
-          return {
-            id: (linkMatch ? linkMatch[1] : itemMatch[1]).trim().slice(0, 80),
-            title: itemMatch[1].trim().slice(0, 100),
-          };
+          const j = await r.json();
+          if (!j.rows || !j.rows.length) throw new Error("no rows");
+          // Top package (stable, changes rarely) — only triggers when ranking changes
+          const top = j.rows[0];
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "pypi_top_" + top.project + "_" + day, title: "Top PyPI: " + top.project + " (" + top.download_count.toLocaleString() + " downloads)" };
         }),
       },
     }),
@@ -1066,6 +1070,165 @@ const COLLECTORS = {
           const vuln = vulns[vulns.length - 1].cve;
           const desc = vuln.descriptions?.[0]?.value || "No description";
           return { id: vuln.id, title: vuln.id + ": " + desc.slice(0, 100) };
+        }),
+      },
+    }),
+  },
+  "defence-aircraft": {
+    event_source: "adsb_mil",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        adsb_mil: await fetchSafe(async () => {
+          const r = await fetch("https://api.adsb.lol/v2/mil");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const aircraft = j.ac || j.aircraft || [];
+          const count = aircraft.length;
+          const bucket = Math.floor(count / 50) * 50;
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "mil_" + bucket + "_" + day, title: count + " military aircraft tracked globally" };
+        }),
+      },
+    }),
+  },
+  water: {
+    event_source: "usgs_water",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        usgs_water: await fetchSafe(async () => {
+          const r = await fetch("https://waterservices.usgs.gov/nwis/iv/?format=json&sites=07010000&parameterCd=00060&period=P1D");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const ts = j.value?.timeSeries?.[0]?.values?.[0]?.value?.slice(-1)[0];
+          if (!ts) throw new Error("no data");
+          const flow = parseFloat(ts.value);
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "usgs_" + Math.round(flow) + "_" + day, title: "Mississippi flow: " + flow.toLocaleString() + " cfs" };
+        }),
+      },
+    }),
+  },
+  "global-events": {
+    event_source: "gdelt",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        gdelt: await fetchSafe(async () => {
+          const r = await fetch("https://api.gdeltproject.org/api/v2/doc/doc?query=climate&mode=artlist&maxrecords=1&format=json&sort=datedesc");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const art = j.articles?.[0];
+          if (!art) throw new Error("no articles");
+          return { id: art.url, title: (art.title || "Global event").slice(0, 100) };
+        }),
+      },
+    }),
+  },
+  "food-products": {
+    event_source: "openfoodfacts",
+    ttl: 86400,
+    collectAll: async (env) => ({
+      sources: {
+        openfoodfacts: await fetchSafe(async () => {
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const barcodes = ["3017620422003", "5449000000996", "7622210449283", "3179730010104"];
+          const code = barcodes[dayOfYear % barcodes.length];
+          const r = await fetch("https://world.openfoodfacts.org/api/v2/product/" + code + ".json");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const prod = j.product;
+          if (!prod) throw new Error("no product");
+          return { id: code + "_" + dayOfYear, title: (prod.product_name || "Product") + " (" + (prod.brands || "?") + ")" };
+        }),
+      },
+    }),
+  },
+  demographics: {
+    event_source: "worldbank_pop",
+    ttl: 86400,
+    collectAll: async (env) => ({
+      sources: {
+        worldbank_pop: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/SWE/indicator/SP.POP.TOTL?format=json&per_page=1&date=2024");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const val = j[1]?.[0]?.value;
+          if (val === null || val === undefined) throw new Error("no data");
+          return { id: "se_pop_" + Math.round(val) + "_2024", title: "Sweden population: " + val.toLocaleString() };
+        }),
+      },
+    }),
+  },
+  "energy-grid": {
+    event_source: "smard_grid_load",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        smard_grid_load: await fetchSafe(async () => {
+          const indexResp = await fetch("https://www.smard.de/app/chart_data/410/DE/index_hour.json");
+          if (!indexResp.ok) throw new Error("index status " + indexResp.status);
+          const index = await indexResp.json();
+          const timestamps = index.timestamps;
+          if (!timestamps || !timestamps.length) throw new Error("no timestamps");
+          const latest = timestamps[timestamps.length - 1];
+          const dataResp = await fetch("https://www.smard.de/app/chart_data/410/DE/410_DE_hour_" + latest + ".json");
+          if (!dataResp.ok) throw new Error("data status " + dataResp.status);
+          const data = await dataResp.json();
+          const series = data.series;
+          if (!series || !series.length) throw new Error("no series");
+
+          // Find last non-null value (SMARD often has trailing nulls for incomplete hours)
+          let load = null;
+          for (let i = series.length - 1; i >= 0; i--) {
+            if (series[i][1] !== null && series[i][1] !== undefined) {
+              load = series[i][1];
+              break;
+            }
+          }
+          if (load === null) throw new Error("no non-null load value in series");
+
+          const bucket = Math.floor(load / 500) * 500;
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "smard_" + bucket + "_" + day, title: "DE grid load: " + Math.round(load).toLocaleString() + " MW" };
+        }),
+      },
+    }),
+  },
+  "carbon-intensity": {
+    event_source: "uk_carbon",
+    ttl: 1800,
+    collectAll: async (env) => ({
+      sources: {
+        uk_carbon: await fetchSafe(async () => {
+          const r = await fetch("https://api.carbonintensity.org.uk/intensity");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const entry = j.data && j.data[0];
+          if (!entry) throw new Error("no data");
+          const actual = entry.intensity.actual;
+          const forecast = entry.intensity.forecast;
+          const index = entry.intensity.index;
+          const value = actual !== null ? actual : forecast;
+          const bucket = Math.floor(value / 20) * 20;
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "uk_carbon_" + bucket + "_" + day, title: "UK grid: " + value + " gCO2/kWh (" + index + ")" };
+        }),
+      },
+    }),
+  },
+  "nasa-apod": {
+    event_source: "nasa_apod",
+    ttl: 86400,
+    collectAll: async (env) => ({
+      sources: {
+        nasa_apod: await fetchSafe(async () => {
+          const r = await fetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!j.date || !j.title) throw new Error("no data");
+          return { id: "apod_" + j.date, title: "APOD: " + (j.title || "?").slice(0, 80) };
         }),
       },
     }),
