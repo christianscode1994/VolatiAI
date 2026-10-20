@@ -1,1500 +1,6 @@
 {
   "snapshots": [
     {
-      "timestamp": "2026-10-20T18:49:24.665445Z",
-      "node_count": 147,
-      "edge_count": 81,
-      "nodes": [
-        {
-          "id": "claim:air-quality",
-          "type": "claim",
-          "sector": "air-quality",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:air-quality:healthy:0",
-          "type": "source",
-          "sector": "air-quality"
-        },
-        {
-          "id": "source:air-quality:healthy:1",
-          "type": "source",
-          "sector": "air-quality"
-        },
-        {
-          "id": "claim:anime",
-          "type": "claim",
-          "sector": "anime",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:anime:healthy:0",
-          "type": "source",
-          "sector": "anime"
-        },
-        {
-          "id": "claim:art-design",
-          "type": "claim",
-          "sector": "art-design",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:art-design:healthy:0",
-          "type": "source",
-          "sector": "art-design"
-        },
-        {
-          "id": "claim:arxiv-ai",
-          "type": "claim",
-          "sector": "arxiv-ai",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:arxiv-ai:healthy:0",
-          "type": "source",
-          "sector": "arxiv-ai"
-        },
-        {
-          "id": "claim:arxiv-cs",
-          "type": "claim",
-          "sector": "arxiv-cs",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:arxiv-cs:healthy:0",
-          "type": "source",
-          "sector": "arxiv-cs"
-        },
-        {
-          "id": "claim:audius",
-          "type": "claim",
-          "sector": "audius",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:audius:healthy:0",
-          "type": "source",
-          "sector": "audius"
-        },
-        {
-          "id": "claim:biology",
-          "type": "claim",
-          "sector": "biology",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:biology:healthy:0",
-          "type": "source",
-          "sector": "biology"
-        },
-        {
-          "id": "claim:blockchain",
-          "type": "claim",
-          "sector": "blockchain",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:blockchain:healthy:0",
-          "type": "source",
-          "sector": "blockchain"
-        },
-        {
-          "id": "source:blockchain:healthy:1",
-          "type": "source",
-          "sector": "blockchain"
-        },
-        {
-          "id": "source:blockchain:healthy:2",
-          "type": "source",
-          "sector": "blockchain"
-        },
-        {
-          "id": "claim:books",
-          "type": "claim",
-          "sector": "books",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:books:healthy:0",
-          "type": "source",
-          "sector": "books"
-        },
-        {
-          "id": "claim:carbon-intensity",
-          "type": "claim",
-          "sector": "carbon-intensity",
-          "summary": "New: UK grid: 156 gCO2/kWh (moderate)",
-          "density": "sparse",
-          "severity": "notice",
-          "has_signal": true
-        },
-        {
-          "id": "source:carbon-intensity:healthy:0",
-          "type": "source",
-          "sector": "carbon-intensity"
-        },
-        {
-          "id": "claim:commodities",
-          "type": "claim",
-          "sector": "commodities",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:commodities:healthy:0",
-          "type": "source",
-          "sector": "commodities"
-        },
-        {
-          "id": "source:commodities:healthy:1",
-          "type": "source",
-          "sector": "commodities"
-        },
-        {
-          "id": "source:commodities:healthy:2",
-          "type": "source",
-          "sector": "commodities"
-        },
-        {
-          "id": "claim:crossref",
-          "type": "claim",
-          "sector": "crossref",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:crossref:healthy:0",
-          "type": "source",
-          "sector": "crossref"
-        },
-        {
-          "id": "claim:crypto-defi",
-          "type": "claim",
-          "sector": "crypto-defi",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:crypto-defi:healthy:0",
-          "type": "source",
-          "sector": "crypto-defi"
-        },
-        {
-          "id": "claim:currency-ex",
-          "type": "claim",
-          "sector": "currency-ex",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:currency-ex:healthy:0",
-          "type": "source",
-          "sector": "currency-ex"
-        },
-        {
-          "id": "source:currency-ex:healthy:1",
-          "type": "source",
-          "sector": "currency-ex"
-        },
-        {
-          "id": "source:currency-ex:healthy:2",
-          "type": "source",
-          "sector": "currency-ex"
-        },
-        {
-          "id": "claim:cve-feed",
-          "type": "claim",
-          "sector": "cve-feed",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:cve-feed:healthy:0",
-          "type": "source",
-          "sector": "cve-feed"
-        },
-        {
-          "id": "claim:demographics",
-          "type": "claim",
-          "sector": "demographics",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:demographics:healthy:0",
-          "type": "source",
-          "sector": "demographics"
-        },
-        {
-          "id": "claim:depin-market",
-          "type": "claim",
-          "sector": "depin-market",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:depin-market:healthy:0",
-          "type": "source",
-          "sector": "depin-market"
-        },
-        {
-          "id": "claim:depin-network",
-          "type": "claim",
-          "sector": "depin-network",
-          "summary": "New: Flux nodes: 6,998",
-          "density": "sparse",
-          "severity": "notice",
-          "has_signal": true
-        },
-        {
-          "id": "source:depin-network:healthy:0",
-          "type": "source",
-          "sector": "depin-network"
-        },
-        {
-          "id": "claim:develop",
-          "type": "claim",
-          "sector": "develop",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:develop:healthy:0",
-          "type": "source",
-          "sector": "develop"
-        },
-        {
-          "id": "claim:drug-recall",
-          "type": "claim",
-          "sector": "drug-recall",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:drug-recall:healthy:0",
-          "type": "source",
-          "sector": "drug-recall"
-        },
-        {
-          "id": "claim:earthquakes",
-          "type": "claim",
-          "sector": "earthquakes",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:earthquakes:healthy:0",
-          "type": "source",
-          "sector": "earthquakes"
-        },
-        {
-          "id": "claim:education",
-          "type": "claim",
-          "sector": "education",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:education:healthy:0",
-          "type": "source",
-          "sector": "education"
-        },
-        {
-          "id": "claim:energy",
-          "type": "claim",
-          "sector": "energy",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:energy:healthy:0",
-          "type": "source",
-          "sector": "energy"
-        },
-        {
-          "id": "source:energy:healthy:1",
-          "type": "source",
-          "sector": "energy"
-        },
-        {
-          "id": "source:energy:healthy:2",
-          "type": "source",
-          "sector": "energy"
-        },
-        {
-          "id": "claim:energy-grid",
-          "type": "claim",
-          "sector": "energy-grid",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:energy-grid:healthy:0",
-          "type": "source",
-          "sector": "energy-grid"
-        },
-        {
-          "id": "claim:environment",
-          "type": "claim",
-          "sector": "environment",
-          "summary": "quiet",
-          "density": "slow",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:environment:healthy:0",
-          "type": "source",
-          "sector": "environment"
-        },
-        {
-          "id": "claim:events",
-          "type": "claim",
-          "sector": "events",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:events:healthy:0",
-          "type": "source",
-          "sector": "events"
-        },
-        {
-          "id": "claim:fed-rate",
-          "type": "claim",
-          "sector": "fed-rate",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:fed-rate:healthy:0",
-          "type": "source",
-          "sector": "fed-rate"
-        },
-        {
-          "id": "claim:finance",
-          "type": "claim",
-          "sector": "finance",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:finance:healthy:0",
-          "type": "source",
-          "sector": "finance"
-        },
-        {
-          "id": "source:finance:healthy:1",
-          "type": "source",
-          "sector": "finance"
-        },
-        {
-          "id": "claim:food-drink",
-          "type": "claim",
-          "sector": "food-drink",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:food-drink:healthy:0",
-          "type": "source",
-          "sector": "food-drink"
-        },
-        {
-          "id": "claim:food-products",
-          "type": "claim",
-          "sector": "food-products",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:food-products:healthy:0",
-          "type": "source",
-          "sector": "food-products"
-        },
-        {
-          "id": "claim:free-games",
-          "type": "claim",
-          "sector": "free-games",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:free-games:healthy:0",
-          "type": "source",
-          "sector": "free-games"
-        },
-        {
-          "id": "claim:free-to-play",
-          "type": "claim",
-          "sector": "free-to-play",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:free-to-play:healthy:0",
-          "type": "source",
-          "sector": "free-to-play"
-        },
-        {
-          "id": "claim:gdp",
-          "type": "claim",
-          "sector": "gdp",
-          "summary": "quiet",
-          "density": "slow",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:gdp:healthy:0",
-          "type": "source",
-          "sector": "gdp"
-        },
-        {
-          "id": "claim:github-trending",
-          "type": "claim",
-          "sector": "github-trending",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:github-trending:healthy:0",
-          "type": "source",
-          "sector": "github-trending"
-        },
-        {
-          "id": "claim:health",
-          "type": "claim",
-          "sector": "health",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:health:healthy:0",
-          "type": "source",
-          "sector": "health"
-        },
-        {
-          "id": "claim:huggingface-models",
-          "type": "claim",
-          "sector": "huggingface-models",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:huggingface-models:healthy:0",
-          "type": "source",
-          "sector": "huggingface-models"
-        },
-        {
-          "id": "claim:jobs",
-          "type": "claim",
-          "sector": "jobs",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:jobs:healthy:0",
-          "type": "source",
-          "sector": "jobs"
-        },
-        {
-          "id": "claim:kryptovaluta",
-          "type": "claim",
-          "sector": "kryptovaluta",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:kryptovaluta:healthy:0",
-          "type": "source",
-          "sector": "kryptovaluta"
-        },
-        {
-          "id": "source:kryptovaluta:healthy:1",
-          "type": "source",
-          "sector": "kryptovaluta"
-        },
-        {
-          "id": "source:kryptovaluta:healthy:2",
-          "type": "source",
-          "sector": "kryptovaluta"
-        },
-        {
-          "id": "claim:metals",
-          "type": "claim",
-          "sector": "metals",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:metals:healthy:0",
-          "type": "source",
-          "sector": "metals"
-        },
-        {
-          "id": "source:metals:healthy:1",
-          "type": "source",
-          "sector": "metals"
-        },
-        {
-          "id": "claim:music",
-          "type": "claim",
-          "sector": "music",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:music:healthy:0",
-          "type": "source",
-          "sector": "music"
-        },
-        {
-          "id": "claim:news",
-          "type": "claim",
-          "sector": "news",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:news:healthy:0",
-          "type": "source",
-          "sector": "news"
-        },
-        {
-          "id": "claim:npm-packages",
-          "type": "claim",
-          "sector": "npm-packages",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:npm-packages:healthy:0",
-          "type": "source",
-          "sector": "npm-packages"
-        },
-        {
-          "id": "claim:open-source",
-          "type": "claim",
-          "sector": "open-source",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:open-source:healthy:0",
-          "type": "source",
-          "sector": "open-source"
-        },
-        {
-          "id": "claim:open-source-packages",
-          "type": "claim",
-          "sector": "open-source-packages",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:open-source-packages:healthy:0",
-          "type": "source",
-          "sector": "open-source-packages"
-        },
-        {
-          "id": "claim:osv-vulnerabilities",
-          "type": "claim",
-          "sector": "osv-vulnerabilities",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:osv-vulnerabilities:healthy:0",
-          "type": "source",
-          "sector": "osv-vulnerabilities"
-        },
-        {
-          "id": "claim:podcasts",
-          "type": "claim",
-          "sector": "podcasts",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:podcasts:healthy:0",
-          "type": "source",
-          "sector": "podcasts"
-        },
-        {
-          "id": "claim:pubmed",
-          "type": "claim",
-          "sector": "pubmed",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:pubmed:healthy:0",
-          "type": "source",
-          "sector": "pubmed"
-        },
-        {
-          "id": "claim:pypi-packages",
-          "type": "claim",
-          "sector": "pypi-packages",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:pypi-packages:healthy:0",
-          "type": "source",
-          "sector": "pypi-packages"
-        },
-        {
-          "id": "claim:science",
-          "type": "claim",
-          "sector": "science",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:science:healthy:0",
-          "type": "source",
-          "sector": "science"
-        },
-        {
-          "id": "claim:science-math",
-          "type": "claim",
-          "sector": "science-math",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:science-math:healthy:0",
-          "type": "source",
-          "sector": "science-math"
-        },
-        {
-          "id": "claim:sec-filings",
-          "type": "claim",
-          "sector": "sec-filings",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:sec-filings:healthy:0",
-          "type": "source",
-          "sector": "sec-filings"
-        },
-        {
-          "id": "claim:security",
-          "type": "claim",
-          "sector": "security",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:security:healthy:0",
-          "type": "source",
-          "sector": "security"
-        },
-        {
-          "id": "claim:shopping",
-          "type": "claim",
-          "sector": "shopping",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:shopping:healthy:0",
-          "type": "source",
-          "sector": "shopping"
-        },
-        {
-          "id": "claim:space",
-          "type": "claim",
-          "sector": "space",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:space:healthy:0",
-          "type": "source",
-          "sector": "space"
-        },
-        {
-          "id": "claim:spaceweather",
-          "type": "claim",
-          "sector": "spaceweather",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:spaceweather:healthy:0",
-          "type": "source",
-          "sector": "spaceweather"
-        },
-        {
-          "id": "claim:sports-fitness",
-          "type": "claim",
-          "sector": "sports-fitness",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:sports-fitness:healthy:0",
-          "type": "source",
-          "sector": "sports-fitness"
-        },
-        {
-          "id": "claim:stocks",
-          "type": "claim",
-          "sector": "stocks",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:stocks:healthy:0",
-          "type": "source",
-          "sector": "stocks"
-        },
-        {
-          "id": "source:stocks:healthy:1",
-          "type": "source",
-          "sector": "stocks"
-        },
-        {
-          "id": "claim:tracking",
-          "type": "claim",
-          "sector": "tracking",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:tracking:healthy:0",
-          "type": "source",
-          "sector": "tracking"
-        },
-        {
-          "id": "claim:travel",
-          "type": "claim",
-          "sector": "travel",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:travel:healthy:0",
-          "type": "source",
-          "sector": "travel"
-        },
-        {
-          "id": "claim:treasuries",
-          "type": "claim",
-          "sector": "treasuries",
-          "summary": "quiet",
-          "density": "slow",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:treasuries:healthy:0",
-          "type": "source",
-          "sector": "treasuries"
-        },
-        {
-          "id": "claim:tv",
-          "type": "claim",
-          "sector": "tv",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:tv:healthy:0",
-          "type": "source",
-          "sector": "tv"
-        },
-        {
-          "id": "claim:unemployment",
-          "type": "claim",
-          "sector": "unemployment",
-          "summary": "quiet",
-          "density": "slow",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:unemployment:healthy:0",
-          "type": "source",
-          "sector": "unemployment"
-        },
-        {
-          "id": "claim:vehicles",
-          "type": "claim",
-          "sector": "vehicles",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:vehicles:healthy:0",
-          "type": "source",
-          "sector": "vehicles"
-        },
-        {
-          "id": "claim:water",
-          "type": "claim",
-          "sector": "water",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:water:healthy:0",
-          "type": "source",
-          "sector": "water"
-        },
-        {
-          "id": "claim:weather",
-          "type": "claim",
-          "sector": "weather",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:weather:healthy:0",
-          "type": "source",
-          "sector": "weather"
-        },
-        {
-          "id": "source:weather:healthy:1",
-          "type": "source",
-          "sector": "weather"
-        },
-        {
-          "id": "claim:wikipedia",
-          "type": "claim",
-          "sector": "wikipedia",
-          "summary": "quiet",
-          "density": "sparse",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:wikipedia:healthy:0",
-          "type": "source",
-          "sector": "wikipedia"
-        }
-      ],
-      "edges": [
-        {
-          "from": "source:air-quality:healthy:0",
-          "to": "claim:air-quality",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:air-quality:healthy:1",
-          "to": "claim:air-quality",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:anime:healthy:0",
-          "to": "claim:anime",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:art-design:healthy:0",
-          "to": "claim:art-design",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:arxiv-ai:healthy:0",
-          "to": "claim:arxiv-ai",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:arxiv-cs:healthy:0",
-          "to": "claim:arxiv-cs",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:audius:healthy:0",
-          "to": "claim:audius",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:biology:healthy:0",
-          "to": "claim:biology",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:blockchain:healthy:0",
-          "to": "claim:blockchain",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:blockchain:healthy:1",
-          "to": "claim:blockchain",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:blockchain:healthy:2",
-          "to": "claim:blockchain",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:books:healthy:0",
-          "to": "claim:books",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:carbon-intensity:healthy:0",
-          "to": "claim:carbon-intensity",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:commodities:healthy:0",
-          "to": "claim:commodities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:commodities:healthy:1",
-          "to": "claim:commodities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:commodities:healthy:2",
-          "to": "claim:commodities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:crossref:healthy:0",
-          "to": "claim:crossref",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:crypto-defi:healthy:0",
-          "to": "claim:crypto-defi",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:currency-ex:healthy:0",
-          "to": "claim:currency-ex",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:currency-ex:healthy:1",
-          "to": "claim:currency-ex",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:currency-ex:healthy:2",
-          "to": "claim:currency-ex",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:cve-feed:healthy:0",
-          "to": "claim:cve-feed",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:demographics:healthy:0",
-          "to": "claim:demographics",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:depin-market:healthy:0",
-          "to": "claim:depin-market",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:depin-network:healthy:0",
-          "to": "claim:depin-network",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:develop:healthy:0",
-          "to": "claim:develop",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:drug-recall:healthy:0",
-          "to": "claim:drug-recall",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:earthquakes:healthy:0",
-          "to": "claim:earthquakes",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:education:healthy:0",
-          "to": "claim:education",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:energy:healthy:0",
-          "to": "claim:energy",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:energy:healthy:1",
-          "to": "claim:energy",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:energy:healthy:2",
-          "to": "claim:energy",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:energy-grid:healthy:0",
-          "to": "claim:energy-grid",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:environment:healthy:0",
-          "to": "claim:environment",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:events:healthy:0",
-          "to": "claim:events",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:fed-rate:healthy:0",
-          "to": "claim:fed-rate",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:finance:healthy:0",
-          "to": "claim:finance",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:finance:healthy:1",
-          "to": "claim:finance",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:food-drink:healthy:0",
-          "to": "claim:food-drink",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:food-products:healthy:0",
-          "to": "claim:food-products",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:free-games:healthy:0",
-          "to": "claim:free-games",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:free-to-play:healthy:0",
-          "to": "claim:free-to-play",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:gdp:healthy:0",
-          "to": "claim:gdp",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:github-trending:healthy:0",
-          "to": "claim:github-trending",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:health:healthy:0",
-          "to": "claim:health",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:huggingface-models:healthy:0",
-          "to": "claim:huggingface-models",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:jobs:healthy:0",
-          "to": "claim:jobs",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:kryptovaluta:healthy:0",
-          "to": "claim:kryptovaluta",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:kryptovaluta:healthy:1",
-          "to": "claim:kryptovaluta",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:kryptovaluta:healthy:2",
-          "to": "claim:kryptovaluta",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:metals:healthy:0",
-          "to": "claim:metals",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:metals:healthy:1",
-          "to": "claim:metals",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:music:healthy:0",
-          "to": "claim:music",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:news:healthy:0",
-          "to": "claim:news",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:npm-packages:healthy:0",
-          "to": "claim:npm-packages",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:open-source:healthy:0",
-          "to": "claim:open-source",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:open-source-packages:healthy:0",
-          "to": "claim:open-source-packages",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:osv-vulnerabilities:healthy:0",
-          "to": "claim:osv-vulnerabilities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:podcasts:healthy:0",
-          "to": "claim:podcasts",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:pubmed:healthy:0",
-          "to": "claim:pubmed",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:pypi-packages:healthy:0",
-          "to": "claim:pypi-packages",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:science:healthy:0",
-          "to": "claim:science",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:science-math:healthy:0",
-          "to": "claim:science-math",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:sec-filings:healthy:0",
-          "to": "claim:sec-filings",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:security:healthy:0",
-          "to": "claim:security",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:shopping:healthy:0",
-          "to": "claim:shopping",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:space:healthy:0",
-          "to": "claim:space",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:spaceweather:healthy:0",
-          "to": "claim:spaceweather",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:sports-fitness:healthy:0",
-          "to": "claim:sports-fitness",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:stocks:healthy:0",
-          "to": "claim:stocks",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:stocks:healthy:1",
-          "to": "claim:stocks",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:tracking:healthy:0",
-          "to": "claim:tracking",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:travel:healthy:0",
-          "to": "claim:travel",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:treasuries:healthy:0",
-          "to": "claim:treasuries",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:tv:healthy:0",
-          "to": "claim:tv",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:unemployment:healthy:0",
-          "to": "claim:unemployment",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:vehicles:healthy:0",
-          "to": "claim:vehicles",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:water:healthy:0",
-          "to": "claim:water",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:weather:healthy:0",
-          "to": "claim:weather",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:weather:healthy:1",
-          "to": "claim:weather",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:wikipedia:healthy:0",
-          "to": "claim:wikipedia",
-          "relation": "supports",
-          "weight": 1.0
-        }
-      ]
-    },
-    {
       "timestamp": "2026-10-20T18:58:59.901657Z",
       "node_count": 147,
       "edge_count": 81,
@@ -10533,6 +9039,1793 @@
           "type": "claim",
           "sector": "events",
           "summary": "New: [238] SimCity, but with Permits",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:events:healthy:0",
+          "type": "source",
+          "sector": "events"
+        },
+        {
+          "id": "claim:fed-rate",
+          "type": "claim",
+          "sector": "fed-rate",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:fed-rate:healthy:0",
+          "type": "source",
+          "sector": "fed-rate"
+        },
+        {
+          "id": "claim:finance",
+          "type": "claim",
+          "sector": "finance",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:finance:healthy:0",
+          "type": "source",
+          "sector": "finance"
+        },
+        {
+          "id": "source:finance:healthy:1",
+          "type": "source",
+          "sector": "finance"
+        },
+        {
+          "id": "claim:food-drink",
+          "type": "claim",
+          "sector": "food-drink",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:food-drink:healthy:0",
+          "type": "source",
+          "sector": "food-drink"
+        },
+        {
+          "id": "claim:food-products",
+          "type": "claim",
+          "sector": "food-products",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:food-products:healthy:0",
+          "type": "source",
+          "sector": "food-products"
+        },
+        {
+          "id": "claim:free-games",
+          "type": "claim",
+          "sector": "free-games",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:free-games:healthy:0",
+          "type": "source",
+          "sector": "free-games"
+        },
+        {
+          "id": "claim:free-to-play",
+          "type": "claim",
+          "sector": "free-to-play",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:free-to-play:healthy:0",
+          "type": "source",
+          "sector": "free-to-play"
+        },
+        {
+          "id": "claim:gdp",
+          "type": "claim",
+          "sector": "gdp",
+          "summary": "quiet",
+          "density": "slow",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:gdp:healthy:0",
+          "type": "source",
+          "sector": "gdp"
+        },
+        {
+          "id": "claim:github-trending",
+          "type": "claim",
+          "sector": "github-trending",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:github-trending:healthy:0",
+          "type": "source",
+          "sector": "github-trending"
+        },
+        {
+          "id": "claim:health",
+          "type": "claim",
+          "sector": "health",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:health:healthy:0",
+          "type": "source",
+          "sector": "health"
+        },
+        {
+          "id": "claim:huggingface-models",
+          "type": "claim",
+          "sector": "huggingface-models",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:huggingface-models:healthy:0",
+          "type": "source",
+          "sector": "huggingface-models"
+        },
+        {
+          "id": "claim:jobs",
+          "type": "claim",
+          "sector": "jobs",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:jobs:healthy:0",
+          "type": "source",
+          "sector": "jobs"
+        },
+        {
+          "id": "claim:maker",
+          "type": "claim",
+          "sector": "maker",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:maker:healthy:0",
+          "type": "source",
+          "sector": "maker"
+        },
+        {
+          "id": "claim:metals",
+          "type": "claim",
+          "sector": "metals",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:metals:healthy:0",
+          "type": "source",
+          "sector": "metals"
+        },
+        {
+          "id": "source:metals:healthy:1",
+          "type": "source",
+          "sector": "metals"
+        },
+        {
+          "id": "claim:mining",
+          "type": "claim",
+          "sector": "mining",
+          "summary": "New: BTC hashprice: $1.4058/TH/day",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:mining:healthy:0",
+          "type": "source",
+          "sector": "mining"
+        },
+        {
+          "id": "claim:music",
+          "type": "claim",
+          "sector": "music",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:music:healthy:0",
+          "type": "source",
+          "sector": "music"
+        },
+        {
+          "id": "claim:news",
+          "type": "claim",
+          "sector": "news",
+          "summary": "New: SimCity, but with Permits",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:news:healthy:0",
+          "type": "source",
+          "sector": "news"
+        },
+        {
+          "id": "claim:nft",
+          "type": "claim",
+          "sector": "nft",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:nft:healthy:0",
+          "type": "source",
+          "sector": "nft"
+        },
+        {
+          "id": "claim:npm-packages",
+          "type": "claim",
+          "sector": "npm-packages",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:npm-packages:healthy:0",
+          "type": "source",
+          "sector": "npm-packages"
+        },
+        {
+          "id": "claim:open-source",
+          "type": "claim",
+          "sector": "open-source",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:open-source:healthy:0",
+          "type": "source",
+          "sector": "open-source"
+        },
+        {
+          "id": "claim:open-source-packages",
+          "type": "claim",
+          "sector": "open-source-packages",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:open-source-packages:healthy:0",
+          "type": "source",
+          "sector": "open-source-packages"
+        },
+        {
+          "id": "claim:osv-vulnerabilities",
+          "type": "claim",
+          "sector": "osv-vulnerabilities",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:osv-vulnerabilities:healthy:0",
+          "type": "source",
+          "sector": "osv-vulnerabilities"
+        },
+        {
+          "id": "claim:podcasts",
+          "type": "claim",
+          "sector": "podcasts",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:podcasts:healthy:0",
+          "type": "source",
+          "sector": "podcasts"
+        },
+        {
+          "id": "claim:pqc-migration",
+          "type": "claim",
+          "sector": "pqc-migration",
+          "summary": "New: NSA PQC controls: 36",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:pqc-migration:healthy:0",
+          "type": "source",
+          "sector": "pqc-migration"
+        },
+        {
+          "id": "claim:pubmed",
+          "type": "claim",
+          "sector": "pubmed",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:pubmed:healthy:0",
+          "type": "source",
+          "sector": "pubmed"
+        },
+        {
+          "id": "claim:pypi-packages",
+          "type": "claim",
+          "sector": "pypi-packages",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:pypi-packages:healthy:0",
+          "type": "source",
+          "sector": "pypi-packages"
+        },
+        {
+          "id": "claim:science",
+          "type": "claim",
+          "sector": "science",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:science:healthy:0",
+          "type": "source",
+          "sector": "science"
+        },
+        {
+          "id": "claim:science-math",
+          "type": "claim",
+          "sector": "science-math",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:science-math:healthy:0",
+          "type": "source",
+          "sector": "science-math"
+        },
+        {
+          "id": "claim:sec-filings",
+          "type": "claim",
+          "sector": "sec-filings",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:sec-filings:healthy:0",
+          "type": "source",
+          "sector": "sec-filings"
+        },
+        {
+          "id": "claim:security",
+          "type": "claim",
+          "sector": "security",
+          "summary": "New: CVE-2026-106931 \u2014 EG Secure Solutions SiteGuard Server Edition OS Command Injection Vulnerability",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:security:healthy:0",
+          "type": "source",
+          "sector": "security"
+        },
+        {
+          "id": "claim:shopping",
+          "type": "claim",
+          "sector": "shopping",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:shopping:healthy:0",
+          "type": "source",
+          "sector": "shopping"
+        },
+        {
+          "id": "claim:space",
+          "type": "claim",
+          "sector": "space",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:space:healthy:0",
+          "type": "source",
+          "sector": "space"
+        },
+        {
+          "id": "claim:spaceweather",
+          "type": "claim",
+          "sector": "spaceweather",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:spaceweather:healthy:0",
+          "type": "source",
+          "sector": "spaceweather"
+        },
+        {
+          "id": "claim:sports-fitness",
+          "type": "claim",
+          "sector": "sports-fitness",
+          "summary": "New: Follow live: Big second quarter propels Celtics into the lead in season opener against Pistons",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:sports-fitness:healthy:0",
+          "type": "source",
+          "sector": "sports-fitness"
+        },
+        {
+          "id": "claim:stocks",
+          "type": "claim",
+          "sector": "stocks",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:stocks:healthy:0",
+          "type": "source",
+          "sector": "stocks"
+        },
+        {
+          "id": "source:stocks:healthy:1",
+          "type": "source",
+          "sector": "stocks"
+        },
+        {
+          "id": "claim:tracking",
+          "type": "claim",
+          "sector": "tracking",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:tracking:healthy:0",
+          "type": "source",
+          "sector": "tracking"
+        },
+        {
+          "id": "claim:travel",
+          "type": "claim",
+          "sector": "travel",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:travel:healthy:0",
+          "type": "source",
+          "sector": "travel"
+        },
+        {
+          "id": "claim:treasuries",
+          "type": "claim",
+          "sector": "treasuries",
+          "summary": "quiet",
+          "density": "slow",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:treasuries:healthy:0",
+          "type": "source",
+          "sector": "treasuries"
+        },
+        {
+          "id": "claim:tv",
+          "type": "claim",
+          "sector": "tv",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:tv:healthy:0",
+          "type": "source",
+          "sector": "tv"
+        },
+        {
+          "id": "claim:unemployment",
+          "type": "claim",
+          "sector": "unemployment",
+          "summary": "quiet",
+          "density": "slow",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:unemployment:healthy:0",
+          "type": "source",
+          "sector": "unemployment"
+        },
+        {
+          "id": "claim:vehicles",
+          "type": "claim",
+          "sector": "vehicles",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:vehicles:healthy:0",
+          "type": "source",
+          "sector": "vehicles"
+        },
+        {
+          "id": "claim:water",
+          "type": "claim",
+          "sector": "water",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:water:healthy:0",
+          "type": "source",
+          "sector": "water"
+        },
+        {
+          "id": "claim:weather",
+          "type": "claim",
+          "sector": "weather",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:weather:healthy:0",
+          "type": "source",
+          "sector": "weather"
+        },
+        {
+          "id": "source:weather:healthy:1",
+          "type": "source",
+          "sector": "weather"
+        },
+        {
+          "id": "claim:wikipedia",
+          "type": "claim",
+          "sector": "wikipedia",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:wikipedia:healthy:0",
+          "type": "source",
+          "sector": "wikipedia"
+        }
+      ],
+      "edges": [
+        {
+          "from": "source:aave:healthy:0",
+          "to": "claim:aave",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:air-quality:healthy:0",
+          "to": "claim:air-quality",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:air-quality:healthy:1",
+          "to": "claim:air-quality",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:anime:healthy:0",
+          "to": "claim:anime",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:art-design:healthy:0",
+          "to": "claim:art-design",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:arxiv-ai:healthy:0",
+          "to": "claim:arxiv-ai",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:arxiv-cs:healthy:0",
+          "to": "claim:arxiv-cs",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:audius:healthy:0",
+          "to": "claim:audius",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:biology:healthy:0",
+          "to": "claim:biology",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:blockchain:healthy:0",
+          "to": "claim:blockchain",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:blockchain:healthy:1",
+          "to": "claim:blockchain",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:blockchain:healthy:2",
+          "to": "claim:blockchain",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:books:healthy:0",
+          "to": "claim:books",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:carbon-intensity:healthy:0",
+          "to": "claim:carbon-intensity",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:commodities:healthy:0",
+          "to": "claim:commodities",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:commodities:healthy:1",
+          "to": "claim:commodities",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:commodities:healthy:2",
+          "to": "claim:commodities",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:crossref:healthy:0",
+          "to": "claim:crossref",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:crypto-defi:healthy:0",
+          "to": "claim:crypto-defi",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:crypto-market:healthy:0",
+          "to": "claim:crypto-market",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:crypto-market:healthy:1",
+          "to": "claim:crypto-market",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:crypto-market:healthy:2",
+          "to": "claim:crypto-market",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:crypto-oi:healthy:0",
+          "to": "claim:crypto-oi",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:cryptocurrency:healthy:0",
+          "to": "claim:cryptocurrency",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:cryptocurrency:healthy:1",
+          "to": "claim:cryptocurrency",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:cryptocurrency:healthy:2",
+          "to": "claim:cryptocurrency",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:currency-ex:healthy:0",
+          "to": "claim:currency-ex",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:currency-ex:healthy:1",
+          "to": "claim:currency-ex",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:currency-ex:healthy:2",
+          "to": "claim:currency-ex",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:cve-feed:healthy:0",
+          "to": "claim:cve-feed",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:defi-dex-volume:healthy:0",
+          "to": "claim:defi-dex-volume",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:defi-fees:healthy:0",
+          "to": "claim:defi-fees",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:defi-stablecoins:healthy:0",
+          "to": "claim:defi-stablecoins",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:defi-yields:healthy:0",
+          "to": "claim:defi-yields",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:defi-yields:healthy:1",
+          "to": "claim:defi-yields",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:demographics:healthy:0",
+          "to": "claim:demographics",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:depin-market:healthy:0",
+          "to": "claim:depin-market",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:depin-network:healthy:0",
+          "to": "claim:depin-network",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:dev-metaverse:healthy:0",
+          "to": "claim:dev-metaverse",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:dev-vr-ar:healthy:0",
+          "to": "claim:dev-vr-ar",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:develop:healthy:0",
+          "to": "claim:develop",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:drug-recall:healthy:0",
+          "to": "claim:drug-recall",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:earthquakes:healthy:0",
+          "to": "claim:earthquakes",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:education:healthy:0",
+          "to": "claim:education",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:energy:healthy:0",
+          "to": "claim:energy",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:energy:healthy:1",
+          "to": "claim:energy",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:energy:healthy:2",
+          "to": "claim:energy",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:energy-grid:healthy:0",
+          "to": "claim:energy-grid",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:environment:healthy:0",
+          "to": "claim:environment",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:events:healthy:0",
+          "to": "claim:events",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:fed-rate:healthy:0",
+          "to": "claim:fed-rate",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:finance:healthy:0",
+          "to": "claim:finance",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:finance:healthy:1",
+          "to": "claim:finance",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:food-drink:healthy:0",
+          "to": "claim:food-drink",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:food-products:healthy:0",
+          "to": "claim:food-products",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:free-games:healthy:0",
+          "to": "claim:free-games",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:free-to-play:healthy:0",
+          "to": "claim:free-to-play",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:gdp:healthy:0",
+          "to": "claim:gdp",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:github-trending:healthy:0",
+          "to": "claim:github-trending",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:health:healthy:0",
+          "to": "claim:health",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:huggingface-models:healthy:0",
+          "to": "claim:huggingface-models",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:jobs:healthy:0",
+          "to": "claim:jobs",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:maker:healthy:0",
+          "to": "claim:maker",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:metals:healthy:0",
+          "to": "claim:metals",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:metals:healthy:1",
+          "to": "claim:metals",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:mining:healthy:0",
+          "to": "claim:mining",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:music:healthy:0",
+          "to": "claim:music",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:news:healthy:0",
+          "to": "claim:news",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:nft:healthy:0",
+          "to": "claim:nft",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:npm-packages:healthy:0",
+          "to": "claim:npm-packages",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:open-source:healthy:0",
+          "to": "claim:open-source",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:open-source-packages:healthy:0",
+          "to": "claim:open-source-packages",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:osv-vulnerabilities:healthy:0",
+          "to": "claim:osv-vulnerabilities",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:podcasts:healthy:0",
+          "to": "claim:podcasts",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:pqc-migration:healthy:0",
+          "to": "claim:pqc-migration",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:pubmed:healthy:0",
+          "to": "claim:pubmed",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:pypi-packages:healthy:0",
+          "to": "claim:pypi-packages",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:science:healthy:0",
+          "to": "claim:science",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:science-math:healthy:0",
+          "to": "claim:science-math",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:sec-filings:healthy:0",
+          "to": "claim:sec-filings",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:security:healthy:0",
+          "to": "claim:security",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:shopping:healthy:0",
+          "to": "claim:shopping",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:space:healthy:0",
+          "to": "claim:space",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:spaceweather:healthy:0",
+          "to": "claim:spaceweather",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:sports-fitness:healthy:0",
+          "to": "claim:sports-fitness",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:stocks:healthy:0",
+          "to": "claim:stocks",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:stocks:healthy:1",
+          "to": "claim:stocks",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:tracking:healthy:0",
+          "to": "claim:tracking",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:travel:healthy:0",
+          "to": "claim:travel",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:treasuries:healthy:0",
+          "to": "claim:treasuries",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:tv:healthy:0",
+          "to": "claim:tv",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:unemployment:healthy:0",
+          "to": "claim:unemployment",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:vehicles:healthy:0",
+          "to": "claim:vehicles",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:water:healthy:0",
+          "to": "claim:water",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:weather:healthy:0",
+          "to": "claim:weather",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:weather:healthy:1",
+          "to": "claim:weather",
+          "relation": "supports",
+          "weight": 1.0
+        },
+        {
+          "from": "source:wikipedia:healthy:0",
+          "to": "claim:wikipedia",
+          "relation": "supports",
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-10-20T20:38:40.567941Z",
+      "node_count": 176,
+      "edge_count": 97,
+      "nodes": [
+        {
+          "id": "claim:aave",
+          "type": "claim",
+          "sector": "aave",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:aave:healthy:0",
+          "type": "source",
+          "sector": "aave"
+        },
+        {
+          "id": "claim:air-quality",
+          "type": "claim",
+          "sector": "air-quality",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:air-quality:healthy:0",
+          "type": "source",
+          "sector": "air-quality"
+        },
+        {
+          "id": "source:air-quality:healthy:1",
+          "type": "source",
+          "sector": "air-quality"
+        },
+        {
+          "id": "claim:anime",
+          "type": "claim",
+          "sector": "anime",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:anime:healthy:0",
+          "type": "source",
+          "sector": "anime"
+        },
+        {
+          "id": "claim:art-design",
+          "type": "claim",
+          "sector": "art-design",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:art-design:healthy:0",
+          "type": "source",
+          "sector": "art-design"
+        },
+        {
+          "id": "claim:arxiv-ai",
+          "type": "claim",
+          "sector": "arxiv-ai",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:arxiv-ai:healthy:0",
+          "type": "source",
+          "sector": "arxiv-ai"
+        },
+        {
+          "id": "claim:arxiv-cs",
+          "type": "claim",
+          "sector": "arxiv-cs",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:arxiv-cs:healthy:0",
+          "type": "source",
+          "sector": "arxiv-cs"
+        },
+        {
+          "id": "claim:audius",
+          "type": "claim",
+          "sector": "audius",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:audius:healthy:0",
+          "type": "source",
+          "sector": "audius"
+        },
+        {
+          "id": "claim:biology",
+          "type": "claim",
+          "sector": "biology",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:biology:healthy:0",
+          "type": "source",
+          "sector": "biology"
+        },
+        {
+          "id": "claim:blockchain",
+          "type": "claim",
+          "sector": "blockchain",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:blockchain:healthy:0",
+          "type": "source",
+          "sector": "blockchain"
+        },
+        {
+          "id": "source:blockchain:healthy:1",
+          "type": "source",
+          "sector": "blockchain"
+        },
+        {
+          "id": "source:blockchain:healthy:2",
+          "type": "source",
+          "sector": "blockchain"
+        },
+        {
+          "id": "claim:books",
+          "type": "claim",
+          "sector": "books",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:books:healthy:0",
+          "type": "source",
+          "sector": "books"
+        },
+        {
+          "id": "claim:carbon-intensity",
+          "type": "claim",
+          "sector": "carbon-intensity",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:carbon-intensity:healthy:0",
+          "type": "source",
+          "sector": "carbon-intensity"
+        },
+        {
+          "id": "claim:commodities",
+          "type": "claim",
+          "sector": "commodities",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:commodities:healthy:0",
+          "type": "source",
+          "sector": "commodities"
+        },
+        {
+          "id": "source:commodities:healthy:1",
+          "type": "source",
+          "sector": "commodities"
+        },
+        {
+          "id": "source:commodities:healthy:2",
+          "type": "source",
+          "sector": "commodities"
+        },
+        {
+          "id": "claim:crossref",
+          "type": "claim",
+          "sector": "crossref",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:crossref:healthy:0",
+          "type": "source",
+          "sector": "crossref"
+        },
+        {
+          "id": "claim:crypto-defi",
+          "type": "claim",
+          "sector": "crypto-defi",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:crypto-defi:healthy:0",
+          "type": "source",
+          "sector": "crypto-defi"
+        },
+        {
+          "id": "claim:crypto-market",
+          "type": "claim",
+          "sector": "crypto-market",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:crypto-market:healthy:0",
+          "type": "source",
+          "sector": "crypto-market"
+        },
+        {
+          "id": "source:crypto-market:healthy:1",
+          "type": "source",
+          "sector": "crypto-market"
+        },
+        {
+          "id": "source:crypto-market:healthy:2",
+          "type": "source",
+          "sector": "crypto-market"
+        },
+        {
+          "id": "claim:crypto-oi",
+          "type": "claim",
+          "sector": "crypto-oi",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:crypto-oi:healthy:0",
+          "type": "source",
+          "sector": "crypto-oi"
+        },
+        {
+          "id": "claim:cryptocurrency",
+          "type": "claim",
+          "sector": "cryptocurrency",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:cryptocurrency:healthy:0",
+          "type": "source",
+          "sector": "cryptocurrency"
+        },
+        {
+          "id": "source:cryptocurrency:healthy:1",
+          "type": "source",
+          "sector": "cryptocurrency"
+        },
+        {
+          "id": "source:cryptocurrency:healthy:2",
+          "type": "source",
+          "sector": "cryptocurrency"
+        },
+        {
+          "id": "claim:currency-ex",
+          "type": "claim",
+          "sector": "currency-ex",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:currency-ex:healthy:0",
+          "type": "source",
+          "sector": "currency-ex"
+        },
+        {
+          "id": "source:currency-ex:healthy:1",
+          "type": "source",
+          "sector": "currency-ex"
+        },
+        {
+          "id": "source:currency-ex:healthy:2",
+          "type": "source",
+          "sector": "currency-ex"
+        },
+        {
+          "id": "claim:cve-feed",
+          "type": "claim",
+          "sector": "cve-feed",
+          "summary": "New: CVE-2026-100111: Photoshop Desktop is affected by an out-of-bounds write vulnerability that could result in arbitrary",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:cve-feed:healthy:0",
+          "type": "source",
+          "sector": "cve-feed"
+        },
+        {
+          "id": "claim:defi-dex-volume",
+          "type": "claim",
+          "sector": "defi-dex-volume",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:defi-dex-volume:healthy:0",
+          "type": "source",
+          "sector": "defi-dex-volume"
+        },
+        {
+          "id": "claim:defi-fees",
+          "type": "claim",
+          "sector": "defi-fees",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:defi-fees:healthy:0",
+          "type": "source",
+          "sector": "defi-fees"
+        },
+        {
+          "id": "claim:defi-stablecoins",
+          "type": "claim",
+          "sector": "defi-stablecoins",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:defi-stablecoins:healthy:0",
+          "type": "source",
+          "sector": "defi-stablecoins"
+        },
+        {
+          "id": "claim:defi-yields",
+          "type": "claim",
+          "sector": "defi-yields",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:defi-yields:healthy:0",
+          "type": "source",
+          "sector": "defi-yields"
+        },
+        {
+          "id": "source:defi-yields:healthy:1",
+          "type": "source",
+          "sector": "defi-yields"
+        },
+        {
+          "id": "claim:demographics",
+          "type": "claim",
+          "sector": "demographics",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:demographics:healthy:0",
+          "type": "source",
+          "sector": "demographics"
+        },
+        {
+          "id": "claim:depin-market",
+          "type": "claim",
+          "sector": "depin-market",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:depin-market:healthy:0",
+          "type": "source",
+          "sector": "depin-market"
+        },
+        {
+          "id": "claim:depin-network",
+          "type": "claim",
+          "sector": "depin-network",
+          "summary": "New: Flux nodes: 6,998",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:depin-network:healthy:0",
+          "type": "source",
+          "sector": "depin-network"
+        },
+        {
+          "id": "claim:dev-metaverse",
+          "type": "claim",
+          "sector": "dev-metaverse",
+          "summary": "New: Manifolder: latest commit 2026-10-16",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:dev-metaverse:healthy:0",
+          "type": "source",
+          "sector": "dev-metaverse"
+        },
+        {
+          "id": "claim:dev-vr-ar",
+          "type": "claim",
+          "sector": "dev-vr-ar",
+          "summary": "New: VRSpace: latest commit 2026-10-19",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:dev-vr-ar:healthy:0",
+          "type": "source",
+          "sector": "dev-vr-ar"
+        },
+        {
+          "id": "claim:develop",
+          "type": "claim",
+          "sector": "develop",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:develop:healthy:0",
+          "type": "source",
+          "sector": "develop"
+        },
+        {
+          "id": "claim:drug-recall",
+          "type": "claim",
+          "sector": "drug-recall",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:drug-recall:healthy:0",
+          "type": "source",
+          "sector": "drug-recall"
+        },
+        {
+          "id": "claim:earthquakes",
+          "type": "claim",
+          "sector": "earthquakes",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:earthquakes:healthy:0",
+          "type": "source",
+          "sector": "earthquakes"
+        },
+        {
+          "id": "claim:education",
+          "type": "claim",
+          "sector": "education",
+          "summary": "quiet",
+          "density": "sparse",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:education:healthy:0",
+          "type": "source",
+          "sector": "education"
+        },
+        {
+          "id": "claim:energy",
+          "type": "claim",
+          "sector": "energy",
+          "summary": "quiet",
+          "density": "dense",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:energy:healthy:0",
+          "type": "source",
+          "sector": "energy"
+        },
+        {
+          "id": "source:energy:healthy:1",
+          "type": "source",
+          "sector": "energy"
+        },
+        {
+          "id": "source:energy:healthy:2",
+          "type": "source",
+          "sector": "energy"
+        },
+        {
+          "id": "claim:energy-grid",
+          "type": "claim",
+          "sector": "energy-grid",
+          "summary": "New: DE grid load: 57,455 MW",
+          "density": "sparse",
+          "severity": "notice",
+          "has_signal": true
+        },
+        {
+          "id": "source:energy-grid:healthy:0",
+          "type": "source",
+          "sector": "energy-grid"
+        },
+        {
+          "id": "claim:environment",
+          "type": "claim",
+          "sector": "environment",
+          "summary": "quiet",
+          "density": "slow",
+          "severity": "info",
+          "has_signal": false
+        },
+        {
+          "id": "source:environment:healthy:0",
+          "type": "source",
+          "sector": "environment"
+        },
+        {
+          "id": "claim:events",
+          "type": "claim",
+          "sector": "events",
+          "summary": "New: [241] SimCity, but with Permits",
           "density": "sparse",
           "severity": "notice",
           "has_signal": true
