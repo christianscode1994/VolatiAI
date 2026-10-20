@@ -618,6 +618,34 @@ const COLLECTORS = {
     }),
   },
 
+  "defi-yields": {
+    config: { metric: "top_yield_tvl", threshold_pct: 10.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: ["top_yield_apy"] },
+    collectAll: async (env) => ({
+      sources: {
+        top_yield_tvl: await fetchSafe(async () => {
+          const r = await fetch("https://yields.llama.fi/pools");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const pools = j.data || [];
+          // Highest TVL among pools with APY > 10% and >$10M TVL
+          const filtered = pools.filter(p => p.apy > 10 && p.tvlUsd > 1e7);
+          if (!filtered.length) throw new Error("no qualifying pools");
+          filtered.sort((a, b) => b.tvlUsd - a.tvlUsd);
+          return Math.round(filtered[0].tvlUsd);
+        }),
+        top_yield_apy: await fetchSafe(async () => {
+          const r = await fetch("https://yields.llama.fi/pools");
+          const j = await r.json();
+          const pools = j.data || [];
+          const filtered = pools.filter(p => p.apy > 10 && p.tvlUsd > 1e7);
+          if (!filtered.length) return null;
+          filtered.sort((a, b) => b.tvlUsd - a.tvlUsd);
+          return Math.round(filtered[0].apy * 100) / 100;
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
