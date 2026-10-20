@@ -500,34 +500,24 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         total_market_cap: await fetchSafe(async () => {
-          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/global-metrics/quotes/latest?convert=USD");
+          const r = await fetch("https://api.coinlore.net/api/global/");
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
-          return Math.round(j.data.quote.USD.total_market_cap);
+          const g = j[0];
+          if (!g) throw new Error("no data");
+          return Math.round(parseFloat(g.total_mcap));
         }),
         btc_dominance: await fetchSafe(async () => {
-          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/global-metrics/quotes/latest?convert=USD");
+          const r = await fetch("https://api.coinlore.net/api/global/");
           const j = await r.json();
-          return Math.round(j.data.btc_dominance * 100) / 100;
+          const g = j[0];
+          return g && g.btc_d ? Math.round(parseFloat(g.btc_d) * 100) / 100 : null;
         }),
         eth_dominance: await fetchSafe(async () => {
-          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/global-metrics/quotes/latest?convert=USD");
+          const r = await fetch("https://api.coinlore.net/api/global/");
           const j = await r.json();
-          return Math.round(j.data.eth_dominance * 100) / 100;
-        }),
-      },
-    }),
-  },
-
-  "altcoin-season": {
-    config: { metric: "altcoin_index", threshold_pct: 10.0, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        altcoin_index: await fetchSafe(async () => {
-          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/altcoin-season-index/latest");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          return j.data.altcoin_index;
+          const g = j[0];
+          return g && g.eth_d ? Math.round(parseFloat(g.eth_d) * 100) / 100 : null;
         }),
       },
     }),
