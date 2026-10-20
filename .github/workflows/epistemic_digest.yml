@@ -30,6 +30,9 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 scripts/epistemic_digest.py
 
+      - name: Run self-correction advisor
+        run: python3 scripts/self_correct.py
+
       - name: Persist digest history
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
