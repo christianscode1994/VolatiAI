@@ -33,13 +33,19 @@ jobs:
       - name: Run self-correction advisor
         run: python3 scripts/self_correct.py
 
+      - name: Publish graph snapshot to docs
+        run: |
+          if [ -f data/graph_snapshot.json ]; then
+            cp data/graph_snapshot.json docs/graph_snapshot.json
+          fi
+
       - name: Persist digest history
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "VolatiAI Bot"
           git config user.email "bot@volatiai.local"
-          git add data/digest_history.json data/graph_snapshot.json 2>/dev/null || true
+          git add data/digest_history.json data/graph_snapshot.json docs/graph_snapshot.json 2>/dev/null || true
           if ! git diff --staged --quiet; then
             git commit -m "Update digest history and graph snapshot [skip ci]"
             git push
