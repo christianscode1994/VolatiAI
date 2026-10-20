@@ -636,9 +636,13 @@ const COLLECTORS = {
       sources: {
         total_blocks: await fetchSafe(async () => {
           const chains = [
-            { name: "polygon", url: env.PUBLIC_POLYGON_RPC },
-            { name: "bsc", url: env.PUBLIC_BSC_RPC },
-            { name: "avax", url: env.PUBLIC_AVAX_RPC },
+            { name: "polygon",   url: env.PUBLIC_POLYGON_RPC },
+            { name: "bsc",       url: env.PUBLIC_BSC_RPC },
+            { name: "avax",      url: env.PUBLIC_AVAX_RPC },
+            { name: "arbitrum",  url: "https://arbitrum-one-rpc.publicnode.com" },
+            { name: "zksync",    url: "https://mainnet.era.zksync.io" },
+            { name: "peaq",      url: "https://peaq-rpc.publicnode.com" },
+            { name: "bittensor", url: "https://lite.chain.opentensor.ai" },
           ];
           const results = await Promise.all(chains.map(async (c) => {
             if (!c.url) return { name: c.name, height: null };
@@ -649,19 +653,28 @@ const COLLECTORS = {
                 body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
               });
               const j = await r.json();
-              return { name: c.name, height: parseInt(j.result, 16) };
+              if (j.error || !j.result) return { name: c.name, height: null };
+              const h = parseInt(j.result, 16);
+              if (isNaN(h)) return { name: c.name, height: null };
+              return { name: c.name, height: h };
             } catch { return { name: c.name, height: null }; }
           }));
-          const valid = results.filter(r => r.height !== null);
+          const normalized = normalizeChains(results);
+          const valid = normalized.filter(r => r.height !== null);
+          const stalled = normalized.filter(r => r.height === null);
           if (!valid.length) throw new Error("no chains responded");
           const total = valid.reduce((s, c) => s + c.height, 0);
-          const stalled = results.filter(r => r.height === null).map(r => r.name);
-          env.__stalled_chains = stalled.join(",");
-          return total;
+          if (!Number.isFinite(total)) throw new Error("sum is not finite");
+          env.__stalled_chains = stalled.map(r => r.name).join(",");
+          env.__chains_snapshot = Object.fromEntries(
+            normalized.map(r => [r.name, { ok: r.height !== null, height: r.height, error: r.error }])
+          );
+          return Math.round(total);
         }),
         stalled_chains: await fetchSafe(async () => {
           return (env.__stalled_chains || "").length;
         }),
+        chains: await fetchSafe(async () => env.__chains_snapshot || {}),
       },
     }),
   },
@@ -709,6 +722,27 @@ function json(obj, status = 200) {
     status,
     headers: { "content-type": "application/json" },
   });
+}
+
+// ---- v1 helper: normalize a chain height from any RPC shape ----
+function parseHeight(v) {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number") return Number.isFinite(v) && v >= 0 ? v : null;
+  if (typeof v === "string") {
+    const t = v.trim();
+    if (t === "") return null;
+    const n = /^0x/i.test(t) ? parseInt(t, 16) : Number(t);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  }
+  return null;
+}
+
+function normalizeChains(results) {
+  return results.map((r) => ({
+    name:   r.name,
+    height: parseHeight(r.height),
+    error:  r.error ?? null,
+  }));
 }
 
 export default {
