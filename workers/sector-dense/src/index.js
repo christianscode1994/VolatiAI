@@ -575,6 +575,59 @@ const COLLECTORS = {
     }),
   },
 
+  "metaverse-land": {
+    config: { metric: "parcel_count", threshold_pct: 1.0, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        parcel_count: await fetchSafe(async () => {
+          // Decentraland Atlas API – keyless, no auth
+          const r = await fetch("https://api.decentraland.org/v2/parcels");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("no parcels");
+          return j.length;
+        }),
+      },
+    }),
+  },
+
+  aave: {
+    config: { metric: "aave_tvl", threshold_pct: 10.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        aave_tvl: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/protocol/aave");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          return Math.round(Object.values(j.currentChainTvls || {}).reduce((a, b) => a + (b || 0), 0));
+        }),
+      },
+    }),
+  },
+
+  maker: {
+    config: { metric: "sky_tvl", threshold_pct: 10.0, threshold_abs: 5e8, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        sky_tvl: await fetchSafe(async () => {
+          // MakerDAO is now "Sky Lending"
+          const r = await fetch("https://api.llama.fi/protocol/makerdao");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          // Avoid double-counting staking duplicates
+          const tvls = j.currentChainTvls || {};
+          let total = 0;
+          for (const [chain, val] of Object.entries(tvls)) {
+            if (!chain.includes("-borrowed") && !chain.includes("-staking")) {
+              total += val || 0;
+            }
+          }
+          return Math.round(total);
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────

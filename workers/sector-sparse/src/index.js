@@ -1234,6 +1234,113 @@ const COLLECTORS = {
     }),
   },
 
+  nft: {
+    event_source: "opensea_top_collection",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        opensea_top_collection: await fetchSafe(async () => {
+          // Rotate known blue-chip NFT collections by day-of-year
+          const slugs = [
+            "boredapeyachtclub", "cryptopunks", "azuki",
+            "pudgypenguins", "mutant-ape-yacht-club", "clonex",
+            "doodles-official", "moonbirds", "meebits", "otherdeed"
+          ];
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+          const slug = slugs[dayOfYear % slugs.length];
+
+          const r = await fetch("https://api.opensea.io/api/v2/collections/" + slug + "/stats", {
+            headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const total = j.total || {};
+          const floor = total.floor_price != null ? total.floor_price : "n/a";
+          const symbol = total.floor_price_symbol || "ETH";
+          // Bucket floor price to 1-unit granularity to avoid noise
+          const bucket = typeof floor === "number" ? Math.round(floor) : 0;
+          return { id: slug + "_" + bucket, title: slug + ": floor " + floor + " " + symbol };
+        }),
+      },
+    }),
+  },
+
+  "dev-vr-ar": {
+    event_source: "github_vr_ar",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        github_vr_ar: await fetchSafe(async () => {
+          const repos = [
+            { owner: "rokups", repo: "virtual-reality", name: "Virtual Reality" },
+            { owner: "jalmasi", repo: "vrspace", name: "VRSpace" },
+            { owner: "ir-engine", repo: "ir-engine", name: "iR Engine" },
+            { owner: "etherealengine", repo: "etherealengine", name: "Ethereal Engine" },
+          ];
+          const headers = { "user-agent": "VolatiAI/1.0" };
+          if (env.GITHUB_TOKEN) headers["authorization"] = "Bearer " + env.GITHUB_TOKEN;
+
+          const results = await Promise.all(repos.map(async (r) => {
+            try {
+              const resp = await fetch(`https://api.github.com/repos/${r.owner}/${r.repo}/commits?per_page=1`, { headers });
+              if (!resp.ok) return null;
+              const commits = await resp.json();
+              if (!Array.isArray(commits) || !commits[0]) return null;
+              return { name: r.name, sha: commits[0].sha, date: commits[0].commit.author.date };
+            } catch { return null; }
+          }));
+
+          const active = results.filter(Boolean);
+          if (!active.length) throw new Error("no commits");
+          active.sort((a, b) => new Date(b.date) - new Date(a.date));
+          const top = active[0];
+          return {
+            id: "vrar_" + top.name.replace(/\s/g, "_") + "_" + top.sha.slice(0, 8),
+            title: top.name + ": latest commit " + new Date(top.date).toISOString().slice(0, 10),
+          };
+        }),
+      },
+    }),
+  },
+
+  "dev-metaverse": {
+    event_source: "github_metaverse",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        github_metaverse: await fetchSafe(async () => {
+          const repos = [
+            { owner: "ir-engine", repo: "ir-engine", name: "iR Engine" },
+            { owner: "PatchedReality", repo: "Manifolder", name: "Manifolder" },
+            { owner: "WebOfWorlds", repo: "simpleWorlds", name: "simpleWorlds" },
+            { owner: "vircadia", repo: "vircadia-native-core", name: "Vircadia" },
+          ];
+          const headers = { "user-agent": "VolatiAI/1.0" };
+          if (env.GITHUB_TOKEN) headers["authorization"] = "Bearer " + env.GITHUB_TOKEN;
+
+          const results = await Promise.all(repos.map(async (r) => {
+            try {
+              const resp = await fetch(`https://api.github.com/repos/${r.owner}/${r.repo}/commits?per_page=1`, { headers });
+              if (!resp.ok) return null;
+              const commits = await resp.json();
+              if (!Array.isArray(commits) || !commits[0]) return null;
+              return { name: r.name, sha: commits[0].sha, date: commits[0].commit.author.date };
+            } catch { return null; }
+          }));
+
+          const active = results.filter(Boolean);
+          if (!active.length) throw new Error("no commits");
+          active.sort((a, b) => new Date(b.date) - new Date(a.date));
+          const top = active[0];
+          return {
+            id: "meta_" + top.name.replace(/\s/g, "_") + "_" + top.sha.slice(0, 8),
+            title: top.name + ": latest commit " + new Date(top.date).toISOString().slice(0, 10),
+          };
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────
