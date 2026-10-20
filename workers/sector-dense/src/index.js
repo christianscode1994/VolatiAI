@@ -636,29 +636,28 @@ const COLLECTORS = {
       sources: {
         total_blocks: await fetchSafe(async () => {
           const chains = [
-            { name: "polygon",   url: env.PUBLIC_POLYGON_RPC },
-            { name: "bsc",       url: env.PUBLIC_BSC_RPC },
-            { name: "avax",      url: env.PUBLIC_AVAX_RPC },
-            { name: "arbitrum",  url: "https://arbitrum-one-rpc.publicnode.com" },
-            { name: "zksync",    url: "https://mainnet.era.zksync.io" },
-            { name: "peaq",      url: "https://peaq-rpc.publicnode.com" },
-            { name: "bittensor", url: "https://lite.chain.opentensor.ai" },
+            // --- EVM (eth_blockNumber -> hex) ---
+            { name: "polygon",   url: env.PUBLIC_POLYGON_RPC, kind: "evm" },
+            { name: "bsc",       url: env.PUBLIC_BSC_RPC, kind: "evm" },
+            { name: "avax",      url: env.PUBLIC_AVAX_RPC, kind: "evm" },
+            { name: "arbitrum",  url: "https://arbitrum-one-rpc.publicnode.com", kind: "evm" },
+            { name: "zksync",    url: "https://mainnet.era.zksync.io", kind: "evm" },
+            { name: "peaq",      url: "https://peaq-rpc.publicnode.com", kind: "evm" },
+            { name: "bittensor", url: "https://lite.chain.opentensor.ai", kind: "evm" },
+            // --- Tier 1 EVM additions (PublicNode, keyless) ---
+            { name: "ethereum",  url: "https://ethereum-rpc.publicnode.com", kind: "evm" },
+            { name: "base",      url: "https://base-rpc.publicnode.com", kind: "evm" },
+            { name: "optimism",  url: "https://optimism-rpc.publicnode.com", kind: "evm" },
+            { name: "linea",     url: "https://linea-rpc.publicnode.com", kind: "evm" },
+            { name: "celo",      url: "https://celo-rpc.publicnode.com", kind: "evm" },
+            { name: "fantom",    url: "https://rpcapi.fantom.network", kind: "evm" },
+            // --- Tier 2 non-EVM ---
+            { name: "solana",    url: "https://solana-rpc.publicnode.com", kind: "solana" },
+            { name: "near",      url: "https://free.rpc.fastnear.com", kind: "near" },
+            { name: "cosmos",    url: "https://cosmos-rpc.publicnode.com", kind: "cosmos" },
+            { name: "starknet",  url: "https://starknet.api.onfinality.io/public", kind: "starknet" },
           ];
-          const results = await Promise.all(chains.map(async (c) => {
-            if (!c.url) return { name: c.name, height: null };
-            try {
-              const r = await fetch(c.url, {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
-              });
-              const j = await r.json();
-              if (j.error || !j.result) return { name: c.name, height: null };
-              const h = parseInt(j.result, 16);
-              if (isNaN(h)) return { name: c.name, height: null };
-              return { name: c.name, height: h };
-            } catch { return { name: c.name, height: null }; }
-          }));
+          const results = await Promise.all(chains.map(fetchChainHeight));
           const normalized = normalizeChains(results);
           const valid = normalized.filter(r => r.height !== null);
           const stalled = normalized.filter(r => r.height === null);
@@ -743,6 +742,55 @@ function normalizeChains(results) {
     height: parseHeight(r.height),
     error:  r.error ?? null,
   }));
+}
+
+
+// ---- v2 helper: fetch height for any chain kind ----
+async function fetchChainHeight(c) {
+  if (!c.url) return { name: c.name, height: null, error: "no url" };
+  const signal = AbortSignal.timeout(8000);
+  try {
+    let method, params;
+    switch (c.kind) {
+      case "solana":   method = "getSlot"; params = []; break;
+      case "near":     method = "block"; params = { finality: "final" }; break;
+      case "cosmos":   method = "status"; params = []; break;
+      case "starknet": method = "starknet_blockNumber"; params = []; break;
+      default:         method = "eth_blockNumber"; params = [];
+    }
+    const body = c.kind === "near"
+      ? { jsonrpc: "2.0", id: "dontcare", method, params }
+      : { jsonrpc: "2.0", id: 1, method, params };
+    const r = await fetch(c.url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    });
+    const j = await r.json();
+    let height = null;
+    switch (c.kind) {
+      case "solana":
+        height = typeof j.result === "number" ? j.result : null; break;
+      case "near":
+        height = j?.result?.header?.height ?? null; break;
+      case "cosmos": {
+        const h = j?.result?.sync_info?.latest_block_height;
+        height = h != null ? parseInt(h, 10) : null; break;
+      }
+      case "starknet":
+        height = typeof j.result === "number" ? j.result : null; break;
+      default:
+        if (j.error || !j.result) return { name: c.name, height: null, error: j.error?.message ?? "no result" };
+        height = parseInt(j.result, 16);
+    }
+    if (height === null || Number.isNaN(height)) {
+      return { name: c.name, height: null, error: "parse failed" };
+    }
+    return { name: c.name, height };
+  } catch (e) {
+    return { name: c.name, height: null, error: e.name ?? "fetch failed" };
+  }
 }
 
 export default {
