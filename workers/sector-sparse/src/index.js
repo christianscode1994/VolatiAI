@@ -1383,6 +1383,85 @@ const COLLECTORS = {
     }),
   },
 
+  "iacr-crypto": {
+    event_source: "iacr_eprint_rss",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        iacr_eprint_rss: await fetchSafe(async () => {
+          const r = await fetch("https://eprint.iacr.org/rss/rss.xml", {
+            headers: { "user-agent": "VolatiAI/1.0" },
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const text = await r.text();
+          // Debug: check what we got
+          if (text.length < 100) throw new Error("empty response, len=" + text.length);
+          // Try both RSS <item> and Atom <entry>
+          let items = text.match(/<item[\s>][\s\S]*?<\/item>/g);
+          if (!items || !items.length) {
+            items = text.match(/<entry[\s>][\s\S]*?<\/entry>/g);
+          }
+          if (!items || !items.length) throw new Error("no items, len=" + text.length + " preview=" + text.slice(0, 100));
+          const first = items[0];
+          const titleM = first.match(/<title[^>]*>(?:<!\[CDATA\[)?([^<\]]+)/);
+          const linkM = first.match(/<link[^>]*href="([^"]+)"/) || first.match(/<link>([^<]+)<\/link>/);
+          if (!titleM) throw new Error("no title");
+          return {
+            id: (linkM ? linkM[1] : titleM[1]).trim().slice(0, 80),
+            title: titleM[1].trim().slice(0, 100),
+          };
+        }),
+      },
+    }),
+  },
+
+  "mining": {
+    event_source: "dcentral_hashprice",
+    ttl: 3600,
+    collectAll: async (env) => ({
+      sources: {
+        dcentral_hashprice: await fetchSafe(async () => {
+          const r = await fetch("https://d-central.tech/wp-json/dc/v1/hashprice", {
+            headers: { "user-agent": "VolatiAI/1.0" },
+          });
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+
+          // Defensive: find first numeric price field anywhere in the object
+          function findNumber(obj, depth) {
+            if (depth > 3 || obj === null || obj === undefined) return null;
+            if (typeof obj === "number" && !isNaN(obj) && obj > 0 && obj < 100) return obj;
+            if (typeof obj === "string") {
+              const n = parseFloat(obj);
+              if (!isNaN(n) && n > 0 && n < 100) return n;
+            }
+            if (typeof obj === "object") {
+              const priorityKeys = ["usd", "hashprice", "usd_per_th_day", "hashprice_usd_per_th_day", "value"];
+              for (const key of priorityKeys) {
+                if (obj[key] !== undefined) {
+                  const found = findNumber(obj[key], depth + 1);
+                  if (found !== null) return found;
+                }
+              }
+              for (const key of Object.keys(obj)) {
+                const found = findNumber(obj[key], depth + 1);
+                if (found !== null) return found;
+              }
+            }
+            return null;
+          }
+
+          const price = findNumber(j, 0);
+          if (price === null) throw new Error("no numeric price found: " + JSON.stringify(j).slice(0, 200));
+
+          const bucket = Math.round(price * 100);
+          const day = new Date().toISOString().slice(0, 10);
+          return { id: "hashprice_" + bucket + "_" + day, title: "BTC hashprice: $" + price.toFixed(4) + "/TH/day" };
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────
