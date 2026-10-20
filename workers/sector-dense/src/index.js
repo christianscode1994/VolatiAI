@@ -463,6 +463,118 @@ const COLLECTORS = {
     }),
   },
 
+  "crypto-funding": {
+    config: { metric: "btc_funding_rate", threshold_pct: 100, threshold_abs: 0.0003, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        btc_funding_rate: await fetchSafe(async () => {
+          const r = await fetch("https://www.okx.com/api/v5/public/funding-rate?instId=BTC-USDT-SWAP");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const d = j.data && j.data[0];
+          if (!d) throw new Error("no data");
+          return parseFloat(d.fundingRate);
+        }),
+      },
+    }),
+  },
+
+  "crypto-oi": {
+    config: { metric: "btc_open_interest", threshold_pct: 10, threshold_abs: 5000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        btc_open_interest: await fetchSafe(async () => {
+          const r = await fetch("https://www.okx.com/api/v5/public/open-interest?instId=BTC-USDT-SWAP&ccy=BTC");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          const d = j.data && j.data[0];
+          if (!d) throw new Error("no data");
+          return Math.round(parseFloat(d.oi));
+        }),
+      },
+    }),
+  },
+
+  "crypto-market": {
+    config: { metric: "total_market_cap", threshold_pct: 2.0, threshold_abs: 5e10, window: "24h", ttl: 3600, context_keys: ["btc_dominance", "eth_dominance"] },
+    collectAll: async (env) => ({
+      sources: {
+        total_market_cap: await fetchSafe(async () => {
+          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/global-metrics/quotes/latest?convert=USD");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          return Math.round(j.data.quote.USD.total_market_cap);
+        }),
+        btc_dominance: await fetchSafe(async () => {
+          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/global-metrics/quotes/latest?convert=USD");
+          const j = await r.json();
+          return Math.round(j.data.btc_dominance * 100) / 100;
+        }),
+        eth_dominance: await fetchSafe(async () => {
+          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/global-metrics/quotes/latest?convert=USD");
+          const j = await r.json();
+          return Math.round(j.data.eth_dominance * 100) / 100;
+        }),
+      },
+    }),
+  },
+
+  "altcoin-season": {
+    config: { metric: "altcoin_index", threshold_pct: 10.0, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        altcoin_index: await fetchSafe(async () => {
+          const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/altcoin-season-index/latest");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          return j.data.altcoin_index;
+        }),
+      },
+    }),
+  },
+
+  "defi-dex-volume": {
+    config: { metric: "dex_volume_24h", threshold_pct: 15.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        dex_volume_24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          return Math.round(j.total24h);
+        }),
+      },
+    }),
+  },
+
+  "defi-stablecoins": {
+    config: { metric: "stablecoin_count", threshold_pct: 1.0, threshold_abs: 2, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        stablecoin_count: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=false");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          return j.peggedAssets ? j.peggedAssets.length : 0;
+        }),
+      },
+    }),
+  },
+
+  "defi-fees": {
+    config: { metric: "fees_24h", threshold_pct: 20.0, threshold_abs: 1e7, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async (env) => ({
+      sources: {
+        fees_24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/overview/fees?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true");
+          if (!r.ok) throw new Error("status " + r.status);
+          const j = await r.json();
+          return Math.round(j.total24h);
+        }),
+      },
+    }),
+  },
+
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
