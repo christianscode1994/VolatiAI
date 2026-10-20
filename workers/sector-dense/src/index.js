@@ -185,7 +185,9 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         treasury_10y: await fetchSafe(async () => {
-          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01");
+          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01", {
+            headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)" }
+          });
           if (!r.ok) throw new Error("status " + r.status);
           const csv = await r.text();
           const lines = csv.trim().split("\n").slice(1).filter(l => !l.endsWith(","));
