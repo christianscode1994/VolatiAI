@@ -34,20 +34,29 @@ def load_text(path):
 
 
 def extract_thresholds(worker_path, sector):
-    """Extract threshold_pct and threshold_abs from worker source."""
+    """Extract threshold_pct, threshold_abs, or event_source from worker source."""
     src = load_text(worker_path)
-    # Match sector block (handles quoted and unquoted keys)
-    pattern = rf'(?:"{re.escape(sector)}"|{re.escape(sector)})\s*:\s*\{{.*?config:\s*\{{([^}}]+)\}}'
-    m = re.search(pattern, src, re.DOTALL)
+    pattern = rf'(?:"{re.escape(sector)}"|\b{re.escape(sector)})\s*:\s*\{{'
+    m = re.search(pattern, src)
     if not m:
         return None
-    config_str = m.group(1)
-    pct = re.search(r'threshold_pct:\s*([\d.]+)', config_str)
-    abs_v = re.search(r'threshold_abs:\s*([\d.e]+)', config_str)
+    start = m.end()
+    depth = 1
+    i = start
+    while i < len(src) and depth > 0:
+        if src[i] == '{':
+            depth += 1
+        elif src[i] == '}':
+            depth -= 1
+        i += 1
+    block = src[start:i]
+    pct = re.search(r'threshold_pct:\s*([\d.]+)', block)
+    abs_v = re.search(r'threshold_abs:\s*([\d.e]+)', block)
+    event_src = re.search(r'event_source:\s*"([^"]+)"', block)
     return {
         "threshold_pct": float(pct.group(1)) if pct else None,
         "threshold_abs": float(abs_v.group(1)) if abs_v else None,
-        "config_str": config_str.strip(),
+        "event_source": event_src.group(1) if event_src else None,
     }
 
 
@@ -79,7 +88,7 @@ def recommend(stats):
     """Generate actionable recommendations."""
     recs = {
         "raise_thresholds": [],
-        "lower_thresholds": [],
+        
         "remove_sector": [],
         "investigate": [],
     }
@@ -120,12 +129,15 @@ def recommend(stats):
                     "reason": f"spam ({rate*100:.0f}%) but no config found in workers",
                 })
 
-        # Quiet: 0 signals in 10+ runs
+        # Quiet: 0 signals in 10+ runs — DON'T flag as "lower threshold"
+        # (dense thresholds are usually correct, sparse dedup is correct,
+        #  slow needs 7+ days of history)
         elif rate == 0 and s["runs"] >= 10:
-            recs["lower_thresholds"].append({
+            # Only note in a separate "monitor" bucket — no action suggested
+            recs.setdefault("monitor_quiet", []).append({
                 "sector": sector,
-                "reason": f"never signaled in {s['runs']} runs, avg_conf={s['avg_conf']:.2f}",
-                "action": "Consider lowering threshold, changing source, or removing",
+                "runs": s["runs"],
+                "avg_conf": round(s["avg_conf"], 2),
             })
 
     return recs
@@ -147,10 +159,12 @@ def print_report(stats, recs):
             print(f"   {r['sector']:20s} pct {r['current_pct']} → {r['suggested_pct']}  ({r['reason']})")
         print()
 
-    if recs["lower_thresholds"]:
-        print(f"💤 LOWER THRESHOLD ({len(recs['lower_thresholds'])}):")
-        for r in recs["lower_thresholds"]:
-            print(f"   {r['sector']:20s} {r['reason']}")
+    if recs.get("monitor_quiet"):
+        print(f"💤 MONITOR ({len(recs['monitor_quiet'])} quiet sectors — no action):")
+        for r in recs["monitor_quiet"][:5]:
+            print(f"   {r['sector']:20s} {r['runs']} runs, conf={r['avg_conf']}")
+        if len(recs["monitor_quiet"]) > 5:
+            print(f"   ... +{len(recs['monitor_quiet']) - 5} more (see JSON)")
         print()
 
     if recs["investigate"]:
