@@ -4,6 +4,7 @@
 import concurrent.futures
 from datetime import datetime
 from graph_store import snapshot, compare_to_previous
+from temporal_anomalies import find_temporal_anomalies
 import json
 import os
 import sys
@@ -526,6 +527,21 @@ def main():
         graph_diff = compare_to_previous(graph)
         snapshot(graph)
         print(f"\nGraph snapshot: {len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges")
+
+        # Temporal anomalies (uses the snapshot we just saved)
+        temporal = find_temporal_anomalies()
+        if temporal.get("status") == "ok" and temporal.get("total", 0) > 0:
+            print(f"  Temporal anomalies: {temporal['total']}")
+            for a in temporal.get("silent_changes", [])[:3]:
+                print(f"    silent change: {a['sector']} '{a['prev_summary']}' → '{a['curr_summary']}'")
+            for a in temporal.get("silent_drops", [])[:3]:
+                print(f"    silent drop: {a['sector']} (last: '{a['last_summary']}')")
+            for a in temporal.get("silent_appearances", [])[:3]:
+                print(f"    silent appearance: {a['sector']} '{a['summary']}'")
+        if graph_diff.get("status") == "no_previous_snapshot":
+            print("  (first snapshot — no diff)")
+        else:
+            print(f"  snapshot #{graph_diff.get('snapshot_age_runs', 0)}: new={graph_diff.get('new_claims', 0)} dropped={graph_diff.get('dropped_claims', 0)} persisted={graph_diff.get('persisted', 0)}")
         if graph_diff.get("changed"):
             print(f"  Changed claims: {len(graph_diff['changed'])}")
             for c in graph_diff["changed"][:5]:
