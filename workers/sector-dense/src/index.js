@@ -156,7 +156,7 @@ const COLLECTORS = {
     }),
   },
 
-  kryptovaluta: {
+  cryptocurrency: {
     config: { metric: "btc_dominance", threshold_pct: 2, threshold_abs: 1.0, window: "24h", ttl: 1800, context_keys: ["fng", "top10"] },
     collectAll: async (env) => ({
       sources: {
