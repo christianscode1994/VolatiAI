@@ -502,7 +502,7 @@ const COLLECTORS = {
   },
 
   "crypto-oi": {
-    config: { metric: "btc_open_interest", threshold_pct: 10, threshold_abs: 5000, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "btc_open_interest", threshold_pct: 0.3, threshold_abs: 5000, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async (env) => ({
       sources: {
         btc_open_interest: await fetchSafe(async () => {
@@ -1952,7 +1952,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "institutional-finance": {
-    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 100, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "filings_24h", threshold_pct: 1.0, threshold_abs: 100, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
       sources: {
         filings_24h: await fetchSafe(async () => {
@@ -2293,7 +2293,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "science-news": {
-    config: { metric: "papers_7d", threshold_pct: 2, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "papers_7d", threshold_pct: 0.25, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
       sources: {
         papers_7d: await fetchSafe(async () => {
@@ -2343,7 +2343,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "grid-mix": {
-    config: { metric: "renewable_pct", threshold_pct: 15, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "renewable_pct", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
       sources: {
         renewable_pct: await fetchSafe(async () => {
