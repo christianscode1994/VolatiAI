@@ -2467,6 +2467,82 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "bike-share": {
+    config: { metric: "networks", threshold_pct: 2, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        networks: await fetchSafe(async () => {
+          const r = await fetch("https://api.citybik.es/v2/networks",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.networks;
+          if (!Array.isArray(arr)) throw new Error("no_networks: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  "malware-families": {
+    config: { metric: "tracked_families", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tracked_families: await fetchSafe(async () => {
+          const r = await fetch("https://jordanricky1604-ship-it.github.io/malware-families-catalog/api/families.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  weather: {
+    config: { metric: "temperature_c", threshold_pct: 10, threshold_abs: 1, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        temperature_c: await fetchSafe(async () => {
+          const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.current?.temperature_2m;
+          if (typeof v !== "number") throw new Error("no_temp: current_keys=" + Object.keys(j?.current || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "fema-disasters": {
+    config: { metric: "total_declarations", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_declarations: await fetchSafe(async () => {
+          const r = await fetch("https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries?$top=1&$inlinecount=allpages",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.["@odata.count"] ?? j?.metadata?.count ?? j?.count ?? j?.totalCount;
+          if (typeof n !== "number") throw new Error("no_count: top_keys=" + Object.keys(j || {}).slice(0,8).join(",") + " meta_keys=" + Object.keys(j?.metadata || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
