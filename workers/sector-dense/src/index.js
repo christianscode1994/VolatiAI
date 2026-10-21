@@ -2027,6 +2027,78 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  stackoverflow: {
+    config: { metric: "questions_per_minute", threshold_pct: 20, threshold_abs: 1, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        questions_per_minute: await fetchSafe(async () => {
+          const r = await fetch("https://api.stackexchange.com/2.3/info?site=stackoverflow",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.items?.[0]?.questions_per_minute ?? j?.items?.[0]?.total_questions;
+          if (typeof v !== "number") throw new Error("no_qpm: keys=" + Object.keys(j?.items?.[0] || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  hackernews: {
+    config: { metric: "stories_24h", threshold_pct: 20, threshold_abs: 50, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        stories_24h: await fetchSafe(async () => {
+          const cutoff = Math.floor((Date.now() - 864e5) / 1000);
+          const r = await fetch("https://hn.algolia.com/api/v1/search?tags=story&numericFilters=created_at_i>" + cutoff + "&hitsPerPage=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.nbHits !== "number") throw new Error("no_nbhits: keys=" + Object.keys(j || {}).join(","));
+          return j.nbHits;
+        }),
+      },
+    }),
+  },
+  "pypi-activity": {
+    config: { metric: "weekly_downloads", threshold_pct: 10, threshold_abs: 10000000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        weekly_downloads: await fetchSafe(async () => {
+          const pkgs = ["requests", "numpy", "pandas", "flask", "django"];
+          const results = await Promise.all(pkgs.map(p =>
+            fetch("https://pypistats.org/api/packages/" + p + "/recent",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) })
+          ));
+          let total = 0;
+          for (const r of results) {
+            if (r.ok) { const j = await r.json(); const v = j?.data?.last_week; if (typeof v === "number") total += v; }
+          }
+          if (total === 0) throw new Error("all_packages_failed");
+          return total;
+        }),
+      },
+    }),
+  },
+  "crates-io": {
+    config: { metric: "total_crates", threshold_pct: 0.1, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_crates: await fetchSafe(async () => {
+          const r = await fetch("https://crates.io/api/v1/crates?page=1&per_page=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.meta || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
