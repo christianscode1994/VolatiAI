@@ -43,10 +43,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/briefing.json
-          if ! git diff --staged --quiet; then
-            git commit -m "chore: update docs/briefing.json"
-            git push
+          if git diff --staged --quiet; then
+            echo "no changes to briefing.json"
+            exit 0
           fi
+          git commit -m "chore: update docs/briefing.json"
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "pushed on attempt $i"
+              exit 0
+            fi
+            echo "push rejected (attempt $i), rebasing and retrying..."
+            git pull --rebase -X ours origin main
+            sleep 3
+          done
+          echo "push failed after 5 attempts"
+          exit 1
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
