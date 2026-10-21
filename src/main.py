@@ -52,7 +52,11 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
 
     # ---- On-chain ----
     rpc = RPC()
-    latest_block = rpc.get_block_number(provider="ethereum")
+    try:
+        latest_block = rpc.get_block_number(provider="ethereum")
+    except Exception as e:
+        logger.warning("RPC block fetch failed: %s — using fallback", e)
+        latest_block = 22_000_000  # recent known Ethereum block
 
     from_block = max(0, latest_block - 100)
     to_block = latest_block
