@@ -3698,6 +3698,78 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "emsc-earthquakes": {
+    config: { metric: "recent_events", threshold_pct: 15, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        recent_events: await fetchSafe(async () => {
+          const r = await fetch("https://www.seismicportal.eu/fdsnws/event/1/query?format=json&limit=50&orderby=time",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.features;
+          if (!Array.isArray(arr)) throw new Error("no_features: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "uk-flood-warnings": {
+    config: { metric: "active_warnings", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_warnings: await fetchSafe(async () => {
+          const r = await fetch("https://environment.data.gov.uk/flood-monitoring/id/floods",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.items;
+          if (!Array.isArray(arr)) throw new Error("no_items: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "volcano-alerts": {
+    config: { metric: "monitored_volcanoes", threshold_pct: 2, threshold_abs: 2, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        monitored_volcanoes: await fetchSafe(async () => {
+          const r = await fetch("https://volcanoes.usgs.gov/hans-public/api/volcano/getMonitoredVolcanoes",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j
+                    : Array.isArray(j?.volcanoes) ? j.volcanoes
+                    : Array.isArray(j?.data) ? j.data
+                    : null;
+          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "ct-certificates": {
+    config: { metric: "certs_24h", threshold_pct: 5, threshold_abs: 1000000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        certs_24h: await fetchSafe(async () => {
+          const r = await fetch("https://issued.live/api/stats",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.certificates_24h ?? j?.certs_24h ?? j?.ingest?.certificates_24h ?? j?.totals?.certificates_24h;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
