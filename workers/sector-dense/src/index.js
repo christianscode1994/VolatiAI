@@ -678,6 +678,88 @@ const COLLECTORS = {
     }),
   },
 
+  "protocols-tvl": {
+    config: { metric: "total_tvl_usd", threshold_pct: 1.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: ["chain_count"] },
+    collectAll: async (env) => {
+      const UA = { "user-agent": "VolatiAI/1.0", "accept": "application/json" };
+      const chainsRes = await fetchSafe("defillama.chains", async () => {
+        const r = await fetch("https://api.llama.fi/v2/chains", { headers: UA, signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw new Error("http_" + r.status);
+        const j = await r.json();
+        if (!Array.isArray(j)) throw new Error("not_array");
+        return j;
+      });
+      const chains = chainsRes.ok ? chainsRes.data : [];
+      const total = chains.reduce((s, c) => s + (c.tvl ?? 0), 0);
+      return {
+        sources: {
+          total_tvl_usd: { ok: chainsRes.ok, data: chainsRes.ok ? Math.round(total) : null, error: chainsRes.error },
+          chain_count:   { ok: chainsRes.ok, data: chainsRes.ok ? chains.length : null, error: chainsRes.error },
+        },
+      };
+    },
+  },
+
+  "scaling-l2": {
+    config: { metric: "total_tvl_usd", threshold_pct: 2.0, threshold_abs: 1e8, window: "24h", ttl: 3600, context_keys: ["count"] },
+    collectAll: async (env) => {
+      const UA = { "user-agent": "VolatiAI/1.0", "accept": "application/json" };
+      const L2_NAMES = ["Arbitrum","Base","OP Mainnet","Optimism","zkSync Era","ZKsync Era","Linea","Scroll","Mantle","Blast","Starknet","Manta Pacific","Metis","Mode","Taiko","Immutable zkEVM"];
+      const chainsRes = await fetchSafe("defillama.l2s", async () => {
+        const r = await fetch("https://api.llama.fi/v2/chains", { headers: UA, signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw new Error("http_" + r.status);
+        const j = await r.json();
+        if (!Array.isArray(j)) throw new Error("not_array");
+        return j.filter(c => L2_NAMES.includes(c.name));
+      });
+      const l2s = chainsRes.ok ? chainsRes.data : [];
+      const total = l2s.reduce((s, c) => s + (c.tvl ?? 0), 0);
+      return {
+        sources: {
+          total_tvl_usd: { ok: chainsRes.ok, data: chainsRes.ok ? Math.round(total) : null, error: chainsRes.error },
+          count:         { ok: chainsRes.ok, data: chainsRes.ok ? l2s.length : null, error: chainsRes.error },
+        },
+      };
+    },
+  },
+
+  "interop-messaging": {
+    config: { metric: "total_messages", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: ["layerzero", "wormhole", "axelar"] },
+    collectAll: async (env) => {
+      const UA = { "user-agent": "VolatiAI/1.0", "accept": "application/json" };
+      const [lz, wh, ax] = await Promise.all([
+        fetchSafe("layerzero", async () => {
+          const r = await fetch("https://scan.layerzero-api.com/v1/messages/latest", { headers: UA, signal: AbortSignal.timeout(10000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          return (Array.isArray(j) ? j : (j.data ?? [])).length;
+        }),
+        fetchSafe("wormhole", async () => {
+          const r = await fetch("https://api.wormholescan.io/api/v1/vaas?limit=100", { headers: UA, signal: AbortSignal.timeout(10000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          return (Array.isArray(j) ? j : (j.data ?? [])).length;
+        }),
+        fetchSafe("axelar", async () => {
+          const r = await fetch("https://api.axelarscan.io/gmp/searchGMP?size=50", { headers: UA, signal: AbortSignal.timeout(10000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          return (Array.isArray(j) ? j : (j.data ?? [])).length;
+        }),
+      ]);
+      const total = (lz.data ?? 0) + (wh.data ?? 0) + (ax.data ?? 0);
+      const anyOk = lz.ok || wh.ok || ax.ok;
+      return {
+        sources: {
+          total_messages: { ok: anyOk, data: anyOk ? total : null, error: anyOk ? null : "all_sources_failed" },
+          layerzero:      { ok: lz.ok, data: lz.data, error: lz.error },
+          wormhole:       { ok: wh.ok, data: wh.data, error: wh.error },
+          axelar:         { ok: ax.ok, data: ax.data, error: ax.error },
+        },
+      };
+    },
+  },
+
   "web3-eth-supply": {
     config: { metric: "eth_supply", threshold_pct: 0.1, threshold_abs: 10000, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async (env) => ({
