@@ -1988,6 +1988,45 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "open-source-gitlab": {
+    config: { metric: "public_projects", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        public_projects: await fetchSafe(async () => {
+          const r = await fetch("https://gitlab.com/api/v4/projects?per_page=1&order_by=star_count",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const total = r.headers.get("x-total");
+          if (total === null) throw new Error("no_x_total_header");
+          const n = parseInt(total, 10);
+          if (Number.isNaN(n)) throw new Error("bad_x_total: " + total);
+          return n;
+        }),
+      },
+    }),
+  },
+  simulations: {
+    config: { metric: "projected_temp_c", threshold_pct: 5, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        projected_temp_c: await fetchSafe(async () => {
+          const r = await fetch("https://climate-api.open-meteo.com/v1/climate?latitude=52.52&longitude=13.41&start_date=2050-01-01&end_date=2050-01-02&models=EC_Earth3P_HR&daily=temperature_2m_max",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.daily?.temperature_2m_max;
+          if (!Array.isArray(arr) || arr.length === 0) throw new Error("no_daily: keys=" + Object.keys(j?.daily || {}).join(","));
+          const v = arr[0];
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
