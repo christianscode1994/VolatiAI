@@ -469,7 +469,7 @@ def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=Non
     icons = {"dense": "\U0001F534", "sparse": "\U0001F7E1", "slow": "\u26AA"}
     labels = {"dense": "Dense signals", "sparse": "Events", "slow": "Slow trends"}
 
-    for d in ("dense", "sparse", "slow"):
+    for d in ("sparse", "dense", "slow"):
         items = by_density[d]
         if not items:
             continue
@@ -497,8 +497,9 @@ def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=Non
             lines.append(f"   {a['summary']}")
 
         if quiet:
-            quiet_names = ", ".join(a["sector"] for a in quiet)
-            lines.append(f"\U0001F4A4 {len(quiet)} quiet: {quiet_names}")
+            # Just the count, not the full list — 191 names truncates the
+            # message before readers reach the fired signals below
+            lines.append(f"\U0001F4A4 {len(quiet)} quiet")
 
         lines.append("")
 
