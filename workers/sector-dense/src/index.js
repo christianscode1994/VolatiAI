@@ -2997,6 +2997,190 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "13f-holdings": {
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        filings_24h: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+          const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=13F-HR&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
+          const r = await fetch(url, {
+            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "accept": "application/json" },
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.hits?.total?.value ?? j?.hits?.total;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "form-d-filings": {
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        filings_24h: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+          const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=D&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
+          const r = await fetch(url, {
+            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "accept": "application/json" },
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.hits?.total?.value ?? j?.hits?.total;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "hedge-fund-monitor": {
+    config: { metric: "total_nav_usd", threshold_pct: 2, threshold_abs: 1e10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_nav_usd: await fetchSafe(async () => {
+          const r = await fetch("https://data.financialresearch.gov/hf/v1/series/full/?mnemonic=FPF-ALLQHF_NAV_SUM",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const series = Array.isArray(j) ? j[0] : (j?.series ?? j?.data?.[0]);
+          const obs = series?.observations ?? series?.data ?? j?.observations;
+          if (!Array.isArray(obs) || !obs.length) throw new Error("no_obs: keys=" + Object.keys(series || j || {}).join(","));
+          const last = obs[obs.length - 1];
+          const v = typeof last?.value === "number" ? last.value
+                  : typeof last?.[1] === "number" ? last[1]
+                  : null;
+          if (v === null) throw new Error("no_value: obs_keys=" + Object.keys(last || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "yc-companies": {
+    config: { metric: "total_companies", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_companies: await fetchSafe(async () => {
+          const r = await fetch("https://yc-oss.github.io/api/meta.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.companies ?? j?.data ?? j;
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  gitdealflow: {
+    config: { metric: "tracked_startups", threshold_pct: 2, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tracked_startups: await fetchSafe(async () => {
+          const r = await fetch("https://signals.gitdealflow.com/api/signals.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.signals ?? j?.data ?? j?.companies ?? []);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "ai-models": {
+    config: { metric: "available_models", threshold_pct: 2, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        available_models: await fetchSafe(async () => {
+          const r = await fetch("https://text.pollinations.ai/models",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "bluesky-posts": {
+    config: { metric: "ai_posts_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        ai_posts_24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=AI&limit=100",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const posts = j?.posts;
+          if (!Array.isArray(posts)) throw new Error("no_posts: keys=" + Object.keys(j || {}).join(","));
+          return posts.length;
+        }),
+      },
+    }),
+  },
+  "vc-funding": {
+    config: { metric: "total_rounds", threshold_pct: 0.5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_rounds: await fetchSafe(async () => {
+          const r = await fetch("https://funding.tech.eu/api/v1/rounds?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total ?? j?.count ?? j?.meta?.total;
+          if (typeof n === "number") return n;
+          const arr = Array.isArray(j) ? j : j?.data ?? j?.rounds;
+          if (Array.isArray(arr)) return arr.length;
+          throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  "ma-exits": {
+    config: { metric: "total_exits", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_exits: await fetchSafe(async () => {
+          const r = await fetch("https://funding.tech.eu/api/v1/exits?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total ?? j?.count ?? j?.meta?.total;
+          if (typeof n === "number") return n;
+          const arr = Array.isArray(j) ? j : j?.data ?? j?.exits;
+          if (Array.isArray(arr)) return arr.length;
+          throw new Error("no_count: keys=" + Object.keys(j || {}).join(", "));
+        }),
+      },
+    }),
+  },
+  "ma-transactions": {
+    config: { metric: "total_transactions", threshold_pct: 1, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_transactions: await fetchSafe(async () => {
+          const r = await fetch("https://windsordrake.com/market-intelligence/api/transactions.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.transactions ?? j?.data ?? []);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
