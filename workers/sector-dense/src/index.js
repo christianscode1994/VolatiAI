@@ -1111,8 +1111,11 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (typeof j.totalCount !== "number") throw new Error("no_count");
-          return j.totalCount;
+          const raw = j.totalCount ?? j.pagination?.totalCount ?? j.total ?? null;
+          if (raw === null) throw new Error("no_count");
+          const n = typeof raw === "number" ? raw : parseInt(raw, 10);
+          if (Number.isNaN(n)) throw new Error("bad_count");
+          return n;
         }),
       },
     }),
@@ -1184,7 +1187,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         upcoming: await fetchSafe(async () => {
-          const r = await fetch("https://ll.thespacedevs.com/2.3.0/launch/upcoming/?limit=1",
+          const r = await fetch("https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -1354,22 +1357,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  etf: {
-    config: { metric: "etf_count", threshold_pct: 1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        etf_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.tickertrace.pro/v1/etfs?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.total ?? j?.count ?? (Array.isArray(j) ? j.length : null);
-          if (typeof n !== "number") throw new Error("no_count");
-          return n;
-        }),
-      },
-    }),
-  },
   maritime: {
     config: { metric: "vessels", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
@@ -1406,7 +1393,8 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         debt_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=1",
+          const d7 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
+          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?filter=record_date:gte:" + d7 + "&sort=-record_date&page[size]=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -1423,12 +1411,12 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         coin_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinpaprika.com/v1/coins",
+          const r = await fetch("https://api.coinlore.net/api/tickers/?start=0&limit=100",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array");
-          return j.length;
+          if (!Array.isArray(j?.data)) throw new Error("not_array");
+          return j.data.length;
         }),
       },
     }),
