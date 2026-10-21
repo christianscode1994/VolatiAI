@@ -1,10 +1,17 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-21T19:46:11Z",
+  "ts": "2026-10-21T20:21:48Z",
   "run_number": 24,
   "briefing": {
-    "headline": "9 signals across 248 sectors evaluated",
+    "headline": "10 signals across 247 sectors evaluated",
     "by_domain": {
+      "energy": {
+        "count": 2,
+        "sectors": [
+          "carbon-intensity",
+          "energy-grid"
+        ]
+      },
       "security": {
         "count": 1,
         "sectors": [
@@ -23,12 +30,6 @@
           "develop",
           "events",
           "news"
-        ]
-      },
-      "energy": {
-        "count": 1,
-        "sectors": [
-          "energy-grid"
         ]
       },
       "space": {
@@ -53,9 +54,18 @@
   },
   "signals": [
     {
+      "sector": "carbon-intensity",
+      "severity": "notice",
+      "summary": "New: UK grid: 76 gCO2/kWh (low)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 15
+    },
+    {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-0321: Denial of service vulnerabilities in Palo Alto Networks PAN-OS\u00ae software allow an unauthenticated at",
+      "summary": "New: CVE-2026-0311: A server-side request forgery vulnerability in Palo Alto Networks Checkov by Prisma\u00ae Cloud enables a",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -64,7 +74,7 @@
     {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,843",
+      "summary": "New: Flux nodes: 6,850",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -77,12 +87,12 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 8
+      "fires_24": 10
     },
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 63,156 MW",
+      "summary": "New: DE grid load: 63,155 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -91,7 +101,7 @@
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [385] Today's PHP security release, and how we're strengthening security",
+      "summary": "New: [437] Today's PHP security release, and how we're strengthening security",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -113,7 +123,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 6
+      "fires_24": 8
     },
     {
       "sector": "sports-fitness",
@@ -127,7 +137,7 @@
     {
       "sector": "water",
       "severity": "notice",
-      "summary": "New: Mississippi flow: 168,000 cfs",
+      "summary": "New: Mississippi flow: 169,000 cfs",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -135,14 +145,13 @@
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-21 19:29",
+    "previous_ts": "2026-10-21 20:19",
     "signals_before": 10,
-    "signals_after": 9,
+    "signals_after": 10,
     "new": [],
-    "dropped": [
-      "museums"
-    ],
+    "dropped": [],
     "persistent": [
+      "carbon-intensity",
       "cve-feed",
       "depin-network",
       "develop",
@@ -156,23 +165,13 @@
     "movements": [
       {
         "sector": "energy-grid",
-        "previous": "New: DE grid load: 66,687 MW",
-        "current": "New: DE grid load: 63,156 MW"
+        "previous": "New: DE grid load: 63,158 MW",
+        "current": "New: DE grid load: 63,155 MW"
       },
       {
         "sector": "events",
-        "previous": "New: [359] Today's PHP security release, and how we're strengthening security",
-        "current": "New: [385] Today's PHP security release, and how we're strengthening security"
-      },
-      {
-        "sector": "news",
-        "previous": "New: Claude Duet",
-        "current": "New: Mistral Large 4"
-      },
-      {
-        "sector": "water",
-        "previous": "New: Mississippi flow: 167,000 cfs",
-        "current": "New: Mississippi flow: 168,000 cfs"
+        "previous": "New: [435] Today's PHP security release, and how we're strengthening security",
+        "current": "New: [437] Today's PHP security release, and how we're strengthening security"
       }
     ]
   },
@@ -239,9 +238,9 @@
     }
   ],
   "stats": {
-    "total_sectors": 248,
-    "firing_sectors": 9,
-    "fire_rate_pct": 3.63,
+    "total_sectors": 247,
+    "firing_sectors": 10,
+    "fire_rate_pct": 4.05,
     "runs_in_history": 24
   }
 }
