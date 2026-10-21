@@ -3650,15 +3650,9 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const arr = j?.fuelMix ?? j?.data ?? (Array.isArray(j) ? j : null);
-          if (!Array.isArray(arr)) throw new Error("no_fuelmix: keys=" + Object.keys(j || {}).join(","));
-          let total = 0;
-          for (const f of arr) {
-            const v = f?.actual ?? f?.value ?? f?.mw;
-            if (typeof v === "number") total += v;
-          }
-          if (total === 0) throw new Error("all_zero: sample=" + JSON.stringify(arr[0] || {}).slice(0, 200));
-          return Math.round(total);
+          const total = j?.TotalMW;
+          if (typeof total === "number") return Math.round(total);
+          throw new Error("no_TotalMW: keys=" + Object.keys(j || {}).join(","));
         }),
       },
     }),
@@ -3804,22 +3798,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "kalshi-open": {
-    config: { metric: "open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        open_markets: await fetchSafe(async () => {
-          const r = await fetch("https://external-api.kalshi.com/trade-api/v2/markets?status=open&limit=1000",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.markets;
-          if (!Array.isArray(arr)) throw new Error("no_markets: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -3878,22 +3856,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "ioda-outages": {
-    config: { metric: "outage_events", threshold_pct: 15, threshold_abs: 2, window: "24h", ttl: 1800, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        outage_events: await fetchSafe(async () => {
-          const r = await fetch("https://api.ioda.inetintel.cc.gatech.edu/v2/outages/events?limit=100",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.data ?? j?.events ?? null);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
   "ocean-waves": {
     config: { metric: "wave_height_m", threshold_pct: 20, threshold_abs: 0.3, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
@@ -3936,10 +3898,11 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const series = j?.data?.[0]?.data ?? j?.series ?? j?.data;
-          if (!Array.isArray(series) || !series.length) throw new Error("no_series: keys=" + Object.keys(j || {}).join(","));
+          const plot = Array.isArray(j?.plots) ? j.plots[0] : null;
+          const series = plot?.data ?? plot?.values ?? j?.data;
+          if (!Array.isArray(series) || !series.length) throw new Error("no_series: plots_keys=" + Object.keys(plot || j || {}).join(","));
           const last = series[series.length - 1];
-          const v = Array.isArray(last) ? last[1] : (last?.value ?? last?.y);
+          const v = Array.isArray(last) ? last[1] : (last?.value ?? last?.y ?? last);
           if (typeof v !== "number") throw new Error("no_value: last=" + JSON.stringify(last).slice(0, 150));
           return v;
         }),
