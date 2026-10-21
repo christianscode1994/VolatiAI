@@ -2639,7 +2639,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         num_found: await fetchSafe(async () => {
-          const r = await fetch("https://openlibrary.org/search.json?q=language%3Aeng&limit=1",
+          const r = await fetch("https://openlibrary.org/search.json?q=history&limit=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -2794,21 +2794,6 @@ Object.assign(COLLECTORS, {
           const n = j?.page?.total_elements;
           if (typeof n !== "number") throw new Error("no_total_elements: keys=" + Object.keys(j?.page || {}).join(","));
           return n;
-        }),
-      },
-    }),
-  },
-  "rest-countries": {
-    config: { metric: "country_count", threshold_pct: 0.1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        country_count: await fetchSafe(async () => {
-          const r = await fetch("https://restcountries.com/v3.1/all",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return j.length;
         }),
       },
     }),
