@@ -226,7 +226,7 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
     # Unified JSON output for bots, external tools, and the dashboard
     try:
         from scripts.briefing import write_briefing
-        write_briefing(path=str(PUBLIC_DIR / "briefing.json"))
+        write_briefing(path="docs/briefing.json")
     except Exception as e:
         logger.warning("Briefing JSON failed: %s", e)
 
