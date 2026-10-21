@@ -882,12 +882,12 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         papers_7d: await fetchSafe(async () => {
-          const d = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
-          const r = await fetch(`https://api.openalex.org/works?search=chemistry&filter=from_publication_date:${d}&per-page=1&mailto=volatiai@example.com`, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:physics.chem-ph&start=0&max_results=1", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.meta?.count !== "number") throw new Error("no_count");
-          return j.meta.count;
+          const t = await r.text();
+          const m = t.match(/<opensearch:totalResults[^>]*>\s*(\d+)\s*<\/opensearch:totalResults>/);
+          if (!m) throw new Error("no_count");
+          return parseInt(m[1], 10);
         }),
       },
     }),
@@ -897,13 +897,14 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         pubmed_7d: await fetchSafe(async () => {
-          const url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=biotechnology%5BMeSH+Terms%5D+AND+last+7+days%5Bdp%5D&retmode=json&retmax=0";
-          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          const d7 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
+          const td = new Date().toISOString().slice(0,10);
+          const q = encodeURIComponent(`biotechnology AND (FIRST_PDATE:[${d7} TO ${td}])`);
+          const r = await fetch(`https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${q}&format=json&pageSize=1`, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = parseInt(j.esearchresult?.count ?? "0", 10);
-          if (Number.isNaN(n)) throw new Error("no_count");
-          return n;
+          if (typeof j.hitCount !== "number") throw new Error("no_count");
+          return j.hitCount;
         }),
       },
     }),
@@ -913,7 +914,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         datasets: await fetchSafe(async () => {
-          const r = await fetch("https://catalog.data.gov/api/3/action/package_search?rows=0", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          const r = await fetch("https://data.gov.uk/api/3/action/package_search?rows=0", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           if (typeof j.result?.count !== "number") throw new Error("no_count");
@@ -958,10 +959,10 @@ Object.assign(COLLECTORS, {
           const r = await fetch("https://external-api.faa.gov/asws/api/airport/delays", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (Array.isArray(j)) return j.length;
-          if (Array.isArray(j?.delays)) return j.delays.length;
-          if (Array.isArray(j?.airports)) return j.airports.length;
-          throw new Error("unknown_shape");
+          if (typeof j?.status?.count === "number") return j.status.count;
+          const sum = ["GroundDelays","GroundStops","ArriveDepartDelays","Closures"]
+            .reduce((n, k) => n + (typeof j?.[k]?.count === "number" ? j[k].count : 0), 0);
+          return sum;
         }),
       },
     }),
