@@ -3912,6 +3912,59 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "privacy-monero": {
+    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        difficulty: await fetchSafe(async () => {
+          const r = await fetch("https://api.blockchair.com/monero/stats",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.difficulty;
+          if (typeof n !== "number") throw new Error("no_difficulty: data_keys=" + Object.keys(j?.data || {}).slice(0,8).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "privacy-zcash": {
+    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e7, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        difficulty: await fetchSafe(async () => {
+          const r = await fetch("https://api.blockchair.com/zcash/stats",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.difficulty;
+          if (typeof n !== "number") throw new Error("no_difficulty: data_keys=" + Object.keys(j?.data || {}).slice(0,8).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "monero-network": {
+    config: { metric: "hashrate", threshold_pct: 5, threshold_abs: 1e8, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        hashrate: await fetchSafe(async () => {
+          const r = await fetch("https://moneroblocks.info/api/get_stats",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.hashrate;
+          if (typeof n !== "number") throw new Error("no_hashrate: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
