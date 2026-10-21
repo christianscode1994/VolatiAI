@@ -70,6 +70,15 @@ def build_live_signals_section(digest_history_path=None):
 
     firing = [(name, data) for name, data in sectors.items() if data.get("has_signal")]
 
+    # Compute fire rate per sector over the last 24 runs
+    window = runs[-24:]
+    fire_counts = {}
+    for run in window:
+        for name, data in run.get("sectors", {}).items():
+            if data.get("has_signal"):
+                fire_counts[name] = fire_counts.get(name, 0) + 1
+    total_runs = len(window)
+
     if not firing:
         return f"""
   <h2>Live Signals</h2>
@@ -89,22 +98,29 @@ def build_live_signals_section(digest_history_path=None):
             "notice":   "pill-neutral",
             "info":     "pill-neutral",
         }.get(sev, "pill-neutral")
-        metric = data.get("metric") or "\u2014"
-        pct = data.get("pct_change")
-        if pct is not None:
-            pct_str = f"{pct:+.2f}%"
-            pct_cls = "pos" if pct > 0 else "neg" if pct < 0 else ""
+
+        # Prefer summary text, fall back to metric + pct
+        summary = data.get("summary") or ""
+        if summary and summary != "quiet":
+            display = summary[:80] + ("…" if len(summary) > 80 else "")
         else:
-            pct_str = "\u2014"
-            pct_cls = ""
+            metric = data.get("metric") or "\u2014"
+            pct = data.get("pct_change")
+            if pct is not None:
+                display = f"{metric} {pct:+.2f}%"
+            else:
+                display = metric
+
+        fire_rate = f"{fire_counts.get(name, 0)}/{total_runs}"
         conf = data.get("confidence") or 0
         conf_pct = int(round(conf * 100))
+
         rows += f"""
     <tr>
       <td><span class="pill {sev_pill}">{sev}</span></td>
       <td>{name}</td>
-      <td>{metric}</td>
-      <td class="{pct_cls}">{pct_str}</td>
+      <td style="text-align:left; font-size:0.85rem;">{display}</td>
+      <td>{fire_rate}</td>
       <td>{conf_pct}%</td>
     </tr>"""
 
@@ -112,7 +128,7 @@ def build_live_signals_section(digest_history_path=None):
   <h2>Live Signals ({len(firing)} firing)</h2>
   <div class="updated">Last digest run: {ts}Z</div>
   <table>
-    <tr><th>Severity</th><th>Sector</th><th>Metric</th><th>Change</th><th>Conf</th></tr>
+    <tr><th>Sev</th><th>Sector</th><th>What</th><th>Fires</th><th>Conf</th></tr>
     {rows}
   </table>
 """

@@ -281,6 +281,7 @@ def append_run(history, arb, envelopes_by_sector):
             "delta_current": delta.get("current"),
             "metric": delta.get("metric"),
             "pct_change": delta.get("pct_change"),
+            "summary": env.get("summary"),
         }
     history["runs"].append({"timestamp": timestamp, "sectors": sectors})
     return history
