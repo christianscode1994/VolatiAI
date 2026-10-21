@@ -3549,73 +3549,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  movies: {
-    config: { metric: "movie_count", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        movie_count: await fetchSafe(async () => {
-          const r = await fetch("https://itunes.apple.com/search?term=movie&entity=movie&limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.resultCount;
-          if (typeof n !== "number") throw new Error("no_resultCount: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
-  "music-charts": {
-    config: { metric: "chart_tracks", threshold_pct: 5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        chart_tracks: await fetchSafe(async () => {
-          const r = await fetch("https://api.deezer.com/chart/0/tracks?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.total ?? (Array.isArray(j?.data) ? j.data.length : null);
-          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
-  "simkl-trending": {
-    config: { metric: "trending_titles", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        trending_titles: await fetchSafe(async () => {
-          const r = await fetch("https://api.simkl.org/trending?client_id=volatiai&app-name=volatiai&app-version=1.0",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j
-                    : Array.isArray(j?.data) ? j.data
-                    : Array.isArray(j?.movies) ? j.movies
-                    : null;
-          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
-  "itunes-podcasts": {
-    config: { metric: "podcast_count", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        podcast_count: await fetchSafe(async () => {
-          const r = await fetch("https://itunes.apple.com/search?term=podcast&entity=podcast&limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.resultCount;
-          if (typeof n !== "number") throw new Error("no_resultCount: keys=" + Object.keys(j || {}).join(", "));
-          return n;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -3625,7 +3558,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         arrivals: await fetchSafe(async () => {
-          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/ST.INT.ARVL?format=json&per_page=5&date=2020:2024",
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/ST.INT.ARVL?format=json&per_page=5&date=2015:2020",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -3659,7 +3592,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         heritage_sites: await fetchSafe(async () => {
-          const q = "SELECT (COUNT(?site) AS ?count) WHERE { ?site wdt:P1435 wd:Q9259 }";
+          const q = "SELECT (COUNT(?site) AS ?count) WHERE { ?site wdt:P1435 wd:Q9259 . ?site wdt:P625 ?coord }";
           const url = "https://query.wikidata.org/sparql?format=json&query=" + encodeURIComponent(q);
           const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/sparql-results+json" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
@@ -3680,9 +3613,9 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.meta?.total ?? j?.total;
+          const n = j?.pagination?.total ?? j?.meta?.total ?? j?.total;
           if (typeof n === "number") return n;
-          const arr = Array.isArray(j) ? j : (j?.events ?? j?.data ?? null);
+          const arr = j?.events ?? (Array.isArray(j) ? j : j?.data);
           if (!Array.isArray(arr)) throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
           return arr.length;
         }),
