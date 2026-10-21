@@ -1990,29 +1990,12 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "open-source-gitlab": {
-    config: { metric: "public_projects", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        public_projects: await fetchSafe(async () => {
-          const r = await fetch("https://gitlab.com/api/v4/projects?per_page=1&order_by=star_count",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const total = r.headers.get("x-total");
-          if (total === null) throw new Error("no_x_total_header");
-          const n = parseInt(total, 10);
-          if (Number.isNaN(n)) throw new Error("bad_x_total: " + total);
-          return n;
-        }),
-      },
-    }),
-  },
   simulations: {
     config: { metric: "projected_temp_c", threshold_pct: 5, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
       sources: {
         projected_temp_c: await fetchSafe(async () => {
-          const r = await fetch("https://climate-api.open-meteo.com/v1/climate?latitude=52.52&longitude=13.41&start_date=2050-01-01&end_date=2050-01-02&models=EC_Earth3P_HR&daily=temperature_2m_max",
+          const r = await fetch("https://climate-api.open-meteo.com/v1/climate?latitude=52.52&longitude=13.41&start_date=2049-01-01&end_date=2049-01-31&models=MRI_AGCM3_2_S&daily=temperature_2m_max",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -2029,22 +2012,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  stackoverflow: {
-    config: { metric: "questions_per_minute", threshold_pct: 20, threshold_abs: 1, window: "24h", ttl: 1800, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        questions_per_minute: await fetchSafe(async () => {
-          const r = await fetch("https://api.stackexchange.com/2.3/info?site=stackoverflow",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.items?.[0]?.questions_per_minute ?? j?.items?.[0]?.total_questions;
-          if (typeof v !== "number") throw new Error("no_qpm: keys=" + Object.keys(j?.items?.[0] || {}).join(","));
-          return v;
-        }),
-      },
-    }),
-  },
   hackernews: {
     config: { metric: "stories_24h", threshold_pct: 20, threshold_abs: 50, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
@@ -2139,7 +2106,7 @@ Object.assign(COLLECTORS, {
       sources: {
         papers_7d: await fetchSafe(async () => {
           const d = new Date(Date.now() - 7*864e5).toISOString().slice(0,10).replace(/-/g,"");
-          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:cs.DS+OR+cat:cs.CC+OR+cat:cs.LO&start=0&max_results=1&sortBy=submittedDate&sortOrder=descending",
+          const r = await fetch("https://export.arxiv.org/api/query?search_query=cat%3Acs.DS&start=0&max_results=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const t = await r.text();
