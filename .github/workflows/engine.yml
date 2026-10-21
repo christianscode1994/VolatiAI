@@ -51,17 +51,20 @@ jobs:
           INFURA_URL: ${{ secrets.INFURA_URL }}
         run: python -m src.main
 
-      - name: Persist briefing
-        if: success()
+      - name: Copy output to docs
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/briefing.json
-          if git diff --staged --quiet; then
-            echo "no changes to briefing.json"
-            exit 0
-          fi
-          git commit -m "chore: update docs/briefing.json"
+          cp public/latest.json docs/latest.json
+          cp public/summary.html docs/summary.html
+
+      - name: Commit updated docs
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/latest.json docs/summary.html history docs/briefing.json
+          git commit -m "Update public dashboard & API" || echo "No changes"
+
+      - name: Push changes
+        run: |
           for i in 1 2 3 4 5; do
             if git push; then
               echo "pushed on attempt $i"
@@ -73,17 +76,3 @@ jobs:
           done
           echo "push failed after 5 attempts"
           exit 1
-      - name: Copy output to docs
-        run: |
-          cp public/latest.json docs/latest.json
-          cp public/summary.html docs/summary.html
-
-      - name: Commit updated docs
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add docs/latest.json docs/summary.html history
-          git commit -m "Update public dashboard & API" || echo "No changes"
-
-      - name: Push changes
-        run: git push
