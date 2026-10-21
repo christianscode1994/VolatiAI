@@ -2378,6 +2378,58 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "botnet-c2": {
+    config: { metric: "active_c2", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_c2: await fetchSafe(async () => {
+          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          const online = j.filter(x => x && x.status === "online");
+          return online.length > 0 ? online.length : j.length;
+        }),
+      },
+    }),
+  },
+  "bot-activity": {
+    config: { metric: "agent_hits_24h", threshold_pct: 25, threshold_abs: 500, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        agent_hits_24h: await fetchSafe(async () => {
+          const r = await fetch("https://robauto.ai/agent-leaderboard.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.summary?.total_agent_hits_24h;
+          if (typeof n !== "number") throw new Error("no_count: summary_keys=" + Object.keys(j?.summary || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "agent-census": {
+    config: { metric: "named_agents", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        named_agents: await fetchSafe(async () => {
+          const r = await fetch("https://fetchgate.dev/v1/agent-census.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totals?.namedAgents;
+          if (typeof n !== "number") throw new Error("no_count: totals_keys=" + Object.keys(j?.totals || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
