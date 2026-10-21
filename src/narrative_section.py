@@ -1,6 +1,8 @@
 """Keyless narrative + sentiment sections for the VolatiAI dashboard.
 No secrets, no KV, no state. Called once per HTML generation."""
 
+from scripts.narrative import summarize as summarize_narrative, format_html as format_narrative_html
+
 import re
 import requests
 
@@ -132,6 +134,27 @@ def build_live_signals_section(digest_history_path=None):
     {rows}
   </table>
 """
+
+
+def build_digest_briefing():
+    """High-level narrative summary at top of dashboard.
+    Reads digest_history.json, produces 2-3 sentence briefing + watchlist."""
+    try:
+        from pathlib import Path
+        import json
+        history_path = Path(__file__).resolve().parent.parent / "data" / "digest_history.json"
+        with open(history_path) as f:
+            history = json.load(f)
+        narrative = summarize_narrative(history)
+        return format_narrative_html(narrative)
+    except Exception as e:
+        return f'''
+  <div class="card" style="border-left-color: #ff6b6b; margin-bottom: 1.5rem;">
+    <div class="label">Briefing</div>
+    <div class="value">unavailable</div>
+    <div class="sub">{e}</div>
+  </div>
+'''
 
 
 def build_narrative_sections():
