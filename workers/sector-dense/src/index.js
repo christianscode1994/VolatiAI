@@ -3770,6 +3770,59 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "coinrithm-overview": {
+    config: { metric: "total_open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_open_markets: await fetchSafe(async () => {
+          const r = await fetch("https://api.coinrithm.com/api/prediction-markets/overview",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.stats?.totalOpenMarkets;
+          if (typeof n !== "number") throw new Error("no_totalOpenMarkets: stats_keys=" + Object.keys(j?.stats || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "polymarket-open": {
+    config: { metric: "open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        open_markets: await fetchSafe(async () => {
+          const r = await fetch("https://gamma-api.polymarket.com/markets?closed=false&limit=500",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.data ?? j?.markets ?? null);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "kalshi-open": {
+    config: { metric: "open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        open_markets: await fetchSafe(async () => {
+          const r = await fetch("https://external-api.kalshi.com/trade-api/v2/markets?status=open&limit=1000",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.markets;
+          if (!Array.isArray(arr)) throw new Error("no_markets: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
