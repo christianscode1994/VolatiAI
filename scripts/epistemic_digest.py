@@ -140,9 +140,13 @@ CONFLICT_GROUPS = {
 
 # Direction normalization for FX: higher currency-ex = stronger EUR,
 # higher exchange-rate (EUR→USD) = weaker USD. Negate one to compare.
+# FX pairs are RECIPROCAL, not directional: exchange-rate returns
+# USD→EUR (0.89) while currency-ex returns EUR→USD (1.12). Invert
+# exchange-rate to align. Negation was wrong — 1.1215 vs 0.89075
+# are the same rate, not 200% divergence.
 CONFLICT_DIRECTION = {
-    "currency-ex": +1,
-    "exchange-rate": -1,
+    "currency-ex": "raw",
+    "exchange-rate": "reciprocal",
 }
 
 
@@ -166,12 +170,18 @@ def find_contradictions(arbitrations, envelopes_by_sector):
         pct = delta.get("pct_change")
         if current is None:
             continue
-        direction = CONFLICT_DIRECTION.get(sector, +1)
+        mode = CONFLICT_DIRECTION.get(sector, "raw")
+        if mode == "reciprocal" and isinstance(current, (int, float)) and current > 0:
+            current = 1.0 / current
+            pct = (-pct) if pct is not None else None
+        elif mode == "negate" and isinstance(current, (int, float)):
+            current = -current
+            pct = (-pct) if pct is not None else None
         by_metric.setdefault(group, []).append({
             "sector": sector,
             "metric_raw": metric,
-            "current": current * direction,
-            "pct_change": pct * direction if pct is not None else None,
+            "current": current,
+            "pct_change": pct,
             "confidence": env.get("confidence") if env.get("confidence") is not None else a["confidence"],
         })
 
