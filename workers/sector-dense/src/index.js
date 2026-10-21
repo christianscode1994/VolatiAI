@@ -1904,6 +1904,124 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  science: {
+    config: { metric: "datasets", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        datasets: await fetchSafe(async () => {
+          const r = await fetch("https://www.pangaea.de/advanced/search.php?q=ocean+temperature&count=1&type=json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalCount ?? j?.total ?? j?.count ?? j?.hits?.total;
+          if (typeof n === "number") return n;
+          throw new Error("shape_mismatch: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  fintech: {
+    config: { metric: "markets", threshold_pct: 5, threshold_abs: 2, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        markets: await fetchSafe(async () => {
+          const r = await fetch("https://api.orderly.org/v1/public/query", {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify({ type: "marketSummary" }),
+            signal: AbortSignal.timeout(15000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j?.success !== true) throw new Error("api_error: " + JSON.stringify(j).slice(0, 200));
+          const d = j?.data;
+          const arr = Array.isArray(d) ? d
+                    : Array.isArray(d?.rows) ? d.rows
+                    : Array.isArray(d?.markets) ? d.markets
+                    : null;
+          if (arr === null) throw new Error("shape_mismatch: data_keys=" + Object.keys(d || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "institutional-finance": {
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 100, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        filings_24h: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+          const url = "https://efts.sec.gov/LATEST/search-index?q=&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
+          const r = await fetch(url, {
+            headers: {
+              "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "accept": "application/json",
+            },
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.hits?.total?.value ?? j?.hits?.total;
+          if (typeof n === "number") return n;
+          throw new Error("shape_mismatch: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  population: {
+    config: { metric: "world_population", threshold_pct: 0.01, threshold_abs: 100000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        world_population: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL?format=json&per_page=5&date=2020:2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.[1];
+          if (!Array.isArray(arr)) throw new Error("no_data");
+          const row = arr.find(x => x.value !== null);
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  economics: {
+    config: { metric: "gdp_growth_pct", threshold_pct: 5, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        gdp_growth_pct: await fetchSafe(async () => {
+          const r = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH?periods=2024",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.values?.NGDP_RPCH?.USA?.["2024"] ?? j?.values?.NGDP_RPCH?.WLD?.["2024"];
+          if (typeof v === "number") return v;
+          throw new Error("shape_mismatch: keys=" + Object.keys(j?.values || {}).join(","));
+        }),
+      },
+    }),
+  },
+  laws: {
+    config: { metric: "documents", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        documents: await fetchSafe(async () => {
+          const r = await fetch("https://www.federalregister.gov/api/v1/documents.json?per_page=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("shape_mismatch: keys=" + Object.keys(j || {}).join(","));
+          return j.count;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
