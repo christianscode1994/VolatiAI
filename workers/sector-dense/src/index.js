@@ -3553,24 +3553,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "world-tourism": {
-    config: { metric: "arrivals", threshold_pct: 1, threshold_abs: 1000000, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        arrivals: await fetchSafe(async () => {
-          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/ST.INT.ARVL?format=json&per_page=5&date=2015:2020",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.[1];
-          if (!Array.isArray(arr)) throw new Error("no_data: keys=" + Object.keys(j || {}).join(","));
-          const row = arr.find(x => x && x.value !== null);
-          if (!row) throw new Error("no_value");
-          return row.value;
-        }),
-      },
-    }),
-  },
   airports: {
     config: { metric: "total_airports", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
