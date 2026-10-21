@@ -1102,24 +1102,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "clinical-trials": {
-    config: { metric: "total_studies", threshold_pct: 0.1, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_studies: await fetchSafe(async () => {
-          const r = await fetch("https://clinicaltrials.gov/api/v2/studies?pageSize=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const raw = j.totalCount ?? j.pagination?.totalCount ?? j.total ?? null;
-          if (raw === null) throw new Error("no_count");
-          const n = typeof raw === "number" ? raw : parseInt(raw, 10);
-          if (Number.isNaN(n)) throw new Error("bad_count");
-          return n;
-        }),
-      },
-    }),
-  },
   "energy-carbon": {
     config: { metric: "gco2_per_kwh", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
@@ -1394,7 +1376,7 @@ Object.assign(COLLECTORS, {
       sources: {
         debt_usd: await fetchSafe(async () => {
           const d7 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
-          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?filter=record_date:gte:" + d7 + "&sort=-record_date&page[size]=1",
+          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?filter=record_date:gte:" + d7 + "&sort=-record_date&page%5Bsize%5D=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
