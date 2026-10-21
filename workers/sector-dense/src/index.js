@@ -2099,6 +2099,59 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "space-news": {
+    config: { metric: "articles_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        articles_24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.spaceflightnewsapi.net/v4/articles/?limit=100",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.results;
+          if (!Array.isArray(arr)) throw new Error("no_results: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  forums: {
+    config: { metric: "active_topics", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_topics: await fetchSafe(async () => {
+          const r = await fetch("https://meta.discourse.org/latest.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const topics = j?.topic_list?.topics;
+          if (!Array.isArray(topics)) throw new Error("no_topics: keys=" + Object.keys(j || {}).join(","));
+          return topics.length;
+        }),
+      },
+    }),
+  },
+  "theoretical-cs": {
+    config: { metric: "papers_7d", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        papers_7d: await fetchSafe(async () => {
+          const d = new Date(Date.now() - 7*864e5).toISOString().slice(0,10).replace(/-/g,"");
+          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:cs.DS+OR+cat:cs.CC+OR+cat:cs.LO&start=0&max_results=1&sortBy=submittedDate&sortOrder=descending",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const t = await r.text();
+          const m = t.match(/<opensearch:totalResults[^>]*>\s*(\d+)\s*<\/opensearch:totalResults>/);
+          if (!m) throw new Error("no_totalResults");
+          return parseInt(m[1], 10);
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
