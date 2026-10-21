@@ -1,4 +1,4 @@
-from src.narrative_section import build_narrative_sections, build_live_signals_section, build_digest_briefing
+from src.narrative_section import build_narrative_sections, build_live_signals_section, build_digest_briefing, build_delta_section
 import json
 from datetime import datetime
 
@@ -225,7 +225,7 @@ def write_html(path, payload, score=None):
   </div>
 """
 
-    html += build_digest_briefing() + build_live_signals_section() + build_narrative_sections() + '\n  <h2>Market Microstructure</h2>\n  <div class="grid">\n'
+    html += build_digest_briefing() + build_delta_section() + build_live_signals_section() + build_narrative_sections() + '\n  <h2>Market Microstructure</h2>\n  <div class="grid">\n'
 
     if whales:
         wp = whales.get("whale_pressure_index")
