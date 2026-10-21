@@ -3050,14 +3050,18 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const series = Array.isArray(j) ? j[0] : (j?.series ?? j?.data?.[0]);
-          const obs = series?.observations ?? series?.data ?? j?.observations;
-          if (!Array.isArray(obs) || !obs.length) throw new Error("no_obs: keys=" + Object.keys(series || j || {}).join(","));
+          const key = Object.keys(j || {})[0];
+          const series = j?.[key];
+          const ts = series?.timeseries;
+          const obs = Array.isArray(ts) ? ts
+                    : Array.isArray(series?.observations) ? series.observations
+                    : null;
+          if (!obs || !obs.length) throw new Error("no_obs: series_keys=" + Object.keys(series || {}).join(","));
           const last = obs[obs.length - 1];
           const v = typeof last?.value === "number" ? last.value
                   : typeof last?.[1] === "number" ? last[1]
                   : null;
-          if (v === null) throw new Error("no_value: obs_keys=" + Object.keys(last || {}).join(","));
+          if (v === null) throw new Error("no_value: last_keys=" + Object.keys(last || {}).join(","));
           return v;
         }),
       },
@@ -3072,9 +3076,14 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const arr = j?.companies ?? j?.data ?? j;
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
+          const all = j?.companies?.all;
+          if (Array.isArray(all)) return all.length;
+          const comp = j?.companies;
+          if (comp && typeof comp === "object") {
+            const total = Object.values(comp).reduce((s, arr) => s + (Array.isArray(arr) ? arr.length : 0), 0);
+            if (total > 0) return total;
+          }
+          throw new Error("no_companies: keys=" + Object.keys(j?.companies || {}).join(","));
         }),
       },
     }),
@@ -3135,10 +3144,8 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.total ?? j?.count ?? j?.meta?.total;
+          const n = j?.count ?? j?.total;
           if (typeof n === "number") return n;
-          const arr = Array.isArray(j) ? j : j?.data ?? j?.rounds;
-          if (Array.isArray(arr)) return arr.length;
           throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
         }),
       },
