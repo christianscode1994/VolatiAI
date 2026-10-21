@@ -2304,15 +2304,17 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const candidates = [
-            j?.demand_mw, j?.national_demand_mw, j?.demand?.mw,
-            j?.demand, j?.national_demand, j?.total_demand_mw,
-            j?.data?.demand_mw, j?.data?.demand,
-          ];
-          for (const v of candidates) {
-            if (typeof v === "number" && Number.isFinite(v)) return v;
+          const d = j?.demand;
+          if (typeof d === "number" && Number.isFinite(d)) return d;
+          if (d && typeof d === "object") {
+            for (const k of ["mw", "value", "current", "total", "demand_mw", "estimated"]) {
+              if (typeof d[k] === "number" && Number.isFinite(d[k])) return d[k];
+            }
+            const numKeys = Object.keys(d).filter(k => typeof d[k] === "number");
+            if (numKeys.length) return d[numKeys[0]];
+            throw new Error("demand_no_number: keys=" + Object.keys(d).join(","));
           }
-          throw new Error("no_demand: keys=" + Object.keys(j || {}).join(","));
+          throw new Error("no_demand: demand_type=" + typeof d + " top=" + Object.keys(j || {}).join(","));
         }),
       },
     }),
@@ -2326,25 +2328,31 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const direct = [
-            j?.renewable_share, j?.renewables_pct, j?.renewable_pct,
-            j?.mix?.renewable, j?.data?.renewable_share,
-          ];
-          for (const v of direct) {
-            if (typeof v === "number" && Number.isFinite(v)) return v;
+          for (const k of ["renewable_share", "renewables_pct", "renewable_pct"]) {
+            if (typeof j?.[k] === "number") return j[k];
           }
-          // Fallback: sum renewable fuels from a mix object of percentages
-          const mix = j?.mix || j?.generation_mix || j?.data?.mix;
-          if (mix && typeof mix === "object") {
-            const RENEWABLE = ["wind", "solar", "hydro", "biomass", "other_renewable", "renewables"];
+          const mix = j?.mix;
+          if (Array.isArray(mix)) {
+            const REN = ["wind","solar","hydro","biomass","other_renewable","renewable","renewables","wave","tidal"];
             let sum = 0, found = false;
-            for (const k of Object.keys(mix)) {
-              if (RENEWABLE.some(rk => k.toLowerCase().includes(rk)) && typeof mix[k] === "number") {
-                sum += mix[k]; found = true;
-              }
+            for (const el of mix) {
+              if (!el || typeof el !== "object") continue;
+              const fuel = String(el.fuel || el.source || el.name || el.type || el.label || "").toLowerCase();
+              if (!REN.some(r => fuel.includes(r))) continue;
+              const v = el.share ?? el.pct ?? el.percentage ?? el.value ?? el.mw ?? el.percent;
+              if (typeof v === "number") { sum += v; found = true; }
             }
             if (found) return Math.round(sum * 100) / 100;
-            throw new Error("no_renewable_in_mix: mix_keys=" + Object.keys(mix).join(","));
+            throw new Error("mix_no_renewable: sample=" + JSON.stringify(mix[0] || {}).slice(0, 250));
+          }
+          if (mix && typeof mix === "object") {
+            const REN = ["wind","solar","hydro","biomass","other_renewable","renewables"];
+            let sum = 0, found = false;
+            for (const k of Object.keys(mix)) {
+              if (REN.some(r => k.toLowerCase().includes(r)) && typeof mix[k] === "number") { sum += mix[k]; found = true; }
+            }
+            if (found) return Math.round(sum * 100) / 100;
+            throw new Error("mix_obj_no_renewable: keys=" + Object.keys(mix).join(","));
           }
           throw new Error("no_mix: keys=" + Object.keys(j || {}).join(","));
         }),
@@ -2428,6 +2436,10 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
+});
+
+
+Object.assign(COLLECTORS, {
 });
 
 export default {
