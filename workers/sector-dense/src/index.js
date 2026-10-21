@@ -4017,6 +4017,205 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "cloud-outages": {
+    config: { metric: "active_incidents", threshold_pct: 20, threshold_abs: 3, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_incidents: await fetchSafe(async () => {
+          const r = await fetch("https://outagedeck.com/api/v1/incidents?state=active&limit=100",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.totalIncidents ?? j?.totalIncidents;
+          if (typeof n === "number") return n;
+          const arr = j?.data?.incidents ?? j?.incidents;
+          if (Array.isArray(arr)) return arr.length;
+          throw new Error("no_count: keys=" + Object.keys(j || {}).join(",") + " data_keys=" + Object.keys(j?.data || {}).join(","));
+        }),
+      },
+    }),
+  },
+  "cloudflare-status": {
+    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        components_down: await fetchSafe(async () => {
+          const r = await fetch("https://www.cloudflarestatus.com/api/v2/summary.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const components = j?.components;
+          if (!Array.isArray(components)) throw new Error("no_components: keys=" + Object.keys(j || {}).join(","));
+          return components.filter(c => c.status && c.status !== "operational").length;
+        }),
+      },
+    }),
+  },
+  "cloud-components": {
+    config: { metric: "total_down", threshold_pct: 30, threshold_abs: 2, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => {
+      const providers = [
+        { name: "digitalocean", url: "https://status.digitalocean.com/api/v2/summary.json" },
+        { name: "vercel",       url: "https://www.vercel-status.com/api/v2/summary.json" },
+        { name: "snowflake",    url: "https://status.snowflake.com/api/v2/summary.json" },
+        { name: "elastic",      url: "https://status.elastic.co/api/v2/summary.json" },
+      ];
+      const results = await Promise.all(providers.map(async (p) => {
+        try {
+          const r = await fetch(p.url, { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(12000) });
+          if (!r.ok) return { name: p.name, ok: false, down: 0 };
+          const j = await r.json();
+          const components = j?.components;
+          if (!Array.isArray(components)) return { name: p.name, ok: false, down: 0 };
+          const down = components.filter(c => c.status && c.status !== "operational").length;
+          return { name: p.name, ok: true, down };
+        } catch { return { name: p.name, ok: false, down: 0 }; }
+      }));
+      const anyOk = results.some(r => r.ok);
+      const totalDown = results.reduce((s, r) => s + r.down, 0);
+      return {
+        sources: {
+          total_down:   { ok: anyOk, data: anyOk ? totalDown : null, error: anyOk ? null : "all_providers_failed" },
+          digitalocean: { ok: results[0].ok, data: results[0].down, error: null },
+          vercel:       { ok: results[1].ok, data: results[1].down, error: null },
+          snowflake:    { ok: results[2].ok, data: results[2].down, error: null },
+          elastic:      { ok: results[3].ok, data: results[3].down, error: null },
+        },
+      };
+    },
+  },
+  "filecoin-network": {
+    config: { metric: "epoch", threshold_pct: 5, threshold_abs: 1000, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        epoch: await fetchSafe(async () => {
+          const r = await fetch("https://api.node.glif.io/rpc/v1", {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "Filecoin.ChainHead", params: [], id: 1 }),
+            signal: AbortSignal.timeout(15000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const h = j?.result?.Height;
+          if (typeof h !== "number") throw new Error("no_height: keys=" + Object.keys(j?.result || {}).join(",") + " err=" + JSON.stringify(j?.error || {}).slice(0, 100));
+          return h;
+        }),
+      },
+    }),
+  },
+  "arweave-network": {
+    config: { metric: "height", threshold_pct: 2, threshold_abs: 3, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        height: await fetchSafe(async () => {
+          const r = await fetch("https://arweave.net/info",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const h = j?.height;
+          if (typeof h !== "number") throw new Error("no_height: keys=" + Object.keys(j || {}).join(","));
+          return h;
+        }),
+      },
+    }),
+  },
+  "dropbox-status": {
+    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        components_down: await fetchSafe(async () => {
+          const r = await fetch("https://status.dropbox.com/api/v2/summary.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const components = j?.components;
+          if (!Array.isArray(components)) throw new Error("no_components: keys=" + Object.keys(j || {}).join(","));
+          return components.filter(c => c.status && c.status !== "operational").length;
+        }),
+      },
+    }),
+  },
+  "box-status": {
+    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        components_down: await fetchSafe(async () => {
+          const r = await fetch("https://status.box.com/api/v2/summary.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const components = j?.components;
+          if (!Array.isArray(components)) throw new Error("no_components: keys=" + Object.keys(j || {}).join(","));
+          return components.filter(c => c.status && c.status !== "operational").length;
+        }),
+      },
+    }),
+  },
+  "stablecoin-supply": {
+    config: { metric: "total_circulating_usd", threshold_pct: 1, threshold_abs: 1e9, window: "24h", ttl: 1800, context_keys: ["asset_count", "usdt_dominance"] },
+    collectAll: async () => ({
+      sources: {
+        total_circulating_usd: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=true",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const assets = j?.peggedAssets;
+          if (!Array.isArray(assets)) throw new Error("no_peggedAssets: keys=" + Object.keys(j || {}).join(","));
+          let total = 0;
+          for (const a of assets) {
+            const c = a?.circulating;
+            if (typeof c === "number" && Number.isFinite(c)) { total += c; continue; }
+            if (c && typeof c === "object") {
+              for (const v of Object.values(c)) {
+                if (typeof v === "number" && Number.isFinite(v)) total += v;
+              }
+            }
+          }
+          if (total === 0) throw new Error("all_zero: assets=" + assets.length);
+          return Math.round(total);
+        }),
+        asset_count: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=true",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const assets = j?.peggedAssets;
+          if (!Array.isArray(assets)) throw new Error("no_peggedAssets");
+          return assets.length;
+        }),
+        usdt_dominance: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=true",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const assets = j?.peggedAssets;
+          if (!Array.isArray(assets)) throw new Error("no_peggedAssets");
+          let total = 0, usdt = 0;
+          for (const a of assets) {
+            const c = a?.circulating;
+            let assetTotal = 0;
+            if (typeof c === "number" && Number.isFinite(c)) assetTotal = c;
+            else if (c && typeof c === "object") {
+              for (const v of Object.values(c)) {
+                if (typeof v === "number" && Number.isFinite(v)) assetTotal += v;
+              }
+            }
+            total += assetTotal;
+            if ((a?.symbol || "").toUpperCase() === "USDT") usdt = assetTotal;
+          }
+          if (total === 0) throw new Error("all_zero");
+          return Math.round((usdt / total) * 10000) / 100;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
