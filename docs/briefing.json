@@ -1,6 +1,6 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-21T20:32:41Z",
+  "ts": "2026-10-21T20:41:11Z",
   "run_number": 24,
   "briefing": {
     "headline": "10 signals across 248 sectors evaluated",
@@ -60,7 +60,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 16
+      "fires_24": 17
     },
     {
       "sector": "cve-feed",
@@ -87,12 +87,12 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 12
+      "fires_24": 13
     },
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 63,155 MW",
+      "summary": "New: DE grid load: 59,801 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -101,11 +101,11 @@
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [450] Today's PHP security release, and how we're strengthening security",
+      "summary": "New: [216] Mistral Large 4",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 17
+      "fires_24": 18
     },
     {
       "sector": "news",
@@ -123,7 +123,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 10
+      "fires_24": 11
     },
     {
       "sector": "sports-fitness",
@@ -132,12 +132,12 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 18
+      "fires_24": 19
     },
     {
       "sector": "water",
       "severity": "notice",
-      "summary": "New: Mississippi flow: 169,000 cfs",
+      "summary": "New: Mississippi flow: 168,000 cfs",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -145,7 +145,7 @@
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-21 20:29",
+    "previous_ts": "2026-10-21 20:32",
     "signals_before": 10,
     "signals_after": 10,
     "new": [],
@@ -164,14 +164,19 @@
     ],
     "movements": [
       {
-        "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,852",
-        "current": "New: Flux nodes: 6,854"
+        "sector": "energy-grid",
+        "previous": "New: DE grid load: 63,155 MW",
+        "current": "New: DE grid load: 59,801 MW"
       },
       {
         "sector": "events",
-        "previous": "New: [446] Today's PHP security release, and how we're strengthening security",
-        "current": "New: [450] Today's PHP security release, and how we're strengthening security"
+        "previous": "New: [450] Today's PHP security release, and how we're strengthening security",
+        "current": "New: [216] Mistral Large 4"
+      },
+      {
+        "sector": "water",
+        "previous": "New: Mississippi flow: 169,000 cfs",
+        "current": "New: Mississippi flow: 168,000 cfs"
       }
     ]
   },
@@ -219,12 +224,6 @@
       "fires_in_window": 0
     },
     {
-      "sector": "science-news",
-      "avg_volatility": 1.75,
-      "max_volatility": 1.75,
-      "fires_in_window": 0
-    },
-    {
       "sector": "fintech",
       "avg_volatility": 1.61,
       "max_volatility": 1.61,
@@ -234,6 +233,12 @@
       "sector": "grid-demand",
       "avg_volatility": 0.7,
       "max_volatility": 0.7,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "hazards",
+      "avg_volatility": 0.59,
+      "max_volatility": 0.61,
       "fires_in_window": 0
     }
   ],
