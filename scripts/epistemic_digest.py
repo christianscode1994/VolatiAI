@@ -151,7 +151,7 @@ def find_contradictions(arbitrations, envelopes_by_sector):
             "metric_raw": metric,
             "current": current,
             "pct_change": pct,
-            "confidence": a["confidence"],
+            "confidence": env.get("confidence") if env.get("confidence") is not None else a["confidence"],
         })
 
     # 1. Same-metric divergence (>10% difference between two reports)
