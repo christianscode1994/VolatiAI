@@ -1085,6 +1085,173 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "food-security": {
+    config: { metric: "products", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        products: await fetchSafe(async () => {
+          const r = await fetch("https://world.openfoodfacts.org/api/v2/search?page_size=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+  "clinical-trials": {
+    config: { metric: "total_studies", threshold_pct: 0.1, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_studies: await fetchSafe(async () => {
+          const r = await fetch("https://clinicaltrials.gov/api/v2/studies?pageSize=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.totalCount !== "number") throw new Error("no_count");
+          return j.totalCount;
+        }),
+      },
+    }),
+  },
+  "energy-carbon": {
+    config: { metric: "gco2_per_kwh", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        gco2_per_kwh: await fetchSafe(async () => {
+          const r = await fetch("https://api.carbonintensity.org.uk/intensity",
+            { headers: { "accept": "application/json", "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.data?.[0]?.intensity?.actual;
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "air-quality": {
+    config: { metric: "avg_european_aqi", threshold_pct: 15, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        avg_european_aqi: await fetchSafe(async () => {
+          const cities = [[51.5,-0.1],[40.7,-74.0],[35.7,139.7]];
+          const results = await Promise.all(cities.map(([lat,lon]) =>
+            fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat + "&longitude=" + lon + "&current=european_aqi",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) })
+          ));
+          let sum = 0, n = 0;
+          for (const r of results) {
+            if (r.ok) {
+              const j = await r.json();
+              const v = j?.current?.european_aqi;
+              if (typeof v === "number") { sum += v; n++; }
+            }
+          }
+          if (n === 0) throw new Error("all_cities_failed");
+          return Math.round(sum / n);
+        }),
+      },
+    }),
+  },
+  sports: {
+    config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        games_today: await fetchSafe(async () => {
+          const leagues = ["basketball/nba","football/nfl","baseball/mlb","hockey/nhl","soccer/eng.1"];
+          const results = await Promise.all(leagues.map(l =>
+            fetch("https://site.api.espn.com/apis/site/v2/sports/" + l + "/scoreboard",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) })
+          ));
+          let total = 0;
+          for (const r of results) {
+            if (r.ok) {
+              const j = await r.json();
+              if (Array.isArray(j?.events)) total += j.events.length;
+            }
+          }
+          return total;
+        }),
+      },
+    }),
+  },
+  "space-launches": {
+    config: { metric: "upcoming", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        upcoming: await fetchSafe(async () => {
+          const r = await fetch("https://ll.thespacedevs.com/2.3.0/launch/upcoming/?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+  "wikipedia-activity": {
+    config: { metric: "views_7d", threshold_pct: 10, threshold_abs: 500000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        views_7d: await fetchSafe(async () => {
+          const end = new Date();
+          const start = new Date(Date.now() - 7*864e5);
+          const fmt = d => d.toISOString().slice(0,10).replace(/-/g,"");
+          const articles = ["Main_Page","Artificial_intelligence","Bitcoin"];
+          const results = await Promise.all(articles.map(a =>
+            fetch("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/" + a + "/daily/" + fmt(start) + "/" + fmt(end),
+              { headers: { "user-agent": "VolatiAI/1.0 (contact: volatiai@example.com)" }, signal: AbortSignal.timeout(15000) })
+          ));
+          let total = 0;
+          for (const r of results) {
+            if (r.ok) {
+              const j = await r.json();
+              if (Array.isArray(j?.items)) for (const it of j.items) total += it.views || 0;
+            }
+          }
+          if (total === 0) throw new Error("all_articles_failed");
+          return total;
+        }),
+      },
+    }),
+  },
+  "cyber-threats": {
+    config: { metric: "known_exploited", threshold_pct: 1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        known_exploited: await fetchSafe(async () => {
+          const r = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+  hazards: {
+    config: { metric: "earthquakes_24h", threshold_pct: 50, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        earthquakes_24h: await fetchSafe(async () => {
+          const r = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.features)) throw new Error("no_features");
+          return j.features.length;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
