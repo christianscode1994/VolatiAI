@@ -607,7 +607,11 @@ def main():
     print("\n=== Sending ===")
     ok = send(token, chat_id, digest)
     print("Sent:", ok)
-    return 0 if ok else 1
+    # History persistence + graph publishing are the essential outputs.
+    # Telegram is best-effort — a failed notification should not fail the
+    # workflow, because the digest content still needs to reach consumers
+    # via dashboard/history.
+    return 0
 
 
 if __name__ == "__main__":
