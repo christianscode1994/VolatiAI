@@ -1510,6 +1510,78 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  travel: {
+    config: { metric: "fuel_countries", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        fuel_countries: await fetchSafe(async () => {
+          const r = await fetch("https://openvan.camp/api/fuel/prices?source=volatiai",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.total_countries;
+          if (typeof n !== "number") throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+  oil: {
+    config: { metric: "wti_usd", threshold_pct: 3, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        wti_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.oilpriceapi.com/v1/demo/prices?codes=WTI_USD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.data?.prices;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_prices");
+          const row = arr.find(x => x.code === "WTI_USD") || arr[0];
+          const v = typeof row.price === "number" ? row.price : parseFloat(row.price);
+          if (Number.isNaN(v)) throw new Error("bad_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  mining: {
+    config: { metric: "critical_deposits", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        critical_deposits: await fetchSafe(async () => {
+          const r = await fetch("https://energy.usgs.gov/arcgis/rest/services/Critical_Minerals/USGS_Critical_Mineral_Data/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+  fertilizer: {
+    config: { metric: "kg_per_hectare", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        kg_per_hectare: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/AG.CON.FERT.ZS?format=json&per_page=5&date=2020:2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.[1];
+          if (!Array.isArray(arr)) throw new Error("no_data");
+          const row = arr.find(x => x.value !== null);
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
