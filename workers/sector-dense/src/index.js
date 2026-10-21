@@ -2293,6 +2293,91 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "grid-demand": {
+    config: { metric: "demand_mw", threshold_pct: 10, threshold_abs: 1000, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        demand_mw: await fetchSafe(async () => {
+          const r = await fetch("https://trydan.uk/api/live",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const candidates = [
+            j?.demand_mw, j?.national_demand_mw, j?.demand?.mw,
+            j?.demand, j?.national_demand, j?.total_demand_mw,
+            j?.data?.demand_mw, j?.data?.demand,
+          ];
+          for (const v of candidates) {
+            if (typeof v === "number" && Number.isFinite(v)) return v;
+          }
+          throw new Error("no_demand: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  "grid-mix": {
+    config: { metric: "renewable_pct", threshold_pct: 15, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        renewable_pct: await fetchSafe(async () => {
+          const r = await fetch("https://trydan.uk/api/live",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const direct = [
+            j?.renewable_share, j?.renewables_pct, j?.renewable_pct,
+            j?.mix?.renewable, j?.data?.renewable_share,
+          ];
+          for (const v of direct) {
+            if (typeof v === "number" && Number.isFinite(v)) return v;
+          }
+          // Fallback: sum renewable fuels from a mix object of percentages
+          const mix = j?.mix || j?.generation_mix || j?.data?.mix;
+          if (mix && typeof mix === "object") {
+            const RENEWABLE = ["wind", "solar", "hydro", "biomass", "other_renewable", "renewables"];
+            let sum = 0, found = false;
+            for (const k of Object.keys(mix)) {
+              if (RENEWABLE.some(rk => k.toLowerCase().includes(rk)) && typeof mix[k] === "number") {
+                sum += mix[k]; found = true;
+              }
+            }
+            if (found) return Math.round(sum * 100) / 100;
+            throw new Error("no_renewable_in_mix: mix_keys=" + Object.keys(mix).join(","));
+          }
+          throw new Error("no_mix: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  "grid-balance": {
+    config: { metric: "system_balance_mw", threshold_pct: 50, threshold_abs: 100, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        system_balance_mw: await fetchSafe(async () => {
+          const end = new Date().toISOString().replace(/\.\d+Z$/, ".000Z");
+          const start = new Date(Date.now() - 3600e3).toISOString().replace(/\.\d+Z$/, ".000Z");
+          const url = "https://dashboard.elering.ee/api/system/with-plan?start="
+                    + encodeURIComponent(start) + "&end=" + encodeURIComponent(end);
+          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j?.success !== true) throw new Error("api_error: success=" + String(j?.success));
+          const real = j?.data?.real;
+          if (!Array.isArray(real) || real.length === 0) {
+            throw new Error("no_real_series: data_keys=" + Object.keys(j?.data || {}).join(","));
+          }
+          const last = real[real.length - 1];
+          const v = last?.system_balance;
+          if (typeof v !== "number") throw new Error("no_balance: row_keys=" + Object.keys(last || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
