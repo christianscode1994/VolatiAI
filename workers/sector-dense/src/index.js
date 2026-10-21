@@ -3188,6 +3188,96 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "eu-open-data": {
+    config: { metric: "total_datasets", threshold_pct: 0.1, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_datasets: await fetchSafe(async () => {
+          const r = await fetch("https://data.europa.eu/api/hub/search/search?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.result?.count;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j?.result || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "ted-tenders": {
+    config: { metric: "notices_7d", threshold_pct: 10, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        notices_7d: await fetchSafe(async () => {
+          const d7 = new Date(Date.now() - 7*864e5);
+          const pd = d7.getUTCFullYear() + String(d7.getUTCMonth()+1).padStart(2,"0") + String(d7.getUTCDate()).padStart(2,"0");
+          const r = await fetch("https://api.ted.europa.eu/v3/notices/search", {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify({ query: "PD>=" + pd, limit: 1, scope: "ALL" }),
+            signal: AbortSignal.timeout(25000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalNoticeCount;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "eu-legal-acts": {
+    config: { metric: "acts_30d", threshold_pct: 20, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        acts_30d: await fetchSafe(async () => {
+          const d30 = new Date(Date.now() - 30*864e5).toISOString().slice(0, 10);
+          const q = "PREFIX cdm: <http://publications.europa.eu/ontology/cdm#> "
+                  + "SELECT (COUNT(?w) AS ?c) WHERE { "
+                  + "?w a cdm:work ; cdm:work_date_document ?d . "
+                  + "FILTER(?d >= \"" + d30 + "\"^^xsd:date) }";
+          const url = "https://publications.europa.eu/webapi/rdf/sparql?format=application%2Fsparql-results%2Bjson&query="
+                    + encodeURIComponent(q);
+          const r = await fetch(url, {
+            headers: { "user-agent": "VolatiAI/1.0", "accept": "application/sparql-results+json" },
+            signal: AbortSignal.timeout(25000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.results?.bindings?.[0]?.c?.value;
+          if (v == null) throw new Error("no_count: keys=" + Object.keys(j?.results || {}).join(","));
+          return parseInt(v, 10);
+        }),
+      },
+    }),
+  },
+  "eurostat-hicp": {
+    config: { metric: "eu_hicp_pct", threshold_pct: 2, threshold_abs: 0.05, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        eu_hicp_pct: await fetchSafe(async () => {
+          const url = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
+                    + "?geo=EU27_2020&coicop=CP00&lastTimePeriod=1";
+          const r = await fetch(url,
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const vals = j?.value;
+          if (!vals || typeof vals !== "object") throw new Error("no_value: keys=" + Object.keys(j || {}).join(","));
+          const arr = Object.values(vals);
+          if (!arr.length) throw new Error("empty_value");
+          const v = arr[arr.length - 1];
+          if (typeof v !== "number") throw new Error("bad_value: " + String(v));
+          return v;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
