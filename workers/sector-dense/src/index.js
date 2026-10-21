@@ -2647,6 +2647,105 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "aviation-weather": {
+    config: { metric: "metar_stations", threshold_pct: 15, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        metar_stations: await fetchSafe(async () => {
+          const r = await fetch("https://aviationweather.gov/api/data/metar?bbox=35,-15,60,30&format=json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  astronauts: {
+    config: { metric: "people_in_space", threshold_pct: 20, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        people_in_space: await fetchSafe(async () => {
+          const r = await fetch("http://api.open-notify.org/astros.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.number;
+          if (typeof n !== "number") throw new Error("no_number: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "google-books": {
+    config: { metric: "total_items", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_items: await fetchSafe(async () => {
+          const r = await fetch("https://www.googleapis.com/books/v1/volumes?q=machine+learning&maxResults=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalItems;
+          if (typeof n !== "number") throw new Error("no_totalItems: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "openlibrary-books": {
+    config: { metric: "num_found", threshold_pct: 0.1, threshold_abs: 10000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        num_found: await fetchSafe(async () => {
+          const r = await fetch("https://openlibrary.org/search.json?q=the&limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.numFound;
+          if (typeof n !== "number") throw new Error("no_numFound: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "worldbank-indicators": {
+    config: { metric: "indicator_count", threshold_pct: 0.1, threshold_abs: 50, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        indicator_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/indicator?format=json&per_page=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.[0]?.total ?? j?.[0]?.pages;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + JSON.stringify(Object.keys(j?.[0] || {})).slice(0,200));
+          return n;
+        }),
+      },
+    }),
+  },
+  "npm-search": {
+    config: { metric: "total_matches", threshold_pct: 0.5, threshold_abs: 500, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_matches: await fetchSafe(async () => {
+          const r = await fetch("https://registry.npmjs.org/-/v1/search?text=keywords:react&size=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
