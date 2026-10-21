@@ -1370,24 +1370,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "treasury-debt": {
-    config: { metric: "debt_usd", threshold_pct: 0.1, threshold_abs: 1e10, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        debt_usd: await fetchSafe(async () => {
-          const d7 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
-          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?filter=record_date:gte:" + d7 + "&sort=-record_date&page%5Bsize%5D=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.data?.[0]?.tot_pub_debt_out_amt;
-          const n = v != null ? parseFloat(v) : NaN;
-          if (Number.isNaN(n)) throw new Error("no_value");
-          return Math.round(n);
-        }),
-      },
-    }),
-  },
   "more-cryptos": {
     config: { metric: "coin_count", threshold_pct: 0.5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
