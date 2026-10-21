@@ -1252,6 +1252,106 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "generative-ai": {
+    config: { metric: "top100_downloads", threshold_pct: 2, threshold_abs: 1000000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        top100_downloads: await fetchSafe(async () => {
+          const r = await fetch("https://huggingface.co/api/models?sort=trendingScore&direction=-1&limit=100&expand[]=downloads",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const models = await r.json();
+          if (!Array.isArray(models)) throw new Error("not_array");
+          return models.reduce((sum, m) => sum + (m.downloads || 0), 0);
+        }),
+      },
+    }),
+  },
+  compute: {
+    config: { metric: "active_providers", threshold_pct: 5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_providers: await fetchSafe(async () => {
+          const r = await fetch("https://console-api.akash.network/v1/providers",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const providers = Array.isArray(j) ? j : (j.providers || j.data || []);
+          if (!Array.isArray(providers)) throw new Error("not_array");
+          return providers.length;
+        }),
+      },
+    }),
+  },
+  cybersecurity: {
+    config: { metric: "exploited_cves", threshold_pct: 10, threshold_abs: 2, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        exploited_cves: await fetchSafe(async () => {
+          const r = await fetch("https://api.genztech.dev/v1/cves/exploited",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const rows = Array.isArray(j) ? j : (j.data || j.cves || []);
+          if (!Array.isArray(rows)) throw new Error("not_array");
+          return rows.length;
+        }),
+      },
+    }),
+  },
+  "ai-benchmarks": {
+    config: { metric: "top_swebench_score", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        top_swebench_score: await fetchSafe(async () => {
+          const r = await fetch("https://api.genztech.dev/v1/ai-coding/leaderboard",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const rows = Array.isArray(j) ? j : (j.data || j.leaderboard || []);
+          if (!Array.isArray(rows) || rows.length === 0) throw new Error("empty");
+          const scores = rows.map(x => x.score ?? x.swebench ?? x.value).filter(v => typeof v === "number");
+          if (!scores.length) throw new Error("no_scores");
+          return Math.max(...scores);
+        }),
+      },
+    }),
+  },
+  "developer-activity": {
+    config: { metric: "public_events", threshold_pct: 10, threshold_abs: 50, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        public_events: await fetchSafe(async () => {
+          const r = await fetch("https://api.github.com/events?per_page=100",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "bitcoin-nodes": {
+    config: { metric: "reachable_nodes", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        reachable_nodes: await fetchSafe(async () => {
+          const r = await fetch("https://bitnodes.io/api/v1/snapshots/latest/",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const nodes = j?.total_nodes ?? j?.nodes?.length;
+          if (typeof nodes !== "number") throw new Error("no_count");
+          return nodes;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
