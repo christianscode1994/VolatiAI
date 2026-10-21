@@ -1767,7 +1767,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   electricity: {
-    config: { metric: "grid_frequency_hz", threshold_pct: 0.1, threshold_abs: 0.05, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "grid_frequency_hz", threshold_pct: 0.5, threshold_abs: 0.25, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
       sources: {
         grid_frequency_hz: await fetchSafe(async () => {
