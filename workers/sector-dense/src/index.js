@@ -3607,6 +3607,97 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "gdacs-disasters": {
+    config: { metric: "active_alerts", threshold_pct: 10, threshold_abs: 2, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_alerts: await fetchSafe(async () => {
+          const r = await fetch("https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.features ?? (Array.isArray(j) ? j : j?.events);
+          if (!Array.isArray(arr)) throw new Error("no_features: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "nws-alerts": {
+    config: { metric: "active_alerts", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_alerts: await fetchSafe(async () => {
+          const r = await fetch("https://api.weather.gov/alerts/active/count",
+            { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.com)", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "miso-grid": {
+    config: { metric: "total_load_mw", threshold_pct: 5, threshold_abs: 3000, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_load_mw: await fetchSafe(async () => {
+          const r = await fetch("https://public-api.misoenergy.org/api/FuelMix",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.fuelMix ?? j?.data ?? (Array.isArray(j) ? j : null);
+          if (!Array.isArray(arr)) throw new Error("no_fuelmix: keys=" + Object.keys(j || {}).join(","));
+          let total = 0;
+          for (const f of arr) {
+            const v = f?.actual ?? f?.value ?? f?.mw;
+            if (typeof v === "number") total += v;
+          }
+          if (total === 0) throw new Error("all_zero: sample=" + JSON.stringify(arr[0] || {}).slice(0, 200));
+          return Math.round(total);
+        }),
+      },
+    }),
+  },
+  "crypto-liquidations": {
+    config: { metric: "total_count", threshold_pct: 20, threshold_abs: 5, window: "4h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_count: await fetchSafe(async () => {
+          const r = await fetch("https://three.ws/api/coin/liquidations",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.summary?.totalCount;
+          if (typeof n !== "number") throw new Error("no_totalCount: summary_keys=" + Object.keys(j?.summary || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "disease-outbreaks": {
+    config: { metric: "outbreak_items", threshold_pct: 10, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        outbreak_items: await fetchSafe(async () => {
+          const r = await fetch("https://www.who.int/api/news/diseaseoutbreaknews?sf_culture=en&$orderby=PublicationDate%20desc&$top=50",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.value ?? j?.items ?? (Array.isArray(j) ? j : null);
+          if (!Array.isArray(arr)) throw new Error("no_value: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
