@@ -61,7 +61,27 @@ function buildValueEnvelope(sector, config, result, prev) {
   const ta = config.threshold_abs || 0;
   const hasSignal = metric !== null && prev !== null && prev !== undefined
     && Math.abs(pct) >= tp && Math.abs(absChange) >= ta;
-  const severity = Math.abs(pct) >= tp * 3 ? "alert" : "notice";
+
+  // magnitude = how many times the threshold the move was (0 if no signal)
+  const magnitude = (hasSignal && tp > 0) ? Math.abs(pct) / tp : 0;
+
+  // data_quality = fraction of sources that responded OK
+  const dataQuality = healthy / Math.max(total, 1);
+
+  // signal_confidence = magnitude × data_quality (0..1)
+  // cap magnitude at 5x so a 100x spike doesn't drown out other signals
+  const signalConfidence = hasSignal
+    ? Math.round(Math.min(1.0, (magnitude / 5.0) * dataQuality) * 100) / 100
+    : 0;
+
+  // 4-tier severity gradient
+  let severity = "info";
+  if (hasSignal) {
+    if (magnitude >= 10) severity = "critical";
+    else if (magnitude >= 5) severity = "warning";
+    else if (magnitude >= 2) severity = "notice";
+    else severity = "info";
+  }
 
   const context = {};
   for (const key of (config.context_keys || [])) {
@@ -71,8 +91,10 @@ function buildValueEnvelope(sector, config, result, prev) {
   return {
     sector, density: "dense",
     has_signal: hasSignal,
-    severity: hasSignal ? severity : "info",
-    confidence: healthy / Math.max(total, 1),
+    severity,
+    confidence: signalConfidence,
+    data_quality: Math.round(dataQuality * 100) / 100,
+    magnitude: Math.round(magnitude * 100) / 100,
     timestamp: new Date().toISOString(),
     summary: hasSignal
       ? config.metric + " " + metric + " (" + (pct > 0 ? "+" : "") + pct.toFixed(1) + "%)"
@@ -410,7 +432,7 @@ const COLLECTORS = {
 
 
   "air-quality": {
-    config: { metric: "pm25", threshold_pct: 20.0, threshold_abs: 5.0, window: "24h", ttl: 3600, context_keys: ["no2"] },
+    config: { metric: "pm25", threshold_pct: 3, threshold_abs: 5.0, window: "24h", ttl: 3600, context_keys: ["no2"] },
     collectAll: async (env) => ({
       sources: {
         pm25: await fetchSafe(async () => {
@@ -1103,7 +1125,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "energy-carbon": {
-    config: { metric: "gco2_per_kwh", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "gco2_per_kwh", threshold_pct: 3, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
       sources: {
         gco2_per_kwh: await fetchSafe(async () => {
@@ -1240,7 +1262,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "generative-ai": {
-    config: { metric: "top100_downloads", threshold_pct: 2, threshold_abs: 1000000, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "top100_downloads", threshold_pct: 0.5, threshold_abs: 1000000, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
       sources: {
         top100_downloads: await fetchSafe(async () => {
@@ -2271,7 +2293,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "science-news": {
-    config: { metric: "papers_7d", threshold_pct: 10, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "papers_7d", threshold_pct: 2, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
       sources: {
         papers_7d: await fetchSafe(async () => {
