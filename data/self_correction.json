@@ -1,0 +1,202 @@
+{
+  "raise_thresholds": [],
+  "remove_sector": [
+    {
+      "sector": "treasuries",
+      "reason": "conf=0 in 6/16 runs (38%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "fed-rate",
+      "reason": "conf=0 in 6/15 runs (40%)",
+      "action": "Remove from active_sectors.json or fix source"
+    }
+  ],
+  "investigate": [
+    {
+      "sector": "events",
+      "reason": "spam (75%) but no config found in workers"
+    },
+    {
+      "sector": "pypi-packages",
+      "reason": "spam (73%) but no config found in workers"
+    }
+  ],
+  "monitor_quiet": [
+    {
+      "sector": "biology",
+      "runs": 16,
+      "avg_conf": 0.94
+    },
+    {
+      "sector": "blockchain",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "books",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "crypto-defi",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "currency-ex",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "develop",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "energy",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "environment",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "finance",
+      "runs": 16,
+      "avg_conf": 0.83
+    },
+    {
+      "sector": "health",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "kryptovaluta",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "metals",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "open-source",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "podcasts",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "security",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "shopping",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "stocks",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "tracking",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "vehicles",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "weather",
+      "runs": 16,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "commodities",
+      "runs": 15,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "spaceweather",
+      "runs": 15,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "air-quality",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "crossref",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "depin-market",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "drug-recall",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "free-games",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "free-to-play",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "gdp",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "github-trending",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "huggingface-models",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "osv-vulnerabilities",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "pubmed",
+      "runs": 11,
+      "avg_conf": 0.91
+    },
+    {
+      "sector": "sec-filings",
+      "runs": 11,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "unemployment",
+      "runs": 11,
+      "avg_conf": 1.0
+    }
+  ]
+}
