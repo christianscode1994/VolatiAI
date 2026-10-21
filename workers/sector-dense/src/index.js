@@ -1743,6 +1743,126 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  electricity: {
+    config: { metric: "grid_frequency_hz", threshold_pct: 0.1, threshold_abs: 0.05, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        grid_frequency_hz: await fetchSafe(async () => {
+          const r = await fetch("https://data.elexon.co.uk/bmrs/api/v1/system/frequency",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.data;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_data");
+          const v = arr[0].frequency;
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "particle-physics": {
+    config: { metric: "hep_papers", threshold_pct: 0.5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        hep_papers: await fetchSafe(async () => {
+          const r = await fetch("https://inspirehep.net/api/literature?q=arxiv_categories:hep-ph&size=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.hits?.total;
+          if (typeof total !== "number") throw new Error("no_count");
+          return total;
+        }),
+      },
+    }),
+  },
+  satellites: {
+    config: { metric: "tracked_satellites", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tracked_satellites: await fetchSafe(async () => {
+          const r = await fetch("https://tle.ivanstanojevic.me/api/tle?search=starlink",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalItems;
+          if (typeof n !== "number") throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  electricity: {
+    config: { metric: "grid_frequency_hz", threshold_pct: 0.05, threshold_abs: 0.03, window: "24h", ttl: 900, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        grid_frequency_hz: await fetchSafe(async () => {
+          const r = await fetch("https://trydan.uk/api/frequency",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.hz;
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "ev-charging": {
+    config: { metric: "charging_stations", threshold_pct: 0.1, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        charging_stations: await fetchSafe(async () => {
+          const body = new URLSearchParams({ data: '[out:json][timeout:25];node["amenity"="charging_station"];out count;' });
+          const r = await fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            headers: { "user-agent": "VolatiAI/1.0", "content-type": "application/x-www-form-urlencoded" },
+            body: body.toString(),
+            signal: AbortSignal.timeout(30000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.elements?.[0]?.tags?.total;
+          if (total == null) throw new Error("no_count");
+          const n = typeof total === "number" ? total : parseInt(total, 10);
+          if (Number.isNaN(n)) throw new Error("bad_count");
+          return n;
+        }),
+      },
+    }),
+  },
+  "data-centers": {
+    config: { metric: "mapped_facilities", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        mapped_facilities: await fetchSafe(async () => {
+          const body = new URLSearchParams({ data: '[out:json][timeout:30];(node["building"="data_center"];way["building"="data_center"];node["telecom"="data_center"];way["telecom"="data_center"];);out count;' });
+          const r = await fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            headers: { "user-agent": "VolatiAI/1.0", "content-type": "application/x-www-form-urlencoded" },
+            body: body.toString(),
+            signal: AbortSignal.timeout(35000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.elements?.[0]?.tags?.total;
+          if (total == null) throw new Error("no_count");
+          const n = typeof total === "number" ? total : parseInt(total, 10);
+          if (Number.isNaN(n)) throw new Error("bad_count");
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
