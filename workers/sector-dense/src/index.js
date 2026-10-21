@@ -2119,6 +2119,188 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  museums: {
+    config: { metric: "total_objects", threshold_pct: 0.1, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => {
+      const met = await fetchSafe(async () => {
+        const r = await fetch("https://collectionapi.metmuseum.org/public/collection/v1/objects",
+          { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+        if (!r.ok) throw new Error("http_" + r.status);
+        const j = await r.json();
+        if (typeof j.total !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+        return j.total;
+      });
+      const artic = await fetchSafe(async () => {
+        const r = await fetch("https://api.artic.edu/api/v1/artworks?limit=1",
+          { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw new Error("http_" + r.status);
+        const j = await r.json();
+        const n = j?.pagination?.total;
+        if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.pagination || {}).join(","));
+        return n;
+      });
+      const total = (met.data || 0) + (artic.data || 0);
+      return {
+        sources: {
+          total_objects: { ok: met.ok || artic.ok, data: (met.ok || artic.ok) ? total : null,
+                           error: (met.ok || artic.ok) ? null : "both_failed" },
+          met: { ok: met.ok, data: met.data, error: met.error },
+          artic: { ok: artic.ok, data: artic.data, error: artic.error },
+        },
+      };
+    },
+  },
+  "global-culture": {
+    config: { metric: "culture_indicators", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        culture_indicators: await fetchSafe(async () => {
+          const r = await fetch("https://api.uis.unesco.org/api/public/data/indicators",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j.indicators || j.data || []);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "japanese-culture": {
+    config: { metric: "anime_total", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        anime_total: await fetchSafe(async () => {
+          const r = await fetch("https://api.jikan.moe/v4/anime?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.pagination?.items?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.pagination?.items || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "korean-culture": {
+    config: { metric: "works", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        works: await fetchSafe(async () => {
+          const r = await fetch("https://openlibrary.org/subjects/korea.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.work_count !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return j.work_count;
+        }),
+      },
+    }),
+  },
+  "chinese-culture": {
+    config: { metric: "poems", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        poems: await fetchSafe(async () => {
+          const r = await fetch("https://poetry.palemoky.com/api/poems?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total ?? j?.count ?? j?.pagination?.total
+                  ?? (Array.isArray(j?.data) ? j.data.length : null)
+                  ?? (Array.isArray(j) ? j.length : null);
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  languages: {
+    config: { metric: "wiki_count", threshold_pct: 0.1, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        wiki_count: await fetchSafe(async () => {
+          const r = await fetch("https://meta.wikimedia.org/w/api.php?action=sitematrix&format=json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.sitematrix?.count;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j?.sitematrix || {}).slice(0, 5).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  calendars: {
+    config: { metric: "upcoming_holidays", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        upcoming_holidays: await fetchSafe(async () => {
+          const r = await fetch("https://date.nager.at/api/v3/NextPublicHolidaysWorldwide",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  programming: {
+    config: { metric: "top_score", threshold_pct: 2, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        top_score: await fetchSafe(async () => {
+          const r = await fetch("https://langpop.com/api/v1/rankings?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.data?.[0]?.composite_score;
+          if (typeof v !== "number") throw new Error("no_score: keys=" + Object.keys(j?.data?.[0] || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  statistics: {
+    config: { metric: "series_count", threshold_pct: 0.1, threshold_abs: 100000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        series_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.db.nomics.world/v22/providers",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.nb_series;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  entertainment: {
+    config: { metric: "episodes_today", threshold_pct: 20, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        episodes_today: await fetchSafe(async () => {
+          const r = await fetch("https://api.tvmaze.com/schedule",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
