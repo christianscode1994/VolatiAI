@@ -3408,6 +3408,107 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "micar-casps": {
+    config: { metric: "authorised_casps", threshold_pct: 0.5, threshold_abs: 2, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        authorised_casps: await fetchSafe(async () => {
+          const r = await fetch("https://www.casp-tracker.com/api/open/casps.csv",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const t = await r.text();
+          const lines = t.trim().split("\n").filter(l => l.trim().length > 0);
+          if (lines.length < 2) throw new Error("no_rows: lines=" + lines.length);
+          return lines.length - 1;  // subtract header
+        }),
+      },
+    }),
+  },
+  "crypto-regulatory-news": {
+    config: { metric: "regulation_articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        regulation_articles: await fetchSafe(async () => {
+          const r = await fetch("https://bytenews.io/api/v1/category/regulation.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.articles ?? j?.items ?? j?.data ?? []);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "crypto-regulatory-feed": {
+    config: { metric: "regulatory_items", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        regulatory_items: await fetchSafe(async () => {
+          const r = await fetch("https://cryptocurrency.cv/api/regulatory",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.articles ?? j?.data ?? j?.results ?? []);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "cannabis-laws-states": {
+    config: { metric: "state_records", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        state_records: await fetchSafe(async () => {
+          const r = await fetch("https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Cannabis_Laws_by_State/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.count;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "cannabis-news": {
+    config: { metric: "articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        articles: await fetchSafe(async () => {
+          const r = await fetch("https://freenewsapi.ai/v1/feed.json?topic=cannabis&size=50",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.items ?? j?.articles ?? j?.data;
+          if (!Array.isArray(arr)) throw new Error("no_items: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "narcotics-enforcement": {
+    config: { metric: "enforcement_actions", threshold_pct: 0.5, threshold_abs: 2, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        enforcement_actions: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/drug/enforcement.json?search=reason_for_recall:%22cannabis%22&limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.results?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.meta || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
