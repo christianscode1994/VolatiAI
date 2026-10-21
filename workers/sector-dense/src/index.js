@@ -2196,8 +2196,9 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return j.length;
+          const arr = Array.isArray(j) ? j : (Array.isArray(j?.data) ? j.data : null);
+          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
         }),
       },
     }),
@@ -2498,9 +2499,9 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.total;
-          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
-          return n;
+          const arr = j?.families;
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
         }),
       },
     }),
@@ -2638,7 +2639,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         num_found: await fetchSafe(async () => {
-          const r = await fetch("https://openlibrary.org/search.json?q=the&limit=1",
+          const r = await fetch("https://openlibrary.org/search.json?q=language%3Aeng&limit=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -2839,6 +2840,74 @@ Object.assign(COLLECTORS, {
           const j = await r.json();
           if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
           return j.length;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  "flux-nodes": {
+    config: { metric: "total_nodes", threshold_pct: 2, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_nodes: await fetchSafe(async () => {
+          const r = await fetch("https://api.runonflux.io/daemon/getfluxnodecount",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.data || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "helium-hotspots": {
+    config: { metric: "total_hotspots", threshold_pct: 0.5, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_hotspots: await fetchSafe(async () => {
+          const r = await fetch("https://entities.nft.helium.io/v2/hotspots/pagination-metadata?subnetwork=iot",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalItems;
+          if (typeof n !== "number") throw new Error("no_totalItems: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "filecoin-miners": {
+    config: { metric: "active_miners", threshold_pct: 1, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_miners: await fetchSafe(async () => {
+          const r = await fetch("https://filfox.info/api/v1/overview",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.activeMiners;
+          if (typeof n !== "number") throw new Error("no_activeMiners: keys=" + Object.keys(j || {}).slice(0,8).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "depin-networks": {
+    config: { metric: "networks_with_telemetry", threshold_pct: 1, threshold_abs: 2, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        networks_with_telemetry: await fetchSafe(async () => {
+          const r = await fetch("https://kairossignal.com/v1/supply",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.n_networks_available ?? j?.n_networks;
+          if (typeof n !== "number") throw new Error("no_networks: keys=" + Object.keys(j || {}).join(","));
+          return n;
         }),
       },
     }),
