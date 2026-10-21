@@ -2,6 +2,7 @@
 No secrets, no KV, no state. Called once per HTML generation."""
 
 from scripts.narrative import summarize as summarize_narrative, format_html as format_narrative_html
+from scripts.delta import delta as compute_delta, format_html as format_delta_html
 
 import re
 import requests
@@ -155,6 +156,20 @@ def build_digest_briefing():
     <div class="sub">{e}</div>
   </div>
 '''
+
+
+def build_delta_section():
+    """Show what changed since previous run."""
+    try:
+        from pathlib import Path
+        import json
+        history_path = Path(__file__).resolve().parent.parent / "data" / "digest_history.json"
+        with open(history_path) as f:
+            history = json.load(f)
+        d = compute_delta(history)
+        return format_delta_html(d)
+    except Exception:
+        return ""
 
 
 def build_narrative_sections():

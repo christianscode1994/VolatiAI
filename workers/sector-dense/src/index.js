@@ -4216,6 +4216,50 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "snapshot-proposals": {
+    config: { metric: "active_proposals", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_proposals: await fetchSafe(async () => {
+          const r = await fetch("https://hub.snapshot.org/graphql", {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify({
+              query: '{ proposals(first: 1000, where: { state: "active" }) { id } }'
+            }),
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j.errors) throw new Error("graphql: " + JSON.stringify(j.errors).slice(0, 150));
+          const arr = j?.data?.proposals;
+          if (!Array.isArray(arr)) throw new Error("no_proposals: keys=" + Object.keys(j?.data || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "chainsights-daos": {
+    config: { metric: "tracked_daos", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tracked_daos: await fetchSafe(async () => {
+          const r = await fetch("https://chainsights.one/api/v1/daos",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.data ?? j?.daos ?? null);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
