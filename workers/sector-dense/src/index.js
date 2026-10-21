@@ -1679,18 +1679,17 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const d = j?.data || j;
-          if (Array.isArray(d)) {
-            const last = d[d.length - 1];
-            const v = last?.value ?? last?.sales ?? last;
-            if (typeof v === "number") return v;
-            throw new Error("no_value");
+          const rows = j?.data?.data;
+          if (!Array.isArray(rows) || rows.length === 0) {
+            throw new Error("no_rows: data_keys=" + Object.keys(j?.data || {}).join(","));
           }
-          if (typeof d === "object") {
-            const keys = Object.keys(d).filter(k => typeof d[k] === "number");
-            if (keys.length) return d[keys[keys.length - 1]];
-          }
-          throw new Error("no_value");
+          const last = rows[rows.length - 1];
+          const v = typeof last?.value === "number" ? last.value
+                  : typeof last?.y === "number" ? last.y
+                  : typeof last === "number" ? last
+                  : null;
+          if (v === null) throw new Error("no_value: row_keys=" + Object.keys(last || {}).join(","));
+          return v;
         }),
       },
     }),
@@ -1768,13 +1767,16 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         hep_papers: await fetchSafe(async () => {
-          const r = await fetch("https://inspirehep.net/api/literature?q=arxiv_categories:hep-ph&size=1",
+          const r = await fetch("https://inspirehep.net/api/literature?q=arxiv_categories%3A%22hep-ph%22&size=1",
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const total = j?.hits?.total;
-          if (typeof total !== "number") throw new Error("no_count");
-          return total;
+          const t = j?.hits?.total;
+          const n = typeof t === "number" ? t
+                  : typeof t?.value === "number" ? t.value
+                  : null;
+          if (n === null) throw new Error("no_count: total_type=" + typeof t + " keys=" + Object.keys(t || {}).join(","));
+          return n;
         }),
       },
     }),
@@ -1882,26 +1884,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "luxury-auctions": {
-    config: { metric: "total_lots", threshold_pct: 0.1, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_lots: await fetchSafe(async () => {
-          const r = await fetch("https://clientapi.prod.sothelabs.com/graphql", {
-            method: "POST",
-            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
-            body: JSON.stringify({ query: "{ lots(first:1) { totalCount } }" }),
-            signal: AbortSignal.timeout(20000),
-          });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.data?.lots?.totalCount ?? j?.data?.prod_lots?.totalCount;
-          if (typeof n !== "number") throw new Error("no_count: " + JSON.stringify(j).slice(0, 200));
-          return n;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -1954,7 +1936,7 @@ Object.assign(COLLECTORS, {
         filings_24h: await fetchSafe(async () => {
           const today = new Date().toISOString().slice(0, 10);
           const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
-          const url = "https://efts.sec.gov/LATEST/search-index?q=&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
+          const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=8-K&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
           const r = await fetch(url, {
             headers: {
               "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -1985,22 +1967,6 @@ Object.assign(COLLECTORS, {
           const row = arr.find(x => x.value !== null);
           if (!row) throw new Error("no_value");
           return row.value;
-        }),
-      },
-    }),
-  },
-  economics: {
-    config: { metric: "gdp_growth_pct", threshold_pct: 5, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        gdp_growth_pct: await fetchSafe(async () => {
-          const r = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH?periods=2024",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.values?.NGDP_RPCH?.USA?.["2024"] ?? j?.values?.NGDP_RPCH?.WLD?.["2024"];
-          if (typeof v === "number") return v;
-          throw new Error("shape_mismatch: keys=" + Object.keys(j?.values || {}).join(","));
         }),
       },
     }),
