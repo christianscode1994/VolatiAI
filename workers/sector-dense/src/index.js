@@ -3329,6 +3329,85 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "global-trade-regulations": {
+    config: { metric: "total_regulations", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_regulations: await fetchSafe(async () => {
+          const r = await fetch("https://tradecompliancerecords.com/api/v1/registry",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j
+                    : Array.isArray(j?.nodes) ? j.nodes
+                    : Array.isArray(j?.data) ? j.data
+                    : Array.isArray(j?.registry) ? j.registry
+                    : null;
+          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "uk-legislation": {
+    config: { metric: "total_acts", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_acts: await fetchSafe(async () => {
+          const r = await fetch("https://www.legislation.gov.uk/all/data.feed?results-count=1",
+            { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.com)", "accept": "application/atom+xml" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const m = text.match(/<opensearch:totalResults[^>]*>(\d+)<\/opensearch:totalResults>/);
+          if (!m) throw new Error("no_totalResults: len=" + text.length);
+          return parseInt(m[1], 10);
+        }),
+      },
+    }),
+  },
+  "un-governance": {
+    config: { metric: "total_entities", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_entities: await fetchSafe(async () => {
+          const r = await fetch("https://data.ungovr.org/v1/entities/index.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j
+                    : Array.isArray(j?.entities) ? j.entities
+                    : Array.isArray(j?.countries) ? j.countries
+                    : Array.isArray(j?.data) ? j.data
+                    : null;
+          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "swiss-federal-laws": {
+    config: { metric: "total_acts", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_acts: await fetchSafe(async () => {
+          const query = "SELECT (COUNT(*) AS ?count) WHERE { ?s a <http://data.legilux.public.lu/resource/ontology/jolux#Act> . }";
+          const url = "https://fedlex.data.admin.ch/sparqlendpoint?format=application%2Fsparql-results%2Bjson&query=" + encodeURIComponent(query);
+          const r = await fetch(url,
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/sparql-results+json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.results?.bindings?.[0]?.count?.value;
+          if (v == null) throw new Error("no_count: keys=" + Object.keys(j?.results || {}).join(","));
+          return parseInt(v, 10);
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
