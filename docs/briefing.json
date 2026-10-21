@@ -1,9 +1,9 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-21T19:29:06Z",
+  "ts": "2026-10-21T19:46:11Z",
   "run_number": 24,
   "briefing": {
-    "headline": "10 signals across 248 sectors evaluated",
+    "headline": "9 signals across 248 sectors evaluated",
     "by_domain": {
       "security": {
         "count": 1,
@@ -48,12 +48,6 @@
         "sectors": [
           "water"
         ]
-      },
-      "other": {
-        "count": 1,
-        "sectors": [
-          "museums"
-        ]
       }
     }
   },
@@ -83,12 +77,12 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 7
+      "fires_24": 8
     },
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 66,687 MW",
+      "summary": "New: DE grid load: 63,156 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -97,7 +91,7 @@
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [359] Today's PHP security release, and how we're strengthening security",
+      "summary": "New: [385] Today's PHP security release, and how we're strengthening security",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -106,7 +100,7 @@
     {
       "sector": "news",
       "severity": "notice",
-      "summary": "New: Claude Duet",
+      "summary": "New: Mistral Large 4",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -119,7 +113,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 5
+      "fires_24": 6
     },
     {
       "sector": "sports-fitness",
@@ -133,30 +127,21 @@
     {
       "sector": "water",
       "severity": "notice",
-      "summary": "New: Mississippi flow: 167,000 cfs",
+      "summary": "New: Mississippi flow: 168,000 cfs",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 12
-    },
-    {
-      "sector": "museums",
-      "severity": "critical",
-      "summary": "total_objects 502993 (-20.9%)",
-      "confidence": 1,
-      "magnitude": 209.33,
-      "pct_change": -20.933314260653326,
-      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-21 19:25",
-    "signals_before": 9,
-    "signals_after": 10,
-    "new": [
+    "previous_ts": "2026-10-21 19:29",
+    "signals_before": 10,
+    "signals_after": 9,
+    "new": [],
+    "dropped": [
       "museums"
     ],
-    "dropped": [],
     "persistent": [
       "cve-feed",
       "depin-network",
@@ -171,22 +156,33 @@
     "movements": [
       {
         "sector": "energy-grid",
-        "previous": "New: DE grid load: 66,677 MW",
-        "current": "New: DE grid load: 66,687 MW"
+        "previous": "New: DE grid load: 66,687 MW",
+        "current": "New: DE grid load: 63,156 MW"
       },
       {
         "sector": "events",
-        "previous": "New: [353] Today's PHP security release, and how we're strengthening security",
-        "current": "New: [359] Today's PHP security release, and how we're strengthening security"
+        "previous": "New: [359] Today's PHP security release, and how we're strengthening security",
+        "current": "New: [385] Today's PHP security release, and how we're strengthening security"
       },
       {
         "sector": "news",
-        "previous": "New: Today's PHP security release, and how we're strengthening security",
-        "current": "New: Claude Duet"
+        "previous": "New: Claude Duet",
+        "current": "New: Mistral Large 4"
+      },
+      {
+        "sector": "water",
+        "previous": "New: Mississippi flow: 167,000 cfs",
+        "current": "New: Mississippi flow: 168,000 cfs"
       }
     ]
   },
   "watchlist": [
+    {
+      "sector": "museums",
+      "avg_volatility": 20.93,
+      "max_volatility": 20.93,
+      "fires_in_window": 1
+    },
     {
       "sector": "biotech",
       "avg_volatility": 10.99,
@@ -240,18 +236,12 @@
       "avg_volatility": 1.61,
       "max_volatility": 1.61,
       "fires_in_window": 0
-    },
-    {
-      "sector": "grid-demand",
-      "avg_volatility": 0.7,
-      "max_volatility": 0.7,
-      "fires_in_window": 0
     }
   ],
   "stats": {
     "total_sectors": 248,
-    "firing_sectors": 10,
-    "fire_rate_pct": 4.03,
+    "firing_sectors": 9,
+    "fire_rate_pct": 3.63,
     "runs_in_history": 24
   }
 }
