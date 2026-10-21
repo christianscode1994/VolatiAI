@@ -3547,6 +3547,77 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  movies: {
+    config: { metric: "movie_count", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        movie_count: await fetchSafe(async () => {
+          const r = await fetch("https://itunes.apple.com/search?term=movie&entity=movie&limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.resultCount;
+          if (typeof n !== "number") throw new Error("no_resultCount: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "music-charts": {
+    config: { metric: "chart_tracks", threshold_pct: 5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        chart_tracks: await fetchSafe(async () => {
+          const r = await fetch("https://api.deezer.com/chart/0/tracks?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total ?? (Array.isArray(j?.data) ? j.data.length : null);
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "simkl-trending": {
+    config: { metric: "trending_titles", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        trending_titles: await fetchSafe(async () => {
+          const r = await fetch("https://api.simkl.org/trending?client_id=volatiai&app-name=volatiai&app-version=1.0",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j
+                    : Array.isArray(j?.data) ? j.data
+                    : Array.isArray(j?.movies) ? j.movies
+                    : null;
+          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "itunes-podcasts": {
+    config: { metric: "podcast_count", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        podcast_count: await fetchSafe(async () => {
+          const r = await fetch("https://itunes.apple.com/search?term=podcast&entity=podcast&limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.resultCount;
+          if (typeof n !== "number") throw new Error("no_resultCount: keys=" + Object.keys(j || {}).join(", "));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
