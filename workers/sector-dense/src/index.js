@@ -1582,6 +1582,180 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  tokenization: {
+    config: { metric: "tokenized_stocks", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tokenized_stocks: await fetchSafe(async () => {
+          const r = await fetch("https://api.coinbase.com/v1/tokenized-stocks",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j.data || j.tokens || []);
+          if (!Array.isArray(arr)) throw new Error("not_array");
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  stocks: {
+    config: { metric: "us_listings", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        us_listings: await fetchSafe(async () => {
+          const r = await fetch("https://blockrun.ai/api/v1/stocks/US/list",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j.data || j.tickers || j.symbols || []);
+          if (!Array.isArray(arr)) throw new Error("not_array");
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "mental-health": {
+    config: { metric: "mh_indicators", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        mh_indicators: await fetchSafe(async () => {
+          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'mental%20health')",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.value)) throw new Error("no_value");
+          return j.value.length;
+        }),
+      },
+    }),
+  },
+  "substance-abuse": {
+    config: { metric: "datasets", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        datasets: await fetchSafe(async () => {
+          const r = await fetch("https://healthdata.gov/api/3/action/package_search?q=substance+abuse&rows=0",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.result?.count !== "number") throw new Error("no_count");
+          return j.result.count;
+        }),
+      },
+    }),
+  },
+  "renewable-energy": {
+    config: { metric: "renewable_share_pct", threshold_pct: 1, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        renewable_share_pct: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/EG.FEC.RNEW.ZS?format=json&per_page=5&date=2020:2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.[1];
+          if (!Array.isArray(arr)) throw new Error("no_data");
+          const row = arr.find(x => x.value !== null);
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  infrastructure: {
+    config: { metric: "electricity_access_pct", threshold_pct: 0.5, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        electricity_access_pct: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/EG.ELC.ACCS.ZS?format=json&per_page=5&date=2020:2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.[1];
+          if (!Array.isArray(arr)) throw new Error("no_data");
+          const row = arr.find(x => x.value !== null);
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  construction: {
+    config: { metric: "industry_value_added_usd", threshold_pct: 1, threshold_abs: 1e10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        industry_value_added_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/NV.IND.TOTL.CD?format=json&per_page=5&date=2020:2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.[1];
+          if (!Array.isArray(arr)) throw new Error("no_data");
+          const row = arr.find(x => x.value !== null);
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  esports: {
+    config: { metric: "live_games", threshold_pct: 30, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        live_games: await fetchSafe(async () => {
+          const r = await fetch("https://api.opendota.com/api/live",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  livestreaming: {
+    config: { metric: "live_streams", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        live_streams: await fetchSafe(async () => {
+          const r = await fetch("https://gql.twitch.tv/gql", {
+            method: "POST",
+            headers: {
+              "Client-ID": "kimne78kx3ncx6brgo4mv6wki5h1ko",
+              "Content-Type": "application/json",
+              "user-agent": "VolatiAI/1.0",
+            },
+            body: JSON.stringify({ query: "{ streams(first:100){ edges { node { id } } } }" }),
+            signal: AbortSignal.timeout(15000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const edges = j?.data?.streams?.edges;
+          if (!Array.isArray(edges)) throw new Error("no_edges");
+          return edges.length;
+        }),
+      },
+    }),
+  },
+  beauty: {
+    config: { metric: "beauty_products", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        beauty_products: await fetchSafe(async () => {
+          const r = await fetch("https://world.openbeautyfacts.org/api/v2/search?page_size=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
