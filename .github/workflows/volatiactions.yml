@@ -72,7 +72,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add docs/latest.json docs/summary.html history docs/briefing.json docs/briefing.json
+          git add docs/latest.json docs/summary.html history docs/briefing.json
           git commit -m "Update dashboard, API & history snapshots" || echo "No changes"
           for i in 1 2 3 4 5; do
             if git push; then

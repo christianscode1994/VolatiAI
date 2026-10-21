@@ -563,6 +563,12 @@ def main():
         for t in trends:
             print(f"  {t}")
     save_history(history)
+    try:
+        from scripts.briefing import write_briefing
+        write_briefing(path="docs/briefing.json")
+        print("Wrote docs/briefing.json")
+    except Exception as e:
+        print(f"briefing write failed: {e}")
 
     # Persistent graph snapshot
     graph_diff = None
