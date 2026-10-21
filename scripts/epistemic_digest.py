@@ -244,6 +244,9 @@ def append_run(history, arb, envelopes_by_sector):
         sectors[a["sector"]] = {
             "has_signal": a["has_signal"],
             "confidence": a["confidence"],
+            "severity": env.get("severity") or a.get("severity") or "info",
+            "magnitude": env.get("magnitude") if env.get("magnitude") is not None else a.get("magnitude"),
+            "data_quality": env.get("data_quality"),
             "delta_current": delta.get("current"),
             "metric": delta.get("metric"),
             "pct_change": delta.get("pct_change"),
