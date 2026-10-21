@@ -1,431 +1,6 @@
 {
   "runs": [
     {
-      "timestamp": "2026-10-20T02:54:54.379856Z",
-      "sectors": {
-        "air-quality": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 4.9,
-          "metric": "pm25",
-          "pct_change": 0
-        },
-        "anime": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "art-design": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "arxiv-cs": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "audius": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "biology": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "blockchain": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 0.17,
-          "metric": "gas_price",
-          "pct_change": 0
-        },
-        "books": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "commodities": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 6.56,
-          "metric": "copper",
-          "pct_change": 0
-        },
-        "crossref": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "crypto-defi": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 89074498483,
-          "metric": "defi_tvl",
-          "pct_change": 0
-        },
-        "currency-ex": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 1.1225,
-          "metric": "eur_usd",
-          "pct_change": 0
-        },
-        "cve-feed": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "depin-market": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 703847655,
-          "metric": "depin_mcap",
-          "pct_change": 0
-        },
-        "depin-network": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "develop": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "drug-recall": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "earthquakes": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "energy": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 98.67,
-          "metric": "wti",
-          "pct_change": 0
-        },
-        "environment": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 428.07,
-          "metric": "co2_ppm",
-          "pct_change": null
-        },
-        "events": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "fed-rate": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 3.88,
-          "metric": "fed_funds",
-          "pct_change": 0
-        },
-        "finance": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 5.09,
-          "metric": "treasury_10y",
-          "pct_change": 0
-        },
-        "food-drink": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "free-games": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "free-to-play": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "gdp": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 604.8,
-          "metric": "gdp_se",
-          "pct_change": null
-        },
-        "github-trending": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "health": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "huggingface-models": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "jobs": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "kryptovaluta": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 60.31,
-          "metric": "btc_dominance",
-          "pct_change": 0
-        },
-        "metals": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 4151.8,
-          "metric": "gold",
-          "pct_change": 0
-        },
-        "music": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "news": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "npm-packages": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "open-source": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "open-source-packages": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "osv-vulnerabilities": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "podcasts": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "pubmed": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "pypi-packages": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "sec-filings": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "security": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "shopping": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 98.66,
-          "metric": "wti",
-          "pct_change": 0
-        },
-        "space": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "spaceweather": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "sports-fitness": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "stocks": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 7690.73,
-          "metric": "sp500",
-          "pct_change": 0
-        },
-        "tracking": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 18.44,
-          "metric": "vix",
-          "pct_change": 0
-        },
-        "travel": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "treasuries": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 5.09,
-          "metric": "yield_10y",
-          "pct_change": null
-        },
-        "tv": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "unemployment": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 8.4,
-          "metric": "unemployment_se",
-          "pct_change": null
-        },
-        "vehicles": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "weather": {
-          "has_signal": false,
-          "confidence": 1.0,
-          "delta_current": 3.9,
-          "metric": "temp_stockholm",
-          "pct_change": 0
-        },
-        "wikipedia": {
-          "has_signal": true,
-          "confidence": 1.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "education": {
-          "has_signal": false,
-          "confidence": 0.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "science": {
-          "has_signal": false,
-          "confidence": 0.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        },
-        "science-math": {
-          "has_signal": false,
-          "confidence": 0.0,
-          "delta_current": null,
-          "metric": null,
-          "pct_change": null
-        }
-      }
-    },
-    {
       "timestamp": "2026-10-20T10:46:09.639532Z",
       "sectors": {
         "air-quality": {
@@ -13720,6 +13295,1288 @@
           "confidence": 0.0,
           "delta_current": null,
           "metric": null,
+          "pct_change": null
+        },
+        "space-launches": {
+          "has_signal": false,
+          "confidence": 0.0,
+          "delta_current": 0,
+          "metric": "none",
+          "pct_change": null
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-21T10:05:10.699361Z",
+      "sectors": {
+        "aave": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 43913770114,
+          "metric": "aave_tvl",
+          "pct_change": 0.43794668554138105
+        },
+        "agent-census": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 60,
+          "metric": "named_agents",
+          "pct_change": 0
+        },
+        "ai-news": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 246,
+          "metric": "ai_stories_24h",
+          "pct_change": 0.40816326530612246
+        },
+        "air-quality": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 29,
+          "metric": "avg_european_aqi",
+          "pct_change": -3.3333333333333335
+        },
+        "anime": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "api-directory": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 2529,
+          "metric": "num_apis",
+          "pct_change": 0
+        },
+        "art-design": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "arxiv-ai": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "arxiv-cs": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "audius": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "autonomous-tech": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 6332,
+          "metric": "ads_incidents",
+          "pct_change": 0
+        },
+        "aviation-weather": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 250,
+          "metric": "metar_stations",
+          "pct_change": 0
+        },
+        "bank-data": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 27835,
+          "metric": "institutions",
+          "pct_change": 0
+        },
+        "beauty": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 78384,
+          "metric": "beauty_products",
+          "pct_change": 0
+        },
+        "bike-share": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 815,
+          "metric": "networks",
+          "pct_change": 0
+        },
+        "biology": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "biotech": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 910,
+          "metric": "pubmed_7d",
+          "pct_change": 0
+        },
+        "bitcoin-nodes": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 25772,
+          "metric": "reachable_nodes",
+          "pct_change": 0.03105107902499612
+        },
+        "blockchain": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 0.05,
+          "metric": "gas_price",
+          "pct_change": 0
+        },
+        "books": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "bot-activity": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 6299,
+          "metric": "agent_hits_24h",
+          "pct_change": 0
+        },
+        "botnet-c2": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": {
+            "total": 5,
+            "online": 1
+          },
+          "metric": "tracked_c2",
+          "pct_change": null
+        },
+        "calendars": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 22,
+          "metric": "upcoming_holidays",
+          "pct_change": 0
+        },
+        "carbon-intensity": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "chemistry": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 28596,
+          "metric": "papers_7d",
+          "pct_change": 0
+        },
+        "china": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 18729668435848,
+          "metric": "gdp_usd",
+          "pct_change": 0
+        },
+        "climate-datasets": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "dataset_count",
+          "pct_change": 0
+        },
+        "cloud-status": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 0,
+          "metric": "open_incidents",
+          "pct_change": 0
+        },
+        "commodities": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 6.547,
+          "metric": "copper",
+          "pct_change": -0.045801526717558994
+        },
+        "compute": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1869,
+          "metric": "active_providers",
+          "pct_change": 0
+        },
+        "construction": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 28403795045949.5,
+          "metric": "industry_value_added_usd",
+          "pct_change": 0
+        },
+        "courtlistener": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 8332813,
+          "metric": "total_opinions",
+          "pct_change": 0
+        },
+        "crates-io": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 357906,
+          "metric": "total_crates",
+          "pct_change": 0.0025146899806368873
+        },
+        "crossref": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "crypto-defi": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 90342408321,
+          "metric": "defi_tvl",
+          "pct_change": 0
+        },
+        "crypto-market": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 2754133710575,
+          "metric": "total_market_cap",
+          "pct_change": 0.002582775370973369
+        },
+        "crypto-oi": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3096231,
+          "metric": "btc_open_interest",
+          "pct_change": 0.1250499617768154
+        },
+        "cryptocurrency": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 60.51,
+          "metric": "btc_dominance",
+          "pct_change": 0.016528925619831422
+        },
+        "currency-ex": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1.1215,
+          "metric": "eur_usd",
+          "pct_change": 0
+        },
+        "cve-feed": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "cyber-threats": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1754,
+          "metric": "known_exploited",
+          "pct_change": 0
+        },
+        "data-validity": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 4984,
+          "metric": "fresh_datasets_7d",
+          "pct_change": 0
+        },
+        "defi-dex-volume": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 8773678664,
+          "metric": "dex_volume_24h",
+          "pct_change": 0
+        },
+        "defi-fees": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 70888842,
+          "metric": "fees_24h",
+          "pct_change": 0.008150042608908066
+        },
+        "defi-stablecoins": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 424,
+          "metric": "stablecoin_count",
+          "pct_change": 0
+        },
+        "defi-yields": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 282555542,
+          "metric": "top_yield_tvl",
+          "pct_change": 0
+        },
+        "demographics": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "depin-market": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 719650482,
+          "metric": "depin_mcap",
+          "pct_change": -0.040870082131472085
+        },
+        "depin-network": {
+          "has_signal": true,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "depin-networks": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 164,
+          "metric": "networks_with_telemetry",
+          "pct_change": 0
+        },
+        "dev-metaverse": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "dev-vr-ar": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "develop": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "developer-activity": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "public_events",
+          "pct_change": 0
+        },
+        "devto-articles": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "article_count",
+          "pct_change": 0
+        },
+        "diseases": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3102,
+          "metric": "indicators",
+          "pct_change": 0
+        },
+        "drug-recall": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "e-commerce": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1000,
+          "metric": "catalog_products",
+          "pct_change": 0
+        },
+        "earthquakes": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "education": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "electricity": {
+          "has_signal": true,
+          "confidence": 1.0,
+          "delta_current": 49.983,
+          "metric": "grid_frequency_hz",
+          "pct_change": -0.10193068713275359
+        },
+        "energy": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 99.36,
+          "metric": "wti",
+          "pct_change": -0.060350030175017375
+        },
+        "energy-carbon": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 120,
+          "metric": "gco2_per_kwh",
+          "pct_change": 0
+        },
+        "energy-grid": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "entertainment": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 136,
+          "metric": "episodes_today",
+          "pct_change": 0
+        },
+        "environment": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 428.08,
+          "metric": "co2_ppm",
+          "pct_change": null
+        },
+        "events": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "exchange-rate": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 0.89075,
+          "metric": "eur_usd",
+          "pct_change": 0
+        },
+        "fed-rate": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3.88,
+          "metric": "fed_funds",
+          "pct_change": 0
+        },
+        "fema-disasters": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 70571,
+          "metric": "total_declarations",
+          "pct_change": 0
+        },
+        "fertilizer": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 136.461700816081,
+          "metric": "kg_per_hectare",
+          "pct_change": 0
+        },
+        "filecoin-miners": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 447,
+          "metric": "active_miners",
+          "pct_change": 0
+        },
+        "finance": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 5.15,
+          "metric": "treasury_10y",
+          "pct_change": 0
+        },
+        "fintech": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 758,
+          "metric": "markets",
+          "pct_change": 1.6085790884718498
+        },
+        "flux-nodes": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 6989,
+          "metric": "total_nodes",
+          "pct_change": 0.02862458852154
+        },
+        "food-drink": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "food-products": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "food-security": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 4826348,
+          "metric": "products",
+          "pct_change": 0
+        },
+        "forums": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 30,
+          "metric": "active_topics",
+          "pct_change": 0
+        },
+        "frankfurter-fx": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 0.89166,
+          "metric": "usd_eur",
+          "pct_change": 0
+        },
+        "free-games": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "free-to-play": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "gaming": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1759088,
+          "metric": "steam_players",
+          "pct_change": 0.6906033864465436
+        },
+        "gdp": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 604.8,
+          "metric": "gdp_se",
+          "pct_change": null
+        },
+        "generative-ai": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 107069746,
+          "metric": "top100_downloads",
+          "pct_change": 0.6838487301655545
+        },
+        "github-trending": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "government-data": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 59370,
+          "metric": "datasets",
+          "pct_change": 0
+        },
+        "grid-demand": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 33110,
+          "metric": "demand_mw",
+          "pct_change": -0.6958190870373703
+        },
+        "grid-mix": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 46.9,
+          "metric": "renewable_pct",
+          "pct_change": -2.8985507246376785
+        },
+        "hackernews": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1266,
+          "metric": "stories_24h",
+          "pct_change": 0.31695721077654515
+        },
+        "hazards": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 174,
+          "metric": "earthquakes_24h",
+          "pct_change": 0
+        },
+        "health": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "helium-hotspots": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1035730,
+          "metric": "total_hotspots",
+          "pct_change": 0
+        },
+        "huggingface-models": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "humanitarian-aid": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 28357,
+          "metric": "datasets",
+          "pct_change": 0
+        },
+        "infrastructure": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 91.9264843853681,
+          "metric": "electricity_access_pct",
+          "pct_change": 0
+        },
+        "institutional-finance": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 236,
+          "metric": "filings_24h",
+          "pct_change": 7.2727272727272725
+        },
+        "jobs": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "korean-culture": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1010,
+          "metric": "works",
+          "pct_change": 0
+        },
+        "languages": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1073,
+          "metric": "wiki_count",
+          "pct_change": 0
+        },
+        "laws": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 10000,
+          "metric": "documents",
+          "pct_change": 0
+        },
+        "maker": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 6461040129,
+          "metric": "sky_tvl",
+          "pct_change": 0
+        },
+        "malware-families": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 2982,
+          "metric": "tracked_families",
+          "pct_change": 0
+        },
+        "maritime": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1137,
+          "metric": "vessels",
+          "pct_change": 0.08802816901408451
+        },
+        "mental-health": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 23,
+          "metric": "mh_indicators",
+          "pct_change": 0
+        },
+        "metals": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 4139.1,
+          "metric": "gold",
+          "pct_change": -0.019324138264191708
+        },
+        "more-cryptos": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "coin_count",
+          "pct_change": 0
+        },
+        "museums": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 636163,
+          "metric": "total_objects",
+          "pct_change": 0
+        },
+        "music": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "nasa-neo": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 62763,
+          "metric": "neo_total",
+          "pct_change": 0
+        },
+        "nature-observations": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 395344600,
+          "metric": "total_observations",
+          "pct_change": 0
+        },
+        "networking": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 61400,
+          "metric": "ripe_probes",
+          "pct_change": 0
+        },
+        "news": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "nft": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "ngo": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 804,
+          "metric": "filings",
+          "pct_change": 0
+        },
+        "npm-packages": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "npm-search": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 193540,
+          "metric": "total_matches",
+          "pct_change": 0
+        },
+        "open-source": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "open-source-packages": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "openfda-recalls": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 18043,
+          "metric": "total_recalls",
+          "pct_change": 0
+        },
+        "openlibrary-books": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3990670,
+          "metric": "num_found",
+          "pct_change": -7.517528998241651e-05
+        },
+        "optoelectronics": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 58772,
+          "metric": "papers",
+          "pct_change": 0
+        },
+        "osv-vulnerabilities": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "particle-physics": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 0,
+          "metric": "hep_papers",
+          "pct_change": 0
+        },
+        "philosophy": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 204902,
+          "metric": "works",
+          "pct_change": 0
+        },
+        "podcasts": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "population": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 8140897523,
+          "metric": "world_population",
+          "pct_change": 0
+        },
+        "pqc-migration": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "programming": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 46.1165,
+          "metric": "top_score",
+          "pct_change": 0
+        },
+        "protocols-tvl": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 90342408321,
+          "metric": "total_tvl_usd",
+          "pct_change": 0
+        },
+        "pubmed": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "pypi-activity": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 757777775,
+          "metric": "weekly_downloads",
+          "pct_change": 0
+        },
+        "pypi-packages": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "radio-stations": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 62479,
+          "metric": "total_stations",
+          "pct_change": 0.004801843908060695
+        },
+        "refugees": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 31637408,
+          "metric": "refugees",
+          "pct_change": 0
+        },
+        "religions": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 171560,
+          "metric": "works",
+          "pct_change": 0
+        },
+        "renewable-energy": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 19.7355641050053,
+          "metric": "renewable_share_pct",
+          "pct_change": 0
+        },
+        "research": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 60027,
+          "metric": "works_7d",
+          "pct_change": 0
+        },
+        "satellites": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 12354,
+          "metric": "tracked_satellites",
+          "pct_change": 0
+        },
+        "scaling-l2": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 8477218093,
+          "metric": "total_tvl_usd",
+          "pct_change": 0
+        },
+        "science": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 159734,
+          "metric": "datasets",
+          "pct_change": 0
+        },
+        "science-math": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "science-news": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 20062,
+          "metric": "papers_7d",
+          "pct_change": 0
+        },
+        "sec-filings": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "security": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "shopping": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 99.36,
+          "metric": "wti",
+          "pct_change": -0.060350030175017375
+        },
+        "simulations": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 0.3,
+          "metric": "projected_temp_c",
+          "pct_change": 0
+        },
+        "smr": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 91,
+          "metric": "tracked_units",
+          "pct_change": 0
+        },
+        "space": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "space-news": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "articles_24h",
+          "pct_change": 0
+        },
+        "spaceweather": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "species-observations": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3981531892,
+          "metric": "occurrence_count",
+          "pct_change": 0
+        },
+        "sports": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 30,
+          "metric": "games_today",
+          "pct_change": 0
+        },
+        "sports-fitness": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "sports-scores": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3,
+          "metric": "games_today",
+          "pct_change": 0
+        },
+        "statistics": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 1725484065,
+          "metric": "series_count",
+          "pct_change": 0
+        },
+        "stocks": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "us_listings",
+          "pct_change": 0
+        },
+        "theoretical-cs": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 30660,
+          "metric": "papers_7d",
+          "pct_change": 0
+        },
+        "tokenization": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 100,
+          "metric": "tokenized_stocks",
+          "pct_change": 0
+        },
+        "tracking": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 17.44,
+          "metric": "vix",
+          "pct_change": 0.4029936672423735
+        },
+        "transportation": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 3,
+          "metric": "delayed_airports",
+          "pct_change": 0
+        },
+        "travel": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 173,
+          "metric": "fuel_countries",
+          "pct_change": 0
+        },
+        "treasuries": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 5.15,
+          "metric": "yield_10y",
+          "pct_change": null
+        },
+        "tv": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "unemployment": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 8.4,
+          "metric": "unemployment_se",
+          "pct_change": null
+        },
+        "universities": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 2349,
+          "metric": "university_count",
+          "pct_change": 0
+        },
+        "usgs-streamflow": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 178000,
+          "metric": "discharge_cfs",
+          "pct_change": 0
+        },
+        "utilities": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 211.94,
+          "metric": "power_price_eur_mwh",
+          "pct_change": 0
+        },
+        "vehicles": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "water": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "weather": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 12.3,
+          "metric": "temperature_c",
+          "pct_change": -3.1496062992125875
+        },
+        "web-apps": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 175034536,
+          "metric": "weekly_downloads",
+          "pct_change": 0
+        },
+        "wikipedia": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": null,
+          "metric": null,
+          "pct_change": null
+        },
+        "wikipedia-activity": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 44854861,
+          "metric": "views_7d",
+          "pct_change": 0
+        },
+        "worldbank-indicators": {
+          "has_signal": false,
+          "confidence": 1.0,
+          "delta_current": 29544,
+          "metric": "indicator_count",
+          "pct_change": 0
+        },
+        "interop-messaging": {
+          "has_signal": false,
+          "confidence": 0.8571428571428571,
+          "delta_current": 150,
+          "metric": "total_messages",
+          "pct_change": 0
+        },
+        "computer-networks": {
+          "has_signal": false,
+          "confidence": 0.0,
+          "delta_current": 0,
+          "metric": "none",
+          "pct_change": null
+        },
+        "ev": {
+          "has_signal": false,
+          "confidence": 0.0,
+          "delta_current": 0,
+          "metric": "none",
+          "pct_change": null
+        },
+        "grid-balance": {
+          "has_signal": false,
+          "confidence": 0.0,
+          "delta_current": 0,
+          "metric": "none",
+          "pct_change": null
+        },
+        "natural-disasters": {
+          "has_signal": false,
+          "confidence": 0.0,
+          "delta_current": 0,
+          "metric": "none",
+          "pct_change": null
+        },
+        "nutrition-foods": {
+          "has_signal": false,
+          "confidence": 0.0,
+          "delta_current": 0,
+          "metric": "none",
           "pct_change": null
         },
         "space-launches": {
