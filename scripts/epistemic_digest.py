@@ -506,6 +506,13 @@ def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=Non
 
 
 def send(token, chat_id, text):
+    # Telegram caps messages at 4096 chars; leave buffer for HTML tags
+    MAX_LEN = 4000
+    if len(text) > MAX_LEN:
+        cut = text[:MAX_LEN].rfind("\n")
+        if cut < MAX_LEN * 0.8:
+            cut = MAX_LEN
+        text = text[:cut] + "\n\n\u2026 (truncated)"
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     data = json.dumps({"chat_id": chat_id, "text": text, "parse_mode": "HTML"}).encode()
     req = urllib.request.Request(url, data=data, headers={"content-type": "application/json"})
