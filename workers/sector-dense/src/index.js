@@ -875,6 +875,99 @@ async function fetchChainHeight(c) {
   }
 }
 
+
+Object.assign(COLLECTORS, {
+  chemistry: {
+    config: { metric: "papers_7d", threshold_pct: 10, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        papers_7d: await fetchSafe(async () => {
+          const d = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
+          const r = await fetch(`https://api.openalex.org/works?search=chemistry&filter=from_publication_date:${d}&per-page=1&mailto=volatiai@example.com`, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.meta?.count !== "number") throw new Error("no_count");
+          return j.meta.count;
+        }),
+      },
+    }),
+  },
+  biotech: {
+    config: { metric: "pubmed_7d", threshold_pct: 10, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        pubmed_7d: await fetchSafe(async () => {
+          const url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=biotechnology%5BMeSH+Terms%5D+AND+last+7+days%5Bdp%5D&retmode=json&retmax=0";
+          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = parseInt(j.esearchresult?.count ?? "0", 10);
+          if (Number.isNaN(n)) throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+  "government-data": {
+    config: { metric: "datasets", threshold_pct: 1, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        datasets: await fetchSafe(async () => {
+          const r = await fetch("https://catalog.data.gov/api/3/action/package_search?rows=0", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.result?.count !== "number") throw new Error("no_count");
+          return j.result.count;
+        }),
+      },
+    }),
+  },
+  "humanitarian-aid": {
+    config: { metric: "datasets", threshold_pct: 1, threshold_abs: 20, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        datasets: await fetchSafe(async () => {
+          const r = await fetch("https://data.humdata.org/api/3/action/package_search?rows=0", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.result?.count !== "number") throw new Error("no_count");
+          return j.result.count;
+        }),
+      },
+    }),
+  },
+  ngo: {
+    config: { metric: "filings", threshold_pct: 1, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        filings: await fetchSafe(async () => {
+          const r = await fetch("https://projects.propublica.org/nonprofits/api/v2/search.json?q=humanitarian", { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.total_results !== "number") throw new Error("no_count");
+          return j.total_results;
+        }),
+      },
+    }),
+  },
+  transportation: {
+    config: { metric: "delayed_airports", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        delayed_airports: await fetchSafe(async () => {
+          const r = await fetch("https://external-api.faa.gov/asws/api/airport/delays", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j)) return j.length;
+          if (Array.isArray(j?.delays)) return j.delays.length;
+          if (Array.isArray(j?.airports)) return j.airports.length;
+          throw new Error("unknown_shape");
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
