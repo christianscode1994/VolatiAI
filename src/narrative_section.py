@@ -44,6 +44,77 @@ def _fetch_crypto_rss(limit=40):
     return score / len(titles), len(titles)
 
 
+def build_live_signals_section(digest_history_path="data/digest_history.json"):
+    """Live signals from the latest epistemic digest run.
+    Reads data/digest_history.json and renders fired sectors."""
+    import json
+    from pathlib import Path
+
+    try:
+        with open(digest_history_path) as f:
+            history = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return ""
+
+    runs = history.get("runs", [])
+    if not runs:
+        return ""
+
+    last_run = runs[-1]
+    sectors = last_run.get("sectors", {})
+    ts = (last_run.get("timestamp") or "unknown")[:19]
+
+    firing = [(name, data) for name, data in sectors.items() if data.get("has_signal")]
+
+    if not firing:
+        return f'''
+  <h2>Live Signals</h2>
+  <div class="card">
+    <div class="label">Last digest run: {ts}Z</div>
+    <div class="value"><span class="pill pill-neutral">quiet</span></div>
+    <div class="sub">0 of {len(sectors)} sectors firing</div>
+  </div>
+'''
+
+    rows = ""
+    for name, data in sorted(firing, key=lambda x: -(x[1].get("confidence") or 0)):
+        sev = data.get("severity") or "notice"
+        sev_pill = {
+            "critical": "pill-bear",
+            "warning":  "pill-bear",
+            "notice":   "pill-neutral",
+            "info":     "pill-neutral",
+        }.get(sev, "pill-neutral")
+        metric = data.get("metric") or "\u2014"
+        pct = data.get("pct_change")
+        if pct is not None:
+            pct_str = f"{pct:+.2f}%"
+            pct_cls = "pos" if pct > 0 else "neg" if pct < 0 else ""
+        else:
+            pct_str = "\u2014"
+            pct_cls = ""
+        conf = data.get("confidence") or 0
+        conf_pct = int(round(conf * 100))
+
+        rows += f'''
+    <tr>
+      <td><span class="pill {sev_pill}">{sev}</span></td>
+      <td>{name}</td>
+      <td>{metric}</td>
+      <td class="{pct_cls}">{pct_str}</td>
+      <td>{conf_pct}%</td>
+    </tr>'''
+
+    return f'''
+  <h2>Live Signals ({len(firing)} firing)</h2>
+  <div class="updated">Last digest run: {ts}Z</div>
+  <table>
+    <tr><th>Severity</th><th>Sector</th><th>Metric</th><th>Change</th><th>Conf</th></tr>
+    {rows}
+  </table>
+'''
+
+
 def build_narrative_sections():
     """HTML for Crypto Sentiment / DeFi TVL / Trending NFTs."""
 
