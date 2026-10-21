@@ -3544,27 +3544,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "clinical-trials-v2": {
-    config: { metric: "total_studies", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_studies: await fetchSafe(async () => {
-          const r = await fetch("https://clinicaltrials.gov/api/v2/studies?pageSize=1&format=json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const xTotal = r.headers.get("x-total-count");
-          if (xTotal !== null) {
-            const n = parseInt(xTotal, 10);
-            if (!Number.isNaN(n)) return n;
-          }
-          const j = await r.json();
-          const n = j?.totalCount ?? j?.pagination?.totalCount;
-          if (typeof n === "number") return n;
-          throw new Error("no_count: header=" + (xTotal === null ? "absent" : xTotal) + " keys=" + Object.keys(j || {}).join(","));
-        }),
-      },
-    }),
-  },
 });
 
 
