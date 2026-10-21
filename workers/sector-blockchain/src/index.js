@@ -1,7 +1,7 @@
 const SECTOR = "blockchain";
 
 const RPC_URLS = [
-  "https://nullrpc.dev/eth",
+  "https://ethereum-rpc.publicnode.com",
   "https://rpcfree.com/ethereum-rpc",
   "https://eth.blockrazor.xyz",
   "https://ethereum-rpc.publicnode.com"
@@ -103,7 +103,7 @@ export default {
         ? `Gas ${pct > 0 ? "+" : ""}${pct.toFixed(0)}% (${gas} gwei, ${absChange.toFixed(1)} Δ)`
         : "quiet",
       delta: gas !== null
-        ? { metric: "gas_price", current: gas, previous: previous ? parseFloat(previous) : null, pct_change: pct, window: "24h" }
+        ? { metric: "gas", current: gas, previous: previous ? parseFloat(previous) : null, pct_change: pct, window: "24h" }
         : null,
       context: {
         eth_block: result.sources.block.ok ? result.sources.block.data.block : null,
