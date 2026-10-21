@@ -1,0 +1,241 @@
+{
+  "sector": "volati-ai",
+  "ts": "2026-10-21T18:57:57Z",
+  "run_number": 24,
+  "briefing": {
+    "headline": "10 signals across 244 sectors evaluated",
+    "by_domain": {
+      "energy": {
+        "count": 2,
+        "sectors": [
+          "carbon-intensity",
+          "energy-grid"
+        ]
+      },
+      "security": {
+        "count": 1,
+        "sectors": [
+          "cve-feed"
+        ]
+      },
+      "crypto": {
+        "count": 1,
+        "sectors": [
+          "depin-network"
+        ]
+      },
+      "information": {
+        "count": 3,
+        "sectors": [
+          "develop",
+          "events",
+          "news"
+        ]
+      },
+      "space": {
+        "count": 1,
+        "sectors": [
+          "spaceweather"
+        ]
+      },
+      "sports": {
+        "count": 1,
+        "sectors": [
+          "sports-fitness"
+        ]
+      },
+      "environment": {
+        "count": 1,
+        "sectors": [
+          "water"
+        ]
+      }
+    }
+  },
+  "signals": [
+    {
+      "sector": "carbon-intensity",
+      "severity": "notice",
+      "summary": "New: UK grid: 115 gCO2/kWh (moderate)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 15
+    },
+    {
+      "sector": "cve-feed",
+      "severity": "notice",
+      "summary": "New: CVE-2026-100406: dbt enables data analysts and engineers to transform their data using the same practices that softwa",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 18
+    },
+    {
+      "sector": "depin-network",
+      "severity": "notice",
+      "summary": "New: Flux nodes: 6,845",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 21
+    },
+    {
+      "sector": "develop",
+      "severity": "notice",
+      "summary": "New: Universal Semiconductor (v1.17.9)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 5
+    },
+    {
+      "sector": "energy-grid",
+      "severity": "notice",
+      "summary": "New: DE grid load: 66,671 MW",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 17
+    },
+    {
+      "sector": "events",
+      "severity": "notice",
+      "summary": "New: [845] PHP 8.2.35",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 15
+    },
+    {
+      "sector": "news",
+      "severity": "notice",
+      "summary": "New: PHP 8.2.35",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 18
+    },
+    {
+      "sector": "spaceweather",
+      "severity": "notice",
+      "summary": "New: Space Weather Message Code: WARK04\r",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 3
+    },
+    {
+      "sector": "sports-fitness",
+      "severity": "notice",
+      "summary": "New: NFL Week 7 buzz: What we're hearing on QB situations, trade candidates and the wild NFC East",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 16
+    },
+    {
+      "sector": "water",
+      "severity": "notice",
+      "summary": "New: Mississippi flow: 167,000 cfs",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 10
+    }
+  ],
+  "delta": {
+    "previous_ts": "2026-10-21 18:53",
+    "signals_before": 10,
+    "signals_after": 10,
+    "new": [],
+    "dropped": [],
+    "persistent": [
+      "carbon-intensity",
+      "cve-feed",
+      "depin-network",
+      "develop",
+      "energy-grid",
+      "events",
+      "news",
+      "spaceweather",
+      "sports-fitness",
+      "water"
+    ],
+    "movements": [
+      {
+        "sector": "events",
+        "previous": "New: [841] PHP 8.2.35",
+        "current": "New: [845] PHP 8.2.35"
+      }
+    ]
+  },
+  "watchlist": [
+    {
+      "sector": "biotech",
+      "avg_volatility": 10.99,
+      "max_volatility": 10.99,
+      "fires_in_window": 1
+    },
+    {
+      "sector": "energy-carbon",
+      "avg_volatility": 3.91,
+      "max_volatility": 3.91,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "air-quality",
+      "avg_volatility": 3.33,
+      "max_volatility": 3.33,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "institutional-finance",
+      "avg_volatility": 3.04,
+      "max_volatility": 7.27,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "grid-mix",
+      "avg_volatility": 2.9,
+      "max_volatility": 2.9,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "weather",
+      "avg_volatility": 2.72,
+      "max_volatility": 3.25,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "defi-dex-volume",
+      "avg_volatility": 2.64,
+      "max_volatility": 2.64,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "science-news",
+      "avg_volatility": 1.75,
+      "max_volatility": 1.75,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "fintech",
+      "avg_volatility": 1.61,
+      "max_volatility": 1.61,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "grid-demand",
+      "avg_volatility": 0.7,
+      "max_volatility": 0.7,
+      "fires_in_window": 0
+    }
+  ],
+  "stats": {
+    "total_sectors": 244,
+    "firing_sectors": 10,
+    "fire_rate_pct": 4.1,
+    "runs_in_history": 24
+  }
+}

@@ -223,6 +223,13 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         logger.warning("Narrative snapshot failed: %s", e)
     write_html(PUBLIC_DIR / "summary.html", payload, score=score)
 
+    # Unified JSON output for bots, external tools, and the dashboard
+    try:
+        from scripts.briefing import write_briefing
+        write_briefing(path=str(PUBLIC_DIR / "briefing.json"))
+    except Exception as e:
+        logger.warning("Briefing JSON failed: %s", e)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-snaps", action="store_true",
