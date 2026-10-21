@@ -1,17 +1,10 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-21T18:57:57Z",
+  "ts": "2026-10-21T19:29:06Z",
   "run_number": 24,
   "briefing": {
-    "headline": "10 signals across 244 sectors evaluated",
+    "headline": "10 signals across 248 sectors evaluated",
     "by_domain": {
-      "energy": {
-        "count": 2,
-        "sectors": [
-          "carbon-intensity",
-          "energy-grid"
-        ]
-      },
       "security": {
         "count": 1,
         "sectors": [
@@ -32,6 +25,12 @@
           "news"
         ]
       },
+      "energy": {
+        "count": 1,
+        "sectors": [
+          "energy-grid"
+        ]
+      },
       "space": {
         "count": 1,
         "sectors": [
@@ -49,23 +48,20 @@
         "sectors": [
           "water"
         ]
+      },
+      "other": {
+        "count": 1,
+        "sectors": [
+          "museums"
+        ]
       }
     }
   },
   "signals": [
     {
-      "sector": "carbon-intensity",
-      "severity": "notice",
-      "summary": "New: UK grid: 115 gCO2/kWh (moderate)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 15
-    },
-    {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-100406: dbt enables data analysts and engineers to transform their data using the same practices that softwa",
+      "summary": "New: CVE-2026-0321: Denial of service vulnerabilities in Palo Alto Networks PAN-OS\u00ae software allow an unauthenticated at",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -74,7 +70,7 @@
     {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,845",
+      "summary": "New: Flux nodes: 6,843",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -87,12 +83,12 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 5
+      "fires_24": 7
     },
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 66,671 MW",
+      "summary": "New: DE grid load: 66,687 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -101,7 +97,7 @@
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [845] PHP 8.2.35",
+      "summary": "New: [359] Today's PHP security release, and how we're strengthening security",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -110,7 +106,7 @@
     {
       "sector": "news",
       "severity": "notice",
-      "summary": "New: PHP 8.2.35",
+      "summary": "New: Claude Duet",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -123,12 +119,12 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 3
+      "fires_24": 5
     },
     {
       "sector": "sports-fitness",
       "severity": "notice",
-      "summary": "New: NFL Week 7 buzz: What we're hearing on QB situations, trade candidates and the wild NFC East",
+      "summary": "New: Breaking down how the 17 first-year Power 4 college football coaches have done so far",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -141,17 +137,27 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 10
+      "fires_24": 12
+    },
+    {
+      "sector": "museums",
+      "severity": "critical",
+      "summary": "total_objects 502993 (-20.9%)",
+      "confidence": 1,
+      "magnitude": 209.33,
+      "pct_change": -20.933314260653326,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-21 18:53",
-    "signals_before": 10,
+    "previous_ts": "2026-10-21 19:25",
+    "signals_before": 9,
     "signals_after": 10,
-    "new": [],
+    "new": [
+      "museums"
+    ],
     "dropped": [],
     "persistent": [
-      "carbon-intensity",
       "cve-feed",
       "depin-network",
       "develop",
@@ -164,9 +170,19 @@
     ],
     "movements": [
       {
+        "sector": "energy-grid",
+        "previous": "New: DE grid load: 66,677 MW",
+        "current": "New: DE grid load: 66,687 MW"
+      },
+      {
         "sector": "events",
-        "previous": "New: [841] PHP 8.2.35",
-        "current": "New: [845] PHP 8.2.35"
+        "previous": "New: [353] Today's PHP security release, and how we're strengthening security",
+        "current": "New: [359] Today's PHP security release, and how we're strengthening security"
+      },
+      {
+        "sector": "news",
+        "previous": "New: Today's PHP security release, and how we're strengthening security",
+        "current": "New: Claude Duet"
       }
     ]
   },
@@ -233,9 +249,9 @@
     }
   ],
   "stats": {
-    "total_sectors": 244,
+    "total_sectors": 248,
     "firing_sectors": 10,
-    "fire_rate_pct": 4.1,
+    "fire_rate_pct": 4.03,
     "runs_in_history": 24
   }
 }
