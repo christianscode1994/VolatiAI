@@ -28,6 +28,8 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: python3 scripts/epistemic_digest.py
 
       - name: Run self-correction advisor
