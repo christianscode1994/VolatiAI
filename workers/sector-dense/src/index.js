@@ -2545,22 +2545,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "semantic-scholar": {
-    config: { metric: "total_papers", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_papers: await fetchSafe(async () => {
-          const r = await fetch("https://api.semanticscholar.org/graph/v1/paper/search?query=machine+learning&limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.total;
-          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
   courtlistener: {
     config: { metric: "total_opinions", threshold_pct: 0.1, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -2614,21 +2598,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "spacex-launches": {
-    config: { metric: "total_launches", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_launches: await fetchSafe(async () => {
-          const r = await fetch("https://api.spacexdata.com/v4/launches",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return j.length;
-        }),
-      },
-    }),
-  },
   "exchange-rate": {
     config: { metric: "eur_usd", threshold_pct: 1, threshold_abs: 0.005, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
@@ -2660,38 +2629,6 @@ Object.assign(COLLECTORS, {
           const j = await r.json();
           if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
           return j.length;
-        }),
-      },
-    }),
-  },
-  astronauts: {
-    config: { metric: "people_in_space", threshold_pct: 20, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        people_in_space: await fetchSafe(async () => {
-          const r = await fetch("http://api.open-notify.org/astros.json",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.number;
-          if (typeof n !== "number") throw new Error("no_number: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
-  "google-books": {
-    config: { metric: "total_items", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_items: await fetchSafe(async () => {
-          const r = await fetch("https://www.googleapis.com/books/v1/volumes?q=machine+learning&maxResults=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.totalItems;
-          if (typeof n !== "number") throw new Error("no_totalItems: keys=" + Object.keys(j || {}).join(","));
-          return n;
         }),
       },
     }),
@@ -2760,22 +2697,6 @@ Object.assign(COLLECTORS, {
           const events = j?.events;
           if (!Array.isArray(events)) throw new Error("no_events: keys=" + Object.keys(j || {}).join(","));
           return events.length;
-        }),
-      },
-    }),
-  },
-  "sports-leagues": {
-    config: { metric: "total_leagues", threshold_pct: 1, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_leagues: await fetchSafe(async () => {
-          const r = await fetch("https://www.thesportsdb.com/api/v1/json/3/all_leagues.php",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const leagues = j?.leagues;
-          if (!Array.isArray(leagues)) throw new Error("no_leagues: keys=" + Object.keys(j || {}).join(","));
-          return leagues.length;
         }),
       },
     }),
@@ -2903,22 +2824,6 @@ Object.assign(COLLECTORS, {
           const v = j?.rates?.EUR;
           if (typeof v !== "number") throw new Error("no_rate: rates_keys=" + Object.keys(j?.rates || {}).join(","));
           return v;
-        }),
-      },
-    }),
-  },
-  "reddit-subscribers": {
-    config: { metric: "r_all_subscribers", threshold_pct: 0.5, threshold_abs: 10000, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        r_all_subscribers: await fetchSafe(async () => {
-          const r = await fetch("https://www.reddit.com/r/all/about.json",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.data?.subscribers;
-          if (typeof n !== "number") throw new Error("no_subscribers: keys=" + Object.keys(j?.data || {}).join(","));
-          return n;
         }),
       },
     }),
