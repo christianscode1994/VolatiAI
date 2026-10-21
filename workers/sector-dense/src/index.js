@@ -3650,9 +3650,10 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const total = j?.TotalMW;
-          if (typeof total === "number") return Math.round(total);
-          throw new Error("no_TotalMW: keys=" + Object.keys(j || {}).join(","));
+          const raw = j?.TotalMW;
+          const total = typeof raw === "number" ? raw : parseFloat(raw);
+          if (Number.isFinite(total)) return Math.round(total);
+          throw new Error("no_TotalMW: raw=" + JSON.stringify(raw).slice(0, 100) + " type=" + typeof raw);
         }),
       },
     }),
@@ -3754,7 +3755,10 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.certificates_24h ?? j?.certs_24h ?? j?.ingest?.certificates_24h ?? j?.totals?.certificates_24h;
+          const n = j?.totals?.certs_24h
+                  ?? j?.certs_24h
+                  ?? j?.ingest?.certs_24h
+                  ?? j?.totals?.certificates_24h;
           if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
           return n;
         }),
@@ -3901,10 +3905,13 @@ Object.assign(COLLECTORS, {
           const plot = Array.isArray(j?.plots) ? j.plots[0] : null;
           const series = plot?.data ?? plot?.values ?? j?.data;
           if (!Array.isArray(series) || !series.length) throw new Error("no_series: plots_keys=" + Object.keys(plot || j || {}).join(","));
-          const last = series[series.length - 1];
-          const v = Array.isArray(last) ? last[1] : (last?.value ?? last?.y ?? last);
-          if (typeof v !== "number") throw new Error("no_value: last=" + JSON.stringify(last).slice(0, 150));
-          return v;
+          // Prefer SCSFI_EU (spot index) over forward curve; find last non-null
+          for (let k = series.length - 1; k >= 0; k--) {
+            const row = series[k];
+            const v = row?.SCSFI_EU ?? row?.["Forward curve"] ?? row?.value ?? row?.y ?? (Array.isArray(row) ? row[1] : null);
+            if (typeof v === "number") return v;
+          }
+          throw new Error("no_value: last=" + JSON.stringify(series[series.length-1]).slice(0, 200));
         }),
       },
     }),
