@@ -2152,38 +2152,6 @@ Object.assign(COLLECTORS, {
       };
     },
   },
-  "global-culture": {
-    config: { metric: "culture_indicators", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        culture_indicators: await fetchSafe(async () => {
-          const r = await fetch("https://api.uis.unesco.org/api/public/data/indicators",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j.indicators || j.data || []);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
-  "japanese-culture": {
-    config: { metric: "anime_total", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        anime_total: await fetchSafe(async () => {
-          const r = await fetch("https://api.jikan.moe/v4/anime?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.pagination?.items?.total;
-          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.pagination?.items || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
   "korean-culture": {
     config: { metric: "works", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -2195,24 +2163,6 @@ Object.assign(COLLECTORS, {
           const j = await r.json();
           if (typeof j.work_count !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
           return j.work_count;
-        }),
-      },
-    }),
-  },
-  "chinese-culture": {
-    config: { metric: "poems", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        poems: await fetchSafe(async () => {
-          const r = await fetch("https://poetry.palemoky.com/api/poems?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.total ?? j?.count ?? j?.pagination?.total
-                  ?? (Array.isArray(j?.data) ? j.data.length : null)
-                  ?? (Array.isArray(j) ? j.length : null);
-          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
-          return n;
         }),
       },
     }),
@@ -2295,6 +2245,48 @@ Object.assign(COLLECTORS, {
           const j = await r.json();
           if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
           return j.length;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  "ai-news": {
+    config: { metric: "ai_stories_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        ai_stories_24h: await fetchSafe(async () => {
+          const cutoff = Math.floor((Date.now() - 864e5) / 1000);
+          const r = await fetch("https://hn.algolia.com/api/v1/search?query=AI&tags=story&numericFilters=created_at_i>" + cutoff + "&hitsPerPage=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.nbHits !== "number") throw new Error("no_nbhits: keys=" + Object.keys(j || {}).join(","));
+          return j.nbHits;
+        }),
+      },
+    }),
+  },
+  "science-news": {
+    config: { metric: "papers_7d", threshold_pct: 10, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        papers_7d: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0,10).replace(/-/g,"/");
+          const weekAgo = new Date(Date.now()-7*864e5).toISOString().slice(0,10).replace(/-/g,"/");
+          const url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="
+                    + encodeURIComponent(weekAgo + ":" + today + "[dp]")
+                    + "&retmode=json&retmax=0";
+          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const raw = j?.esearchresult?.count;
+          if (raw == null) throw new Error("no_count: keys=" + Object.keys(j?.esearchresult || {}).join(","));
+          const n = typeof raw === "number" ? raw : parseInt(raw, 10);
+          if (Number.isNaN(n)) throw new Error("bad_count: " + raw);
+          return n;
         }),
       },
     }),
