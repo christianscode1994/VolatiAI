@@ -69,12 +69,16 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         logger.warning("Polkadot health failed: %s", e)
         polkadot_health = None
 
-    onchain = {
-        "chain_health": build_chain_health(rpc),
-        "polkadot": polkadot_health,
-        "stablecoin_flows": build_stablecoin_flows(rpc, from_block, to_block),
-        "whale_activity": build_whale_activity(rpc, 50, from_block, to_block),
-    }
+    try:
+        onchain = {
+            "chain_health": build_chain_health(rpc),
+            "polkadot": polkadot_health,
+            "stablecoin_flows": build_stablecoin_flows(rpc, from_block, to_block),
+            "whale_activity": build_whale_activity(rpc, 50, from_block, to_block),
+        }
+    except Exception as e:
+        logger.warning("Onchain section failed: %s — continuing without it", e)
+        onchain = {"polkadot": polkadot_health}
 
     # ---- Exchange tickers + depth (best-effort, per-exchange isolation) ----
     exchanges = {}
