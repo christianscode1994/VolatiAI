@@ -129,6 +129,23 @@ def find_correlation_anomalies(arbitrations, envelopes_by_sector):
     return anomalies
 
 
+# Sectors in the same conflict group genuinely measure the same thing.
+# Sectors NOT listed here are never compared — false positives from name
+# collisions (papers_7d, works, datasets, total_tvl_usd, weekly_downloads,
+# games_today) are eliminated by design, not by tuning.
+CONFLICT_GROUPS = {
+    "currency-ex": "fx_usd_eur",
+    "exchange-rate": "fx_usd_eur",
+}
+
+# Direction normalization for FX: higher currency-ex = stronger EUR,
+# higher exchange-rate (EUR→USD) = weaker USD. Negate one to compare.
+CONFLICT_DIRECTION = {
+    "currency-ex": +1,
+    "exchange-rate": -1,
+}
+
+
 def find_contradictions(arbitrations, envelopes_by_sector):
     """Find claims that contradict each other semantically."""
     contradictions = []
@@ -136,21 +153,25 @@ def find_contradictions(arbitrations, envelopes_by_sector):
     # Build metric -> [(sector, current, pct_change, confidence)]
     by_metric = {}
     for a in arbitrations:
-        env = envelopes_by_sector.get(a["sector"], {})
+        sector = a["sector"]
+        group = CONFLICT_GROUPS.get(sector)
+        if not group:
+            continue  # sector not in any conflict group → skip
+        env = envelopes_by_sector.get(sector, {})
         delta = env.get("delta") or {}
         metric = delta.get("metric")
         if not metric or metric == "none":
             continue
-        canonical = METRIC_ALIASES.get(metric, metric)
         current = delta.get("current")
         pct = delta.get("pct_change")
         if current is None:
             continue
-        by_metric.setdefault(canonical, []).append({
-            "sector": a["sector"],
+        direction = CONFLICT_DIRECTION.get(sector, +1)
+        by_metric.setdefault(group, []).append({
+            "sector": sector,
             "metric_raw": metric,
-            "current": current,
-            "pct_change": pct,
+            "current": current * direction,
+            "pct_change": pct * direction if pct is not None else None,
             "confidence": env.get("confidence") if env.get("confidence") is not None else a["confidence"],
         })
 
@@ -165,7 +186,7 @@ def find_contradictions(arbitrations, envelopes_by_sector):
                 if avg == 0:
                     continue
                 divergence = abs(a["current"] - b["current"]) / avg
-                if divergence > 0.10:
+                if divergence > 0.20:
                     contradictions.append({
                         "type": "metric_divergence",
                         "metric": canonical,
