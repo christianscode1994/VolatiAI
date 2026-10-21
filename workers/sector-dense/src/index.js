@@ -3972,6 +3972,51 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "vpn-nordvpn": {
+    config: { metric: "total_servers", threshold_pct: 2, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_servers: await fetchSafe(async () => {
+          const r = await fetch("https://api.nordvpn.com/v1/servers/countries",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          const total = j.reduce((s, c) => s + (c.serverCount || 0), 0);
+          if (total === 0) throw new Error("all_zero: countries=" + j.length);
+          return total;
+        }),
+      },
+    }),
+  },
+  "vpn-mullvad": {
+    config: { metric: "total_relays", threshold_pct: 2, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_relays: await fetchSafe(async () => {
+          const r = await fetch("https://api.mullvad.net/public/relays/wireguard/v1/",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const countries = j?.countries;
+          if (!Array.isArray(countries)) throw new Error("no_countries: keys=" + Object.keys(j || {}).join(","));
+          let total = 0;
+          for (const country of countries) {
+            for (const city of (country.cities || [])) {
+              total += (city.relays || []).length;
+            }
+          }
+          if (total === 0) throw new Error("all_zero: countries=" + countries.length);
+          return total;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
