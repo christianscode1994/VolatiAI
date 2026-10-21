@@ -2921,6 +2921,82 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "policy-rates": {
+    config: { metric: "us_policy_rate", threshold_pct: 1, threshold_abs: 0.05, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        us_policy_rate: await fetchSafe(async () => {
+          const r = await fetch("https://stats.bis.org/api/v1/data/WS_CBPOL/D.US?lastNObservations=1&format=csv",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const lines = text.trim().split("\n");
+          if (lines.length < 2) throw new Error("no_data_rows: lines=" + lines.length);
+          const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
+          const values = lines[1].split(",").map(v => v.trim().replace(/^"|"$/g, ""));
+          const idx = headers.indexOf("OBS_VALUE");
+          if (idx === -1) throw new Error("no_OBS_VALUE: headers=" + headers.join("|"));
+          const n = parseFloat(values[idx]);
+          if (Number.isNaN(n)) throw new Error("bad_value: " + values[idx]);
+          return n;
+        }),
+      },
+    }),
+  },
+  "nport-filings": {
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        filings_24h: await fetchSafe(async () => {
+          const today = new Date().toISOString().slice(0, 10);
+          const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+          const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=NPORT-P&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
+          const r = await fetch(url, {
+            headers: {
+              "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "accept": "application/json",
+            },
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.hits?.total?.value ?? j?.hits?.total;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "xbrl-frames": {
+    config: { metric: "reporting_filers", threshold_pct: 5, threshold_abs: 50, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        reporting_filers: await fetchSafe(async () => {
+          const now = new Date();
+          let q = Math.floor(now.getMonth() / 3) + 1;
+          let y = now.getFullYear();
+          // Frames for the just-closed quarter are populated first
+          q -= 1;
+          if (q === 0) { q = 4; y -= 1; }
+          const period = "CY" + y + "Q" + q + "I";
+          const url = "https://data.sec.gov/api/xbrl/frames/us-gaap/Assets/USD/" + period + ".json";
+          const r = await fetch(url, {
+            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" },
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.data;
+          if (!Array.isArray(arr)) throw new Error("no_data: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
