@@ -2334,16 +2334,20 @@ Object.assign(COLLECTORS, {
           const mix = j?.mix;
           if (Array.isArray(mix)) {
             const REN = ["wind","solar","hydro","biomass","other_renewable","renewable","renewables","wave","tidal"];
-            let sum = 0, found = false;
+            let pctSum = 0, pctFound = false;
+            let renMw = 0, totMw = 0, mwFound = false;
             for (const el of mix) {
               if (!el || typeof el !== "object") continue;
               const fuel = String(el.fuel || el.source || el.name || el.type || el.label || "").toLowerCase();
-              if (!REN.some(r => fuel.includes(r))) continue;
-              const v = el.share ?? el.pct ?? el.percentage ?? el.value ?? el.mw ?? el.percent;
-              if (typeof v === "number") { sum += v; found = true; }
+              const isRen = REN.some(r => fuel.includes(r));
+              const pct = el.share ?? el.pct ?? el.percentage ?? el.percent;
+              const mw  = el.mw ?? el.value ?? el.generation_mw;
+              if (typeof pct === "number") { pctFound = true; if (isRen) pctSum += pct; }
+              if (typeof mw === "number")  { mwFound = true;  totMw += mw; if (isRen) renMw += mw; }
             }
-            if (found) return Math.round(sum * 100) / 100;
-            throw new Error("mix_no_renewable: sample=" + JSON.stringify(mix[0] || {}).slice(0, 250));
+            if (pctFound && pctSum > 0) return Math.round(pctSum * 100) / 100;
+            if (mwFound && totMw > 0)  return Math.round((renMw / totMw) * 10000) / 100;
+            throw new Error("mix_no_renewable: sample=" + JSON.stringify(mix[0] || {}).slice(0, 300));
           }
           if (mix && typeof mix === "object") {
             const REN = ["wind","solar","hydro","biomass","other_renewable","renewables"];
@@ -2389,17 +2393,18 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "botnet-c2": {
-    config: { metric: "active_c2", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "tracked_c2", threshold_pct: 5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
       sources: {
-        active_c2: await fetchSafe(async () => {
-          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json",
+        tracked_c2: await fetchSafe(async () => {
+          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          const online = j.filter(x => x && x.status === "online");
-          return online.length > 0 ? online.length : j.length;
+          const online = j.filter(x => x && x.status === "online").length;
+          const total = j.length;
+          return { total, online };
         }),
       },
     }),
@@ -2440,6 +2445,26 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
+});
+
+
+Object.assign(COLLECTORS, {
+  "open-data": {
+    config: { metric: "socrata_datasets", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        socrata_datasets: await fetchSafe(async () => {
+          const r = await fetch("https://api.us.socrata.com/api/catalog/v1?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.resultSetSize;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
 });
 
 export default {
