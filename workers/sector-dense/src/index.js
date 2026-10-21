@@ -4282,49 +4282,17 @@ Object.assign(COLLECTORS, {
     }),
   },
   "kaspa-blockdag": {
-    config: { metric: "block_count", threshold_pct: 2, threshold_abs: 5000, window: "24h", ttl: 900, context_keys: ["virtualDaaScore"] },
+    config: { metric: "virtual_daa_score", threshold_pct: 5, threshold_abs: 5000, window: "24h", ttl: 900, context_keys: [] },
     collectAll: async () => ({
       sources: {
-        block_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.kaspa.org/info/blockdag",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const raw = j?.blockCount;
-          const n = typeof raw === "number" ? raw : parseInt(raw, 10);
-          if (Number.isNaN(n)) throw new Error("no_blockCount: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-        virtualDaaScore: await fetchSafe(async () => {
+        virtual_daa_score: await fetchSafe(async () => {
           const r = await fetch("https://api.kaspa.org/info/blockdag",
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           const raw = j?.virtualDaaScore;
           const n = typeof raw === "number" ? raw : parseInt(raw, 10);
-          if (Number.isNaN(n)) throw new Error("no_virtualDaaScore");
-          return n;
-        }),
-      },
-    }),
-  },
-  "aleph-zero-blocks": {
-    config: { metric: "block_number", threshold_pct: 3, threshold_abs: 500, window: "24h", ttl: 900, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        block_number: await fetchSafe(async () => {
-          const r = await fetch("https://rpc.alephzero.team", {
-            method: "POST",
-            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
-            body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
-            signal: AbortSignal.timeout(15000),
-          });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const hex = j?.result;
-          if (typeof hex !== "string") throw new Error("no_result: keys=" + Object.keys(j || {}).join(","));
-          const n = parseInt(hex, 16);
-          if (Number.isNaN(n)) throw new Error("bad_hex: " + hex);
+          if (Number.isNaN(n)) throw new Error("no_virtualDaaScore: keys=" + Object.keys(j || {}).join(","));
           return n;
         }),
       },
