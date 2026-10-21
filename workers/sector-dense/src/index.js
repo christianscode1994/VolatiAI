@@ -3278,6 +3278,57 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "ai-enforcement-events": {
+    config: { metric: "total_events", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_events: await fetchSafe(async () => {
+          const r = await fetch("https://global-ai-governance-map.vercel.app/data/enforcement-events.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "ai-implementation-milestones": {
+    config: { metric: "total_milestones", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_milestones: await fetchSafe(async () => {
+          const r = await fetch("https://global-ai-governance-map.vercel.app/data/implementation-tracker.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "ai-governance-records": {
+    config: { metric: "total_records", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_records: await fetchSafe(async () => {
+          const r = await fetch("https://global-ai-governance-map.vercel.app/data/corpus-index.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const rows = j?.rows;
+          if (!Array.isArray(rows)) throw new Error("no_rows: keys=" + Object.keys(j || {}).join(","));
+          return rows.length;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
