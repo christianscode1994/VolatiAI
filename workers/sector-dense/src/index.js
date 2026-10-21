@@ -969,6 +969,68 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "web-apps": {
+    config: { metric: "weekly_downloads", threshold_pct: 5, threshold_abs: 10000000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        weekly_downloads: await fetchSafe(async () => {
+          const pkgs = ["react", "vue", "next", "svelte", "@angular/core"];
+          const results = await Promise.all(pkgs.map(p =>
+            fetch("https://api.npmjs.org/downloads/point/last-week/" + encodeURIComponent(p),
+                  { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) })
+          ));
+          let total = 0;
+          for (const r of results) {
+            if (r.ok) { const j = await r.json(); total += j.downloads || 0; }
+          }
+          return total;
+        }),
+      },
+    }),
+  },
+  "cloud-status": {
+    config: { metric: "open_incidents", threshold_pct: 0, threshold_abs: 1, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        open_incidents: await fetchSafe(async () => {
+          let total = 0;
+          try {
+            const r = await fetch("https://status.aws.amazon.com/data.json",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
+            if (r.ok) { const j = await r.json(); if (Array.isArray(j.current)) total += j.current.length; }
+          } catch {}
+          try {
+            const r = await fetch("https://status.cloud.google.com/incidents.json",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
+            if (r.ok) {
+              const j = await r.json();
+              if (Array.isArray(j)) total += j.filter(x => !x.end).length;
+            }
+          } catch {}
+          return total;
+        }),
+      },
+    }),
+  },
+  "data-validity": {
+    config: { metric: "fresh_datasets_7d", threshold_pct: 10, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        fresh_datasets_7d: await fetchSafe(async () => {
+          const r = await fetch("https://data.gov.uk/api/3/action/package_search?fq=metadata_modified:%5BNOW-7DAYS%20TO%20NOW%5D&rows=0",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.result?.count !== "number") throw new Error("no_count");
+          return j.result.count;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
