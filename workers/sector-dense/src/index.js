@@ -3509,6 +3509,60 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  psychedelics: {
+    config: { metric: "factsheet_count", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        factsheet_count: await fetchSafe(async () => {
+          const r = await fetch("https://tripbot.tripsit.me/api/tripsit/getAllDrugs",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j.err !== null) throw new Error("api_err: " + String(j.err));
+          const corpus = Array.isArray(j.data) ? j.data[0] : null;
+          if (!corpus || typeof corpus !== "object") throw new Error("no_corpus: keys=" + Object.keys(j || {}).join(","));
+          return Object.keys(corpus).length;
+        }),
+      },
+    }),
+  },
+  "drug-approvals": {
+    config: { metric: "total_approvals", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_approvals: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/drug/drugsfda.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.results?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.meta || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "clinical-trials-v2": {
+    config: { metric: "total_studies", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_studies: await fetchSafe(async () => {
+          const r = await fetch("https://clinicaltrials.gov/api/v2/studies?pageSize=1&format=json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalCount;
+          if (typeof n !== "number") throw new Error("no_totalCount: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
