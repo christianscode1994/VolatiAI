@@ -1285,22 +1285,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  cybersecurity: {
-    config: { metric: "exploited_cves", threshold_pct: 10, threshold_abs: 2, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        exploited_cves: await fetchSafe(async () => {
-          const r = await fetch("https://api.genztech.dev/v1/cves/exploited",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const rows = Array.isArray(j) ? j : (j.data || j.cves || []);
-          if (!Array.isArray(rows)) throw new Error("not_array");
-          return rows.length;
-        }),
-      },
-    }),
-  },
   "ai-benchmarks": {
     config: { metric: "top_swebench_score", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
@@ -1346,6 +1330,125 @@ Object.assign(COLLECTORS, {
           const nodes = j?.total_nodes ?? j?.nodes?.length;
           if (typeof nodes !== "number") throw new Error("no_count");
           return nodes;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  china: {
+    config: { metric: "gdp_usd", threshold_pct: 1, threshold_abs: 1e11, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        gdp_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/CHN/indicator/NY.GDP.MKTP.CD?format=json&per_page=1&date=2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.[1]?.[0]?.value;
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  etf: {
+    config: { metric: "etf_count", threshold_pct: 1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        etf_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.tickertrace.pro/v1/etfs?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total ?? j?.count ?? (Array.isArray(j) ? j.length : null);
+          if (typeof n !== "number") throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+  maritime: {
+    config: { metric: "vessels", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        vessels: await fetchSafe(async () => {
+          const r = await fetch("https://meri.digitraffic.fi/api/ais/v1/vessels",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept-encoding": "gzip" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "bank-data": {
+    config: { metric: "institutions", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        institutions: await fetchSafe(async () => {
+          const r = await fetch("https://banks.data.fdic.gov/api/institutions?limit=1&fields=NAME",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.total;
+          if (typeof n !== "number") throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+  "treasury-debt": {
+    config: { metric: "debt_usd", threshold_pct: 0.1, threshold_abs: 1e10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        debt_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.data?.[0]?.tot_pub_debt_out_amt;
+          const n = v != null ? parseFloat(v) : NaN;
+          if (Number.isNaN(n)) throw new Error("no_value");
+          return Math.round(n);
+        }),
+      },
+    }),
+  },
+  "more-cryptos": {
+    config: { metric: "coin_count", threshold_pct: 0.5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        coin_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.coinpaprika.com/v1/coins",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "e-commerce": {
+    config: { metric: "catalog_products", threshold_pct: 5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        catalog_products: await fetchSafe(async () => {
+          const stores = ["allbirds.com","gymshark.com","fashionnova.com","colourpop.com"];
+          let total = 0;
+          for (const st of stores) {
+            try {
+              const r = await fetch("https://" + st + "/products.json?limit=250",
+                { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
+              if (r.ok) { const j = await r.json(); if (Array.isArray(j.products)) total += j.products.length; }
+            } catch {}
+          }
+          if (total === 0) throw new Error("all_stores_failed");
+          return total;
         }),
       },
     }),
