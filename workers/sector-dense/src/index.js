@@ -2746,6 +2746,200 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "sports-scores": {
+    config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        games_today: await fetchSafe(async () => {
+          const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const events = j?.events;
+          if (!Array.isArray(events)) throw new Error("no_events: keys=" + Object.keys(j || {}).join(","));
+          return events.length;
+        }),
+      },
+    }),
+  },
+  "sports-leagues": {
+    config: { metric: "total_leagues", threshold_pct: 1, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_leagues: await fetchSafe(async () => {
+          const r = await fetch("https://www.thesportsdb.com/api/v1/json/3/all_leagues.php",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const leagues = j?.leagues;
+          if (!Array.isArray(leagues)) throw new Error("no_leagues: keys=" + Object.keys(j || {}).join(","));
+          return leagues.length;
+        }),
+      },
+    }),
+  },
+  "nutrition-foods": {
+    config: { metric: "total_foods", threshold_pct: 0.1, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_foods: await fetchSafe(async () => {
+          const r = await fetch("https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=apple&pageSize=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalHits;
+          if (typeof n !== "number") throw new Error("no_totalHits: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "species-observations": {
+    config: { metric: "occurrence_count", threshold_pct: 1, threshold_abs: 1000000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        occurrence_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.gbif.org/v1/occurrence/search?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.count;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "nature-observations": {
+    config: { metric: "total_observations", threshold_pct: 1, threshold_abs: 10000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_observations: await fetchSafe(async () => {
+          const r = await fetch("https://api.inaturalist.org/v1/observations?per_page=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total_results;
+          if (typeof n !== "number") throw new Error("no_total_results: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "radio-stations": {
+    config: { metric: "total_stations", threshold_pct: 1, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_stations: await fetchSafe(async () => {
+          const r = await fetch("https://de1.api.radio-browser.info/json/stats",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.stations;
+          if (typeof n !== "number") throw new Error("no_stations: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "climate-datasets": {
+    config: { metric: "dataset_count", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        dataset_count: await fetchSafe(async () => {
+          const r = await fetch("https://www.ncei.noaa.gov/access/services/search/v1/datasets?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.count;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "nasa-neo": {
+    config: { metric: "neo_total", threshold_pct: 5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        neo_total: await fetchSafe(async () => {
+          const r = await fetch("https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=DEMO_KEY&size=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.page?.total_elements;
+          if (typeof n !== "number") throw new Error("no_total_elements: keys=" + Object.keys(j?.page || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "rest-countries": {
+    config: { metric: "country_count", threshold_pct: 0.1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        country_count: await fetchSafe(async () => {
+          const r = await fetch("https://restcountries.com/v3.1/all",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "frankfurter-fx": {
+    config: { metric: "usd_eur", threshold_pct: 1, threshold_abs: 0.005, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        usd_eur: await fetchSafe(async () => {
+          const r = await fetch("https://api.frankfurter.app/latest?from=USD&to=EUR",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.rates?.EUR;
+          if (typeof v !== "number") throw new Error("no_rate: rates_keys=" + Object.keys(j?.rates || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "reddit-subscribers": {
+    config: { metric: "r_all_subscribers", threshold_pct: 0.5, threshold_abs: 10000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        r_all_subscribers: await fetchSafe(async () => {
+          const r = await fetch("https://www.reddit.com/r/all/about.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.subscribers;
+          if (typeof n !== "number") throw new Error("no_subscribers: keys=" + Object.keys(j?.data || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "devto-articles": {
+    config: { metric: "article_count", threshold_pct: 10, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        article_count: await fetchSafe(async () => {
+          const r = await fetch("https://dev.to/api/articles?per_page=100",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
