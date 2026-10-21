@@ -1815,47 +1815,39 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "ev-charging": {
-    config: { metric: "charging_stations", threshold_pct: 0.1, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+});
+
+
+Object.assign(COLLECTORS, {
+  smr: {
+    config: { metric: "tracked_units", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
       sources: {
-        charging_stations: await fetchSafe(async () => {
-          const body = new URLSearchParams({ data: '[out:json][timeout:25];node["amenity"="charging_station"];out count;' });
-          const r = await fetch("https://overpass-api.de/api/interpreter", {
-            method: "POST",
-            headers: { "user-agent": "VolatiAI/1.0", "content-type": "application/x-www-form-urlencoded" },
-            body: body.toString(),
-            signal: AbortSignal.timeout(30000),
-          });
+        tracked_units: await fetchSafe(async () => {
+          const r = await fetch("https://www.nuclearnewsnetwork.com/api/v1/projects",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const total = j?.elements?.[0]?.tags?.total;
-          if (total == null) throw new Error("no_count");
-          const n = typeof total === "number" ? total : parseInt(total, 10);
-          if (Number.isNaN(n)) throw new Error("bad_count");
+          const n = typeof j?.count === "number" ? j.count
+                  : Array.isArray(j?.units) ? j.units.length
+                  : null;
+          if (n === null) throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
           return n;
         }),
       },
     }),
   },
-  "data-centers": {
-    config: { metric: "mapped_facilities", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+  "api-directory": {
+    config: { metric: "num_apis", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
       sources: {
-        mapped_facilities: await fetchSafe(async () => {
-          const body = new URLSearchParams({ data: '[out:json][timeout:30];(node["building"="data_center"];way["building"="data_center"];node["telecom"="data_center"];way["telecom"="data_center"];);out count;' });
-          const r = await fetch("https://overpass-api.de/api/interpreter", {
-            method: "POST",
-            headers: { "user-agent": "VolatiAI/1.0", "content-type": "application/x-www-form-urlencoded" },
-            body: body.toString(),
-            signal: AbortSignal.timeout(35000),
-          });
+        num_apis: await fetchSafe(async () => {
+          const r = await fetch("https://api.apis.guru/v2/metrics.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const total = j?.elements?.[0]?.tags?.total;
-          if (total == null) throw new Error("no_count");
-          const n = typeof total === "number" ? total : parseInt(total, 10);
-          if (Number.isNaN(n)) throw new Error("bad_count");
+          const n = j?.numAPIs ?? j?.numAPIsTotal ?? null;
+          if (typeof n !== "number") throw new Error("no_count");
           return n;
         }),
       },
