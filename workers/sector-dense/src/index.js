@@ -1855,6 +1855,55 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  utilities: {
+    config: { metric: "power_price_eur_mwh", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        power_price_eur_mwh: await fetchSafe(async () => {
+          const r = await fetch("https://infranode.dev/api/v1/cities/berlin/power-price",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const pl = j?.data?.payload;
+          const candidates = [
+            pl?.value, pl?.price,
+            Array.isArray(pl?.values) ? pl.values[0]?.price : null,
+            Array.isArray(pl?.values) ? pl.values[0]?.value : null,
+            Array.isArray(pl?.data) ? pl.data[0]?.price : null,
+            j?.data?.price, j?.price,
+          ];
+          for (const v of candidates) {
+            if (typeof v === "number" && Number.isFinite(v)) return v;
+          }
+          throw new Error("no_price: payload_keys=" + Object.keys(pl || {}).join(",") + " top_keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  "luxury-auctions": {
+    config: { metric: "total_lots", threshold_pct: 0.1, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_lots: await fetchSafe(async () => {
+          const r = await fetch("https://clientapi.prod.sothelabs.com/graphql", {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify({ query: "{ lots(first:1) { totalCount } }" }),
+            signal: AbortSignal.timeout(20000),
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.lots?.totalCount ?? j?.data?.prod_lots?.totalCount;
+          if (typeof n !== "number") throw new Error("no_count: " + JSON.stringify(j).slice(0, 200));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
