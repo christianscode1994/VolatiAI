@@ -3823,6 +3823,132 @@ Object.assign(COLLECTORS, {
 });
 
 
+
+Object.assign(COLLECTORS, {
+  "tobacco-health": {
+    config: { metric: "tobacco_indicators", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tobacco_indicators: await fetchSafe(async () => {
+          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'tobacco')",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.value;
+          if (!Array.isArray(arr)) throw new Error("no_value: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "alcohol-health": {
+    config: { metric: "alcohol_indicators", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        alcohol_indicators: await fetchSafe(async () => {
+          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'alcohol')",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.value;
+          if (!Array.isArray(arr)) throw new Error("no_value: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "tobacco-reports": {
+    config: { metric: "total_reports", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_reports: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/tobacco/problem.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.results?.total;
+          if (typeof n !== "number") throw new Error("no_total: meta_keys=" + Object.keys(j?.meta || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
+
+
+Object.assign(COLLECTORS, {
+  "ioda-outages": {
+    config: { metric: "outage_events", threshold_pct: 15, threshold_abs: 2, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        outage_events: await fetchSafe(async () => {
+          const r = await fetch("https://api.ioda.inetintel.cc.gatech.edu/v2/outages/events?limit=100",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.data ?? j?.events ?? null);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "ocean-waves": {
+    config: { metric: "wave_height_m", threshold_pct: 20, threshold_abs: 0.3, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        wave_height_m: await fetchSafe(async () => {
+          const r = await fetch("https://marine-api.open-meteo.com/v1/marine?latitude=54.0&longitude=7.0&current=wave_height",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.current?.wave_height;
+          if (typeof v !== "number") throw new Error("no_wave_height: current_keys=" + Object.keys(j?.current || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "bgp-prefixes": {
+    config: { metric: "total_prefixes", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_prefixes: await fetchSafe(async () => {
+          const r = await fetch("https://bgpv6.com/api/v1/stats",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total_prefixes ?? j?.prefixes ?? j?.total ?? j?.stats?.total_prefixes;
+          if (typeof n === "number") return n;
+          if (Array.isArray(j?.data)) return j.data.length;
+          throw new Error("no_prefix_count: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
+  "shipping-rates": {
+    config: { metric: "shanghai_index", threshold_pct: 5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        shanghai_index: await fetchSafe(async () => {
+          const r = await fetch("https://www.econdb.com/widgets/shanghai-containerized-index/data/",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const series = j?.data?.[0]?.data ?? j?.series ?? j?.data;
+          if (!Array.isArray(series) || !series.length) throw new Error("no_series: keys=" + Object.keys(j || {}).join(","));
+          const last = series[series.length - 1];
+          const v = Array.isArray(last) ? last[1] : (last?.value ?? last?.y);
+          if (typeof v !== "number") throw new Error("no_value: last=" + JSON.stringify(last).slice(0, 150));
+          return v;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
