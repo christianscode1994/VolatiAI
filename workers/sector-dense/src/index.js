@@ -1031,6 +1031,60 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  religions: {
+    config: { metric: "works", threshold_pct: 0.5, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        works: await fetchSafe(async () => {
+          const r = await fetch("https://openlibrary.org/subjects/religion.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.work_count !== "number") throw new Error("no_count");
+          return j.work_count;
+        }),
+      },
+    }),
+  },
+  philosophy: {
+    config: { metric: "works", threshold_pct: 0.5, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        works: await fetchSafe(async () => {
+          const r = await fetch("https://openlibrary.org/subjects/philosophy.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.work_count !== "number") throw new Error("no_count");
+          return j.work_count;
+        }),
+      },
+    }),
+  },
+  gaming: {
+    config: { metric: "steam_players", threshold_pct: 5, threshold_abs: 10000, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        steam_players: await fetchSafe(async () => {
+          const appids = [730, 570, 578080, 1172470, 271590];
+          const results = await Promise.all(appids.map(id =>
+            fetch(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${id}`,
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) })
+          ));
+          let total = 0;
+          for (const r of results) {
+            if (r.ok) { const j = await r.json(); total += j?.response?.player_count || 0; }
+          }
+          if (total === 0) throw new Error("all_sources_zero");
+          return total;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
