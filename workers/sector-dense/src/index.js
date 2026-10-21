@@ -882,7 +882,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         papers_7d: await fetchSafe(async () => {
-          const r = await fetch("http://export.arxiv.org/api/query?search_query=cat:physics.chem-ph&start=0&max_results=1", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          const r = await fetch("https://export.arxiv.org/api/query?search_query=cat:physics.chem-ph&start=0&max_results=1", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const t = await r.text();
           const m = t.match(/<opensearch:totalResults[^>]*>\s*(\d+)\s*<\/opensearch:totalResults>/);
@@ -1528,40 +1528,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  oil: {
-    config: { metric: "wti_usd", threshold_pct: 3, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        wti_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.oilpriceapi.com/v1/demo/prices?codes=WTI_USD",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.data?.prices;
-          if (!Array.isArray(arr) || !arr.length) throw new Error("no_prices");
-          const row = arr.find(x => x.code === "WTI_USD") || arr[0];
-          const v = typeof row.price === "number" ? row.price : parseFloat(row.price);
-          if (Number.isNaN(v)) throw new Error("bad_price");
-          return v;
-        }),
-      },
-    }),
-  },
-  mining: {
-    config: { metric: "critical_deposits", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        critical_deposits: await fetchSafe(async () => {
-          const r = await fetch("https://energy.usgs.gov/arcgis/rest/services/Critical_Minerals/USGS_Critical_Mineral_Data/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.count !== "number") throw new Error("no_count");
-          return j.count;
-        }),
-      },
-    }),
-  },
   fertilizer: {
     config: { metric: "kg_per_hectare", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -1631,21 +1597,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "substance-abuse": {
-    config: { metric: "datasets", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        datasets: await fetchSafe(async () => {
-          const r = await fetch("https://healthdata.gov/api/3/action/package_search?q=substance+abuse&rows=0",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.result?.count !== "number") throw new Error("no_count");
-          return j.result.count;
-        }),
-      },
-    }),
-  },
   "renewable-energy": {
     config: { metric: "renewable_share_pct", threshold_pct: 1, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -1700,45 +1651,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  esports: {
-    config: { metric: "live_games", threshold_pct: 30, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        live_games: await fetchSafe(async () => {
-          const r = await fetch("https://api.opendota.com/api/live",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array");
-          return j.length;
-        }),
-      },
-    }),
-  },
-  livestreaming: {
-    config: { metric: "live_streams", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        live_streams: await fetchSafe(async () => {
-          const r = await fetch("https://gql.twitch.tv/gql", {
-            method: "POST",
-            headers: {
-              "Client-ID": "kimne78kx3ncx6brgo4mv6wki5h1ko",
-              "Content-Type": "application/json",
-              "user-agent": "VolatiAI/1.0",
-            },
-            body: JSON.stringify({ query: "{ streams(first:100){ edges { node { id } } } }" }),
-            signal: AbortSignal.timeout(15000),
-          });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const edges = j?.data?.streams?.edges;
-          if (!Array.isArray(edges)) throw new Error("no_edges");
-          return edges.length;
-        }),
-      },
-    }),
-  },
   beauty: {
     config: { metric: "beauty_products", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
@@ -1750,6 +1662,81 @@ Object.assign(COLLECTORS, {
           const j = await r.json();
           if (typeof j.count !== "number") throw new Error("no_count");
           return j.count;
+        }),
+      },
+    }),
+  },
+});
+
+
+Object.assign(COLLECTORS, {
+  ev: {
+    config: { metric: "ev_sales", threshold_pct: 5, threshold_abs: 10000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        ev_sales: await fetchSafe(async () => {
+          const r = await fetch("https://chinadata.live/api/v2/data/ev-sales-comparison",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const d = j?.data || j;
+          if (Array.isArray(d)) {
+            const last = d[d.length - 1];
+            const v = last?.value ?? last?.sales ?? last;
+            if (typeof v === "number") return v;
+            throw new Error("no_value");
+          }
+          if (typeof d === "object") {
+            const keys = Object.keys(d).filter(k => typeof d[k] === "number");
+            if (keys.length) return d[keys[keys.length - 1]];
+          }
+          throw new Error("no_value");
+        }),
+      },
+    }),
+  },
+  "computer-networks": {
+    config: { metric: "internet_exchanges", threshold_pct: 1, threshold_abs: 2, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        internet_exchanges: await fetchSafe(async () => {
+          const r = await fetch("https://www.peeringdb.com/api/ix",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.data)) throw new Error("no_data");
+          return j.data.length;
+        }),
+      },
+    }),
+  },
+  networking: {
+    config: { metric: "ripe_probes", threshold_pct: 1, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        ripe_probes: await fetchSafe(async () => {
+          const r = await fetch("https://atlas.ripe.net/api/v2/probes/?format=json&page_size=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+  optoelectronics: {
+    config: { metric: "papers", threshold_pct: 5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        papers: await fetchSafe(async () => {
+          const r = await fetch("https://export.arxiv.org/api/query?search_query=cat:physics.optics&start=0&max_results=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const t = await r.text();
+          const m = t.match(/<opensearch:totalResults[^>]*>\s*(\d+)\s*<\/opensearch:totalResults>/);
+          if (!m) throw new Error("no_count");
+          return parseInt(m[1], 10);
         }),
       },
     }),
