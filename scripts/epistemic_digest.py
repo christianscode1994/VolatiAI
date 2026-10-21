@@ -243,7 +243,7 @@ def append_run(history, arb, envelopes_by_sector):
         delta = env.get("delta") or {}
         sectors[a["sector"]] = {
             "has_signal": a["has_signal"],
-            "confidence": a["confidence"],
+            "confidence": env.get("confidence") if env.get("confidence") is not None else a["confidence"],
             "severity": env.get("severity") or a.get("severity") or "info",
             "magnitude": env.get("magnitude") if env.get("magnitude") is not None else a.get("magnitude"),
             "data_quality": env.get("data_quality"),
