@@ -1407,6 +1407,89 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  universities: {
+    config: { metric: "university_count", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        university_count: await fetchSafe(async () => {
+          const r = await fetch("http://universities.hipolabs.com/search?country=United+States",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  refugees: {
+    config: { metric: "refugees", threshold_pct: 1, threshold_abs: 100000, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        refugees: await fetchSafe(async () => {
+          const r = await fetch("https://api.unhcr.org/population/v1/population/?limit=1&yearFrom=2023&yearTo=2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.items) || !j.items.length) throw new Error("no_items");
+          const v = j.items[0].refugees;
+          if (typeof v !== "number") throw new Error("no_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  diseases: {
+    config: { metric: "indicators", threshold_pct: 0.1, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        indicators: await fetchSafe(async () => {
+          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.value)) throw new Error("no_value");
+          return j.value.length;
+        }),
+      },
+    }),
+  },
+  "natural-disasters": {
+    config: { metric: "open_events", threshold_pct: 30, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        open_events: await fetchSafe(async () => {
+          const r = await fetch("https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=100",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.events)) throw new Error("no_events");
+          return j.events.length;
+        }),
+      },
+    }),
+  },
+  research: {
+    config: { metric: "works_7d", threshold_pct: 10, threshold_abs: 500, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        works_7d: await fetchSafe(async () => {
+          const d = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
+          const r = await fetch("https://api.crossref.org/works?query=research&filter=from-pub-date:" + d + "&rows=0",
+            { headers: { "user-agent": "VolatiAI/1.0 (mailto:volatiai@example.com)" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.message?.["total-results"];
+          if (typeof n !== "number") throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
