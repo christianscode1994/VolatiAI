@@ -454,7 +454,7 @@ const COLLECTORS = {
 
 
   "depin-market": {
-    config: { metric: "depin_mcap", threshold_pct: 5.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "depin_mcap", threshold_pct: 0.25, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async (env) => ({
       sources: {
         depin_mcap: await fetchSafe(async () => {
@@ -546,7 +546,7 @@ const COLLECTORS = {
   },
 
   "defi-dex-volume": {
-    config: { metric: "dex_volume_24h", threshold_pct: 15.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
+    config: { metric: "dex_volume_24h", threshold_pct: 0.25, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async (env) => ({
       sources: {
         dex_volume_24h: await fetchSafe(async () => {
