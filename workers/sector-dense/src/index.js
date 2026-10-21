@@ -2543,6 +2543,110 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "semantic-scholar": {
+    config: { metric: "total_papers", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_papers: await fetchSafe(async () => {
+          const r = await fetch("https://api.semanticscholar.org/graph/v1/paper/search?query=machine+learning&limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.total;
+          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  courtlistener: {
+    config: { metric: "total_opinions", threshold_pct: 0.1, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_opinions: await fetchSafe(async () => {
+          const r = await fetch("https://www.courtlistener.com/api/rest/v4/search/?q=*&type=o&order_by=dateFiled+desc",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.count;
+          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "usgs-streamflow": {
+    config: { metric: "discharge_cfs", threshold_pct: 20, threshold_abs: 10000, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        discharge_cfs: await fetchSafe(async () => {
+          const r = await fetch("https://waterservices.usgs.gov/nwis/iv/?format=json&sites=07010000&parameterCd=00060&period=PT2H",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const ts = j?.value?.timeSeries;
+          if (!Array.isArray(ts) || !ts.length) throw new Error("no_series: top_keys=" + Object.keys(j || {}).join(","));
+          const vals = ts[0]?.values?.[0]?.value;
+          if (!Array.isArray(vals) || !vals.length) throw new Error("no_values: ts_keys=" + Object.keys(ts[0] || {}).join(","));
+          const v = vals[0]?.value;
+          const n = typeof v === "number" ? v : parseFloat(v);
+          if (Number.isNaN(n)) throw new Error("bad_value: " + String(v));
+          return n;
+        }),
+      },
+    }),
+  },
+  "openfda-recalls": {
+    config: { metric: "total_recalls", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_recalls: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/drug/enforcement.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.results?.total;
+          if (typeof n !== "number") throw new Error("no_total: meta_keys=" + Object.keys(j?.meta || {}).join(","));
+          return n;
+        }),
+      },
+    }),
+  },
+  "spacex-launches": {
+    config: { metric: "total_launches", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_launches: await fetchSafe(async () => {
+          const r = await fetch("https://api.spacexdata.com/v4/launches",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "exchange-rate": {
+    config: { metric: "eur_usd", threshold_pct: 1, threshold_abs: 0.005, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        eur_usd: await fetchSafe(async () => {
+          const r = await fetch("https://open.er-api.com/v6/latest/USD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.rates?.EUR;
+          if (typeof v !== "number") throw new Error("no_rate: rates_keys=" + Object.keys(j?.rates || {}).slice(0,5).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+});
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
