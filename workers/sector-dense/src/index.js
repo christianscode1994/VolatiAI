@@ -3618,6 +3618,80 @@ Object.assign(COLLECTORS, {
   },
 });
 
+
+Object.assign(COLLECTORS, {
+  "world-tourism": {
+    config: { metric: "arrivals", threshold_pct: 1, threshold_abs: 1000000, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        arrivals: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/WLD/indicator/ST.INT.ARVL?format=json&per_page=5&date=2020:2024",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.[1];
+          if (!Array.isArray(arr)) throw new Error("no_data: keys=" + Object.keys(j || {}).join(","));
+          const row = arr.find(x => x && x.value !== null);
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  airports: {
+    config: { metric: "total_airports", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_airports: await fetchSafe(async () => {
+          const r = await fetch("https://flycodes.net/api/airports.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (j?.airports ?? j?.data ?? null);
+          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+  "unesco-sites": {
+    config: { metric: "heritage_sites", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        heritage_sites: await fetchSafe(async () => {
+          const q = "SELECT (COUNT(?site) AS ?count) WHERE { ?site wdt:P1435 wd:Q9259 }";
+          const url = "https://query.wikidata.org/sparql?format=json&query=" + encodeURIComponent(q);
+          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/sparql-results+json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.results?.bindings?.[0]?.count?.value;
+          if (v == null) throw new Error("no_count: keys=" + Object.keys(j?.results || {}).join(","));
+          return parseInt(v, 10);
+        }),
+      },
+    }),
+  },
+  "travel-events": {
+    config: { metric: "total_events", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        total_events: await fetchSafe(async () => {
+          const r = await fetch("https://openvan.camp/api/events?limit=100",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.meta?.total ?? j?.total;
+          if (typeof n === "number") return n;
+          const arr = Array.isArray(j) ? j : (j?.events ?? j?.data ?? null);
+          if (!Array.isArray(arr)) throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return arr.length;
+        }),
+      },
+    }),
+  },
+});
+
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
