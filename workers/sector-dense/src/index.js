@@ -682,7 +682,7 @@ const COLLECTORS = {
     config: { metric: "total_tvl_usd", threshold_pct: 1.0, threshold_abs: 1e9, window: "24h", ttl: 3600, context_keys: ["chain_count"] },
     collectAll: async (env) => {
       const UA = { "user-agent": "VolatiAI/1.0", "accept": "application/json" };
-      const chainsRes = await fetchSafe("defillama.chains", async () => {
+      const chainsRes = await fetchSafe(async () => {
         const r = await fetch("https://api.llama.fi/v2/chains", { headers: UA, signal: AbortSignal.timeout(15000) });
         if (!r.ok) throw new Error("http_" + r.status);
         const j = await r.json();
@@ -705,7 +705,7 @@ const COLLECTORS = {
     collectAll: async (env) => {
       const UA = { "user-agent": "VolatiAI/1.0", "accept": "application/json" };
       const L2_NAMES = ["Arbitrum","Base","OP Mainnet","Optimism","zkSync Era","ZKsync Era","Linea","Scroll","Mantle","Blast","Starknet","Manta Pacific","Metis","Mode","Taiko","Immutable zkEVM"];
-      const chainsRes = await fetchSafe("defillama.l2s", async () => {
+      const chainsRes = await fetchSafe(async () => {
         const r = await fetch("https://api.llama.fi/v2/chains", { headers: UA, signal: AbortSignal.timeout(15000) });
         if (!r.ok) throw new Error("http_" + r.status);
         const j = await r.json();
@@ -728,19 +728,19 @@ const COLLECTORS = {
     collectAll: async (env) => {
       const UA = { "user-agent": "VolatiAI/1.0", "accept": "application/json" };
       const [lz, wh, ax] = await Promise.all([
-        fetchSafe("layerzero", async () => {
+        fetchSafe(async () => {
           const r = await fetch("https://scan.layerzero-api.com/v1/messages/latest", { headers: UA, signal: AbortSignal.timeout(10000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           return (Array.isArray(j) ? j : (j.data ?? [])).length;
         }),
-        fetchSafe("wormhole", async () => {
+        fetchSafe(async () => {
           const r = await fetch("https://api.wormholescan.io/api/v1/vaas?limit=100", { headers: UA, signal: AbortSignal.timeout(10000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           return (Array.isArray(j) ? j : (j.data ?? [])).length;
         }),
-        fetchSafe("axelar", async () => {
+        fetchSafe(async () => {
           const r = await fetch("https://api.axelarscan.io/gmp/searchGMP?size=50", { headers: UA, signal: AbortSignal.timeout(10000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
