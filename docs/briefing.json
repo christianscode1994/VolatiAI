@@ -1,118 +1,136 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T08:48:55Z",
+  "ts": "2026-10-22T09:39:33Z",
   "run_number": 24,
   "briefing": {
-    "headline": "5 signals across 247 sectors evaluated",
+    "headline": "6 signals across 251 sectors evaluated",
     "by_domain": {
-      "crypto": {
-        "count": 1,
+      "energy": {
+        "count": 2,
         "sectors": [
+          "carbon-intensity",
+          "energy-grid"
+        ]
+      },
+      "crypto": {
+        "count": 2,
+        "sectors": [
+          "crypto-oi",
           "depin-network"
         ]
       },
-      "energy": {
+      "security": {
         "count": 1,
         "sectors": [
-          "electricity"
+          "cve-feed"
         ]
       },
       "information": {
-        "count": 2,
-        "sectors": [
-          "events",
-          "news"
-        ]
-      },
-      "other": {
         "count": 1,
         "sectors": [
-          "web-apps"
+          "news"
         ]
       }
     }
   },
   "signals": [
     {
+      "sector": "carbon-intensity",
+      "severity": "notice",
+      "summary": "New: UK grid: 93 gCO2/kWh (moderate)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 15
+    },
+    {
+      "sector": "cve-feed",
+      "severity": "notice",
+      "summary": "New: CVE-2026-18659: In Eclipse Jetty, across various versions of `jetty-security`, and `jetty-eeN-security`, and `jetty-",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 19
+    },
+    {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,811",
+      "summary": "New: Flux nodes: 6,803",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 21
     },
     {
-      "sector": "events",
+      "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: [440] Security Disclosure",
+      "summary": "New: DE grid load: 63,572 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 19
+      "fires_24": 18
     },
     {
       "sector": "news",
       "severity": "notice",
-      "summary": "New: WorldTUI: I trained a 360M model to pretend to be a terminal",
+      "summary": "New: CVE-2026-111943: Compromised Intermediate Certificate Authority",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 19
     },
     {
-      "sector": "web-apps",
-      "severity": "critical",
-      "summary": "weekly_downloads 0 (-100.0%)",
-      "confidence": 1,
-      "magnitude": 20,
-      "pct_change": -100,
-      "fires_24": 1
-    },
-    {
-      "sector": "electricity",
-      "severity": "info",
-      "summary": "grid_frequency_hz 50.048 (-0.1%)",
-      "confidence": 0.3,
-      "magnitude": 1.48,
-      "pct_change": -0.07387441349705308,
-      "fires_24": 3
+      "sector": "crypto-oi",
+      "severity": "notice",
+      "summary": "btc_open_interest 2967491 (+0.9%)",
+      "confidence": 0.6,
+      "magnitude": 2.98,
+      "pct_change": 0.8951560998149372,
+      "fires_24": 2
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 08:46",
-    "signals_before": 4,
-    "signals_after": 5,
+    "previous_ts": "2026-10-22 08:48",
+    "signals_before": 5,
+    "signals_after": 6,
     "new": [
-      "electricity",
-      "news",
-      "web-apps"
+      "carbon-intensity",
+      "crypto-oi",
+      "cve-feed",
+      "energy-grid"
     ],
     "dropped": [
-      "crypto-oi",
-      "cve-feed"
+      "electricity",
+      "events",
+      "web-apps"
     ],
     "persistent": [
       "depin-network",
-      "events"
+      "news"
     ],
     "movements": [
       {
         "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,810",
-        "current": "New: Flux nodes: 6,811"
+        "previous": "New: Flux nodes: 6,811",
+        "current": "New: Flux nodes: 6,803"
       },
       {
-        "sector": "events",
-        "previous": "New: [341] GitLab critical patch release",
-        "current": "New: [440] Security Disclosure"
+        "sector": "news",
+        "previous": "New: WorldTUI: I trained a 360M model to pretend to be a terminal",
+        "current": "New: CVE-2026-111943: Compromised Intermediate Certificate Authority"
       }
     ]
   },
   "watchlist": [
     {
+      "sector": "web-apps",
+      "avg_volatility": 100,
+      "max_volatility": 100,
+      "fires_in_window": 1
+    },
+    {
       "sector": "museums",
-      "avg_volatility": 20.93,
+      "avg_volatility": 13.96,
       "max_volatility": 20.93,
       "fires_in_window": 2
     },
@@ -163,18 +181,12 @@
       "avg_volatility": 1.19,
       "max_volatility": 1.19,
       "fires_in_window": 0
-    },
-    {
-      "sector": "bluesky-posts",
-      "avg_volatility": 1.01,
-      "max_volatility": 1.02,
-      "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 247,
-    "firing_sectors": 5,
-    "fire_rate_pct": 2.02,
+    "total_sectors": 251,
+    "firing_sectors": 6,
+    "fire_rate_pct": 2.39,
     "runs_in_history": 24
   }
 }
