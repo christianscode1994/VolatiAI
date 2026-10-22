@@ -54,7 +54,7 @@ function buildSlowEnvelope(sector, config, result, history) {
     confidence: healthy / Math.max(total, 1),
     timestamp: new Date().toISOString(),
     summary: hasSignal
-      ? config.metric + " " + metric + " (" + (pct > 0 ? "+" : "") + pct.toFixed(1) + "% vs " + windowDays + "d ago)"
+      ? config.metric + " " + metric + " (" + (pct > 0 ? "+" : "") + pct.toFixed(1) + "% vs " + (actualWindowDays != null ? actualWindowDays + "d" : windowDays + "d") + " ago)"
       : "quiet",
     delta: historical !== null
       ? { metric: config.metric, current: metric, previous: historical, pct_change: pct, window: config.window || "7d", actual_window_days: actualWindowDays }
