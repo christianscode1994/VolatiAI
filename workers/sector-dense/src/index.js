@@ -3129,22 +3129,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  gitdealflow: {
-    config: { metric: "tracked_startups", threshold_pct: 2, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        tracked_startups: await fetchSafe(async () => {
-          const r = await fetch("https://signals.gitdealflow.com/api/signals.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.signals ?? j?.data ?? j?.companies ?? []);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
   "ai-models": {
     config: { metric: "available_models", threshold_pct: 2, threshold_abs: 1, window: "24h", ttl: 3600, context_keys: [] },
     collectAll: async () => ({
