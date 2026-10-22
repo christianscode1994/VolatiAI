@@ -1062,7 +1062,11 @@ const COLLECTORS = {
           if (!ts) throw new Error("no data");
           const flow = parseFloat(ts.value);
           const day = new Date().toISOString().slice(0, 10);
-          return { id: "usgs_" + Math.round(flow) + "_" + day, title: "Mississippi flow: " + flow.toLocaleString() + " cfs" };
+          // Bucket to 10,000 cfs — typical Mississippi flow is 100-300k cfs,
+          // so this fires on ~3-5% movement (a real change, not hourly noise).
+          // Title shows exact flow so signal readers see the real number.
+          const bucket = Math.floor(flow / 10000) * 10000;
+          return { id: "usgs_" + bucket + "_" + day, title: "Mississippi flow: " + flow.toLocaleString() + " cfs" };
         }),
       },
     }),
