@@ -840,40 +840,6 @@ const COLLECTORS = {
     }),
   },
 
-  "nftx-collections": {
-    config: { metric: "collections_count", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        collections_count: await fetchSafe(async () => {
-          const r = await fetch("https://nftx-v4-api-production.up.railway.app/v1/ethereum/collections?limit=100",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.collections ?? j?.data ?? j;
-          if (!Array.isArray(arr)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
-
-  "krown-nft-collections": {
-    config: { metric: "collections_count", threshold_pct: 20, threshold_abs: 3, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        collections_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.krownlabs.app/api/collections?page=1&limit=50",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.data ?? j?.collections ?? j;
-          if (!Array.isArray(arr)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
-
   "depin-network": {
     event_source: "flux_node_count",
     ttl: 3600,

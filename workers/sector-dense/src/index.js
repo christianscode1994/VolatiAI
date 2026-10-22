@@ -3145,23 +3145,6 @@ Object.assign(COLLECTORS, {
     }),
   },
 
-  "dexpaprika-new-pools": {
-    config: { metric: "new_pools_24h", threshold_pct: 50, threshold_abs: 50, window: "24h", ttl: 1800, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        new_pools_24h: await fetchSafe(async () => {
-          const r = await fetch("https://api.dexpaprika.com/networks/ethereum/pools/search?order_by=created_at&sort=desc&limit=100&created_after=-24h",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const pools = j?.pools ?? j?.data ?? j?.results;
-          if (!Array.isArray(pools)) throw new Error("no_pools: keys=" + Object.keys(j || {}).join(","));
-          return pools.length;
-        }),
-      },
-    }),
-  },
-
   "form-d-filings": {
     config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
