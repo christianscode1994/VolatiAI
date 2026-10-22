@@ -3056,6 +3056,78 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
+  "nasa-eonet": {
+    config: { metric: "open_events", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        open_events: await fetchSafe(async () => {
+          const r = await fetch("https://eonet.gsfc.nasa.gov/api/v3/events?status=open",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const events = j?.events;
+          if (!Array.isArray(events)) throw new Error("no_events: keys=" + Object.keys(j || {}).join(","));
+          return events.length;
+        }),
+      },
+    }),
+  },
+
+  "usgs-water": {
+    config: { metric: "potomac_discharge_cfs", threshold_pct: 20, threshold_abs: 500, window: "24h", ttl: 1800, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        potomac_discharge_cfs: await fetchSafe(async () => {
+          const r = await fetch("https://waterservices.usgs.gov/nwis/iv/?format=json&sites=01646500&parameterCd=00060&period=PT2H",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const ts = j?.value?.timeSeries;
+          if (!Array.isArray(ts) || ts.length === 0) throw new Error("no_ts");
+          const values = ts[0]?.values?.[0]?.value;
+          if (!Array.isArray(values) || values.length === 0) throw new Error("no_values");
+          const latest = values[values.length - 1];
+          const v = parseFloat(latest?.value);
+          if (isNaN(v)) throw new Error("no_value: " + JSON.stringify(latest));
+          return v;
+        }),
+      },
+    }),
+  },
+
+  "noaa-ndbc": {
+    config: { metric: "active_stations", threshold_pct: 5, threshold_abs: 20, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        active_stations: await fetchSafe(async () => {
+          const r = await fetch("https://www.ndbc.noaa.gov/activestations.xml",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const matches = text.match(/<station[\s>]/g);
+          if (!matches) throw new Error("no_stations");
+          return matches.length;
+        }),
+      },
+    }),
+  },
+
+  "epa-envirofacts": {
+    config: { metric: "tri_facilities_tx", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        tri_facilities_tx: await fetchSafe(async () => {
+          const r = await fetch("https://data.epa.gov/efservice/tri_facility/state_abbr/TX/rows/1:1000/JSON",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+
   "form-d-filings": {
     config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
