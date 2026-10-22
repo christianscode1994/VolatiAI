@@ -58,9 +58,9 @@ def load_all():
                 stats[sector]["value"] = data["delta_current"]
             if data.get("metric"):
                 stats[sector]["metric"] = data["metric"]
-            ctx = data.get("context") or {}
-            if ctx.get("current_event_id"):
-                stats[sector]["last_event"] = ctx["current_event_id"]
+            eid = data.get("event_id")
+            if eid:
+                stats[sector]["last_event"] = eid
 
     return active, licenses, stats, len(runs)
 
@@ -72,10 +72,11 @@ def render_row(name, stats, licenses, runs):
     if s.get("value") is not None:
         value = fmt_value(s["value"])
     elif s.get("last_event"):
-        value = f"evt:{str(s['last_event'])[:10]}"
+        eid = str(s["last_event"])
+        value = f"evt:{eid[:14]}"
     else:
         value = "—"
-    fires = f"{s['fires']}/{runs}"
+    fires = f"{s.get('fires', 0)}/{runs}"
     src = (lic.get("source") or "—")[:22]
     return f"  {name:<28} {metric:<22} {value:>14}  {fires:>7}  {src}"
 
