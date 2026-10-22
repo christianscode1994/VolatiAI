@@ -394,25 +394,6 @@ const COLLECTORS = {
     }),
   },
 
-  courtlistener: {
-    config: { metric: "total_opinions", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        total_opinions: await fetchSafe(async () => {
-          // /opinions/ returns 401 without a token since Oct 2026.
-          // /search/ is explicitly anonymous. "a" is a broad query to
-          // approximate the full-corpus count; page_size is ignored by
-          // search but harmless to include.
-          const r = await fetch("https://www.courtlistener.com/api/rest/v4/search/?q=a&page_size=1",
-            { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.local)" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.count !== "number") throw new Error("no_count");
-          return j.count;
-        }),
-      },
-    }),
-  },
 
   saos: {
     config: { metric: "judgments", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
