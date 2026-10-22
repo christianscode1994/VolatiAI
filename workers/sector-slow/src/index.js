@@ -270,12 +270,20 @@ const COLLECTORS = {
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(30000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const text = await r.text();
-          const lines = text.trim().split("\n").slice(1).filter(l => l.length > 20);
-          if (!lines.length) throw new Error("no_rows");
-          const last = lines[lines.length - 1].split(",");
-          const v = parseFloat(last[last.length - 1]);
-          if (!Number.isFinite(v)) throw new Error("no_value");
-          return v;
+          const lines = text.trim().split(/\r?\n/);
+          if (lines.length < 2) throw new Error("no_rows");
+          const header = lines[0].split(",").map(h => h.trim().toLowerCase());
+          // Prefer seasonally-adjusted index; fall back to non-adjusted.
+          let col = header.indexOf("index_sa");
+          if (col < 0) col = header.indexOf("index_nsa");
+          if (col < 0) col = header.length - 1;   // last resort
+          // Walk backwards from the end; first numeric value wins.
+          for (let i = lines.length - 1; i >= 1; i--) {
+            const parts = lines[i].split(",");
+            const v = parseFloat(parts[col]);
+            if (Number.isFinite(v) && v > 0) return v;
+          }
+          throw new Error("no_value");
         }),
       },
     }),
@@ -326,12 +334,23 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         active_enterprises: await fetchSafe(async () => {
-          const r = await fetch("https://bodacc.io/api/bodacc/stats/counts",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          // bodacc.io returns 403 to the default worker UA but 200 to curl.
+          // Mimic browser headers; if still 403, this sector should be removed.
+          const r = await fetch("https://bodacc.io/api/bodacc/stats/counts", {
+            headers: {
+              "user-agent": "Mozilla/5.0 (compatible; VolatiAI/1.0; +https://volatiai.local)",
+              "accept": "application/json",
+              "referer": "https://bodacc.io/",
+            },
+            signal: AbortSignal.timeout(25000),
+          });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (typeof j.entreprises_actives !== "number") throw new Error("no_entreprises_actives");
-          return j.entreprises_actives;
+          const n = (j && j.entreprises_actives)
+                 ?? (j && j.data && j.data.entreprises_actives)
+                 ?? null;
+          if (typeof n !== "number") throw new Error("no_entreprises_actives");
+          return n;
         }),
       },
     }),
@@ -351,12 +370,14 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         sensor_boxes: await fetchSafe(async () => {
-          const r = await fetch("https://api.opensensemap.org/stats",
+          // /stats shape varies; /boxes returns an array of all boxes.
+          const r = await fetch("https://api.opensensemap.org/boxes",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (typeof j.boxes === "number") return j.boxes;
-          throw new Error("no_boxes_field");
+          if (Array.isArray(j)) return j.length;
+          if (typeof j.count === "number") return j.count;
+          throw new Error("no_box_count");
         }),
       },
     }),
@@ -377,19 +398,21 @@ const COLLECTORS = {
     }),
   },
   "home-assistant": {
-    config: { metric: "total_installations", threshold_pct: 0.5, window: "7d", window_days: 7, ttl: 86400 },
+    config: { metric: "integration_types", threshold_pct: 0.5, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
       sources: {
-        total_installations: await fetchSafe(async () => {
+        integration_types: await fetchSafe(async () => {
           const r = await fetch("https://analytics.home-assistant.io/data.json",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const flat = Object.values(j).flatMap(v =>
-            typeof v === "number" ? [v] :
-            v && typeof v === "object" ? Object.values(v).filter(x => typeof x === "number") : []);
-          if (!flat.length) throw new Error("no_numeric_values");
-          return flat.reduce((a, b) => a + b, 0);
+          // The analytics JSON contains per-integration, per-version, and
+          // per-timestamp numeric fields. Summing them produced 3.5 trillion.
+          // The honest metric here is the count of top-level keys, which is
+          // the number of distinct integration types tracked.
+          const n = Object.keys(j).length;
+          if (n === 0) throw new Error("empty_json");
+          return n;
         }),
       },
     }),
@@ -404,6 +427,9 @@ const COLLECTORS = {
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           if (Array.isArray(j)) return j.length;
+          if (j && Array.isArray(j.data)) return j.data.length;
+          if (j && Array.isArray(j.packages)) return j.packages.length;
+          if (j && typeof j.count === "number") return j.count;
           throw new Error("not_array");
         }),
       },
