@@ -596,22 +596,6 @@ const COLLECTORS = {
     }),
   },
 
-  aviation: {
-    event_source: "opensky_states",
-    ttl: 1800,
-    collectAll: async (env) => ({
-      sources: {
-        opensky_states: await fetchSafe(async () => {
-          const r = await fetch("https://opensky-network.org/api/states/all?lamin=55&lomin=10&lamax=70&lomax=25");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const count = j.states?.length || 0;
-          const bucket = Math.floor(count / 10) * 10;
-          return { id: "flights_" + bucket + "_" + new Date().toISOString().slice(0, 13), title: count + " aircraft over Scandinavia" };
-        }),
-      },
-    }),
-  },
 
   geocoding: {
     event_source: "nominatim_search",
