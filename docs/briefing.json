@@ -1,133 +1,46 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T13:00:21Z",
+  "ts": "2026-10-22T13:02:42Z",
   "run_number": 24,
   "briefing": {
-    "headline": "6 signals across 250 sectors evaluated",
+    "headline": "1 signal across 250 sectors evaluated",
     "by_domain": {
-      "energy": {
-        "count": 2,
-        "sectors": [
-          "carbon-intensity",
-          "energy-grid"
-        ]
-      },
-      "security": {
+      "other": {
         "count": 1,
         "sectors": [
-          "cve-feed"
-        ]
-      },
-      "crypto": {
-        "count": 1,
-        "sectors": [
-          "depin-network"
-        ]
-      },
-      "sports": {
-        "count": 1,
-        "sectors": [
-          "sports-fitness"
-        ]
-      },
-      "environment": {
-        "count": 1,
-        "sectors": [
-          "water"
+          "open-source"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "carbon-intensity",
+      "sector": "open-source",
       "severity": "notice",
-      "summary": "New: UK grid: 78 gCO2/kWh (low)",
+      "summary": "New: 1.143.0 (vscode)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 13
-    },
-    {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2026-109841: undici is an HTTP client library for Node.js. In versions 7.15.0 through 7.30.0 and 8.0.0 through 8.",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 18
-    },
-    {
-      "sector": "depin-network",
-      "severity": "notice",
-      "summary": "New: Flux nodes: 6,729",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 21
-    },
-    {
-      "sector": "energy-grid",
-      "severity": "notice",
-      "summary": "New: DE grid load: 65,070 MW",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 17
-    },
-    {
-      "sector": "sports-fitness",
-      "severity": "notice",
-      "summary": "New: Why Warriors-Lakers was the quiet end of an incredible NBA era",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 15
-    },
-    {
-      "sector": "water",
-      "severity": "notice",
-      "summary": "New: Mississippi flow: 173,000 cfs",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 13
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 11:21",
-    "signals_before": 4,
-    "signals_after": 6,
+    "previous_ts": "2026-10-22 13:00",
+    "signals_before": 6,
+    "signals_after": 1,
     "new": [
+      "open-source"
+    ],
+    "dropped": [
       "carbon-intensity",
+      "cve-feed",
+      "depin-network",
+      "energy-grid",
       "sports-fitness",
       "water"
     ],
-    "dropped": [
-      "events"
-    ],
-    "persistent": [
-      "cve-feed",
-      "depin-network",
-      "energy-grid"
-    ],
-    "movements": [
-      {
-        "sector": "cve-feed",
-        "previous": "New: CVE-2026-110726: In `api-gateway` versions till `1.7.3`, The default rate-l",
-        "current": "New: CVE-2026-109841: undici is an HTTP client library for Node.js. In versions "
-      },
-      {
-        "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,762",
-        "current": "New: Flux nodes: 6,729"
-      },
-      {
-        "sector": "energy-grid",
-        "previous": "New: DE grid load: 65,261 MW",
-        "current": "New: DE grid load: 65,070 MW"
-      }
-    ]
+    "persistent": [],
+    "movements": []
   },
   "watchlist": [
     {
@@ -162,7 +75,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 5.65,
+      "avg_volatility": 5.75,
       "max_volatility": 5.95,
       "fires_in_window": 0
     },
@@ -193,8 +106,8 @@
   ],
   "stats": {
     "total_sectors": 250,
-    "firing_sectors": 6,
-    "fire_rate_pct": 2.4,
+    "firing_sectors": 1,
+    "fire_rate_pct": 0.4,
     "runs_in_history": 24
   }
 }
