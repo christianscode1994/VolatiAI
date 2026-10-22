@@ -48,28 +48,42 @@ def check_freshness(runs):
 
 
 def check_failures(runs, lookback=3):
-    """Scan recent runs for sectors whose sources failed."""
-    counts = Counter()
+    """Detect sectors that never appear in recent history — likely always failing.
+
+    Errored envelopes are filtered out before arbitrate(), so a failing
+    sector simply doesn't show up in the history. The real signal is
+    "active sector with zero appearances."
+    """
+    import json as _json
+    active = _json.load(open("config/active_sectors.json"))
+
+    appeared = set()
+    for run in runs[-lookback:]:
+        appeared |= set(run.get("sectors", {}).keys())
+
+    never_appeared = sorted(set(active) - appeared)
+    if never_appeared:
+        print(f"  [RED] {len(never_appeared)} active sectors missing from last {lookback} runs:")
+        for s in never_appeared[:10]:
+            print(f"    {s}")
+        if len(never_appeared) > 10:
+            print(f"    ... and {len(never_appeared) - 10} more")
+    else:
+        print(f"  [GREEN] all active sectors appear in last {lookback} runs")
+
+    # Second check: sectors that appear but always have data_quality=0
+    # (partial failure — the fetch succeeded but parsing failed)
+    dq_zero = []
     for run in runs[-lookback:]:
         for sector, data in run.get("sectors", {}).items():
-            # A failed sector typically has delta_current=None AND summary='quiet'
-            # AND has_signal=False. That's not definitive, but combined across
-            # multiple runs it's a signal.
-            if (data.get("delta_current") is None
-                    and data.get("summary") == "quiet"
-                    and data.get("has_signal") is False):
-                counts[sector] += 1
-
-    # Only flag if it's been quiet ALL runs in the window
-    persistent = [s for s, n in counts.items() if n == lookback]
-    if persistent:
-        print(f"  [YELLOW] {len(persistent)} sectors returned null/no-value in all last {lookback} runs:")
-        for s in sorted(persistent)[:10]:
-            print(f"    {s}")
-        if len(persistent) > 10:
-            print(f"    ... and {len(persistent) - 10} more")
-    else:
-        print(f"  [GREEN] no persistent null-value sectors in last {lookback} runs")
+            if data.get("data_quality") == 0:
+                dq_zero.append(sector)
+    if dq_zero:
+        persistent = [s for s, n in Counter(dq_zero).items() if n == lookback]
+        if persistent:
+            print(f"  [YELLOW] {len(persistent)} sectors have data_quality=0 in all {lookback} runs:")
+            for s in persistent[:5]:
+                print(f"    {s}")
 
 
 def check_noise(runs):
