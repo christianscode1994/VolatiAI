@@ -161,7 +161,7 @@ const COLLECTORS = {
           for (let i = 0; i < Math.min(5, ids.length); i++) {
             const detail = await fetch("https://hacker-news.firebaseio.com/v0/item/" + ids[i] + ".json");
             const s = await detail.json();
-            if (s && s.score >= 200 && s.title) {
+            if (s && s.score >= 500 && s.title) {
               return { id: "hn_" + s.id, title: "[" + s.score + "] " + s.title.slice(0, 90) };
             }
           }
