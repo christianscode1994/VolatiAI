@@ -18,10 +18,21 @@ function buildSlowEnvelope(sector, config, result, history) {
   const windowDays = config.window_days || WINDOW_DAYS_DEFAULT;
 
   let historical = null, absChange = 0, pct = 0;
-  if (metric !== null && history && history.length > 0) {
+  if (metric !== null && Array.isArray(history) && history.length > 0) {
     const cutoff = Date.now() - windowDays * 24 * 60 * 60 * 1000;
-    const old = history.find(h => h.t <= cutoff);
-    if (old && old.v !== null) {
+    const normalized = history
+      .map(h => {
+        const rawT = h.t ?? h.timestamp ?? h.ts ?? h.date;
+        const rawV = h.v ?? h.value ?? h.measurement;
+        return {
+          t: typeof rawT === 'number' ? rawT : Date.parse(rawT ?? ''),
+          v: typeof rawV === 'number' ? rawV : Number(rawV),
+        };
+      })
+      .filter(h => Number.isFinite(h.t) && Number.isFinite(h.v))
+      .sort((a, b) => b.t - a.t);
+    const old = normalized.find(h => h.t <= cutoff);
+    if (old) {
       historical = old.v;
       absChange = metric - old.v;
       pct = old.v === 0 ? 0 : (absChange / old.v) * 100;
