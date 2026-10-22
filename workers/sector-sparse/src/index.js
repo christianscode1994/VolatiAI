@@ -1048,7 +1048,7 @@ const COLLECTORS = {
           const now = new Date();
           const weekAgo = new Date(now.getTime() - 7 * 86400000);
           const fmt = (d) => d.toISOString().slice(0, 19) + ".000";
-          const url = "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=" + fmt(weekAgo) + "&pubEndDate=" + fmt(now) + "&resultsPerPage=1";
+          const url = "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=" + fmt(weekAgo) + "&pubEndDate=" + fmt(now) + "&resultsPerPage=1&cvssV3Severity=HIGH";
           const r = await fetch(url);
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
