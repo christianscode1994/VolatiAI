@@ -3053,9 +3053,16 @@ Object.assign(COLLECTORS, {
           const key = Object.keys(j || {})[0];
           const series = j?.[key];
           const ts = series?.timeseries;
-          const obs = Array.isArray(ts) ? ts
-                    : Array.isArray(series?.observations) ? series.observations
-                    : null;
+          let obs = null;
+          if (Array.isArray(ts)) {
+            obs = ts;
+          } else if (ts && typeof ts === "object") {
+            // OFR returns timeseries as {aggregation: [[date, value], ...]}
+            obs = Array.isArray(ts.aggregation) ? ts.aggregation
+                : Object.values(ts).find(v => Array.isArray(v)) || null;
+          } else if (Array.isArray(series?.observations)) {
+            obs = series.observations;
+          }
           if (!obs || !obs.length) throw new Error("no_obs: series_keys=" + Object.keys(series || {}).join(","));
           const last = obs[obs.length - 1];
           const v = typeof last?.value === "number" ? last.value
