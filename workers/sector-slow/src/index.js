@@ -394,6 +394,57 @@ const COLLECTORS = {
     }),
   },
 
+  courtlistener: {
+    config: { metric: "total_opinions", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_opinions: await fetchSafe(async () => {
+          const r = await fetch("https://www.courtlistener.com/api/rest/v4/opinions/?page_size=1",
+            { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.local)" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+
+  saos: {
+    config: { metric: "judgments", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        judgments: await fetchSafe(async () => {
+          const r = await fetch("https://www.saos.org.pl/api/search/judgments?pageSize=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = (typeof j.count === "number") ? j.count
+                  : (j.page && typeof j.page.totalElements === "number") ? j.page.totalElements
+                  : null;
+          if (n === null) throw new Error("no_count");
+          return n;
+        }),
+      },
+    }),
+  },
+
+  "dc-crime": {
+    config: { metric: "crime_incidents", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        crime_incidents: await fetchSafe(async () => {
+          const r = await fetch("https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/FeatureServer/41/query?where=1%3D1&returnCountOnly=true&f=json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+
 };
 
 function json(obj, status = 200) {
