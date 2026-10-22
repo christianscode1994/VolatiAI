@@ -86,23 +86,28 @@ def check_failures(runs, lookback=3):
                 print(f"    {s}")
 
 
-def check_noise(runs):
-    """Sectors firing almost every run are likely event-type noise."""
+def check_noise(runs, lookback=24):
+    """Compute fire counts from history (mirrors briefing.py) and flag noise.
+
+    fires_24 is not stored in history — it's computed by briefing.py from
+    the last 24 runs. This must replicate that computation.
+    """
     if not runs:
         return
-    last = runs[-1]
-    noisy = []
-    for sector, data in last.get("sectors", {}).items():
-        fires = data.get("fires_24")
-        if isinstance(fires, int) and fires >= 20:
-            noisy.append((sector, fires))
+    fire_counts = {}
+    for run in runs[-lookback:]:
+        for sector, data in run.get("sectors", {}).items():
+            if data.get("has_signal"):
+                fire_counts[sector] = fire_counts.get(sector, 0) + 1
+
+    noisy = [(s, n) for s, n in fire_counts.items() if n >= 20]
     if noisy:
         noisy.sort(key=lambda x: -x[1])
-        print(f"  [YELLOW] {len(noisy)} sectors fire >= 20 of last 24 runs (candidate for calibration):")
+        print(f"  [YELLOW] {len(noisy)} sectors fire >= 20 of last {lookback} runs (candidate for calibration):")
         for s, n in noisy:
-            print(f"    {s:<25} fires_24={n}")
+            print(f"    {s:<25} fires={n}/{lookback}")
     else:
-        print("  [GREEN] no sectors firing >= 20/24 runs")
+        print(f"  [GREEN] no sectors firing >= 20 of last {lookback} runs")
 
 
 def main():
