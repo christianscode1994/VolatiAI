@@ -1,17 +1,36 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T14:26:16Z",
+  "ts": "2026-10-22T14:32:43Z",
   "run_number": 24,
   "briefing": {
-    "headline": "0 signals across 248 sectors evaluated",
-    "by_domain": {}
+    "headline": "1 signal across 248 sectors evaluated",
+    "by_domain": {
+      "other": {
+        "count": 1,
+        "sectors": [
+          "jobs"
+        ]
+      }
+    }
   },
-  "signals": [],
+  "signals": [
+    {
+      "sector": "jobs",
+      "severity": "notice",
+      "summary": "New: Senior Backend Engineer @ DuckDuckGo",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    }
+  ],
   "delta": {
-    "previous_ts": "2026-10-22 14:18",
+    "previous_ts": "2026-10-22 14:26",
     "signals_before": 0,
-    "signals_after": 0,
-    "new": [],
+    "signals_after": 1,
+    "new": [
+      "jobs"
+    ],
     "dropped": [],
     "persistent": [],
     "movements": []
@@ -49,7 +68,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 6.45,
+      "avg_volatility": 6.55,
       "max_volatility": 7.14,
       "fires_in_window": 0
     },
@@ -80,8 +99,8 @@
   ],
   "stats": {
     "total_sectors": 248,
-    "firing_sectors": 0,
-    "fire_rate_pct": 0.0,
+    "firing_sectors": 1,
+    "fire_rate_pct": 0.4,
     "runs_in_history": 24
   }
 }
