@@ -3,6 +3,57 @@
 
 const WINDOW_DAYS_DEFAULT = 7;
 
+const DASHBOARD_HTML = `<!doctype html>
+<html><head><meta charset="utf-8"><title>VolatiAI · sector-slow</title>
+<style>
+  body { font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2em; color: #222; background: #fafafa; }
+  h1 { font-weight: 600; margin: 0 0 0.5em; }
+  .meta { color: #666; margin-bottom: 1.5em; }
+  table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f5f5f5; font-weight: 600; }
+  tr:hover td { background: #f9f9f9; }
+  .ok { color: #16a34a; } .warn { color: #ca8a04; } .bad { color: #dc2626; } .idle { color: #888; }
+  code { font-family: ui-monospace, monospace; font-size: 0.92em; }
+  a { color: #2563eb; text-decoration: none; } a:hover { text-decoration: underline; }
+</style></head>
+<body>
+<h1>VolatiAI · sector-slow</h1>
+<div class="meta">Last refresh: <span id="ts">&mdash;</span> · <a href="/_sectors">sectors.json</a> · <a href="/_health">_health.json</a></div>
+<table id="tbl"><thead><tr><th>sector</th><th>history_points</th><th>span_days</th><th>newest_iso</th><th>age</th><th>links</th></tr></thead><tbody></tbody></table>
+<script>
+async function load() {
+  document.getElementById("ts").textContent = new Date().toISOString();
+  const tbody = document.querySelector("#tbl tbody");
+  tbody.innerHTML = "";
+  let data;
+  try {
+    const r = await fetch("/_health");
+    data = await r.json();
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="6" class="bad">fetch failed: ' + e + '</td></tr>';
+    return;
+  }
+  const rows = Object.entries(data.sectors).sort((a,b) => a[0].localeCompare(b[0]));
+  for (const [name, v] of rows) {
+    const tr = document.createElement("tr");
+    const age = v.newest_iso ? ((Date.now() - new Date(v.newest_iso).getTime()) / 3600000) : null;
+    let ageCls = "idle", ageTxt = "\u2014";
+    if (age !== null) { ageTxt = age.toFixed(1) + "h"; ageCls = age < 25 ? "ok" : age < 48 ? "warn" : "bad"; }
+    tr.innerHTML = '<td><code>' + name + '</code></td>'
+      + '<td>' + v.history_points + '</td>'
+      + '<td>' + v.span_days + '</td>'
+      + '<td class="idle">' + (v.newest_iso || '\u2014') + '</td>'
+      + '<td class="' + ageCls + '">' + ageTxt + '</td>'
+      + '<td><a href="/' + name + '/signal">signal</a> &middot; <a href="/' + name + '/history">history</a> &middot; <a href="/' + name + '/raw">raw</a></td>';
+    tbody.appendChild(tr);
+  }
+}
+load();
+setInterval(load, 60000);
+</script>
+</body></html>`;
+
 async function fetchSafe(fn) {
   try { return { ok: true, data: await fn() }; }
   catch (e) { return { ok: false, error: String(e).slice(0, 120) }; }
@@ -535,6 +586,23 @@ export default {
 
     if (action === "raw") {
       return json(await collector.collectAll(env));
+    }
+
+    if (action === "history") {
+      const config = collector.config;
+      const kvKey = `${sectorName}_${config.metric}_history`;
+      try {
+        const raw = await env.SECTOR_KV.get(kvKey);
+        const history = raw ? JSON.parse(raw) : [];
+        return json({
+          sector: sectorName,
+          metric: config.metric,
+          points: history.length,
+          history: history,
+        });
+      } catch (e) {
+        return json({ sector: sectorName, error: String(e).slice(0, 120) }, 500);
+      }
     }
 
     if (action === "signal") {
