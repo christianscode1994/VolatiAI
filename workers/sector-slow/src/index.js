@@ -497,18 +497,25 @@ export default {
 
       const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
       if (current !== null && current !== undefined) {
-        // Dedupe by calendar day. One entry per day per sector regardless of
-        // how many times /signal is hit. Prevents the digest pipeline from
-        // appending a fresh "observation" every run.
+        // Skip the KV write entirely when today's value is unchanged.
+        // Without this, hourly workflows that hit /signal on all sectors
+        // would consume 6k+ writes/day. With it, one write per sector per
+        // day (or more only when the value actually moves).
         const today = new Date().toISOString().slice(0, 10);
-        history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
-        history.push({ t: Date.now(), v: current });
-        history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
-        try {
-          await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
-        } catch (kvErr) {
-          console.log("KV put failed:", String(kvErr));
-          envelope.context = { ...envelope.context, kv_put_ok: false, kv_error: String(kvErr).slice(0, 120) };
+        const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
+        const valueChanged = !todayEntry || todayEntry.v !== current;
+        if (!valueChanged) {
+          envelope.context = { ...envelope.context, kv_put_skipped: "unchanged_today" };
+        } else {
+          history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
+          history.push({ t: Date.now(), v: current });
+          history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
+          try {
+            await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
+          } catch (kvErr) {
+            console.log("KV put failed:", String(kvErr));
+            envelope.context = { ...envelope.context, kv_put_ok: false, kv_error: String(kvErr).slice(0, 120) };
+          }
         }
       }
 
