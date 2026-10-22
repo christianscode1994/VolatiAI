@@ -1,23 +1,37 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T07:59:53Z",
+  "ts": "2026-10-22T08:08:30Z",
   "run_number": 24,
   "briefing": {
-    "headline": "0 signals across 244 sectors evaluated",
-    "by_domain": {}
+    "headline": "1 signal across 244 sectors evaluated",
+    "by_domain": {
+      "crypto": {
+        "count": 1,
+        "sectors": [
+          "privacy-zcash"
+        ]
+      }
+    }
   },
-  "signals": [],
+  "signals": [
+    {
+      "sector": "privacy-zcash",
+      "severity": "notice",
+      "summary": "difficulty 284962848.1659232 (+9.2%)",
+      "confidence": 0.92,
+      "magnitude": 4.62,
+      "pct_change": 9.238051259246479,
+      "fires_24": 2
+    }
+  ],
   "delta": {
-    "previous_ts": "2026-10-22 07:54",
-    "signals_before": 4,
-    "signals_after": 0,
-    "new": [],
-    "dropped": [
-      "depin-network",
-      "electricity",
-      "energy-grid",
+    "previous_ts": "2026-10-22 07:59",
+    "signals_before": 0,
+    "signals_after": 1,
+    "new": [
       "privacy-zcash"
     ],
+    "dropped": [],
     "persistent": [],
     "movements": []
   },
@@ -29,27 +43,39 @@
       "fires_in_window": 2
     },
     {
+      "sector": "crypto-liquidations",
+      "avg_volatility": 12.14,
+      "max_volatility": 17.65,
+      "fires_in_window": 0
+    },
+    {
       "sector": "biotech",
       "avg_volatility": 10.99,
       "max_volatility": 10.99,
       "fires_in_window": 1
     },
     {
-      "sector": "privacy-zcash",
-      "avg_volatility": 10.57,
-      "max_volatility": 17.72,
-      "fires_in_window": 1
-    },
-    {
       "sector": "grid-mix",
-      "avg_volatility": 8.24,
+      "avg_volatility": 7.97,
       "max_volatility": 8.24,
       "fires_in_window": 0
     },
     {
-      "sector": "crypto-liquidations",
-      "avg_volatility": 6.64,
-      "max_volatility": 6.64,
+      "sector": "cloudflare-status",
+      "avg_volatility": 2.59,
+      "max_volatility": 3.9,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "air-quality",
+      "avg_volatility": 2.56,
+      "max_volatility": 2.56,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "grid-demand",
+      "avg_volatility": 1.67,
+      "max_volatility": 1.67,
       "fires_in_window": 0
     },
     {
@@ -59,9 +85,9 @@
       "fires_in_window": 0
     },
     {
-      "sector": "cloudflare-status",
-      "avg_volatility": 1.28,
-      "max_volatility": 1.28,
+      "sector": "bluesky-posts",
+      "avg_volatility": 1.01,
+      "max_volatility": 1.01,
       "fires_in_window": 0
     },
     {
@@ -69,24 +95,12 @@
       "avg_volatility": 1.01,
       "max_volatility": 1.01,
       "fires_in_window": 0
-    },
-    {
-      "sector": "bluesky-posts",
-      "avg_volatility": 1,
-      "max_volatility": 1,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "bitcoin-nodes",
-      "avg_volatility": 0.98,
-      "max_volatility": 0.98,
-      "fires_in_window": 0
     }
   ],
   "stats": {
     "total_sectors": 244,
-    "firing_sectors": 0,
-    "fire_rate_pct": 0.0,
+    "firing_sectors": 1,
+    "fire_rate_pct": 0.41,
     "runs_in_history": 24
   }
 }
