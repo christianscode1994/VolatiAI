@@ -1,43 +1,38 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T13:02:42Z",
+  "ts": "2026-10-22T14:11:31Z",
   "run_number": 24,
   "briefing": {
-    "headline": "1 signal across 250 sectors evaluated",
+    "headline": "1 signal across 248 sectors evaluated",
     "by_domain": {
-      "other": {
+      "environment": {
         "count": 1,
         "sectors": [
-          "open-source"
+          "water"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "open-source",
+      "sector": "water",
       "severity": "notice",
-      "summary": "New: 1.143.0 (vscode)",
+      "summary": "New: Mississippi flow: 173,000 cfs",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 1
+      "fires_24": 13
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 13:00",
-    "signals_before": 6,
+    "previous_ts": "2026-10-22 13:02",
+    "signals_before": 1,
     "signals_after": 1,
     "new": [
-      "open-source"
+      "water"
     ],
     "dropped": [
-      "carbon-intensity",
-      "cve-feed",
-      "depin-network",
-      "energy-grid",
-      "sports-fitness",
-      "water"
+      "open-source"
     ],
     "persistent": [],
     "movements": []
@@ -75,8 +70,8 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 5.75,
-      "max_volatility": 5.95,
+      "avg_volatility": 6.1,
+      "max_volatility": 7.14,
       "fires_in_window": 0
     },
     {
@@ -105,7 +100,7 @@
     }
   ],
   "stats": {
-    "total_sectors": 250,
+    "total_sectors": 248,
     "firing_sectors": 1,
     "fire_rate_pct": 0.4,
     "runs_in_history": 24
