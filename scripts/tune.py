@@ -32,10 +32,16 @@ def load_history():
 
 
 def analyze_sector(sector, runs):
-    """Collect all appearances of a sector across history."""
+    """Collect appearances, splitting pre/post dedup-patch.
+
+    Event IDs are only recorded from the patch forward. Combining
+    pre-patch fires with post-patch event IDs produces a false
+    'X fires per event' ratio. This function reports them separately.
+    """
     pcts = []
     event_ids = []
-    fires = 0
+    fires_pre_patch = 0     # has_signal but no event_id in history
+    fires_post_patch = 0    # has_signal with event_id recorded
     appearances = 0
     for run in runs:
         data = run.get("sectors", {}).get(sector)
@@ -43,17 +49,20 @@ def analyze_sector(sector, runs):
             continue
         appearances += 1
         if data.get("has_signal"):
-            fires += 1
             eid = data.get("event_id")
             if eid is not None:
                 event_ids.append(str(eid))
+                fires_post_patch += 1
+            else:
+                fires_pre_patch += 1
         pct = data.get("pct_change")
         if pct is not None:
             pcts.append(pct)
 
     return {
         "sector": sector,
-        "fires": fires,
+        "fires_pre_patch": fires_pre_patch,
+        "fires_post_patch": fires_post_patch,
         "appearances": appearances,
         "pcts": pcts,
         "event_ids": event_ids,
@@ -87,34 +96,35 @@ def report_value(data, target):
 def report_event(data, target):
     sector = data["sector"]
     ids = data["event_ids"]
-    fires = data["fires"]
+    fires_pre = data["fires_pre_patch"]
+    fires_post = data["fires_post_patch"]
     app = data["appearances"]
+
+    print(f"\n=== {sector} (event-type) ===")
     if not ids:
-        print(f"\n=== {sector} (event-type) ===")
-        print(f"  Fired: {fires}/{app} — no event_id data in history yet")
-        print(f"  (Event IDs are recorded from run 2 of the dedup patch onward)")
+        print(f"  Pre-patch fires: {fires_pre} (no event_id recorded)")
+        print(f"  Post-patch fires: 0")
+        print(f"  → No post-patch data yet. Re-run after 2+ digest cycles.")
         return
 
     distinct = len(set(ids))
-    repeats = fires - distinct
-    avg_fires_per_event = fires / distinct if distinct else 0
-    current_rate = fires / app * 100 if app else 0
+    repeats = fires_post - distinct
+    avg_fires_per_event = fires_post / distinct if distinct else 0
 
-    print(f"\n=== {sector} (event-type) ===")
-    print(f"  Fired: {fires}/{app} = {current_rate:.0f}% (current)")
+    print(f"  Pre-patch fires: {fires_pre} (before dedup patch, no event_id)")
+    print(f"  Post-patch fires: {fires_post} (with event_id)")
     print(f"  Distinct event IDs: {distinct}")
-    print(f"  Fires per event (avg): {avg_fires_per_event:.1f}")
+    print(f"  Fires per event (post-patch): {avg_fires_per_event:.1f}")
     print()
 
-    # Diagnosis
     if avg_fires_per_event <= 1.2:
-        print(f"  ✓ Dedup healthy. Each fire is a genuinely new event.")
-        print(f"  → Fix at Worker: bucket the event ID or filter the source.")
+        print(f"  ✓ Dedup healthy (post-patch). Each fire is a new event.")
+        print(f"  → Fire rate will drop as pre-patch runs age out (~5-6 days).")
     elif avg_fires_per_event <= 2.0:
-        print(f"  ⚠ Minor duplicate fires ({repeats} of {fires}).")
+        print(f"  ⚠ Minor duplicate fires ({repeats} of {fires_post} post-patch).")
         print(f"  → Check dedup cooldown (currently 8 runs).")
     else:
-        print(f"  ✗ Dedup underperforming: {repeats} of {fires} fires are repeats.")
+        print(f"  ✗ Dedup underperforming: {repeats} of {fires_post} post-patch are repeats.")
         print(f"  → Fix in digest: extend dedupe_recent_events cooldown or investigate KV.")
 
     # Most repeat offenders
