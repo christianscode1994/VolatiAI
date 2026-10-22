@@ -11,8 +11,15 @@ Usage:
 """
 import argparse
 import json
+import ssl
 import sys
 import urllib.request
+
+try:
+    import certifi
+    _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    _SSL_CTX = ssl.create_default_context()
 
 DEFAULT_URL = "https://christianscode1994.github.io/VolatiAI/briefing.json"
 UA = "VolatiAI-CLI/1.0"
@@ -20,7 +27,7 @@ UA = "VolatiAI-CLI/1.0"
 
 def fetch(url, timeout=15):
     req = urllib.request.Request(url, headers={"user-agent": UA})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as r:
         return json.loads(r.read())
 
 
