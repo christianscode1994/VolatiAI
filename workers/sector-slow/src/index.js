@@ -399,7 +399,11 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         total_opinions: await fetchSafe(async () => {
-          const r = await fetch("https://www.courtlistener.com/api/rest/v4/opinions/?page_size=1",
+          // /opinions/ returns 401 without a token since Oct 2026.
+          // /search/ is explicitly anonymous. "a" is a broad query to
+          // approximate the full-corpus count; page_size is ignored by
+          // search but harmless to include.
+          const r = await fetch("https://www.courtlistener.com/api/rest/v4/search/?q=a&page_size=1",
             { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.local)" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -415,14 +419,17 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         judgments: await fetchSafe(async () => {
-          const r = await fetch("https://www.saos.org.pl/api/search/judgments?pageSize=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          // SAOS requires Accept: application/json (406 without it),
+          // and pageSize must be >=10 (400 otherwise).
+          const r = await fetch("https://www.saos.org.pl/api/search/judgments?pageSize=10",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = (typeof j.count === "number") ? j.count
-                  : (j.page && typeof j.page.totalElements === "number") ? j.page.totalElements
+          // Response shape: { info: { totalResults: N }, items: [...] }
+          const n = (j.info && typeof j.info.totalResults === "number") ? j.info.totalResults
+                  : (typeof j.count === "number") ? j.count
                   : null;
-          if (n === null) throw new Error("no_count");
+          if (n === null) throw new Error("no_totalResults");
           return n;
         }),
       },
