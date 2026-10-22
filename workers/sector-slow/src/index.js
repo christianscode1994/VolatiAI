@@ -17,7 +17,7 @@ function buildSlowEnvelope(sector, config, result, history) {
   const metric = sources[config.metric]?.ok ? sources[config.metric].data : null;
   const windowDays = config.window_days || WINDOW_DAYS_DEFAULT;
 
-  let historical = null, absChange = 0, pct = 0;
+  let historical = null, absChange = 0, pct = 0, actualWindowDays = null;
   if (metric !== null && Array.isArray(history) && history.length > 0) {
     const cutoff = Date.now() - windowDays * 24 * 60 * 60 * 1000;
     const normalized = history
@@ -30,12 +30,16 @@ function buildSlowEnvelope(sector, config, result, history) {
         };
       })
       .filter(h => Number.isFinite(h.t) && Number.isFinite(h.v))
-      .sort((a, b) => b.t - a.t);
-    const old = normalized.find(h => h.t <= cutoff);
+      .sort((a, b) => a.t - b.t);           // oldest first
+    // Prefer an entry at least windowDays old. If none exists (e.g. history
+    // is brand new), fall back to the oldest available and record the
+    // actual window so downstream knows this is a shorter comparison.
+    const old = normalized.find(h => h.t <= cutoff) ?? normalized[0];
     if (old) {
       historical = old.v;
       absChange = metric - old.v;
       pct = old.v === 0 ? 0 : (absChange / old.v) * 100;
+      actualWindowDays = Math.round(((Date.now() - old.t) / 86400000) * 10) / 10;
     }
   }
 
@@ -53,9 +57,9 @@ function buildSlowEnvelope(sector, config, result, history) {
       ? config.metric + " " + metric + " (" + (pct > 0 ? "+" : "") + pct.toFixed(1) + "% vs " + windowDays + "d ago)"
       : "quiet",
     delta: historical !== null
-      ? { metric: config.metric, current: metric, previous: historical, pct_change: pct, window: config.window || "7d" }
+      ? { metric: config.metric, current: metric, previous: historical, pct_change: pct, window: config.window || "7d", actual_window_days: actualWindowDays }
       : { metric: config.metric, current: metric, previous: null, pct_change: null, window: config.window || "7d" },
-    context: { history_points: history ? history.length : 0 },
+    context: { history_points: history ? history.length : 0, actual_window_days: actualWindowDays },
     sources: { total, healthy, failed },
     ttl_seconds: config.ttl || 86400,
   };
@@ -228,6 +232,11 @@ export default {
 
       const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
       if (current !== null && current !== undefined) {
+        // Dedupe by calendar day. One entry per day per sector regardless of
+        // how many times /signal is hit. Prevents the digest pipeline from
+        // appending a fresh "observation" every run.
+        const today = new Date().toISOString().slice(0, 10);
+        history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
         history.push({ t: Date.now(), v: current });
         history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
         try {
