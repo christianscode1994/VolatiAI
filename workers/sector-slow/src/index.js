@@ -69,6 +69,22 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "ripe-atlas-public": {
+    config: { metric: "public_measurements", threshold_pct: 0.1, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        public_measurements: await fetchSafe(async () => {
+          const r = await fetch("https://atlas.ripe.net/api/v2/measurements/?is_public=true&page_size=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count");
+          return j.count;
+        }),
+      },
+    }),
+  },
+
   "rir-arin": {
     config: { metric: "ipv4_allocations", threshold_pct: 0.1, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
