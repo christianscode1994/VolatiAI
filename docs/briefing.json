@@ -1,10 +1,33 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-21T20:41:11Z",
+  "ts": "2026-10-22T03:45:54Z",
   "run_number": 24,
   "briefing": {
-    "headline": "10 signals across 248 sectors evaluated",
+    "headline": "20 signals across 247 sectors evaluated",
     "by_domain": {
+      "other": {
+        "count": 8,
+        "sectors": [
+          "art-design",
+          "free-games",
+          "jobs",
+          "nft",
+          "open-source-packages",
+          "pypi-packages",
+          "tv",
+          "museums"
+        ]
+      },
+      "information": {
+        "count": 5,
+        "sectors": [
+          "arxiv-ai",
+          "develop",
+          "events",
+          "news",
+          "wikipedia"
+        ]
+      },
       "energy": {
         "count": 2,
         "sectors": [
@@ -22,14 +45,6 @@
         "count": 1,
         "sectors": [
           "depin-network"
-        ]
-      },
-      "information": {
-        "count": 3,
-        "sectors": [
-          "develop",
-          "events",
-          "news"
         ]
       },
       "space": {
@@ -54,27 +69,45 @@
   },
   "signals": [
     {
-      "sector": "carbon-intensity",
+      "sector": "art-design",
       "severity": "notice",
-      "summary": "New: UK grid: 76 gCO2/kWh (low)",
+      "summary": "New: Boating \u2014 Edouard Manet",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 17
+      "fires_24": 1
+    },
+    {
+      "sector": "arxiv-ai",
+      "severity": "notice",
+      "summary": "New: Think Harder Where It Matters: Item-Level Adaptive Recursion for Sequential Recommendation",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "carbon-intensity",
+      "severity": "notice",
+      "summary": "New: UK grid: 55 gCO2/kWh (low)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 18
     },
     {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-0311: A server-side request forgery vulnerability in Palo Alto Networks Checkov by Prisma\u00ae Cloud enables a",
+      "summary": "New: CVE-2026-110911: Wheels 1.1.8 through 4.1.1 allows SQL injection when caller-supplied quoted values are parsed again ",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 19
+      "fires_24": 20
     },
     {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,854",
+      "summary": "New: Flux nodes: 6,803",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -87,34 +120,79 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 13
+      "fires_24": 14
     },
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 59,801 MW",
+      "summary": "New: DE grid load: 48,973 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 18
+      "fires_24": 19
     },
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [216] Mistral Large 4",
+      "summary": "New: [307] mitmproxy adds --emudhra option",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 18
+      "fires_24": 19
+    },
+    {
+      "sector": "free-games",
+      "severity": "notice",
+      "summary": "New: Terraspace (Epic Games) Giveaway",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "jobs",
+      "severity": "notice",
+      "summary": "New: Clinical Data Manager @ Penumbra",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
     },
     {
       "sector": "news",
       "severity": "notice",
-      "summary": "New: Mistral Large 4",
+      "summary": "New: mitmproxy adds --emudhra option",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 20
+      "fires_24": 21
+    },
+    {
+      "sector": "nft",
+      "severity": "notice",
+      "summary": "New: clonex: floor 0.134 ETH",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "open-source-packages",
+      "severity": "notice",
+      "summary": "New: lodash 4.18.1 (latest)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "pypi-packages",
+      "severity": "notice",
+      "summary": "New: Top PyPI: boto3 (2,460,723,068 downloads)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
     },
     {
       "sector": "spaceweather",
@@ -123,32 +201,70 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 11
+      "fires_24": 12
     },
     {
       "sector": "sports-fitness",
       "severity": "notice",
-      "summary": "New: Breaking down how the 17 first-year Power 4 college football coaches have done so far",
+      "summary": "New: Reese keeps Dream rolling in Game 3 to take series lead in WNBA Finals",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 19
+      "fires_24": 20
+    },
+    {
+      "sector": "tv",
+      "severity": "notice",
+      "summary": "New: unknown \u2014 Episode 206",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
     },
     {
       "sector": "water",
       "severity": "notice",
-      "summary": "New: Mississippi flow: 168,000 cfs",
+      "summary": "New: Mississippi flow: 172,000 cfs",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 13
+      "fires_24": 14
+    },
+    {
+      "sector": "wikipedia",
+      "severity": "notice",
+      "summary": "New: Special:Search (963,739 views)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "museums",
+      "severity": "critical",
+      "summary": "total_objects 502993 (-20.9%)",
+      "confidence": 1,
+      "magnitude": 209.33,
+      "pct_change": -20.933314260653326,
+      "fires_24": 2
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-21 20:32",
+    "previous_ts": "2026-10-21 20:41",
     "signals_before": 10,
-    "signals_after": 10,
-    "new": [],
+    "signals_after": 20,
+    "new": [
+      "art-design",
+      "arxiv-ai",
+      "free-games",
+      "jobs",
+      "museums",
+      "nft",
+      "open-source-packages",
+      "pypi-packages",
+      "tv",
+      "wikipedia"
+    ],
     "dropped": [],
     "persistent": [
       "carbon-intensity",
@@ -164,29 +280,48 @@
     ],
     "movements": [
       {
+        "sector": "carbon-intensity",
+        "previous": "New: UK grid: 76 gCO2/kWh (low)",
+        "current": "New: UK grid: 55 gCO2/kWh (low)"
+      },
+      {
+        "sector": "cve-feed",
+        "previous": "New: CVE-2026-0311: A server-side request forgery vulnerability in Palo Alto Net",
+        "current": "New: CVE-2026-110911: Wheels 1.1.8 through 4.1.1 allows SQL injection when calle"
+      },
+      {
+        "sector": "depin-network",
+        "previous": "New: Flux nodes: 6,854",
+        "current": "New: Flux nodes: 6,803"
+      },
+      {
         "sector": "energy-grid",
-        "previous": "New: DE grid load: 63,155 MW",
-        "current": "New: DE grid load: 59,801 MW"
+        "previous": "New: DE grid load: 59,801 MW",
+        "current": "New: DE grid load: 48,973 MW"
       },
       {
         "sector": "events",
-        "previous": "New: [450] Today's PHP security release, and how we're strengthening security",
-        "current": "New: [216] Mistral Large 4"
+        "previous": "New: [216] Mistral Large 4",
+        "current": "New: [307] mitmproxy adds --emudhra option"
+      },
+      {
+        "sector": "news",
+        "previous": "New: Mistral Large 4",
+        "current": "New: mitmproxy adds --emudhra option"
+      },
+      {
+        "sector": "sports-fitness",
+        "previous": "New: Breaking down how the 17 first-year Power 4 college football coaches have d",
+        "current": "New: Reese keeps Dream rolling in Game 3 to take series lead in WNBA Finals"
       },
       {
         "sector": "water",
-        "previous": "New: Mississippi flow: 169,000 cfs",
-        "current": "New: Mississippi flow: 168,000 cfs"
+        "previous": "New: Mississippi flow: 168,000 cfs",
+        "current": "New: Mississippi flow: 172,000 cfs"
       }
     ]
   },
   "watchlist": [
-    {
-      "sector": "museums",
-      "avg_volatility": 20.93,
-      "max_volatility": 20.93,
-      "fires_in_window": 1
-    },
     {
       "sector": "biotech",
       "avg_volatility": 10.99,
@@ -194,27 +329,9 @@
       "fires_in_window": 1
     },
     {
-      "sector": "air-quality",
-      "avg_volatility": 3.33,
-      "max_volatility": 3.33,
-      "fires_in_window": 0
-    },
-    {
       "sector": "weather",
-      "avg_volatility": 3.2,
+      "avg_volatility": 3.25,
       "max_volatility": 3.25,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "institutional-finance",
-      "avg_volatility": 3.04,
-      "max_volatility": 7.27,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "grid-mix",
-      "avg_volatility": 2.9,
-      "max_volatility": 2.9,
       "fires_in_window": 0
     },
     {
@@ -224,15 +341,15 @@
       "fires_in_window": 0
     },
     {
-      "sector": "fintech",
-      "avg_volatility": 1.61,
-      "max_volatility": 1.61,
+      "sector": "bitcoin-nodes",
+      "avg_volatility": 0.98,
+      "max_volatility": 0.98,
       "fires_in_window": 0
     },
     {
-      "sector": "grid-demand",
-      "avg_volatility": 0.7,
-      "max_volatility": 0.7,
+      "sector": "institutional-finance",
+      "avg_volatility": 0.93,
+      "max_volatility": 1.01,
       "fires_in_window": 0
     },
     {
@@ -240,12 +357,36 @@
       "avg_volatility": 0.59,
       "max_volatility": 0.61,
       "fires_in_window": 0
+    },
+    {
+      "sector": "depin-market",
+      "avg_volatility": 0.53,
+      "max_volatility": 1.64,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "data-validity",
+      "avg_volatility": 0.46,
+      "max_volatility": 0.9,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "aviation-weather",
+      "avg_volatility": 0.4,
+      "max_volatility": 0.4,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "aave",
+      "avg_volatility": 0.33,
+      "max_volatility": 0.44,
+      "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 248,
-    "firing_sectors": 10,
-    "fire_rate_pct": 4.03,
+    "total_sectors": 247,
+    "firing_sectors": 20,
+    "fire_rate_pct": 8.1,
     "runs_in_history": 24
   }
 }
