@@ -270,8 +270,7 @@ const COLLECTORS = {
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(30000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const text = await r.text();
-          const lines = text.trim().split("
-").slice(1).filter(l => l.length > 20);
+          const lines = text.trim().split("\n").slice(1).filter(l => l.length > 20);
           if (!lines.length) throw new Error("no_rows");
           const last = lines[lines.length - 1].split(",");
           const v = parseFloat(last[last.length - 1]);
