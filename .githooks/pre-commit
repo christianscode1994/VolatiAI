@@ -1,0 +1,17 @@
+#!/bin/bash
+# Pre-commit hook — runs structural and compliance audits before every commit.
+# Blocks the commit if either fails. Catches the exact class of bug that
+# caused tonight's failed sector additions (wrong block insertion, missing
+# active_sectors entry, restricted source leak).
+
+set -e
+
+echo "→ Running pre-commit audits..."
+
+# Structural: every active sector has a Worker block, and vice versa
+python3 scripts/audit_sectors.py
+
+# Compliance: no restricted sources in Worker code
+python3 scripts/audit_licenses.py
+
+echo "✓ Pre-commit audits passed"
