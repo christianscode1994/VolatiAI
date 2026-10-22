@@ -1,212 +1,96 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T07:39:49Z",
+  "ts": "2026-10-22T07:54:15Z",
   "run_number": 24,
   "briefing": {
-    "headline": "10 signals across 247 sectors evaluated",
+    "headline": "4 signals across 244 sectors evaluated",
     "by_domain": {
-      "information": {
-        "count": 3,
+      "crypto": {
+        "count": 2,
         "sectors": [
-          "arxiv-cs",
-          "events",
-          "news"
+          "depin-network",
+          "privacy-zcash"
         ]
       },
       "energy": {
         "count": 2,
         "sectors": [
-          "carbon-intensity",
+          "electricity",
           "energy-grid"
-        ]
-      },
-      "security": {
-        "count": 1,
-        "sectors": [
-          "cve-feed"
-        ]
-      },
-      "crypto": {
-        "count": 1,
-        "sectors": [
-          "depin-network"
-        ]
-      },
-      "other": {
-        "count": 2,
-        "sectors": [
-          "education",
-          "science-math"
-        ]
-      },
-      "sports": {
-        "count": 1,
-        "sectors": [
-          "sports-fitness"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "arxiv-cs",
-      "severity": "notice",
-      "summary": "New: Agentic World Action Models",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 1
-    },
-    {
-      "sector": "carbon-intensity",
-      "severity": "notice",
-      "summary": "New: UK grid: 110 gCO2/kWh (moderate)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 19
-    },
-    {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2026-101309: The xHCI (USB 3) device model did not validate or save the event ring size provided by the guest.  T",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 21
-    },
-    {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,805",
+      "summary": "New: Flux nodes: 6,807",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 22
+      "fires_24": 23
     },
     {
-      "sector": "education",
-      "severity": "notice",
-      "summary": "New: Commit or Abstain? System One Decision Models, LLMs, and Missing Legal Authority",
+      "sector": "electricity",
+      "severity": "warning",
+      "summary": "grid_frequency_hz 49.884 (-0.4%)",
       "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
+      "magnitude": 8.86,
+      "pct_change": -0.4430607112920634,
       "fires_24": 1
     },
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 61,040 MW",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 20
-    },
-    {
-      "sector": "events",
-      "severity": "notice",
-      "summary": "New: [468] There isn't an easy exploit for this PHP vulnerability",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 20
-    },
-    {
-      "sector": "news",
-      "severity": "notice",
-      "summary": "New: OpenAI CLI",
+      "summary": "New: DE grid load: 63,489 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 21
     },
     {
-      "sector": "science-math",
-      "severity": "notice",
-      "summary": "New: Scaling H2 Factorization to Billion-Unknown Three-Dimensional Problems",
+      "sector": "privacy-zcash",
+      "severity": "warning",
+      "summary": "difficulty 252231704.90041006 (+17.7%)",
       "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
+      "magnitude": 8.86,
+      "pct_change": 17.721446391190895,
       "fires_24": 1
-    },
-    {
-      "sector": "sports-fitness",
-      "severity": "notice",
-      "summary": "New: Reese's latest double-double fuels Game 3 rout as Dream take 2-1 Finals lead",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 21
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 03:45",
-    "signals_before": 20,
-    "signals_after": 10,
+    "previous_ts": "2026-10-22 07:39",
+    "signals_before": 10,
+    "signals_after": 4,
     "new": [
-      "arxiv-cs",
-      "education",
-      "science-math"
+      "electricity",
+      "privacy-zcash"
     ],
     "dropped": [
-      "art-design",
-      "arxiv-ai",
-      "develop",
-      "free-games",
-      "jobs",
-      "museums",
-      "nft",
-      "open-source-packages",
-      "pypi-packages",
-      "spaceweather",
-      "tv",
-      "water",
-      "wikipedia"
-    ],
-    "persistent": [
+      "arxiv-cs",
       "carbon-intensity",
       "cve-feed",
-      "depin-network",
-      "energy-grid",
+      "education",
       "events",
       "news",
+      "science-math",
       "sports-fitness"
+    ],
+    "persistent": [
+      "depin-network",
+      "energy-grid"
     ],
     "movements": [
       {
-        "sector": "carbon-intensity",
-        "previous": "New: UK grid: 55 gCO2/kWh (low)",
-        "current": "New: UK grid: 110 gCO2/kWh (moderate)"
-      },
-      {
-        "sector": "cve-feed",
-        "previous": "New: CVE-2026-110911: Wheels 1.1.8 through 4.1.1 allows SQL injection when calle",
-        "current": "New: CVE-2026-101309: The xHCI (USB 3) device model did not validate or save the"
-      },
-      {
         "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,803",
-        "current": "New: Flux nodes: 6,805"
+        "previous": "New: Flux nodes: 6,805",
+        "current": "New: Flux nodes: 6,807"
       },
       {
         "sector": "energy-grid",
-        "previous": "New: DE grid load: 48,973 MW",
-        "current": "New: DE grid load: 61,040 MW"
-      },
-      {
-        "sector": "events",
-        "previous": "New: [307] mitmproxy adds --emudhra option",
-        "current": "New: [468] There isn't an easy exploit for this PHP vulnerability"
-      },
-      {
-        "sector": "news",
-        "previous": "New: mitmproxy adds --emudhra option",
-        "current": "New: OpenAI CLI"
-      },
-      {
-        "sector": "sports-fitness",
-        "previous": "New: Reese keeps Dream rolling in Game 3 to take series lead in WNBA Finals",
-        "current": "New: Reese's latest double-double fuels Game 3 rout as Dream take 2-1 Finals lea"
+        "previous": "New: DE grid load: 61,040 MW",
+        "current": "New: DE grid load: 63,489 MW"
       }
     ]
   },
@@ -224,9 +108,33 @@
       "fires_in_window": 1
     },
     {
+      "sector": "grid-mix",
+      "avg_volatility": 8.24,
+      "max_volatility": 8.24,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "crypto-liquidations",
+      "avg_volatility": 6.64,
+      "max_volatility": 6.64,
+      "fires_in_window": 0
+    },
+    {
       "sector": "defi-dex-volume",
       "avg_volatility": 2.64,
       "max_volatility": 2.64,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "cloud-outages",
+      "avg_volatility": 1.35,
+      "max_volatility": 1.35,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "cloudflare-status",
+      "avg_volatility": 1.28,
+      "max_volatility": 1.28,
       "fires_in_window": 0
     },
     {
@@ -242,40 +150,16 @@
       "fires_in_window": 0
     },
     {
-      "sector": "depin-market",
-      "avg_volatility": 0.61,
-      "max_volatility": 1.64,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "hazards",
-      "avg_volatility": 0.59,
-      "max_volatility": 0.61,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "data-validity",
-      "avg_volatility": 0.46,
-      "max_volatility": 0.9,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "aviation-weather",
-      "avg_volatility": 0.4,
-      "max_volatility": 0.4,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "aave",
-      "avg_volatility": 0.33,
-      "max_volatility": 0.44,
+      "sector": "ai-news",
+      "avg_volatility": 0.94,
+      "max_volatility": 0.94,
       "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 247,
-    "firing_sectors": 10,
-    "fire_rate_pct": 4.05,
+    "total_sectors": 244,
+    "firing_sectors": 4,
+    "fire_rate_pct": 1.64,
     "runs_in_history": 24
   }
 }
