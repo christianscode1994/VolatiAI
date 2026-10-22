@@ -1,135 +1,190 @@
 #!/usr/bin/env python3
-"""tune.py — suggest thresholds from actual historical distribution.
+"""tune.py — suggest tuning from historical distribution.
 
-For a given sector, shows the pct_change distribution across all
-runs and what fire rate each threshold would produce. Lets you
-tune before deploying.
+Detects sector type and analyzes appropriately:
+
+  Value-type (has delta.metric): shows pct_change distribution and
+  what fire rate each threshold would produce.
+
+  Event-type (has event_id): shows distinct event IDs vs. fires.
+  High fires with low distinct IDs means the dedup mechanism is
+  underperforming. High fires with matching distinct IDs means the
+  source itself is noisy (needs Worker-level bucketing).
 
 Usage:
+    python3 scripts/tune.py --noisy
     python3 scripts/tune.py --sector develop
-    python3 scripts/tune.py --sector carbon-intensity --target 10
-    python3 scripts/tune.py --noisy    # all current noisy sectors
 """
 import argparse
 import json
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 HISTORY = Path("data/digest_history.json")
 
 
-def load_sector_changes(sector_name):
-    """Return all pct_change values for a sector across history."""
+def load_history():
     if not HISTORY.exists():
-        print("error: digest_history.json not found", file=sys.stderr)
+        print(f"error: {HISTORY} not found", file=sys.stderr)
         sys.exit(1)
-    runs = json.load(HISTORY.open()).get("runs", [])
-    changes = []
+    return json.load(HISTORY.open()).get("runs", [])
+
+
+def analyze_sector(sector, runs):
+    """Collect all appearances of a sector across history."""
+    pcts = []
+    event_ids = []
     fires = 0
     appearances = 0
     for run in runs:
-        data = run.get("sectors", {}).get(sector_name)
+        data = run.get("sectors", {}).get(sector)
         if not data:
             continue
         appearances += 1
-        pct = data.get("pct_change")
-        if pct is not None:
-            changes.append(pct)
         if data.get("has_signal"):
             fires += 1
-    return changes, fires, appearances
+            eid = data.get("event_id")
+            if eid is not None:
+                event_ids.append(str(eid))
+        pct = data.get("pct_change")
+        if pct is not None:
+            pcts.append(pct)
+
+    return {
+        "sector": sector,
+        "fires": fires,
+        "appearances": appearances,
+        "pcts": pcts,
+        "event_ids": event_ids,
+        "type": "event" if event_ids else ("value" if pcts else "unknown"),
+    }
 
 
-def suggest_threshold(changes, target_fire_pct):
-    """Find smallest threshold that gives <= target_fire_pct fire rate."""
-    if not changes:
-        return None
-    abs_changes = sorted(abs(c) for c in changes)
+def report_value(data, target):
+    sector = data["sector"]
+    pcts = data["pcts"]
+    fires = data["fires"]
+    app = data["appearances"]
+    abs_changes = sorted(abs(c) for c in pcts)
     n = len(abs_changes)
-    target_count = int(n * target_fire_pct / 100)
-    if target_count == 0:
-        return None  # would need threshold above max
-    if target_count >= n:
-        return abs_changes[0]
-    # Threshold needs to allow only target_count values above it
-    return abs_changes[n - target_count]
+    current_rate = fires / app * 100 if app else 0
 
-
-def report(sector, changes, fires, appearances, target):
-    if not changes:
-        print(f"\n{sector}: no pct_change data in history")
-        return
-
-    abs_changes = sorted(abs(c) for c in changes)
-    n = len(abs_changes)
-    current_rate = fires / appearances * 100 if appearances else 0
-
-    print(f"\n=== {sector} ===")
-    print(f"  Fired: {fires}/{appearances} = {current_rate:.0f}% (current)")
+    print(f"\n=== {sector} (value-type) ===")
+    print(f"  Fired: {fires}/{app} = {current_rate:.0f}% (current)")
     print(f"  pct_change distribution (n={n}):")
-    print(f"    min: {abs_changes[0]:.2f}%  p50: {abs_changes[n//2]:.2f}%  "
-          f"p90: {abs_changes[int(n*0.9)]:.2f}%  max: {abs_changes[-1]:.2f}%")
+    print(f"    min: {abs_changes[0]:.2f}%  p50: {abs_changes[n // 2]:.2f}%  "
+          f"p90: {abs_changes[int(n * 0.9)]:.2f}%  max: {abs_changes[-1]:.2f}%")
     print()
     print(f"  Fire rate by threshold (all abs values):")
     print(f"    {'threshold':>10}  {'would fire':>12}  {'rate':>6}")
     for t in (1, 2, 5, 10, 15, 20, 25, 30, 50):
         count = sum(1 for c in abs_changes if c >= t)
         rate = count / n * 100
-        marker = " ← target" if target and abs(rate - target) < 3 else ""
-        print(f"    {t:>9}%  {count:>12}  {rate:>5.0f}%{marker}")
+        print(f"    {t:>9}%  {count:>12}  {rate:>5.0f}%")
+
+
+def report_event(data, target):
+    sector = data["sector"]
+    ids = data["event_ids"]
+    fires = data["fires"]
+    app = data["appearances"]
+    if not ids:
+        print(f"\n=== {sector} (event-type) ===")
+        print(f"  Fired: {fires}/{app} — no event_id data in history yet")
+        print(f"  (Event IDs are recorded from run 2 of the dedup patch onward)")
+        return
+
+    distinct = len(set(ids))
+    repeats = fires - distinct
+    avg_fires_per_event = fires / distinct if distinct else 0
+    current_rate = fires / app * 100 if app else 0
+
+    print(f"\n=== {sector} (event-type) ===")
+    print(f"  Fired: {fires}/{app} = {current_rate:.0f}% (current)")
+    print(f"  Distinct event IDs: {distinct}")
+    print(f"  Fires per event (avg): {avg_fires_per_event:.1f}")
     print()
-    suggested = suggest_threshold(changes, target)
-    if suggested is not None:
-        print(f"  Suggested threshold for {target}% target: {suggested:.1f}%")
+
+    # Diagnosis
+    if avg_fires_per_event <= 1.2:
+        print(f"  ✓ Dedup healthy. Each fire is a genuinely new event.")
+        print(f"  → Fix at Worker: bucket the event ID or filter the source.")
+    elif avg_fires_per_event <= 2.0:
+        print(f"  ⚠ Minor duplicate fires ({repeats} of {fires}).")
+        print(f"  → Check dedup cooldown (currently 8 runs).")
     else:
-        print(f"  For {target}% target: threshold would need to be above {abs_changes[-1]:.1f}%")
+        print(f"  ✗ Dedup underperforming: {repeats} of {fires} fires are repeats.")
+        print(f"  → Fix in digest: extend dedupe_recent_events cooldown or investigate KV.")
+
+    # Most repeat offenders
+    counts = Counter(ids)
+    top_repeats = [(eid, n) for eid, n in counts.items() if n > 1]
+    top_repeats.sort(key=lambda x: -x[1])
+    if top_repeats:
+        print(f"\n  Top repeated event IDs:")
+        for eid, n in top_repeats[:5]:
+            print(f"    {eid[:40]:<42} fired {n}×")
 
 
-def find_noisy_sectors(min_rate=50):
-    """Find sectors currently firing above min_rate."""
-    runs = json.load(HISTORY.open()).get("runs", [])
+def find_noisy(runs, min_rate=50):
     fires = defaultdict(int)
-    appearances = defaultdict(int)
+    apps = defaultdict(int)
     for run in runs:
         for sector, data in run.get("sectors", {}).items():
-            appearances[sector] += 1
+            apps[sector] += 1
             if data.get("has_signal"):
                 fires[sector] += 1
     noisy = []
-    for sector, app in appearances.items():
+    for sector, app in apps.items():
         if app == 0:
             continue
         rate = fires[sector] / app * 100
         if rate >= min_rate:
             noisy.append((sector, rate))
-    return noisy
+    return sorted(noisy, key=lambda x: -x[1])
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Suggest thresholds from history")
+    ap = argparse.ArgumentParser(description="Suggest tuning from history")
     ap.add_argument("--sector", help="sector name")
-    ap.add_argument("--target", type=int, default=15, help="target fire rate %% (default 15)")
-    ap.add_argument("--noisy", action="store_true", help="show all sectors firing >50%")
+    ap.add_argument("--target", type=int, default=15, help="target fire rate %%")
+    ap.add_argument("--noisy", action="store_true", help="all sectors >50%%")
     args = ap.parse_args()
 
+    runs = load_history()
+
     if args.noisy:
-        noisy = find_noisy_sectors()
+        noisy = find_noisy(runs)
         if not noisy:
-            print("No sectors currently firing above 50%.")
+            print("No sectors firing above 50%.")
             return 0
         print(f"\n=== {len(noisy)} sectors firing above 50% ===\n")
-        for sector, rate in sorted(noisy, key=lambda x: -x[1]):
-            changes, fires, app = load_sector_changes(sector)
-            report(sector, changes, fires, app, args.target)
+        for sector, _ in noisy:
+            data = analyze_sector(sector, runs)
+            if data["type"] == "value":
+                report_value(data, args.target)
+            elif data["type"] == "event":
+                report_event(data, args.target)
+            else:
+                print(f"\n=== {sector} ===")
+                print(f"  No pct_change or event_id data — sector may be pre-dedup-patch")
         return 0
 
     if not args.sector:
         ap.print_help()
         return 1
 
-    changes, fires, app = load_sector_changes(args.sector)
-    report(args.sector, changes, fires, app, args.target)
+    data = analyze_sector(args.sector, runs)
+    if data["type"] == "value":
+        report_value(data, args.target)
+    elif data["type"] == "event":
+        report_event(data, args.target)
+    else:
+        print(f"\n=== {args.sector} ===")
+        print(f"  No pct_change or event_id data in history.")
+        print(f"  Either the sector hasn't fired since the dedup patch, or")
+        print(f"  the sector is value-type with no history yet.")
     return 0
 
 
