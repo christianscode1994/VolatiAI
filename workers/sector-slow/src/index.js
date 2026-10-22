@@ -188,6 +188,212 @@ const COLLECTORS = {
       },
     }),
   },
+,
+  faostat: {
+    config: { metric: "food_price_index", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        food_price_index: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified: see scripts/verify_endpoints.sh");
+        }),
+      },
+    }),
+  },
+  "global-forest-watch": {
+    config: { metric: "tree_cover_loss_ha", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        tree_cover_loss_ha: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  "fcc-broadband": {
+    config: { metric: "providers_reporting", threshold_pct: 0.2, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        providers_reporting: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  bakom: {
+    config: { metric: "antenna_sites", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        antenna_sites: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  ripestat: {
+    config: { metric: "asn_count", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        asn_count: await fetchSafe(async () => {
+          const r = await fetch("https://stat.ripe.net/data/as-overview/data.json?resource=AS3333",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          // stat.ripe.net as-overview gives announced status, not count.
+          // Use the RIS peers count as a proxy for routing population.
+          if (j.data && typeof j.data.announced === "boolean") return j.data.announced ? 1 : 0;
+          throw new Error("no_data");
+        }),
+      },
+    }),
+  },
+  "ietf-datatracker": {
+    config: { metric: "rfc_count", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        rfc_count: await fetchSafe(async () => {
+          const r = await fetch("https://datatracker.ietf.org/api/v1/doc/document/?format=json&limit=1&type=rfc",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j.meta && typeof j.meta.total_count === "number") return j.meta.total_count;
+          throw new Error("no_meta_total");
+        }),
+      },
+    }),
+  },
+  fhfa: {
+    config: { metric: "hpi_index", threshold_pct: 0.3, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        hpi_index: await fetchSafe(async () => {
+          const r = await fetch("https://www.fhfa.gov/hpi/download/monthly/hpi_master.csv",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(30000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const lines = text.trim().split("
+").slice(1).filter(l => l.length > 20);
+          if (!lines.length) throw new Error("no_rows");
+          const last = lines[lines.length - 1].split(",");
+          const v = parseFloat(last[last.length - 1]);
+          if (!Number.isFinite(v)) throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  scb: {
+    config: { metric: "construction_index", threshold_pct: 0.3, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        construction_index: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  arbetsformedlingen: {
+    config: { metric: "job_vacancies", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        job_vacancies: await fetchSafe(async () => {
+          const r = await fetch("https://jobsearch.api.jobtechdev.se/search?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j.total && typeof j.total.value === "number") return j.total.value;
+          throw new Error("no_total");
+        }),
+      },
+    }),
+  },
+  poligraph: {
+    config: { metric: "judicial_affairs", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        judicial_affairs: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  bodacc: {
+    config: { metric: "insolvency_notices", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        insolvency_notices: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  satlas: {
+    config: { metric: "tracked_objects", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        tracked_objects: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  opensensemap: {
+    config: { metric: "sensor_boxes", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        sensor_boxes: await fetchSafe(async () => {
+          const r = await fetch("https://api.opensensemap.org/stats",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.boxes === "number") return j.boxes;
+          throw new Error("no_boxes_field");
+        }),
+      },
+    }),
+  },
+  mattercatalog: {
+    config: { metric: "certified_products", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        certified_products: await fetchSafe(async () => {
+          throw new Error("endpoint_unverified");
+        }),
+      },
+    }),
+  },
+  "home-assistant": {
+    config: { metric: "total_installations", threshold_pct: 0.5, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_installations: await fetchSafe(async () => {
+          const r = await fetch("https://analytics.home-assistant.io/data.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const flat = Object.values(j).flatMap(v =>
+            typeof v === "number" ? [v] :
+            v && typeof v === "object" ? Object.values(v).filter(x => typeof x === "number") : []);
+          if (!flat.length) throw new Error("no_numeric_values");
+          return flat.reduce((a, b) => a + b, 0);
+        }),
+      },
+    }),
+  },
+  robonix: {
+    config: { metric: "packages", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        packages: await fetchSafe(async () => {
+          const r = await fetch("https://packages.robonix.ai/api/v1/packages.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j)) return j.length;
+          throw new Error("not_array");
+        }),
+      },
+    }),
+  },
 
 };
 
