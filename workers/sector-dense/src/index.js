@@ -3020,6 +3020,42 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
+  "cisa-kev": {
+    config: { metric: "new_kev_7d", threshold_pct: 0, threshold_abs: 1, window: "7d", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        new_kev_7d: await fetchSafe(async () => {
+          const r = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const vulns = j?.vulnerabilities;
+          if (!Array.isArray(vulns)) throw new Error("no_vulns: keys=" + Object.keys(j || {}).join(","));
+          const cutoff = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+          return vulns.filter(v => (v.dateAdded || "") >= cutoff).length;
+        }),
+      },
+    }),
+  },
+  "nvd-new-cves": {
+    config: { metric: "cves_7d", threshold_pct: 0, threshold_abs: 200, window: "7d", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        cves_7d: await fetchSafe(async () => {
+          const end = new Date();
+          const start = new Date(Date.now() - 7 * 864e5);
+          const fmt = d => d.toISOString().slice(0, 19) + ".000";
+          const url = "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=" + fmt(start) + "&pubEndDate=" + fmt(end);
+          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.totalResults;
+          if (typeof n === "number") return n;
+          throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+        }),
+      },
+    }),
+  },
   "form-d-filings": {
     config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({

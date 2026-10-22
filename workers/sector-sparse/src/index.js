@@ -1415,6 +1415,22 @@ const COLLECTORS = {
     }),
   },
 
+  "abuse-ch-feodo": {
+    config: { metric: "new_c2_7d", threshold_pct: 0, threshold_abs: 1, window: "7d", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        new_c2_7d: await fetchSafe(async () => {
+          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          const cutoff = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+          return j.filter(e => (e.first_seen || "").slice(0, 10) >= cutoff).length;
+        }),
+      },
+    }),
+  },
   "mining": {
     event_source: "dcentral_hashprice",
     ttl: 3600,
