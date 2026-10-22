@@ -154,19 +154,6 @@ const COLLECTORS = {
     }),
   },
 
-  "sports-fitness": {
-    event_source: "espn_news",
-    ttl: 1800,
-    collectAll: async (env) => ({
-      sources: {
-        espn_news: await fetchSafe(async () => {
-          const r = await fetch('https://www.espn.com/espn/rss/news');
-          if (!r.ok) throw new Error('status ' + r.status);
-          return parseRSSFirstItem(await r.text());
-        }),
-      },
-    }),
-  },
 
   vehicles: {
     event_source: "nhtsa_recall",
@@ -1127,41 +1114,6 @@ const COLLECTORS = {
           const val = j[1]?.[0]?.value;
           if (val === null || val === undefined) throw new Error("no data");
           return { id: "se_pop_" + Math.round(val) + "_2024", title: "Sweden population: " + val.toLocaleString() };
-        }),
-      },
-    }),
-  },
-  "energy-grid": {
-    event_source: "smard_grid_load",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        smard_grid_load: await fetchSafe(async () => {
-          const indexResp = await fetch("https://www.smard.de/app/chart_data/410/DE/index_hour.json");
-          if (!indexResp.ok) throw new Error("index status " + indexResp.status);
-          const index = await indexResp.json();
-          const timestamps = index.timestamps;
-          if (!timestamps || !timestamps.length) throw new Error("no timestamps");
-          const latest = timestamps[timestamps.length - 1];
-          const dataResp = await fetch("https://www.smard.de/app/chart_data/410/DE/410_DE_hour_" + latest + ".json");
-          if (!dataResp.ok) throw new Error("data status " + dataResp.status);
-          const data = await dataResp.json();
-          const series = data.series;
-          if (!series || !series.length) throw new Error("no series");
-
-          // Find last non-null value (SMARD often has trailing nulls for incomplete hours)
-          let load = null;
-          for (let i = series.length - 1; i >= 0; i--) {
-            if (series[i][1] !== null && series[i][1] !== undefined) {
-              load = series[i][1];
-              break;
-            }
-          }
-          if (load === null) throw new Error("no non-null load value in series");
-
-          const bucket = Math.floor(load / 500) * 500;
-          const day = new Date().toISOString().slice(0, 10);
-          return { id: "smard_" + bucket + "_" + day, title: "DE grid load: " + Math.round(load).toLocaleString() + " MW" };
         }),
       },
     }),
