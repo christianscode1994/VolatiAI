@@ -1,43 +1,138 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T17:14:32Z",
+  "ts": "2026-10-22T21:00:45Z",
   "run_number": 24,
   "briefing": {
-    "headline": "1 signal across 248 sectors evaluated",
+    "headline": "8 signals across 264 sectors evaluated",
     "by_domain": {
+      "security": {
+        "count": 1,
+        "sectors": [
+          "cve-feed"
+        ]
+      },
       "crypto": {
         "count": 1,
         "sectors": [
           "depin-network"
+        ]
+      },
+      "other": {
+        "count": 4,
+        "sectors": [
+          "eu-open-data",
+          "micar-casps",
+          "open-source",
+          "xbrl-frames"
+        ]
+      },
+      "information": {
+        "count": 2,
+        "sectors": [
+          "events",
+          "npm-packages"
         ]
       }
     }
   },
   "signals": [
     {
+      "sector": "cve-feed",
+      "severity": "notice",
+      "summary": "New: CVE-2026-115506: libexpat through 2.9.0 contains a denial of service vulnerability because billion laughs protection ",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 10
+    },
+    {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,795",
+      "summary": "New: Flux nodes: 6,832",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 13
+    },
+    {
+      "sector": "eu-open-data",
+      "severity": "critical",
+      "summary": "total_datasets 2039102 (+2.0%)",
+      "confidence": 1,
+      "magnitude": 20.07,
+      "pct_change": 2.00651128168597,
+      "fires_24": 1
+    },
+    {
+      "sector": "events",
+      "severity": "notice",
+      "summary": "New: [711] Quad9 (DNS Resolver) to Exit France",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 10
+    },
+    {
+      "sector": "micar-casps",
+      "severity": "critical",
+      "summary": "authorised_casps 436 (+6.1%)",
+      "confidence": 1,
+      "magnitude": 12.17,
+      "pct_change": 6.082725060827251,
+      "fires_24": 1
+    },
+    {
+      "sector": "npm-packages",
+      "severity": "notice",
+      "summary": "New: @ai-sdk/provider v4.0.32",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "open-source",
+      "severity": "notice",
+      "summary": "New: 1.143.0 (vscode)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "xbrl-frames",
+      "severity": "warning",
+      "summary": "reporting_filers 220 (+31.0%)",
+      "confidence": 1,
+      "magnitude": 6.19,
+      "pct_change": 30.952380952380953,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 17:06",
-    "signals_before": 3,
-    "signals_after": 1,
+    "previous_ts": "2026-10-22 17:14",
+    "signals_before": 1,
+    "signals_after": 8,
     "new": [
+      "cve-feed",
+      "eu-open-data",
+      "events",
+      "micar-casps",
+      "npm-packages",
+      "open-source",
+      "xbrl-frames"
+    ],
+    "dropped": [],
+    "persistent": [
       "depin-network"
     ],
-    "dropped": [
-      "carbon-intensity",
-      "events",
-      "free-games"
-    ],
-    "persistent": [],
-    "movements": []
+    "movements": [
+      {
+        "sector": "depin-network",
+        "previous": "New: Flux nodes: 6,795",
+        "current": "New: Flux nodes: 6,832"
+      }
+    ]
   },
   "watchlist": [
     {
@@ -71,12 +166,6 @@
       "fires_in_window": 3
     },
     {
-      "sector": "xbrl-frames",
-      "avg_volatility": 7.2,
-      "max_volatility": 9.52,
-      "fires_in_window": 0
-    },
-    {
       "sector": "energy-carbon",
       "avg_volatility": 5.38,
       "max_volatility": 5.38,
@@ -99,12 +188,18 @@
       "avg_volatility": 1.67,
       "max_volatility": 1.67,
       "fires_in_window": 0
+    },
+    {
+      "sector": "cloud-outages",
+      "avg_volatility": 1.35,
+      "max_volatility": 1.35,
+      "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 248,
-    "firing_sectors": 1,
-    "fire_rate_pct": 0.4,
+    "total_sectors": 264,
+    "firing_sectors": 8,
+    "fire_rate_pct": 3.03,
     "runs_in_history": 24
   }
 }
