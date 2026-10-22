@@ -3868,29 +3868,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "shipping-rates": {
-    config: { metric: "shanghai_index", threshold_pct: 5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        shanghai_index: await fetchSafe(async () => {
-          const r = await fetch("https://www.econdb.com/widgets/shanghai-containerized-index/data/",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const plot = Array.isArray(j?.plots) ? j.plots[0] : null;
-          const series = plot?.data ?? plot?.values ?? j?.data;
-          if (!Array.isArray(series) || !series.length) throw new Error("no_series: plots_keys=" + Object.keys(plot || j || {}).join(","));
-          // Prefer SCSFI_EU (spot index) over forward curve; find last non-null
-          for (let k = series.length - 1; k >= 0; k--) {
-            const row = series[k];
-            const v = row?.SCSFI_EU ?? row?.["Forward curve"] ?? row?.value ?? row?.y ?? (Array.isArray(row) ? row[1] : null);
-            if (typeof v === "number") return v;
-          }
-          throw new Error("no_value: last=" + JSON.stringify(series[series.length-1]).slice(0, 200));
-        }),
-      },
-    }),
-  },
 });
 
 
