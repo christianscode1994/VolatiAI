@@ -1,72 +1,40 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T17:06:22Z",
+  "ts": "2026-10-22T17:14:32Z",
   "run_number": 24,
   "briefing": {
-    "headline": "3 signals across 248 sectors evaluated",
+    "headline": "1 signal across 248 sectors evaluated",
     "by_domain": {
-      "energy": {
+      "crypto": {
         "count": 1,
         "sectors": [
-          "carbon-intensity"
-        ]
-      },
-      "information": {
-        "count": 1,
-        "sectors": [
-          "events"
-        ]
-      },
-      "other": {
-        "count": 1,
-        "sectors": [
-          "free-games"
+          "depin-network"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "carbon-intensity",
+      "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: UK grid: 189 gCO2/kWh (high)",
+      "summary": "New: Flux nodes: 6,795",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 10
-    },
-    {
-      "sector": "events",
-      "severity": "notice",
-      "summary": "New: [526] eMudhra to exit global SSL/TLS certificate business",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 11
-    },
-    {
-      "sector": "free-games",
-      "severity": "notice",
-      "summary": "New: Sker Ritual (Epic Games) Giveaway",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
+      "fires_24": 13
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 15:17",
+    "previous_ts": "2026-10-22 17:06",
     "signals_before": 3,
-    "signals_after": 3,
+    "signals_after": 1,
     "new": [
+      "depin-network"
+    ],
+    "dropped": [
       "carbon-intensity",
       "events",
       "free-games"
-    ],
-    "dropped": [
-      "cve-feed",
-      "dev-vr-ar",
-      "earthquakes"
     ],
     "persistent": [],
     "movements": []
@@ -104,8 +72,8 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 6.96,
-      "max_volatility": 8.93,
+      "avg_volatility": 7.2,
+      "max_volatility": 9.52,
       "fires_in_window": 0
     },
     {
@@ -135,8 +103,8 @@
   ],
   "stats": {
     "total_sectors": 248,
-    "firing_sectors": 3,
-    "fire_rate_pct": 1.21,
+    "firing_sectors": 1,
+    "fire_rate_pct": 0.4,
     "runs_in_history": 24
   }
 }
