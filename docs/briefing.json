@@ -1,45 +1,42 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T08:46:28Z",
+  "ts": "2026-10-22T08:48:55Z",
   "run_number": 24,
   "briefing": {
-    "headline": "4 signals across 247 sectors evaluated",
+    "headline": "5 signals across 247 sectors evaluated",
     "by_domain": {
       "crypto": {
-        "count": 2,
+        "count": 1,
         "sectors": [
-          "crypto-oi",
           "depin-network"
         ]
       },
-      "security": {
+      "energy": {
         "count": 1,
         "sectors": [
-          "cve-feed"
+          "electricity"
         ]
       },
       "information": {
+        "count": 2,
+        "sectors": [
+          "events",
+          "news"
+        ]
+      },
+      "other": {
         "count": 1,
         "sectors": [
-          "events"
+          "web-apps"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2023-32198: A vulnerability has been identified in Steve where by default it was using an insecure option that d",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 20
-    },
-    {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,810",
+      "summary": "New: Flux nodes: 6,811",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -48,37 +45,69 @@
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [341] GitLab critical patch release",
+      "summary": "New: [440] Security Disclosure",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 19
     },
     {
-      "sector": "crypto-oi",
+      "sector": "news",
       "severity": "notice",
-      "summary": "btc_open_interest 2939184 (-1.0%)",
-      "confidence": 0.65,
-      "magnitude": 3.26,
-      "pct_change": -0.9786297027995116,
+      "summary": "New: WorldTUI: I trained a 360M model to pretend to be a terminal",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 19
+    },
+    {
+      "sector": "web-apps",
+      "severity": "critical",
+      "summary": "weekly_downloads 0 (-100.0%)",
+      "confidence": 1,
+      "magnitude": 20,
+      "pct_change": -100,
       "fires_24": 1
+    },
+    {
+      "sector": "electricity",
+      "severity": "info",
+      "summary": "grid_frequency_hz 50.048 (-0.1%)",
+      "confidence": 0.3,
+      "magnitude": 1.48,
+      "pct_change": -0.07387441349705308,
+      "fires_24": 3
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 08:12",
-    "signals_before": 1,
-    "signals_after": 4,
+    "previous_ts": "2026-10-22 08:46",
+    "signals_before": 4,
+    "signals_after": 5,
     "new": [
+      "electricity",
+      "news",
+      "web-apps"
+    ],
+    "dropped": [
       "crypto-oi",
-      "cve-feed",
+      "cve-feed"
+    ],
+    "persistent": [
       "depin-network",
       "events"
     ],
-    "dropped": [
-      "electricity"
-    ],
-    "persistent": [],
-    "movements": []
+    "movements": [
+      {
+        "sector": "depin-network",
+        "previous": "New: Flux nodes: 6,810",
+        "current": "New: Flux nodes: 6,811"
+      },
+      {
+        "sector": "events",
+        "previous": "New: [341] GitLab critical patch release",
+        "current": "New: [440] Security Disclosure"
+      }
+    ]
   },
   "watchlist": [
     {
@@ -144,8 +173,8 @@
   ],
   "stats": {
     "total_sectors": 247,
-    "firing_sectors": 4,
-    "fire_rate_pct": 1.62,
+    "firing_sectors": 5,
+    "fire_rate_pct": 2.02,
     "runs_in_history": 24
   }
 }
