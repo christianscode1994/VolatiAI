@@ -4338,6 +4338,39 @@ export default {
     const action = parts[1] || "signal";
     const collector = COLLECTORS[sectorName];
 
+    if (sectorName === "_health") {
+      const summary = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const config = c.config;
+        if (!config || !config.metric) {
+          summary[name] = { metric: null, error: "no config.metric" };
+          continue;
+        }
+        const kvKey = name + "_" + config.metric;
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          const v = raw ? parseFloat(raw) : null;
+          summary[name] = {
+            metric: config.metric,
+            storage_model: "scalar",
+            has_value: raw !== null,
+            last_value: Number.isFinite(v) ? v : null,
+            previous: null,
+            pct_change: null,
+            threshold_pct: config.threshold_pct || 0,
+            distance_pct: null,
+            history_points: raw !== null ? 1 : 0,
+            span_days: 0,
+            newest_iso: null,
+            ttl_seconds: config.ttl || 3600
+          };
+        } catch (e) {
+          summary[name] = { error: String(e).slice(0, 80) };
+        }
+      }
+      return json({ density: "dense", sectors: summary, timestamp: new Date().toISOString() });
+    }
+
     if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
 
     if (action === "health") {
