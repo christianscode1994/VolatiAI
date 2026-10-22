@@ -266,6 +266,47 @@ def save_history(history):
         json.dump(history, f, indent=2)
 
 
+def dedupe_recent_events(arb, envelopes_by_sector, cooldown_runs=8):
+    """Suppress event-type signals whose event ID fired recently.
+
+    Cloudflare KV is eventually consistent — writes propagate across
+    edges over 5-20 minutes. Digest runs hitting different edges during
+    that window see stale null from KV and re-fire the same event.
+    Observed: CVE-2026-0311 fired 5 times in 22 minutes.
+
+    digest_history.json is consistent and ordered. Use it as the source
+    of truth: if the same event_id fired in any of the last N runs,
+    suppress it now.
+    """
+    history = load_history()
+    recent_ids = set()
+    for run in history.get("runs", [])[-cooldown_runs:]:
+        for sector, data in run.get("sectors", {}).items():
+            eid = data.get("event_id")
+            if eid and data.get("has_signal"):
+                recent_ids.add(str(eid))
+
+    if not recent_ids:
+        return arb
+
+    suppressed = 0
+    for a in arb:
+        if not a.get("has_signal"):
+            continue
+        env = envelopes_by_sector.get(a["sector"], {})
+        eid = (env.get("context") or {}).get("current_event_id")
+        if eid and str(eid) in recent_ids:
+            a["has_signal"] = False
+            a["summary"] = "quiet"
+            env["has_signal"] = False
+            env["summary"] = "quiet"
+            suppressed += 1
+
+    if suppressed:
+        print(f"Deduped {suppressed} recently-fired events (KV propagation lag)")
+    return arb
+
+
 def append_run(history, arb, envelopes_by_sector):
     timestamp = datetime.utcnow().isoformat() + "Z"
     sectors = {}
@@ -281,6 +322,7 @@ def append_run(history, arb, envelopes_by_sector):
             "delta_current": delta.get("current"),
             "metric": delta.get("metric"),
             "pct_change": delta.get("pct_change"),
+            "event_id": (env.get("context") or {}).get("current_event_id"),
             "summary": env.get("summary"),
         }
     history["runs"].append({"timestamp": timestamp, "sectors": sectors})
@@ -541,6 +583,7 @@ def main():
 
     arb = arbitrate(graph)
     arb.sort(key=lambda x: -x["confidence"])
+    arb = dedupe_recent_events(arb, envelopes_by_sector)
 
     contradictions = find_contradictions(arb, envelopes_by_sector)
     if contradictions:
