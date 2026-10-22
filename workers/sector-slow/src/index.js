@@ -69,7 +69,7 @@ async function load() {
 load();
 setInterval(load, 60000);
 </script>
-</body></html>\`;
+</body></html>`;
 
 async function fetchSafe(fn) {
   try { return { ok: true, data: await fn() }; }
