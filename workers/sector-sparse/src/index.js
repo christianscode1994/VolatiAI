@@ -854,8 +854,11 @@ const COLLECTORS = {
             ? j.data
             : (j.data?.total ?? j.data?.count ?? null);
           if (count === null || count === undefined) throw new Error("no count in " + JSON.stringify(j.data).slice(0, 100));
+          // Bucket to nearest 100 so 1-node fluctuations don't fire.
+          // ~1.5% of current ~6800 count = meaningful movement.
           const day = new Date().toISOString().slice(0, 10);
-          return { id: "flux_" + count + "_" + day, title: "Flux nodes: " + Number(count).toLocaleString() };
+          const bucket = Math.floor(Number(count) / 100) * 100;
+          return { id: "flux_" + bucket + "_" + day, title: "Flux nodes: " + Number(count).toLocaleString() };
         }),
       },
     }),
