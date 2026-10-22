@@ -1,38 +1,19 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T14:11:31Z",
+  "ts": "2026-10-22T14:18:10Z",
   "run_number": 24,
   "briefing": {
-    "headline": "1 signal across 248 sectors evaluated",
-    "by_domain": {
-      "environment": {
-        "count": 1,
-        "sectors": [
-          "water"
-        ]
-      }
-    }
+    "headline": "0 signals across 248 sectors evaluated",
+    "by_domain": {}
   },
-  "signals": [
-    {
-      "sector": "water",
-      "severity": "notice",
-      "summary": "New: Mississippi flow: 173,000 cfs",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 13
-    }
-  ],
+  "signals": [],
   "delta": {
-    "previous_ts": "2026-10-22 13:02",
+    "previous_ts": "2026-10-22 14:11",
     "signals_before": 1,
-    "signals_after": 1,
-    "new": [
-      "water"
-    ],
+    "signals_after": 0,
+    "new": [],
     "dropped": [
-      "open-source"
+      "water"
     ],
     "persistent": [],
     "movements": []
@@ -70,7 +51,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 6.1,
+      "avg_volatility": 6.31,
       "max_volatility": 7.14,
       "fires_in_window": 0
     },
@@ -101,8 +82,8 @@
   ],
   "stats": {
     "total_sectors": 248,
-    "firing_sectors": 1,
-    "fire_rate_pct": 0.4,
+    "firing_sectors": 0,
+    "fire_rate_pct": 0.0,
     "runs_in_history": 24
   }
 }
