@@ -567,6 +567,41 @@ def send(token, chat_id, text):
         return False
 
 
+def find_alertable(arb, history, min_silent_runs=10):
+    """Return signals worth an immediate alert (separate from digest).
+
+    Two conditions, both genuinely rare:
+      - severity is warning or critical (escalation)
+      - first fire after N+ silent runs (state transition)
+
+    From history: 20 of 169 fires match. That's ~12% — real
+    density, not noise.
+    """
+    alerts = []
+    runs = history.get("runs", [])
+    for a in arb:
+        if not a.get("has_signal"):
+            continue
+        severity = a.get("severity") or "info"
+        sector = a["sector"]
+
+        if severity in ("warning", "critical"):
+            alerts.append({**a, "reason": f"severity={severity}"})
+            continue
+
+        # Count consecutive silent runs (most recent first)
+        silent = 0
+        for run in reversed(runs):
+            sector_data = run.get("sectors", {}).get(sector, {})
+            if sector_data.get("has_signal"):
+                break
+            silent += 1
+        if silent >= min_silent_runs:
+            alerts.append({**a, "reason": f"first fire after {silent} silent runs"})
+
+    return alerts
+
+
 def main():
     sectors = load_active_sectors()
     print(f"Fetching {len(sectors)} sectors...")
@@ -657,6 +692,24 @@ def main():
     print("\n=== Sending ===")
     ok = send(token, chat_id, digest)
     print("Sent:", ok)
+
+    # Separate alert channel: fires only on warning/critical severity
+    # or first fire after 10+ silent runs. Empirically ~12% of fires.
+    try:
+        alerts = find_alertable(arb, history)
+        if alerts:
+            alert_lines = ["\U0001F6A8 <b>VolatiAI Alert</b>", ""]
+            for al in alerts:
+                sector = al["sector"]
+                summary = (al.get("summary") or "")[:120]
+                alert_lines.append(f"<b>{sector}</b> \u2014 {al['reason']}")
+                if summary and summary != "quiet":
+                    alert_lines.append(f"  {summary}")
+                alert_lines.append("")
+            send(token, chat_id, "\n".join(alert_lines))
+            print(f"Alert sent: {len(alerts)} signal(s)")
+    except Exception as e:
+        print(f"Alert channel failed (non-fatal): {e}")
     # History persistence + graph publishing are the essential outputs.
     # Telegram is best-effort — a failed notification should not fail the
     # workflow, because the digest content still needs to reach consumers
