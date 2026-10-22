@@ -2,7 +2,7 @@ name: Swarmer Swarm
 
 on:
   schedule:
-    - cron: "0 * * * *"   # once every hour
+    - cron: "0 */6 * * *"   # once every hour
   workflow_dispatch:
 
 concurrency:

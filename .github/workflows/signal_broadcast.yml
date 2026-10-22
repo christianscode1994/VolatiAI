@@ -3,7 +3,7 @@ name: VolatiAI Autonomous Signal Engine
 on:
   schedule:
     # Runs every 5 minutes — adjust as you like
-    - cron: "*/5 * * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch: {}
 
 jobs:
