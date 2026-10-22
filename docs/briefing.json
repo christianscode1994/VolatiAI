@@ -1,123 +1,77 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T09:39:33Z",
+  "ts": "2026-10-22T09:49:36Z",
   "run_number": 24,
   "briefing": {
-    "headline": "6 signals across 251 sectors evaluated",
+    "headline": "3 signals across 251 sectors evaluated",
     "by_domain": {
-      "energy": {
-        "count": 2,
-        "sectors": [
-          "carbon-intensity",
-          "energy-grid"
-        ]
-      },
       "crypto": {
         "count": 2,
         "sectors": [
-          "crypto-oi",
-          "depin-network"
-        ]
-      },
-      "security": {
-        "count": 1,
-        "sectors": [
-          "cve-feed"
+          "depin-network",
+          "privacy-zcash"
         ]
       },
       "information": {
         "count": 1,
         "sectors": [
-          "news"
+          "events"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "carbon-intensity",
-      "severity": "notice",
-      "summary": "New: UK grid: 93 gCO2/kWh (moderate)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 15
-    },
-    {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2026-18659: In Eclipse Jetty, across various versions of `jetty-security`, and `jetty-eeN-security`, and `jetty-",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 19
-    },
-    {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,803",
+      "summary": "New: Flux nodes: 6,793",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 21
     },
     {
-      "sector": "energy-grid",
+      "sector": "events",
       "severity": "notice",
-      "summary": "New: DE grid load: 63,572 MW",
+      "summary": "New: [202] WorldTUI: I trained a 360M model to pretend to be a terminal",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 18
     },
     {
-      "sector": "news",
+      "sector": "privacy-zcash",
       "severity": "notice",
-      "summary": "New: CVE-2026-111943: Compromised Intermediate Certificate Authority",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 19
-    },
-    {
-      "sector": "crypto-oi",
-      "severity": "notice",
-      "summary": "btc_open_interest 2967491 (+0.9%)",
-      "confidence": 0.6,
-      "magnitude": 2.98,
-      "pct_change": 0.8951560998149372,
-      "fires_24": 2
+      "summary": "difficulty 248807067.1510763 (-6.7%)",
+      "confidence": 0.67,
+      "magnitude": 3.34,
+      "pct_change": -6.681186886544286,
+      "fires_24": 3
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 08:48",
-    "signals_before": 5,
-    "signals_after": 6,
+    "previous_ts": "2026-10-22 09:39",
+    "signals_before": 6,
+    "signals_after": 3,
     "new": [
+      "events",
+      "privacy-zcash"
+    ],
+    "dropped": [
       "carbon-intensity",
       "crypto-oi",
       "cve-feed",
-      "energy-grid"
-    ],
-    "dropped": [
-      "electricity",
-      "events",
-      "web-apps"
+      "energy-grid",
+      "news"
     ],
     "persistent": [
-      "depin-network",
-      "news"
+      "depin-network"
     ],
     "movements": [
       {
         "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,811",
-        "current": "New: Flux nodes: 6,803"
-      },
-      {
-        "sector": "news",
-        "previous": "New: WorldTUI: I trained a 360M model to pretend to be a terminal",
-        "current": "New: CVE-2026-111943: Compromised Intermediate Certificate Authority"
+        "previous": "New: Flux nodes: 6,803",
+        "current": "New: Flux nodes: 6,793"
       }
     ]
   },
@@ -136,7 +90,7 @@
     },
     {
       "sector": "crypto-liquidations",
-      "avg_volatility": 12.9,
+      "avg_volatility": 10.13,
       "max_volatility": 17.65,
       "fires_in_window": 0
     },
@@ -147,10 +101,10 @@
       "fires_in_window": 0
     },
     {
-      "sector": "privacy-zcash",
-      "avg_volatility": 7.67,
-      "max_volatility": 17.72,
-      "fires_in_window": 2
+      "sector": "energy-carbon",
+      "avg_volatility": 5.38,
+      "max_volatility": 5.38,
+      "fires_in_window": 0
     },
     {
       "sector": "cloudflare-status",
@@ -177,16 +131,16 @@
       "fires_in_window": 0
     },
     {
-      "sector": "fintech",
-      "avg_volatility": 1.19,
-      "max_volatility": 1.19,
+      "sector": "bluesky-posts",
+      "avg_volatility": 1.26,
+      "max_volatility": 2,
       "fires_in_window": 0
     }
   ],
   "stats": {
     "total_sectors": 251,
-    "firing_sectors": 6,
-    "fire_rate_pct": 2.39,
+    "firing_sectors": 3,
+    "fire_rate_pct": 1.2,
     "runs_in_history": 24
   }
 }
