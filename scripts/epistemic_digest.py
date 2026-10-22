@@ -634,6 +634,9 @@ def main():
 
     # History + trends
     history = load_history()
+    # Alerts need pre-append history so the current run doesn't count as
+    # "already firing" when checking silence. Compute here, use later.
+    alerts = find_alertable(arb, history)
     history = append_run(history, arb, envelopes_by_sector)
     trends = detect_trends(history)
     if trends:
@@ -699,7 +702,6 @@ def main():
     # Separate alert channel: fires only on warning/critical severity
     # or first fire after 10+ silent runs. Empirically ~12% of fires.
     try:
-        alerts = find_alertable(arb, history)
         if alerts:
             alert_lines = ["\U0001F6A8 <b>VolatiAI Alert</b>", ""]
             for al in alerts:
