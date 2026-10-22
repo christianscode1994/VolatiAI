@@ -329,55 +329,12 @@ const COLLECTORS = {
       },
     }),
   },
-  bodacc: {
-    config: { metric: "active_enterprises", threshold_pct: 0.05, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        active_enterprises: await fetchSafe(async () => {
-          // bodacc.io returns 403 to the default worker UA but 200 to curl.
-          // Mimic browser headers; if still 403, this sector should be removed.
-          const r = await fetch("https://bodacc.io/api/bodacc/stats/counts", {
-            headers: {
-              "user-agent": "Mozilla/5.0 (compatible; VolatiAI/1.0; +https://volatiai.local)",
-              "accept": "application/json",
-              "referer": "https://bodacc.io/",
-            },
-            signal: AbortSignal.timeout(25000),
-          });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = (j && j.entreprises_actives)
-                 ?? (j && j.data && j.data.entreprises_actives)
-                 ?? null;
-          if (typeof n !== "number") throw new Error("no_entreprises_actives");
-          return n;
-        }),
-      },
-    }),
-  },
   satlas: {
     config: { metric: "tracked_objects", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         tracked_objects: await fetchSafe(async () => {
           throw new Error("endpoint_unverified");
-        }),
-      },
-    }),
-  },
-  opensensemap: {
-    config: { metric: "sensor_boxes", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        sensor_boxes: await fetchSafe(async () => {
-          // /stats shape varies; /boxes returns an array of all boxes.
-          const r = await fetch("https://api.opensensemap.org/boxes",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (Array.isArray(j)) return j.length;
-          if (typeof j.count === "number") return j.count;
-          throw new Error("no_box_count");
         }),
       },
     }),
@@ -398,21 +355,22 @@ const COLLECTORS = {
     }),
   },
   "home-assistant": {
-    config: { metric: "integration_types", threshold_pct: 0.5, window: "7d", window_days: 7, ttl: 86400 },
+    config: { metric: "installations", threshold_pct: 0.5, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
       sources: {
-        integration_types: await fetchSafe(async () => {
+        installations: await fetchSafe(async () => {
           const r = await fetch("https://analytics.home-assistant.io/data.json",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          // The analytics JSON contains per-integration, per-version, and
-          // per-timestamp numeric fields. Summing them produced 3.5 trillion.
-          // The honest metric here is the count of top-level keys, which is
-          // the number of distinct integration types tracked.
-          const n = Object.keys(j).length;
-          if (n === 0) throw new Error("empty_json");
-          return n;
+          // data.json shape: {current: {installation_types: {core: N, ...}, ...}, ...}
+          const types = j && j.current && j.current.installation_types;
+          if (!types || typeof types !== "object") throw new Error("no_installation_types");
+          const sum = Object.values(types)
+            .filter(v => typeof v === "number" && Number.isFinite(v) && v >= 0)
+            .reduce((a, b) => a + b, 0);
+          if (sum === 0) throw new Error("zero_sum");
+          return sum;
         }),
       },
     }),
