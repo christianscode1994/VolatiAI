@@ -1,15 +1,26 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T09:49:36Z",
+  "ts": "2026-10-22T11:21:44Z",
   "run_number": 24,
   "briefing": {
-    "headline": "3 signals across 251 sectors evaluated",
+    "headline": "4 signals across 251 sectors evaluated",
     "by_domain": {
-      "crypto": {
-        "count": 2,
+      "security": {
+        "count": 1,
         "sectors": [
-          "depin-network",
-          "privacy-zcash"
+          "cve-feed"
+        ]
+      },
+      "crypto": {
+        "count": 1,
+        "sectors": [
+          "depin-network"
+        ]
+      },
+      "energy": {
+        "count": 1,
+        "sectors": [
+          "energy-grid"
         ]
       },
       "information": {
@@ -22,56 +33,67 @@
   },
   "signals": [
     {
-      "sector": "depin-network",
+      "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,793",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 21
-    },
-    {
-      "sector": "events",
-      "severity": "notice",
-      "summary": "New: [202] WorldTUI: I trained a 360M model to pretend to be a terminal",
+      "summary": "New: CVE-2026-110726: In `api-gateway` versions till `1.7.3`, The default rate-limit key resolver, `ClientIpKeyResolver`, ",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 18
     },
     {
-      "sector": "privacy-zcash",
+      "sector": "depin-network",
       "severity": "notice",
-      "summary": "difficulty 248807067.1510763 (-6.7%)",
-      "confidence": 0.67,
-      "magnitude": 3.34,
-      "pct_change": -6.681186886544286,
-      "fires_24": 3
+      "summary": "New: Flux nodes: 6,762",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 21
+    },
+    {
+      "sector": "energy-grid",
+      "severity": "notice",
+      "summary": "New: DE grid load: 65,261 MW",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 17
+    },
+    {
+      "sector": "events",
+      "severity": "notice",
+      "summary": "New: [254] WorldTUI: I trained a 360M model to pretend to be a terminal",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 18
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 09:39",
-    "signals_before": 6,
-    "signals_after": 3,
+    "previous_ts": "2026-10-22 09:49",
+    "signals_before": 3,
+    "signals_after": 4,
     "new": [
-      "events",
-      "privacy-zcash"
+      "cve-feed",
+      "energy-grid"
     ],
     "dropped": [
-      "carbon-intensity",
-      "crypto-oi",
-      "cve-feed",
-      "energy-grid",
-      "news"
+      "privacy-zcash"
     ],
     "persistent": [
-      "depin-network"
+      "depin-network",
+      "events"
     ],
     "movements": [
       {
         "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,803",
-        "current": "New: Flux nodes: 6,793"
+        "previous": "New: Flux nodes: 6,793",
+        "current": "New: Flux nodes: 6,762"
+      },
+      {
+        "sector": "events",
+        "previous": "New: [202] WorldTUI: I trained a 360M model to pretend to be a terminal",
+        "current": "New: [254] WorldTUI: I trained a 360M model to pretend to be a terminal"
       }
     ]
   },
@@ -101,9 +123,21 @@
       "fires_in_window": 0
     },
     {
+      "sector": "privacy-zcash",
+      "avg_volatility": 7.47,
+      "max_volatility": 17.72,
+      "fires_in_window": 3
+    },
+    {
       "sector": "energy-carbon",
       "avg_volatility": 5.38,
       "max_volatility": 5.38,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "xbrl-frames",
+      "avg_volatility": 5.36,
+      "max_volatility": 5.36,
       "fires_in_window": 0
     },
     {
@@ -123,24 +157,12 @@
       "avg_volatility": 1.67,
       "max_volatility": 1.67,
       "fires_in_window": 0
-    },
-    {
-      "sector": "cloud-outages",
-      "avg_volatility": 1.35,
-      "max_volatility": 1.35,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "bluesky-posts",
-      "avg_volatility": 1.26,
-      "max_volatility": 2,
-      "fires_in_window": 0
     }
   ],
   "stats": {
     "total_sectors": 251,
-    "firing_sectors": 3,
-    "fire_rate_pct": 1.2,
+    "firing_sectors": 4,
+    "fire_rate_pct": 1.59,
     "runs_in_history": 24
   }
 }
