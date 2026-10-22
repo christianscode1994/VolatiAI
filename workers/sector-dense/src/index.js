@@ -159,6 +159,22 @@ const COLLECTORS = {
   blockchain: {
     config: { metric: "gas_price", threshold_pct: 20, threshold_abs: 0.05, window: "24h", ttl: 300, context_keys: ["eth_block"] },
     collectAll: async (env) => ({
+      sources: {
+        gas_price: await fetchSafe(async () => {
+          const wei = BigInt(await fetchFromAnyRPC("eth_gasPrice"));
+          return Math.round((Number(wei) / 1e9) * 100) / 100;
+        }),
+        eth_block: await fetchSafe(async () => parseInt(await fetchFromAnyRPC("eth_blockNumber"), 16)),
+        polkadot: await fetchSafe(async () => {
+          const r = await fetch("https://rpc.polkadot.io", {
+            method: "POST", headers: { "content-type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "chain_getHeader", params: [], id: 1 }),
+          });
+          const j = await r.json();
+          if (!j.result?.number) throw new Error("no block");
+          return parseInt(j.result.number, 16);
+        }),
+      },
     }),
   },
 
