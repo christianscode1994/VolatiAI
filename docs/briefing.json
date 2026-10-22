@@ -1,37 +1,39 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T14:32:43Z",
+  "ts": "2026-10-22T14:44:24Z",
   "run_number": 24,
   "briefing": {
     "headline": "1 signal across 248 sectors evaluated",
     "by_domain": {
-      "other": {
+      "energy": {
         "count": 1,
         "sectors": [
-          "jobs"
+          "carbon-intensity"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "jobs",
+      "sector": "carbon-intensity",
       "severity": "notice",
-      "summary": "New: Senior Backend Engineer @ DuckDuckGo",
+      "summary": "New: UK grid: 116 gCO2/kWh (moderate)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 2
+      "fires_24": 10
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 14:26",
-    "signals_before": 0,
+    "previous_ts": "2026-10-22 14:32",
+    "signals_before": 1,
     "signals_after": 1,
     "new": [
+      "carbon-intensity"
+    ],
+    "dropped": [
       "jobs"
     ],
-    "dropped": [],
     "persistent": [],
     "movements": []
   },
@@ -44,9 +46,9 @@
     },
     {
       "sector": "museums",
-      "avg_volatility": 13.96,
+      "avg_volatility": 10.47,
       "max_volatility": 20.93,
-      "fires_in_window": 2
+      "fires_in_window": 1
     },
     {
       "sector": "crypto-liquidations",
@@ -68,7 +70,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 6.55,
+      "avg_volatility": 6.62,
       "max_volatility": 7.14,
       "fires_in_window": 0
     },
