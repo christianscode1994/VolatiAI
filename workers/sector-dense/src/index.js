@@ -3072,18 +3072,16 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         total_companies: await fetchSafe(async () => {
-          const r = await fetch("https://yc-oss.github.io/api/meta.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          const r = await fetch("https://yc-oss.github.io/api/companies/all.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const all = j?.companies?.all;
-          if (Array.isArray(all)) return all.length;
-          const comp = j?.companies;
-          if (comp && typeof comp === "object") {
-            const total = Object.values(comp).reduce((s, arr) => s + (Array.isArray(arr) ? arr.length : 0), 0);
-            if (total > 0) return total;
+          if (Array.isArray(j)) return j.length;
+          if (j?.companies && typeof j.companies === "object") {
+            const t = Object.values(j.companies).reduce((s, a) => s + (Array.isArray(a) ? a.length : 0), 0);
+            if (t > 0) return t;
           }
-          throw new Error("no_companies: keys=" + Object.keys(j?.companies || {}).join(","));
+          throw new Error("no_companies: keys=" + Object.keys(j || {}).join(","));
         }),
       },
     }),
@@ -3140,12 +3138,15 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         total_rounds: await fetchSafe(async () => {
-          const r = await fetch("https://funding.tech.eu/api/v1/rounds?limit=1",
+          const r = await fetch("https://funding.tech.eu/api/v1/rounds?limit=100",
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.count ?? j?.total;
-          if (typeof n === "number") return n;
+          const arr = Array.isArray(j) ? j : (j?.results ?? j?.data ?? j?.rounds ?? []);
+          const arrLen = Array.isArray(arr) ? arr.length : 0;
+          const totalField = j?.total ?? j?.count ?? j?.meta?.total;
+          if (typeof totalField === "number" && totalField >= arrLen) return totalField;
+          if (arrLen > 0) return arrLen;
           throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
         }),
       },
@@ -3156,14 +3157,15 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         total_exits: await fetchSafe(async () => {
-          const r = await fetch("https://funding.tech.eu/api/v1/exits?limit=1",
+          const r = await fetch("https://funding.tech.eu/api/v1/exits?limit=100",
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.total ?? j?.count ?? j?.meta?.total;
-          if (typeof n === "number") return n;
-          const arr = Array.isArray(j) ? j : j?.data ?? j?.exits;
-          if (Array.isArray(arr)) return arr.length;
+          const arr = Array.isArray(j) ? j : (j?.data ?? j?.exits ?? j?.results ?? []);
+          const arrLen = Array.isArray(arr) ? arr.length : 0;
+          const totalField = j?.total ?? j?.count ?? j?.meta?.total;
+          if (typeof totalField === "number" && totalField >= arrLen) return totalField;
+          if (arrLen > 0) return arrLen;
           throw new Error("no_count: keys=" + Object.keys(j || {}).join(", "));
         }),
       },
@@ -3216,12 +3218,12 @@ Object.assign(COLLECTORS, {
           const r = await fetch("https://api.ted.europa.eu/v3/notices/search", {
             method: "POST",
             headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
-            body: JSON.stringify({ query: "PD>=" + pd, limit: 1, scope: "ALL" }),
+            body: JSON.stringify({ query: "publication-date>=" + pd, fields: ["publication-number"], limit: 1, scope: "ALL" }),
             signal: AbortSignal.timeout(25000),
           });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const n = j?.totalNoticeCount;
+          const n = j?.totalNoticeCount ?? j?.total ?? j?.totalElements;
           if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
           return n;
         }),
