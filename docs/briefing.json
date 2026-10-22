@@ -1,37 +1,39 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T08:08:30Z",
+  "ts": "2026-10-22T08:12:20Z",
   "run_number": 24,
   "briefing": {
     "headline": "1 signal across 244 sectors evaluated",
     "by_domain": {
-      "crypto": {
+      "energy": {
         "count": 1,
         "sectors": [
-          "privacy-zcash"
+          "electricity"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "privacy-zcash",
-      "severity": "notice",
-      "summary": "difficulty 284962848.1659232 (+9.2%)",
-      "confidence": 0.92,
-      "magnitude": 4.62,
-      "pct_change": 9.238051259246479,
+      "sector": "electricity",
+      "severity": "info",
+      "summary": "grid_frequency_hz 49.92 (+0.1%)",
+      "confidence": 0.31,
+      "magnitude": 1.56,
+      "pct_change": 0.0781860828772508,
       "fires_24": 2
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 07:59",
-    "signals_before": 0,
+    "previous_ts": "2026-10-22 08:08",
+    "signals_before": 1,
     "signals_after": 1,
     "new": [
+      "electricity"
+    ],
+    "dropped": [
       "privacy-zcash"
     ],
-    "dropped": [],
     "persistent": [],
     "movements": []
   },
@@ -44,7 +46,7 @@
     },
     {
       "sector": "crypto-liquidations",
-      "avg_volatility": 12.14,
+      "avg_volatility": 12.9,
       "max_volatility": 17.65,
       "fires_in_window": 0
     },
@@ -61,8 +63,14 @@
       "fires_in_window": 0
     },
     {
+      "sector": "privacy-zcash",
+      "avg_volatility": 7.67,
+      "max_volatility": 17.72,
+      "fires_in_window": 2
+    },
+    {
       "sector": "cloudflare-status",
-      "avg_volatility": 2.59,
+      "avg_volatility": 2.63,
       "max_volatility": 3.9,
       "fires_in_window": 0
     },
@@ -85,15 +93,9 @@
       "fires_in_window": 0
     },
     {
-      "sector": "bluesky-posts",
-      "avg_volatility": 1.01,
-      "max_volatility": 1.01,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "institutional-finance",
-      "avg_volatility": 1.01,
-      "max_volatility": 1.01,
+      "sector": "fintech",
+      "avg_volatility": 1.19,
+      "max_volatility": 1.19,
       "fires_in_window": 0
     }
   ],
