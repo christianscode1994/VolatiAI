@@ -14,4 +14,16 @@ python3 scripts/audit_sectors.py
 # Compliance: no restricted sources in Worker code
 python3 scripts/audit_licenses.py
 
+# YAML validity: broken workflow YAML causes GitHub to treat the
+# file as having no triggers at all (workflow_dispatch disappears,
+# runs fail at parse time). Ship this wrong and the workflow is
+# dead until a manual fix. Not worth the risk — validate it.
+for yaml_file in .github/workflows/*.yml; do
+  python3 -c "import yaml; yaml.safe_load(open('$yaml_file'))" 2>/dev/null || {
+    echo "✗ YAML parse error in $yaml_file"
+    python3 -c "import yaml; yaml.safe_load(open('$yaml_file'))" 2>&1 | tail -3
+    exit 1
+  }
+done
+
 echo "✓ Pre-commit audits passed"
