@@ -1,38 +1,70 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T14:44:24Z",
+  "ts": "2026-10-22T15:17:19Z",
   "run_number": 24,
   "briefing": {
-    "headline": "1 signal across 248 sectors evaluated",
+    "headline": "3 signals across 248 sectors evaluated",
     "by_domain": {
-      "energy": {
+      "security": {
         "count": 1,
         "sectors": [
-          "carbon-intensity"
+          "cve-feed"
+        ]
+      },
+      "other": {
+        "count": 1,
+        "sectors": [
+          "dev-vr-ar"
+        ]
+      },
+      "environment": {
+        "count": 1,
+        "sectors": [
+          "earthquakes"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "carbon-intensity",
+      "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: UK grid: 116 gCO2/kWh (moderate)",
+      "summary": "New: CVE-2026-115332: Lotus through 0.10.2 contains an sql injection vulnerability that allows authenticated organization ",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 10
+      "fires_24": 12
+    },
+    {
+      "sector": "dev-vr-ar",
+      "severity": "notice",
+      "summary": "New: VRSpace: latest commit 2026-10-22",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
+    },
+    {
+      "sector": "earthquakes",
+      "severity": "notice",
+      "summary": "New: M7 \u2014 183 km ENE of Nagqu, China",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 14:32",
+    "previous_ts": "2026-10-22 14:44",
     "signals_before": 1,
-    "signals_after": 1,
+    "signals_after": 3,
     "new": [
-      "carbon-intensity"
+      "cve-feed",
+      "dev-vr-ar",
+      "earthquakes"
     ],
     "dropped": [
-      "jobs"
+      "carbon-intensity"
     ],
     "persistent": [],
     "movements": []
@@ -70,8 +102,8 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 6.62,
-      "max_volatility": 7.14,
+      "avg_volatility": 6.75,
+      "max_volatility": 7.74,
       "fires_in_window": 0
     },
     {
@@ -101,8 +133,8 @@
   ],
   "stats": {
     "total_sectors": 248,
-    "firing_sectors": 1,
-    "fire_rate_pct": 0.4,
+    "firing_sectors": 3,
+    "fire_rate_pct": 1.21,
     "runs_in_history": 24
   }
 }
