@@ -89,7 +89,7 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         public_measurements: await fetchSafe(async () => {
-          const r = await fetch("https://atlas.ripe.net/api/v2/measurements/?is_public=true&page_size=1",
+          const r = await fetch("https://atlas.ripe.net/api/v2/measurements/?status=Ongoing&is_public=true&page_size=1",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
@@ -209,6 +209,27 @@ export default {
 
     const sectorName = parts[0];
     const action = parts[1] || "signal";
+
+    if (sectorName === "_health") {
+      const summary = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const kvKey = name + "_" + c.config.metric + "_history";
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          const h = raw ? JSON.parse(raw) : [];
+          const times = (h || []).map(x => x.t).filter(t => Number.isFinite(t));
+          summary[name] = {
+            history_points: (h || []).length,
+            span_days: times.length ? Math.round(((Math.max(...times) - Math.min(...times)) / 86400000) * 10) / 10 : 0,
+            newest_iso: times.length ? new Date(Math.max(...times)).toISOString() : null,
+          };
+        } catch (e) {
+          summary[name] = { error: String(e).slice(0, 80) };
+        }
+      }
+      return json({ density: "slow", sectors: summary, timestamp: new Date().toISOString() });
+    }
+
     const collector = COLLECTORS[sectorName];
 
     if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
@@ -243,6 +264,7 @@ export default {
           await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
         } catch (kvErr) {
           console.log("KV put failed:", String(kvErr));
+          envelope.context = { ...envelope.context, kv_put_ok: false, kv_error: String(kvErr).slice(0, 120) };
         }
       }
 
