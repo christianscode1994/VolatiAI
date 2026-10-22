@@ -645,6 +645,9 @@ def main():
         from scripts.briefing import write_briefing
         write_briefing(path="docs/briefing.json")
         print("Wrote docs/briefing.json")
+        from scripts.rss import generate_feed
+        generate_feed(briefing_path="docs/briefing.json", output_path="docs/feed.xml")
+        print("Wrote docs/feed.xml")
     except Exception as e:
         print(f"briefing write failed: {e}")
 
