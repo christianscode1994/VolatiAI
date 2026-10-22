@@ -3140,60 +3140,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "vc-funding": {
-    config: { metric: "total_rounds", threshold_pct: 0.5, threshold_abs: 50, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_rounds: await fetchSafe(async () => {
-          const r = await fetch("https://funding.tech.eu/api/v1/rounds?limit=100",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.results ?? j?.data ?? j?.rounds ?? []);
-          const arrLen = Array.isArray(arr) ? arr.length : 0;
-          const totalField = j?.total ?? j?.count ?? j?.meta?.total;
-          if (typeof totalField === "number" && totalField >= arrLen) return totalField;
-          if (arrLen > 0) return arrLen;
-          throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
-        }),
-      },
-    }),
-  },
-  "ma-exits": {
-    config: { metric: "total_exits", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_exits: await fetchSafe(async () => {
-          const r = await fetch("https://funding.tech.eu/api/v1/exits?limit=100",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.data ?? j?.exits ?? j?.results ?? []);
-          const arrLen = Array.isArray(arr) ? arr.length : 0;
-          const totalField = j?.total ?? j?.count ?? j?.meta?.total;
-          if (typeof totalField === "number" && totalField >= arrLen) return totalField;
-          if (arrLen > 0) return arrLen;
-          throw new Error("no_count: keys=" + Object.keys(j || {}).join(", "));
-        }),
-      },
-    }),
-  },
-  "ma-transactions": {
-    config: { metric: "total_transactions", threshold_pct: 1, threshold_abs: 5, window: "24h", ttl: 3600, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_transactions: await fetchSafe(async () => {
-          const r = await fetch("https://windsordrake.com/market-intelligence/api/transactions.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.transactions ?? j?.data ?? []);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
 });
 
 
