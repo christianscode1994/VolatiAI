@@ -188,7 +188,7 @@ const COLLECTORS = {
       },
     }),
   },
-,
+
   faostat: {
     config: { metric: "food_price_index", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
     collectAll: async () => ({
@@ -311,17 +311,28 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         judicial_affairs: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
+          const r = await fetch("https://poligraph.fr/api/affaires",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = Array.isArray(j) ? j : (Array.isArray(j.data) ? j.data : null);
+          if (!arr) throw new Error("no_array");
+          return arr.length;
         }),
       },
     }),
   },
   bodacc: {
-    config: { metric: "insolvency_notices", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    config: { metric: "active_enterprises", threshold_pct: 0.05, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
       sources: {
-        insolvency_notices: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
+        active_enterprises: await fetchSafe(async () => {
+          const r = await fetch("https://bodacc.io/api/bodacc/stats/counts",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.entreprises_actives !== "number") throw new Error("no_entreprises_actives");
+          return j.entreprises_actives;
         }),
       },
     }),
@@ -356,7 +367,12 @@ const COLLECTORS = {
     collectAll: async () => ({
       sources: {
         certified_products: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
+          const r = await fetch("https://mattercatalog.com/api/stats.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!j.data || typeof j.data.totalProducts !== "number") throw new Error("no_totalProducts");
+          return j.data.totalProducts;
         }),
       },
     }),
