@@ -3128,6 +3128,23 @@ Object.assign(COLLECTORS, {
     }),
   },
 
+  "eth-beacon": {
+    config: { metric: "connected_peers", threshold_pct: 25, threshold_abs: 15, window: "24h", ttl: 3600, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        connected_peers: await fetchSafe(async () => {
+          const r = await fetch("https://public-mainnet-node.ethereum.org/eth/v1/node/peer_count",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const n = j?.data?.connected;
+          if (n === undefined || n === null) throw new Error("no_connected: keys=" + Object.keys(j?.data || {}).join(","));
+          return parseInt(n, 10);
+        }),
+      },
+    }),
+  },
+
   "form-d-filings": {
     config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
