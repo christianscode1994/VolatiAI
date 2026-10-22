@@ -442,7 +442,58 @@ function json(obj, status = 200) {
   });
 }
 
+
+async function runSectorForCron(sectorName, collector, env) {
+  const config = collector.config;
+  const kvKey = `${sectorName}_${config.metric}_history`;
+  const raw = await env.SECTOR_KV.get(kvKey);
+  let history = raw ? JSON.parse(raw) : [];
+  const result = await collector.collectAll(env);
+  const envelope = buildSlowEnvelope(sectorName, config, result, history);
+  const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
+  if (current === null || current === undefined) {
+    return { sector: sectorName, skipped: "no_current", failed: envelope.sources.failed };
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
+  const valueChanged = !todayEntry || todayEntry.v !== current;
+  if (!valueChanged) {
+    return { sector: sectorName, skipped: "unchanged_today", has_signal: envelope.has_signal };
+  }
+  history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
+  history.push({ t: Date.now(), v: current });
+  history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
+  try {
+    await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
+    return { sector: sectorName, written: true, value: current, has_signal: envelope.has_signal };
+  } catch (e) {
+    return { sector: sectorName, error: String(e).slice(0, 120) };
+  }
+}
+
 export default {
+
+  async scheduled(event, env, ctx) {
+    const results = [];
+    const cron = event && event.cron ? event.cron : "unknown";
+    console.log("cron start:", cron);
+    for (const [name, collector] of Object.entries(COLLECTORS)) {
+      try {
+        const r = await runSectorForCron(name, collector, env);
+        results.push(r);
+        console.log("cron sector:", name, JSON.stringify(r));
+      } catch (e) {
+        const err = { sector: name, error: String(e).slice(0, 120) };
+        results.push(err);
+        console.log("cron sector:", name, JSON.stringify(err));
+      }
+    }
+    const written = results.filter(r => r.written).length;
+    const skipped = results.filter(r => r.skipped).length;
+    const failed  = results.filter(r => r.error).length;
+    console.log(`cron summary: ${written} written, ${skipped} skipped, ${failed} failed`);
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
