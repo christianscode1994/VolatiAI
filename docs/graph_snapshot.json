@@ -2047,34 +2047,6 @@
           "sector": "laws"
         },
         {
-          "id": "claim:ma-exits",
-          "type": "claim",
-          "sector": "ma-exits",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-exits:healthy:0",
-          "type": "source",
-          "sector": "ma-exits"
-        },
-        {
-          "id": "claim:ma-transactions",
-          "type": "claim",
-          "sector": "ma-transactions",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-transactions:healthy:0",
-          "type": "source",
-          "sector": "ma-transactions"
-        },
-        {
           "id": "claim:maker",
           "type": "claim",
           "sector": "maker",
@@ -3426,20 +3398,6 @@
           "sector": "utilities"
         },
         {
-          "id": "claim:vc-funding",
-          "type": "claim",
-          "sector": "vc-funding",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:vc-funding:healthy:0",
-          "type": "source",
-          "sector": "vc-funding"
-        },
-        {
           "id": "claim:vehicles",
           "type": "claim",
           "sector": "vehicles",
@@ -4558,18 +4516,6 @@
           "weight": 1.0
         },
         {
-          "from": "source:ma-exits:healthy:0",
-          "to": "claim:ma-exits",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:ma-transactions:healthy:0",
-          "to": "claim:ma-transactions",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
           "from": "source:maker:healthy:0",
           "to": "claim:maker",
           "relation": "supports",
@@ -5172,12 +5118,6 @@
         {
           "from": "source:utilities:healthy:0",
           "to": "claim:utilities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:vc-funding:healthy:0",
-          "to": "claim:vc-funding",
           "relation": "supports",
           "weight": 1.0
         },
@@ -7302,34 +7242,6 @@
           "sector": "laws"
         },
         {
-          "id": "claim:ma-exits",
-          "type": "claim",
-          "sector": "ma-exits",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-exits:healthy:0",
-          "type": "source",
-          "sector": "ma-exits"
-        },
-        {
-          "id": "claim:ma-transactions",
-          "type": "claim",
-          "sector": "ma-transactions",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-transactions:healthy:0",
-          "type": "source",
-          "sector": "ma-transactions"
-        },
-        {
           "id": "claim:maker",
           "type": "claim",
           "sector": "maker",
@@ -8681,20 +8593,6 @@
           "sector": "utilities"
         },
         {
-          "id": "claim:vc-funding",
-          "type": "claim",
-          "sector": "vc-funding",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:vc-funding:healthy:0",
-          "type": "source",
-          "sector": "vc-funding"
-        },
-        {
           "id": "claim:vehicles",
           "type": "claim",
           "sector": "vehicles",
@@ -9813,18 +9711,6 @@
           "weight": 1.0
         },
         {
-          "from": "source:ma-exits:healthy:0",
-          "to": "claim:ma-exits",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:ma-transactions:healthy:0",
-          "to": "claim:ma-transactions",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
           "from": "source:maker:healthy:0",
           "to": "claim:maker",
           "relation": "supports",
@@ -10427,12 +10313,6 @@
         {
           "from": "source:utilities:healthy:0",
           "to": "claim:utilities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:vc-funding:healthy:0",
-          "to": "claim:vc-funding",
           "relation": "supports",
           "weight": 1.0
         },
@@ -12557,34 +12437,6 @@
           "sector": "laws"
         },
         {
-          "id": "claim:ma-exits",
-          "type": "claim",
-          "sector": "ma-exits",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-exits:healthy:0",
-          "type": "source",
-          "sector": "ma-exits"
-        },
-        {
-          "id": "claim:ma-transactions",
-          "type": "claim",
-          "sector": "ma-transactions",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-transactions:healthy:0",
-          "type": "source",
-          "sector": "ma-transactions"
-        },
-        {
           "id": "claim:maker",
           "type": "claim",
           "sector": "maker",
@@ -13922,20 +13774,6 @@
           "sector": "utilities"
         },
         {
-          "id": "claim:vc-funding",
-          "type": "claim",
-          "sector": "vc-funding",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:vc-funding:healthy:0",
-          "type": "source",
-          "sector": "vc-funding"
-        },
-        {
           "id": "claim:vehicles",
           "type": "claim",
           "sector": "vehicles",
@@ -15054,18 +14892,6 @@
           "weight": 1.0
         },
         {
-          "from": "source:ma-exits:healthy:0",
-          "to": "claim:ma-exits",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:ma-transactions:healthy:0",
-          "to": "claim:ma-transactions",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
           "from": "source:maker:healthy:0",
           "to": "claim:maker",
           "relation": "supports",
@@ -15662,12 +15488,6 @@
         {
           "from": "source:utilities:healthy:0",
           "to": "claim:utilities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:vc-funding:healthy:0",
-          "to": "claim:vc-funding",
           "relation": "supports",
           "weight": 1.0
         },
@@ -17778,34 +17598,6 @@
           "sector": "laws"
         },
         {
-          "id": "claim:ma-exits",
-          "type": "claim",
-          "sector": "ma-exits",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-exits:healthy:0",
-          "type": "source",
-          "sector": "ma-exits"
-        },
-        {
-          "id": "claim:ma-transactions",
-          "type": "claim",
-          "sector": "ma-transactions",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:ma-transactions:healthy:0",
-          "type": "source",
-          "sector": "ma-transactions"
-        },
-        {
           "id": "claim:maker",
           "type": "claim",
           "sector": "maker",
@@ -19157,20 +18949,6 @@
           "sector": "utilities"
         },
         {
-          "id": "claim:vc-funding",
-          "type": "claim",
-          "sector": "vc-funding",
-          "summary": "quiet",
-          "density": "dense",
-          "severity": "info",
-          "has_signal": false
-        },
-        {
-          "id": "source:vc-funding:healthy:0",
-          "type": "source",
-          "sector": "vc-funding"
-        },
-        {
           "id": "claim:vehicles",
           "type": "claim",
           "sector": "vehicles",
@@ -20283,18 +20061,6 @@
           "weight": 1.0
         },
         {
-          "from": "source:ma-exits:healthy:0",
-          "to": "claim:ma-exits",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:ma-transactions:healthy:0",
-          "to": "claim:ma-transactions",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
           "from": "source:maker:healthy:0",
           "to": "claim:maker",
           "relation": "supports",
@@ -20897,12 +20663,6 @@
         {
           "from": "source:utilities:healthy:0",
           "to": "claim:utilities",
-          "relation": "supports",
-          "weight": 1.0
-        },
-        {
-          "from": "source:vc-funding:healthy:0",
-          "to": "claim:vc-funding",
           "relation": "supports",
           "weight": 1.0
         },
