@@ -3045,7 +3045,7 @@ Object.assign(COLLECTORS, {
           const end = new Date();
           const start = new Date(Date.now() - 7 * 864e5);
           const fmt = d => d.toISOString().slice(0, 19) + ".000";
-          const url = "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=" + fmt(start) + "&pubEndDate=" + fmt(end);
+          const url = "https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=1&pubStartDate=" + fmt(start) + "&pubEndDate=" + fmt(end);
           const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
