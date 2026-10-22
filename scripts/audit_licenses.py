@@ -32,3 +32,6 @@ if hits:
     print("  - Approved with attribution in source_licenses.json")
 else:
     print("✓ No restricted sources in Worker code")
+
+# Exit non-zero if any restricted source found (hooks use this)
+raise SystemExit(1 if hits else 0)

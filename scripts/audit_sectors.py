@@ -15,3 +15,6 @@ orphaned = all_blocks - active
 print(f"active: {len(active)}, worker blocks: {len(all_blocks)}")
 print(f"active with NO worker block: {len(missing)}" + (f" — {sorted(missing)}" if missing else " ✓"))
 print(f"worker blocks with NO active sector: {len(orphaned)} (stubs — usually fine)")
+
+# Exit non-zero if any active sector has no Worker block (hooks use this)
+raise SystemExit(0 if not missing else 1)
