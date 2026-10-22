@@ -578,6 +578,25 @@ export default {
 
     const collector = COLLECTORS[sectorName];
 
+    if (sectorName === "_sectors") {
+      const meta = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        meta[name] = {
+          metric: c.config.metric,
+          threshold_pct: c.config.threshold_pct,
+          window: c.config.window,
+          window_days: c.config.window_days || WINDOW_DAYS_DEFAULT,
+        };
+      }
+      return json({ density: "slow", count: Object.keys(COLLECTORS).length, sectors: meta });
+    }
+
+    if (sectorName === "dashboard") {
+      return new Response(DASHBOARD_HTML, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    }
+
     if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
 
     if (action === "health") {
