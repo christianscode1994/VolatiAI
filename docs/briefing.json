@@ -1,10 +1,17 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T11:21:44Z",
+  "ts": "2026-10-22T13:00:21Z",
   "run_number": 24,
   "briefing": {
-    "headline": "4 signals across 251 sectors evaluated",
+    "headline": "6 signals across 250 sectors evaluated",
     "by_domain": {
+      "energy": {
+        "count": 2,
+        "sectors": [
+          "carbon-intensity",
+          "energy-grid"
+        ]
+      },
       "security": {
         "count": 1,
         "sectors": [
@@ -17,25 +24,34 @@
           "depin-network"
         ]
       },
-      "energy": {
+      "sports": {
         "count": 1,
         "sectors": [
-          "energy-grid"
+          "sports-fitness"
         ]
       },
-      "information": {
+      "environment": {
         "count": 1,
         "sectors": [
-          "events"
+          "water"
         ]
       }
     }
   },
   "signals": [
     {
+      "sector": "carbon-intensity",
+      "severity": "notice",
+      "summary": "New: UK grid: 78 gCO2/kWh (low)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 13
+    },
+    {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-110726: In `api-gateway` versions till `1.7.3`, The default rate-limit key resolver, `ClientIpKeyResolver`, ",
+      "summary": "New: CVE-2026-109841: undici is an HTTP client library for Node.js. In versions 7.15.0 through 7.30.0 and 8.0.0 through 8.",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -44,7 +60,7 @@
     {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,762",
+      "summary": "New: Flux nodes: 6,729",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -53,47 +69,63 @@
     {
       "sector": "energy-grid",
       "severity": "notice",
-      "summary": "New: DE grid load: 65,261 MW",
+      "summary": "New: DE grid load: 65,070 MW",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 17
     },
     {
-      "sector": "events",
+      "sector": "sports-fitness",
       "severity": "notice",
-      "summary": "New: [254] WorldTUI: I trained a 360M model to pretend to be a terminal",
+      "summary": "New: Why Warriors-Lakers was the quiet end of an incredible NBA era",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 18
+      "fires_24": 15
+    },
+    {
+      "sector": "water",
+      "severity": "notice",
+      "summary": "New: Mississippi flow: 173,000 cfs",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 13
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 09:49",
-    "signals_before": 3,
-    "signals_after": 4,
+    "previous_ts": "2026-10-22 11:21",
+    "signals_before": 4,
+    "signals_after": 6,
     "new": [
-      "cve-feed",
-      "energy-grid"
+      "carbon-intensity",
+      "sports-fitness",
+      "water"
     ],
     "dropped": [
-      "privacy-zcash"
+      "events"
     ],
     "persistent": [
+      "cve-feed",
       "depin-network",
-      "events"
+      "energy-grid"
     ],
     "movements": [
       {
-        "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,793",
-        "current": "New: Flux nodes: 6,762"
+        "sector": "cve-feed",
+        "previous": "New: CVE-2026-110726: In `api-gateway` versions till `1.7.3`, The default rate-l",
+        "current": "New: CVE-2026-109841: undici is an HTTP client library for Node.js. In versions "
       },
       {
-        "sector": "events",
-        "previous": "New: [202] WorldTUI: I trained a 360M model to pretend to be a terminal",
-        "current": "New: [254] WorldTUI: I trained a 360M model to pretend to be a terminal"
+        "sector": "depin-network",
+        "previous": "New: Flux nodes: 6,762",
+        "current": "New: Flux nodes: 6,729"
+      },
+      {
+        "sector": "energy-grid",
+        "previous": "New: DE grid load: 65,261 MW",
+        "current": "New: DE grid load: 65,070 MW"
       }
     ]
   },
@@ -129,15 +161,15 @@
       "fires_in_window": 3
     },
     {
-      "sector": "energy-carbon",
-      "avg_volatility": 5.38,
-      "max_volatility": 5.38,
+      "sector": "xbrl-frames",
+      "avg_volatility": 5.65,
+      "max_volatility": 5.95,
       "fires_in_window": 0
     },
     {
-      "sector": "xbrl-frames",
-      "avg_volatility": 5.36,
-      "max_volatility": 5.36,
+      "sector": "energy-carbon",
+      "avg_volatility": 5.38,
+      "max_volatility": 5.38,
       "fires_in_window": 0
     },
     {
@@ -160,9 +192,9 @@
     }
   ],
   "stats": {
-    "total_sectors": 251,
-    "firing_sectors": 4,
-    "fire_rate_pct": 1.59,
+    "total_sectors": 250,
+    "firing_sectors": 6,
+    "fire_rate_pct": 2.4,
     "runs_in_history": 24
   }
 }
