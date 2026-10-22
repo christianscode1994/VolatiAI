@@ -44,23 +44,6 @@ const COLLECTORS = {
     }),
   },
 
-  news: {
-    event_source: "hn_top",
-    ttl: 1800,
-    collectAll: async (env) => ({
-      sources: {
-        hn_top: await fetchSafe(async () => {
-          const r = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
-          const ids = await r.json();
-          if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');
-          const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + ids[0] + '.json');
-          const s = await detail.json();
-          if (!s || !s.title) throw new Error('no story');
-          return { id: s.id, title: s.title.slice(0, 100) };
-        }),
-      },
-    }),
-  },
 
   jobs: {
     event_source: "remoteok_latest",
