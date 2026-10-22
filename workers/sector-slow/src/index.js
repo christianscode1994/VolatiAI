@@ -6,24 +6,26 @@ const WINDOW_DAYS_DEFAULT = 7;
 const DASHBOARD_HTML = `<!doctype html>
 <html><head><meta charset="utf-8"><title>VolatiAI · sector-slow</title>
 <style>
-  body { font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2em; color: #222; background: #fafafa; }
-  h1 { font-weight: 600; margin: 0 0 0.5em; }
-  .meta { color: #666; margin-bottom: 1.5em; }
-  table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
-  th { background: #f5f5f5; font-weight: 600; }
-  tr:hover td { background: #f9f9f9; }
-  .ok { color: #16a34a; } .warn { color: #ca8a04; } .bad { color: #dc2626; } .idle { color: #888; }
+  body { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 1.5em; color: #222; background: #fafafa; }
+  h1 { font-weight: 600; margin: 0 0 0.4em; }
+  .meta { color: #666; margin-bottom: 1.2em; }
+  table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #eee; white-space: nowrap; }
+  th { background: #f5f5f5; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+  tr:hover td { background: #f8f8f8; }
+  .ok { color: #16a34a; } .warn { color: #ca8a04; } .bad { color: #dc2626; font-weight: 600; } .idle { color: #888; }
   code { font-family: ui-monospace, monospace; font-size: 0.92em; }
   a { color: #2563eb; text-decoration: none; } a:hover { text-decoration: underline; }
+  .note { color: #888; margin-top: 1em; font-size: 12px; }
 </style></head>
 <body>
 <h1>VolatiAI · sector-slow</h1>
-<div class="meta">Last refresh: <span id="ts">&mdash;</span> · <a href="/_sectors">sectors.json</a> · <a href="/_health">_health.json</a></div>
-<table id="tbl"><thead><tr><th>sector</th><th>history_points</th><th>span_days</th><th>newest_iso</th><th>age</th><th>links</th></tr></thead><tbody></tbody></table>
+<div class="meta">Refreshed <span id="ts">&mdash;</span> · <a href="/_sectors">_sectors</a> · <a href="/_health">_health</a></div>
+<table id="tbl"><thead><tr><th>sector</th><th>metric</th><th>n</th><th>last</th><th>prev</th><th>pct</th><th>thr</th><th>dist</th><th>age</th><th>links</th></tr></thead><tbody></tbody></table>
+<p class="note">dist = |pct| &minus; threshold. Negative = below threshold (safe). &ge;0 = would fire. Sorted: closest to firing at top.</p>
 <script>
 async function load() {
-  document.getElementById("ts").textContent = new Date().toISOString();
+  document.getElementById("ts").textContent = new Date().toISOString().slice(0,19).replace("T"," ") + " UTC";
   const tbody = document.querySelector("#tbl tbody");
   tbody.innerHTML = "";
   let data;
@@ -31,19 +33,34 @@ async function load() {
     const r = await fetch("/_health");
     data = await r.json();
   } catch (e) {
-    tbody.innerHTML = '<tr><td colspan="6" class="bad">fetch failed: ' + e + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="bad">fetch failed: ' + e + '</td></tr>';
     return;
   }
-  const rows = Object.entries(data.sectors).sort((a,b) => a[0].localeCompare(b[0]));
+  const rows = Object.entries(data.sectors).sort((a,b) => {
+    const aD = a[1].distance_pct !== null && a[1].distance_pct !== undefined ? a[1].distance_pct : -Infinity;
+    const bD = b[1].distance_pct !== null && b[1].distance_pct !== undefined ? b[1].distance_pct : -Infinity;
+    if (aD !== bD) return bD - aD;
+    return a[0].localeCompare(b[0]);
+  });
+  const EM = "\u2014";
   for (const [name, v] of rows) {
     const tr = document.createElement("tr");
     const age = v.newest_iso ? ((Date.now() - new Date(v.newest_iso).getTime()) / 3600000) : null;
-    let ageCls = "idle", ageTxt = "\u2014";
+    let ageCls = "idle", ageTxt = EM;
     if (age !== null) { ageTxt = age.toFixed(1) + "h"; ageCls = age < 25 ? "ok" : age < 48 ? "warn" : "bad"; }
+    const pct = v.pct_change;
+    const pctTxt = (pct === null || pct === undefined) ? EM : (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
+    const dist = v.distance_pct;
+    const distTxt = (dist === null || dist === undefined) ? EM : dist.toFixed(2) + "%";
+    const distCls = (dist === null || dist === undefined) ? "idle" : (dist >= 0 ? "bad" : dist >= -1 ? "warn" : "idle");
     tr.innerHTML = '<td><code>' + name + '</code></td>'
+      + '<td class="idle">' + (v.metric || EM) + '</td>'
       + '<td>' + v.history_points + '</td>'
-      + '<td>' + v.span_days + '</td>'
-      + '<td class="idle">' + (v.newest_iso || '\u2014') + '</td>'
+      + '<td>' + (v.last_value === null || v.last_value === undefined ? EM : v.last_value) + '</td>'
+      + '<td class="idle">' + (v.prev_value === null || v.prev_value === undefined ? EM : v.prev_value) + '</td>'
+      + '<td>' + pctTxt + '</td>'
+      + '<td class="idle">' + (v.threshold_pct != null ? v.threshold_pct + "%" : EM) + '</td>'
+      + '<td class="' + distCls + '">' + distTxt + '</td>'
       + '<td class="' + ageCls + '">' + ageTxt + '</td>'
       + '<td><a href="/' + name + '/signal">signal</a> &middot; <a href="/' + name + '/history">history</a> &middot; <a href="/' + name + '/raw">raw</a></td>';
     tbody.appendChild(tr);
@@ -52,7 +69,7 @@ async function load() {
 load();
 setInterval(load, 60000);
 </script>
-</body></html>`;
+</body></html>\`;
 
 async function fetchSafe(fn) {
   try { return { ok: true, data: await fn() }; }
@@ -563,11 +580,27 @@ export default {
         try {
           const raw = await env.SECTOR_KV.get(kvKey);
           const h = raw ? JSON.parse(raw) : [];
-          const times = (h || []).map(x => x.t).filter(t => Number.isFinite(t));
+          const sorted = (h || [])
+            .filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v))
+            .sort((a, b) => a.t - b.t);
+          const times = sorted.map(x => x.t);
+          const last = sorted.length >= 1 ? sorted[sorted.length - 1] : null;
+          const prev = sorted.length >= 2 ? sorted[sorted.length - 2] : null;
+          const pctChange = (last && prev && prev.v !== 0)
+            ? ((last.v - prev.v) / Math.abs(prev.v)) * 100
+            : null;
+          const threshold = c.config.threshold_pct || 0;
+          const distancePct = pctChange !== null ? Math.abs(pctChange) - threshold : null;
           summary[name] = {
-            history_points: (h || []).length,
+            metric: c.config.metric,
+            history_points: sorted.length,
             span_days: times.length ? Math.round(((Math.max(...times) - Math.min(...times)) / 86400000) * 10) / 10 : 0,
             newest_iso: times.length ? new Date(Math.max(...times)).toISOString() : null,
+            last_value: last ? last.v : null,
+            prev_value: prev ? prev.v : null,
+            pct_change: pctChange,
+            threshold_pct: threshold,
+            distance_pct: distancePct,
           };
         } catch (e) {
           summary[name] = { error: String(e).slice(0, 80) };

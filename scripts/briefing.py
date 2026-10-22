@@ -47,6 +47,34 @@ def domain_of(sector):
     return "other"
 
 
+def quiet_headline(sectors, fired):
+    """Produce a headline for briefing.json, whether or not any signals fired.
+
+    When fired is empty, ranks sectors by |pct_change| and names the one
+    closest to firing — so a quiet day still says something true instead
+    of "0 signals" or null.
+    """
+    if fired:
+        return f"{len(fired)} signals"
+    if not sectors:
+        return "no data"
+    ranked = []
+    for name, d in sectors.items():
+        pc = d.get("pct_change")
+        if pc is None:
+            continue
+        ranked.append((name, d, abs(pc)))
+    ranked.sort(key=lambda x: -x[2])
+    if not ranked:
+        return f"{len(sectors)} sectors monitored, all quiet"
+    name, d, _ = ranked[0]
+    thr = d.get("threshold_pct")
+    pc = d.get("pct_change")
+    if thr is not None and pc is not None:
+        return (f"{len(sectors)} sectors monitored, all quiet. "
+                f"Closest: {name} {pc:+.2f}% vs {thr}% threshold")
+    return f"{len(sectors)} sectors monitored, all quiet. Closest: {name} {pc:+.2f}%"
+
 def build_briefing():
     """Assemble the unified briefing object."""
     with open("data/digest_history.json") as f:
@@ -100,7 +128,7 @@ def build_briefing():
         "ts": (current.get("timestamp") or "")[:19] + "Z",
         "run_number": len(runs),
         "briefing": {
-            "headline": narrative.get("headline", f"{len(fired)} signals"),
+            "headline": narrative.get("headline") or quiet_headline(sectors, fired),
             "by_domain": by_domain,
         },
         "signals": signals,
