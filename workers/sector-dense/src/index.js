@@ -3056,6 +3056,27 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
+  "bls-labour": {
+    config: { metric: "unemployment_rate", threshold_pct: 5, threshold_abs: 0.2, window: "1mo", ttl: 86400, context_keys: [] },
+    collectAll: async () => ({
+      sources: {
+        unemployment_rate: await fetchSafe(async () => {
+          const r = await fetch("https://api.bls.gov/publicAPI/v1/timeseries/data/LNS14000000",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j?.status !== "REQUEST_SUCCEEDED") throw new Error("bls_status_" + (j?.status || "unknown"));
+          const series = j?.Results?.series?.[0];
+          const data = series?.data;
+          if (!Array.isArray(data) || data.length === 0) throw new Error("no_obs");
+          const latest = data[0];
+          const v = parseFloat(latest?.value);
+          if (isNaN(v)) throw new Error("no_value: " + latest?.value);
+          return v;
+        }),
+      },
+    }),
+  },
   "form-d-filings": {
     config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
     collectAll: async () => ({
