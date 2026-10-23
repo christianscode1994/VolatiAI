@@ -666,6 +666,83 @@ const COLLECTORS = {
       },
     }),
   },
+  "usgs-earthquakes": {
+    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        earthquakes_since_2026: await fetchSafe(async () => {
+          const r = await fetch("https://earthquake.usgs.gov/fdsnws/event/1/count?format=geojson&starttime=2026-01-01",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.count !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
+          return j.count;
+        }),
+      },
+    }),
+  },
+  "noaa-spaceweather-alerts": {
+    config: { metric: "active_alerts", threshold_pct: 10.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        active_alerts: await fetchSafe(async () => {
+          const r = await fetch("https://services.swpc.noaa.gov/products/alerts.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "crossref-works": {
+    config: { metric: "total_works", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_works: await fetchSafe(async () => {
+          const r = await fetch("https://api.crossref.org/works?rows=0",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.message?.["total-results"];
+          if (typeof total !== "number") throw new Error("no_total");
+          return total;
+        }),
+      },
+    }),
+  },
+  "doaj-articles": {
+    config: { metric: "total_articles", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_articles: await fetchSafe(async () => {
+          const r = await fetch("https://doaj.org/api/search/articles/*?pageSize=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.total !== "number") throw new Error("no_total");
+          return j.total;
+        }),
+      },
+    }),
+  },
+  "datacite-dois": {
+    config: { metric: "total_dois", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_dois: await fetchSafe(async () => {
+          const r = await fetch("https://api.datacite.org/dois?page[size]=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.meta?.total ?? j?.meta?.totalCount;
+          if (typeof total !== "number") throw new Error("no_total: meta_keys=" + Object.keys(j?.meta || {}).join(","));
+          return total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
