@@ -13,18 +13,77 @@ import WebSocket from "ws";
 import { pause } from "./pacing.js";
 
 const briefing = JSON.parse(fs.readFileSync("docs/briefing.json", "utf8"));
-const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals in the latest run";
+const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals";
+const signals = Array.isArray(briefing?.signals) ? briefing.signals : [];
+const byDomain = briefing?.briefing?.by_domain ?? {};
+const watchlist = Array.isArray(briefing?.watchlist) ? briefing.watchlist : [];
 
-// Extract count from headline string like "4 signals across 264 sectors evaluated"
-const m = headline.match(/(\d+)\s+signal/);
-const signals = m ? parseInt(m[1], 10) : (briefing?.briefing?.signals ?? 0);
+function fmtNum(n) {
+  if (typeof n !== "number" || !Number.isFinite(n)) return null;
+  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  if (Math.abs(n) < 10)   return n.toFixed(2);
+  return String(Math.round(n));
+}
 
-const lines = [
-  `VolatiAI signal report`,
-  headline,
-];
+function fmtSignal(s) {
+  const sector = s.sector ?? s.name ?? "?";
+  const sev = s.severity === "alert" ? "🚨 " : "";
+  const summary = (s.summary ?? "").replace(/\s+/g, " ").trim();
+  // If numeric data is present (slow-bucket sectors), show value + pct
+  if (typeof s.current === "number" || typeof s.value === "number") {
+    const v = fmtNum(s.current ?? s.value);
+    const pct = (s.pct_change !== null && s.pct_change !== undefined)
+      ? ` (${s.pct_change >= 0 ? "+" : ""}${s.pct_change.toFixed(1)}%)`
+      : "";
+    return `• ${sev}${sector}: ${v}${pct}`;
+  }
+  // Otherwise it's an event — show the summary
+  const trimmed = summary.length > 60 ? summary.slice(0, 57) + "…" : summary;
+  return `• ${sev}${sector}: ${trimmed}`;
+}
 
-const text = lines.join("\n");
+// Domain summary for the header: "energy 1, security 1, info 2, other 3"
+const domainParts = Object.entries(byDomain)
+  .filter(([, v]) => (v.sectors?.length ?? 0) > 0)
+  .map(([dom, v]) => `${dom.slice(0, 4)} ${v.sectors.length}`);
+const domainLine = domainParts.length > 0 ? `(${domainParts.join(", ")})` : "";
+
+// Full message — for platforms with large or no limits
+const fullLines = ["VolatiAI — " + headline];
+if (domainLine) fullLines.push(domainLine);
+if (signals.length > 0) {
+  fullLines.push("");
+  for (const s of signals) fullLines.push(fmtSignal(s));
+}
+if (watchlist.length > 0) {
+  const watchLines = watchlist.slice(0, 3).map(w =>
+    `${w.sector} vol=${Math.round(w.avg_volatility ?? 0)}`
+  );
+  fullLines.push("");
+  fullLines.push("Watchlist: " + watchLines.join(", "));
+}
+const fullText = fullLines.join("\n");
+
+// Compact message — for Bluesky's 300-char limit
+const compactLines = ["VolatiAI — " + headline];
+if (domainLine) compactLines.push(domainLine);
+if (signals.length > 0) {
+  compactLines.push("");
+  for (const s of signals.slice(0, 3)) compactLines.push(fmtSignal(s));
+  if (signals.length > 3) compactLines.push(`+${signals.length - 3} more`);
+}
+const compactText = compactLines.join("\n");
+
+// Per-platform truncation
+const forBluesky  = compactText.slice(0, 297) + (compactText.length > 297 ? "…" : "");
+const forMastodon = fullText.slice(0, 497) + (fullText.length > 497 ? "…" : "");
+const forDiscord  = fullText.slice(0, 1990);
+const forSlack    = fullText.slice(0, 2990);
+const forTelegram = fullText.slice(0, 4080);
+const forNostr    = fullText;
+
 const ts = new Date().toISOString();
 
 console.log(`[${ts}] broadcasting: ${text.replace(/\n/g, " | ")}`);
