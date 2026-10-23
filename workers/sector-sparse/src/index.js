@@ -542,7 +542,7 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         nominatim_search: await fetchSafe(async () => {
-          const r = await fetch("https://nominatim.openstreetmap.org/search?q=VolatiAI&format=json&limit=1", {
+          const r = await fetch("https://nominatim.openstreetmap.org/search?q=Helsinki&format=json&limit=1", {
             headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)" }
           });
           if (!r.ok) throw new Error("status " + r.status);
@@ -695,7 +695,10 @@ const COLLECTORS = {
     collectAll: async (env) => ({
       sources: {
         scryfall: await fetchSafe(async () => {
-          const r = await fetch("https://api.scryfall.com/cards/random");
+          const r = await fetch("https://api.scryfall.com/cards/random", {
+            headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" },
+            signal: AbortSignal.timeout(15000),
+          });
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();
           if (!j.id || !j.name) throw new Error("no card");
@@ -1197,7 +1200,9 @@ const COLLECTORS = {
             headers: {
               "user-agent": "VolatiAI/1.0",
               "accept": "application/json",
+              "accept-encoding": "identity",
             },
+            signal: AbortSignal.timeout(20000),
           });
           if (!r.ok) throw new Error("status " + r.status);
           const j = await r.json();

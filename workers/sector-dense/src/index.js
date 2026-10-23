@@ -1675,7 +1675,15 @@ Object.assign(COLLECTORS, {
             throw new Error("no_rows: data_keys=" + Object.keys(j?.data || {}).join(","));
           }
           const last = rows[rows.length - 1];
-          const v = typeof last?.value === "number" ? last.value
+          // Row shape is {date, china, usa}. Prefer the sum of china+usa if
+          // both numeric; fall back to whichever is present; then generic
+          // value/y for schema changes.
+          const cn = typeof last?.china === "number" ? last.china : null;
+          const us = typeof last?.usa === "number" ? last.usa : null;
+          const v = (cn !== null && us !== null) ? cn + us
+                  : cn !== null ? cn
+                  : us !== null ? us
+                  : typeof last?.value === "number" ? last.value
                   : typeof last?.y === "number" ? last.y
                   : typeof last === "number" ? last
                   : null;
@@ -3345,8 +3353,16 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.com)", "accept": "application/atom+xml" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const text = await r.text();
-          const m = text.match(/<(?:(?:opensearch|os):)?totalResults[^>]*>(\d+)<\/(?:(?:opensearch|os):)?totalResults>/i);
-          if (!m) throw new Error("no_totalResults: len=" + text.length);
+          // Try several tag variants. UK legislation.gov.uk Atom feeds have
+          // historically used <opensearch:totalResults> but format drifts.
+          const m = text.match(/<(?:\w+:)?total[-_]?results[^>]*>\s*(\d+)/i);
+          if (!m) {
+            const probe = text.indexOf("totalResults");
+            const snippet = probe >= 0
+              ? text.slice(Math.max(0, probe - 80), probe + 200)
+              : text.slice(0, 400);
+            throw new Error("no_totalResults: len=" + text.length + " snippet=" + snippet.replace(/\s+/g, " ").slice(0, 400));
+          }
           return parseInt(m[1], 10);
         }),
       },
@@ -3433,7 +3449,11 @@ Object.assign(COLLECTORS, {
       sources: {
         regulatory_items: await fetchSafe(async () => {
           const r = await fetch("https://cryptocurrency.cv/api/regulatory",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+            { headers: {
+                "user-agent": "Mozilla/5.0 (compatible; VolatiAI/1.0)",
+                "accept": "application/json",
+                "referer": "https://cryptocurrency.cv/",
+              }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           const candidates = [j, j?.articles, j?.results, j?.data, j?.data?.articles, j?.data?.items, j?.data?.results];
@@ -3446,22 +3466,6 @@ Object.assign(COLLECTORS, {
           if (arr) return arr.length;
           if (typeof total === "number") return total;
           throw new Error("no_array: keys=" + Object.keys(j || {}).join(",") + " data_keys=" + Object.keys(j?.data || {}).join(","));
-        }),
-      },
-    }),
-  },
-  "cannabis-laws-states": {
-    config: { metric: "state_records", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        state_records: await fetchSafe(async () => {
-          const r = await fetch("https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Cannabis_Laws_by_State/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.count;
-          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
-          return n;
         }),
       },
     }),
