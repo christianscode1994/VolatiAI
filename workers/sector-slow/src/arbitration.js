@@ -283,6 +283,7 @@ const SECTOR_DOMAIN = {
   "treasuries-gov":     "economic",
   "environment":        "atmospheric",
   "usgs-earthquakes":   "geological",
+  "usgs-earthquakes-emsc": "geological",
   "crossref-works":     "scholarly",
   "datacite-dois":      "scholarly",
   "doaj-articles":      "scholarly",
