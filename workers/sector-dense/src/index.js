@@ -179,7 +179,7 @@ const COLLECTORS = {
   },
 
   cryptocurrency: {
-    config: { metric: "btc_dominance", threshold_pct: 2, threshold_abs: 1.0, window: "24h", ttl: 1800, context_keys: ["fng", "top10"] },
+    config: { metric: "btc_dominance", threshold_pct: 2, threshold_abs: 1.0, window: "24h", ttl: 7200, context_keys: ["fng", "top10"] },
     collectAll: async (env) => ({
       sources: {
         btc_dominance: await fetchSafe(async () => {
@@ -974,7 +974,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   transportation: {
-    config: { metric: "delayed_airports", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "delayed_airports", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         delayed_airports: await fetchSafe(async () => {
@@ -1013,7 +1013,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "cloud-status": {
-    config: { metric: "open_incidents", threshold_pct: 0, threshold_abs: 1, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "open_incidents", threshold_pct: 0, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         open_incidents: await fetchSafe(async () => {
@@ -1086,7 +1086,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   gaming: {
-    config: { metric: "steam_players", threshold_pct: 5, threshold_abs: 10000, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "steam_players", threshold_pct: 5, threshold_abs: 10000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         steam_players: await fetchSafe(async () => {
@@ -1125,7 +1125,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "energy-carbon": {
-    config: { metric: "gco2_per_kwh", threshold_pct: 3, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "gco2_per_kwh", threshold_pct: 3, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         gco2_per_kwh: await fetchSafe(async () => {
@@ -1141,7 +1141,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "air-quality": {
-    config: { metric: "avg_european_aqi", threshold_pct: 15, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "avg_european_aqi", threshold_pct: 15, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         avg_european_aqi: await fetchSafe(async () => {
@@ -1165,7 +1165,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   sports: {
-    config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         games_today: await fetchSafe(async () => {
@@ -1243,7 +1243,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   hazards: {
-    config: { metric: "earthquakes_24h", threshold_pct: 50, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "earthquakes_24h", threshold_pct: 50, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         earthquakes_24h: await fetchSafe(async () => {
@@ -1311,7 +1311,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "developer-activity": {
-    config: { metric: "public_events", threshold_pct: 10, threshold_abs: 50, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "public_events", threshold_pct: 10, threshold_abs: 50, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         public_events: await fetchSafe(async () => {
@@ -1362,7 +1362,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   maritime: {
-    config: { metric: "vessels", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "vessels", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         vessels: await fetchSafe(async () => {
@@ -1479,7 +1479,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "natural-disasters": {
-    config: { metric: "open_events", threshold_pct: 30, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "open_events", threshold_pct: 30, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         open_events: await fetchSafe(async () => {
@@ -1767,7 +1767,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   electricity: {
-    config: { metric: "grid_frequency_hz", threshold_pct: 0.5, threshold_abs: 0.25, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "grid_frequency_hz", threshold_pct: 0.5, threshold_abs: 0.25, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         grid_frequency_hz: await fetchSafe(async () => {
@@ -1824,7 +1824,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   electricity: {
-    config: { metric: "grid_frequency_hz", threshold_pct: 0.05, threshold_abs: 0.03, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "grid_frequency_hz", threshold_pct: 0.05, threshold_abs: 0.03, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         grid_frequency_hz: await fetchSafe(async () => {
@@ -1882,7 +1882,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   utilities: {
-    config: { metric: "power_price_eur_mwh", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "power_price_eur_mwh", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         power_price_eur_mwh: await fetchSafe(async () => {
@@ -1927,7 +1927,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   fintech: {
-    config: { metric: "markets", threshold_pct: 5, threshold_abs: 2, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "markets", threshold_pct: 5, threshold_abs: 2, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         markets: await fetchSafe(async () => {
@@ -1952,7 +1952,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "institutional-finance": {
-    config: { metric: "filings_24h", threshold_pct: 1.0, threshold_abs: 100, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "filings_24h", threshold_pct: 1.0, threshold_abs: 100, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         filings_24h: await fetchSafe(async () => {
@@ -1994,7 +1994,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   laws: {
-    config: { metric: "documents", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "documents", threshold_pct: 10, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         documents: await fetchSafe(async () => {
@@ -2035,7 +2035,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   hackernews: {
-    config: { metric: "stories_24h", threshold_pct: 20, threshold_abs: 50, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "stories_24h", threshold_pct: 20, threshold_abs: 50, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         stories_24h: await fetchSafe(async () => {
@@ -2091,7 +2091,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "space-news": {
-    config: { metric: "articles_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "articles_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         articles_24h: await fetchSafe(async () => {
@@ -2107,7 +2107,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   forums: {
-    config: { metric: "active_topics", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "active_topics", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         active_topics: await fetchSafe(async () => {
@@ -2210,7 +2210,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   calendars: {
-    config: { metric: "upcoming_holidays", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "upcoming_holidays", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         upcoming_holidays: await fetchSafe(async () => {
@@ -2258,7 +2258,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   entertainment: {
-    config: { metric: "episodes_today", threshold_pct: 20, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "episodes_today", threshold_pct: 20, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         episodes_today: await fetchSafe(async () => {
@@ -2277,7 +2277,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "ai-news": {
-    config: { metric: "ai_stories_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "ai_stories_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         ai_stories_24h: await fetchSafe(async () => {
@@ -2319,7 +2319,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "grid-demand": {
-    config: { metric: "demand_mw", threshold_pct: 10, threshold_abs: 1000, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "demand_mw", threshold_pct: 10, threshold_abs: 1000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         demand_mw: await fetchSafe(async () => {
@@ -2343,7 +2343,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "grid-mix": {
-    config: { metric: "renewable_pct", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "renewable_pct", threshold_pct: 0.5, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         renewable_pct: await fetchSafe(async () => {
@@ -2387,7 +2387,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "grid-balance": {
-    config: { metric: "system_balance_mw", threshold_pct: 50, threshold_abs: 100, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "system_balance_mw", threshold_pct: 50, threshold_abs: 100, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         system_balance_mw: await fetchSafe(async () => {
@@ -2433,7 +2433,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "bot-activity": {
-    config: { metric: "agent_hits_24h", threshold_pct: 25, threshold_abs: 500, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "agent_hits_24h", threshold_pct: 25, threshold_abs: 500, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         agent_hits_24h: await fetchSafe(async () => {
@@ -2533,7 +2533,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   weather: {
-    config: { metric: "temperature_c", threshold_pct: 10, threshold_abs: 1, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "temperature_c", threshold_pct: 10, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         temperature_c: await fetchSafe(async () => {
@@ -2585,7 +2585,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "usgs-streamflow": {
-    config: { metric: "discharge_cfs", threshold_pct: 20, threshold_abs: 10000, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "discharge_cfs", threshold_pct: 20, threshold_abs: 10000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         discharge_cfs: await fetchSafe(async () => {
@@ -2642,7 +2642,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "aviation-weather": {
-    config: { metric: "metar_stations", threshold_pct: 15, threshold_abs: 20, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "metar_stations", threshold_pct: 15, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         metar_stations: await fetchSafe(async () => {
@@ -2709,7 +2709,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "sports-scores": {
-    config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         games_today: await fetchSafe(async () => {
@@ -2946,7 +2946,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "nport-filings": {
-    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         filings_24h: await fetchSafe(async () => {
@@ -3000,7 +3000,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "13f-holdings": {
-    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         filings_24h: await fetchSafe(async () => {
@@ -3057,7 +3057,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "nasa-eonet": {
-    config: { metric: "open_events", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "open_events", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         open_events: await fetchSafe(async () => {
@@ -3074,7 +3074,7 @@ Object.assign(COLLECTORS, {
   },
 
   "usgs-water": {
-    config: { metric: "potomac_discharge_cfs", threshold_pct: 20, threshold_abs: 500, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "potomac_discharge_cfs", threshold_pct: 20, threshold_abs: 500, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         potomac_discharge_cfs: await fetchSafe(async () => {
@@ -3129,7 +3129,7 @@ Object.assign(COLLECTORS, {
   },
 
   "form-d-filings": {
-    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "filings_24h", threshold_pct: 20, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         filings_24h: await fetchSafe(async () => {
@@ -3217,7 +3217,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "bluesky-posts": {
-    config: { metric: "ai_posts_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "ai_posts_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         ai_posts_24h: await fetchSafe(async () => {
@@ -3474,7 +3474,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "crypto-regulatory-news": {
-    config: { metric: "regulation_articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "regulation_articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         regulation_articles: await fetchSafe(async () => {
@@ -3490,7 +3490,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "crypto-regulatory-feed": {
-    config: { metric: "regulatory_items", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "regulatory_items", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         regulatory_items: await fetchSafe(async () => {
@@ -3522,7 +3522,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "cannabis-news": {
-    config: { metric: "articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         articles: await fetchSafe(async () => {
@@ -3657,7 +3657,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "gdacs-disasters": {
-    config: { metric: "active_alerts", threshold_pct: 10, threshold_abs: 2, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "active_alerts", threshold_pct: 10, threshold_abs: 2, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         active_alerts: await fetchSafe(async () => {
@@ -3673,7 +3673,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "nws-alerts": {
-    config: { metric: "active_alerts", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "active_alerts", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         active_alerts: await fetchSafe(async () => {
@@ -3689,7 +3689,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "miso-grid": {
-    config: { metric: "total_load_mw", threshold_pct: 5, threshold_abs: 3000, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "total_load_mw", threshold_pct: 5, threshold_abs: 3000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         total_load_mw: await fetchSafe(async () => {
@@ -3706,7 +3706,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "crypto-liquidations": {
-    config: { metric: "total_count", threshold_pct: 20, threshold_abs: 5, window: "4h", ttl: 900, context_keys: [] },
+    config: { metric: "total_count", threshold_pct: 20, threshold_abs: 5, window: "4h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         total_count: await fetchSafe(async () => {
@@ -3743,7 +3743,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "emsc-earthquakes": {
-    config: { metric: "recent_events", threshold_pct: 15, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "recent_events", threshold_pct: 15, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         recent_events: await fetchSafe(async () => {
@@ -3759,7 +3759,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "uk-flood-warnings": {
-    config: { metric: "active_warnings", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "active_warnings", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         active_warnings: await fetchSafe(async () => {
@@ -3818,7 +3818,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "coinrithm-overview": {
-    config: { metric: "total_open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "total_open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         total_open_markets: await fetchSafe(async () => {
@@ -3834,7 +3834,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "polymarket-open": {
-    config: { metric: "open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         open_markets: await fetchSafe(async () => {
@@ -3887,7 +3887,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "tobacco-reports": {
-    config: { metric: "total_reports", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "total_reports", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         total_reports: await fetchSafe(async () => {
@@ -3908,7 +3908,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "ocean-waves": {
-    config: { metric: "wave_height_m", threshold_pct: 20, threshold_abs: 0.3, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "wave_height_m", threshold_pct: 20, threshold_abs: 0.3, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         wave_height_m: await fetchSafe(async () => {
@@ -3946,7 +3946,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "privacy-monero": {
-    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e10, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         difficulty: await fetchSafe(async () => {
@@ -3962,7 +3962,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "privacy-zcash": {
-    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e7, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e7, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         difficulty: await fetchSafe(async () => {
@@ -3978,7 +3978,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "monero-network": {
-    config: { metric: "hashrate", threshold_pct: 5, threshold_abs: 1e8, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "hashrate", threshold_pct: 5, threshold_abs: 1e8, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         hashrate: await fetchSafe(async () => {
@@ -4044,7 +4044,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "cloud-outages": {
-    config: { metric: "active_incidents", threshold_pct: 20, threshold_abs: 3, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "active_incidents", threshold_pct: 20, threshold_abs: 3, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         active_incidents: await fetchSafe(async () => {
@@ -4062,7 +4062,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "cloudflare-status": {
-    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         components_down: await fetchSafe(async () => {
@@ -4078,7 +4078,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "cloud-components": {
-    config: { metric: "total_down", threshold_pct: 30, threshold_abs: 2, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "total_down", threshold_pct: 30, threshold_abs: 2, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => {
       const providers = [
         { name: "digitalocean", url: "https://status.digitalocean.com/api/v2/summary.json" },
@@ -4111,7 +4111,7 @@ Object.assign(COLLECTORS, {
     },
   },
   "filecoin-network": {
-    config: { metric: "epoch", threshold_pct: 5, threshold_abs: 1000, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "epoch", threshold_pct: 5, threshold_abs: 1000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         epoch: await fetchSafe(async () => {
@@ -4131,7 +4131,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "arweave-network": {
-    config: { metric: "height", threshold_pct: 2, threshold_abs: 3, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "height", threshold_pct: 2, threshold_abs: 3, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         height: await fetchSafe(async () => {
@@ -4147,7 +4147,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "dropbox-status": {
-    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         components_down: await fetchSafe(async () => {
@@ -4163,7 +4163,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "box-status": {
-    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "components_down", threshold_pct: 25, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         components_down: await fetchSafe(async () => {
@@ -4179,7 +4179,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "stablecoin-supply": {
-    config: { metric: "total_circulating_usd", threshold_pct: 1, threshold_abs: 1e9, window: "24h", ttl: 1800, context_keys: ["asset_count", "usdt_dominance"] },
+    config: { metric: "total_circulating_usd", threshold_pct: 1, threshold_abs: 1e9, window: "24h", ttl: 7200, context_keys: ["asset_count", "usdt_dominance"] },
     collectAll: async () => ({
       sources: {
         total_circulating_usd: await fetchSafe(async () => {
@@ -4243,7 +4243,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "snapshot-proposals": {
-    config: { metric: "active_proposals", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 1800, context_keys: [] },
+    config: { metric: "active_proposals", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         active_proposals: await fetchSafe(async () => {
@@ -4287,7 +4287,7 @@ Object.assign(COLLECTORS, {
 
 Object.assign(COLLECTORS, {
   "hedera-blocks": {
-    config: { metric: "block_number", threshold_pct: 5, threshold_abs: 100, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "block_number", threshold_pct: 5, threshold_abs: 100, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         block_number: await fetchSafe(async () => {
@@ -4306,7 +4306,7 @@ Object.assign(COLLECTORS, {
     }),
   },
   "kaspa-blockdag": {
-    config: { metric: "virtual_daa_score", threshold_pct: 5, threshold_abs: 5000, window: "24h", ttl: 900, context_keys: [] },
+    config: { metric: "virtual_daa_score", threshold_pct: 5, threshold_abs: 5000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
         virtual_daa_score: await fetchSafe(async () => {
