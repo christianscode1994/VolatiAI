@@ -1131,6 +1131,63 @@ export default {
       });
     }
 
+    if (sectorName === "_validate_history") {
+      const findings = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const kvKey = name + "_" + c.config.metric + "_history";
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          if (!raw) continue;
+          const h = (JSON.parse(raw) || []).filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v));
+          if (h.length < 2) continue;
+
+          const sorted = [...h].sort((a, b) => a.t - b.t);
+          const values = sorted.map(x => x.v);
+          const unique = new Set(values).size;
+          const min = Math.min(...values);
+          const max = Math.max(...values);
+          const range = max - min;
+          const mean = values.reduce((a, b) => a + b, 0) / values.length;
+          const ratio = unique / values.length;
+
+          const flags = [];
+          if (unique === 1) flags.push("all_identical");
+          else if (ratio < 0.1) flags.push("mostly_identical");
+          if (range === 0) flags.push("zero_variance");
+
+          for (let i = 1; i < sorted.length; i++) {
+            const prev = sorted[i - 1].v;
+            const jump = Math.abs(sorted[i].v - prev) / Math.max(Math.abs(prev), 1);
+            if (jump > 0.2) {
+              const d = new Date(sorted[i].t).toISOString().slice(0, 10);
+              flags.push("step_" + d + "_" + Math.round(jump * 100) + "pct");
+            }
+          }
+
+          findings[name] = {
+            points: h.length,
+            unique_values: unique,
+            unique_ratio: Math.round(ratio * 1000) / 1000,
+            min: Math.round(min * 100) / 100,
+            max: Math.round(max * 100) / 100,
+            range: Math.round(range * 100) / 100,
+            mean: Math.round(mean * 100) / 100,
+            flags: flags.length > 0 ? flags : null,
+          };
+        } catch (e) {
+          findings[name] = { error: String(e).slice(0, 80) };
+        }
+      }
+      const flagged = Object.entries(findings).filter(([, v]) => v.flags && v.flags.length > 0);
+      return json({
+        timestamp: new Date().toISOString(),
+        total_with_history: Object.keys(findings).length,
+        flagged_count: flagged.length,
+        flagged: Object.fromEntries(flagged),
+        all_findings: findings,
+      });
+    }
+
     if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
 
     if (action === "health") {
