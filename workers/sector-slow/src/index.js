@@ -501,6 +501,21 @@ const COLLECTORS = {
     }),
   },
 
+  "met-artworks": {
+    config: { metric: "total_artworks", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_artworks: await fetchSafe(async () => {
+          const r = await fetch("https://collectionapi.metmuseum.org/public/collection/v1/objects",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.total !== "number") throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+          return j.total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
