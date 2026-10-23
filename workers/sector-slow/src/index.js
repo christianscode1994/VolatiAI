@@ -807,6 +807,19 @@ export default {
     const written = results.filter(r => r.written).length;
     const skipped = results.filter(r => r.skipped).length;
     const failed  = results.filter(r => r.error).length;
+    const summary = {
+      timestamp: new Date().toISOString(),
+      source: "cron",
+      cron,
+      total: results.length,
+      written, skipped, failed,
+      results,
+    };
+    try {
+      await env.SECTOR_KV.put("_last_cron_run", JSON.stringify(summary), { expirationTtl: 86400 * 7 });
+    } catch (e) {
+      console.log("cron status write failed:", String(e));
+    }
     console.log(`cron summary: ${written} written, ${skipped} skipped, ${failed} failed`);
   },
 
@@ -855,6 +868,46 @@ export default {
         }
       }
       return json({ density: "slow", sectors: summary, timestamp: new Date().toISOString() });
+    }
+
+    if (sectorName === "_sweep") {
+      const start = Date.now();
+      const results = [];
+      for (const [name, collector] of Object.entries(COLLECTORS)) {
+        const t0 = Date.now();
+        try {
+          const r = await runSectorForCron(name, collector, env);
+          results.push({ ...r, ms: Date.now() - t0 });
+        } catch (e) {
+          results.push({ sector: name, error: String(e).slice(0, 120), ms: Date.now() - t0 });
+        }
+      }
+      const summary = {
+        timestamp: new Date().toISOString(),
+        source: "manual_sweep",
+        elapsed_ms: Date.now() - start,
+        total: results.length,
+        written: results.filter(r => r.written).length,
+        skipped: results.filter(r => r.skipped).length,
+        failed: results.filter(r => r.error).length,
+        results,
+      };
+      try {
+        await env.SECTOR_KV.put("_last_cron_run", JSON.stringify(summary), { expirationTtl: 86400 * 7 });
+      } catch (e) {
+        summary.kv_error = String(e).slice(0, 120);
+      }
+      return json(summary);
+    }
+
+    if (sectorName === "_cron_status") {
+      try {
+        const raw = await env.SECTOR_KV.get("_last_cron_run");
+        if (!raw) return json({ ok: false, message: "no cron run recorded yet" });
+        return json({ ok: true, last_run: JSON.parse(raw) });
+      } catch (e) {
+        return json({ ok: false, error: String(e).slice(0, 120) }, 500);
+      }
     }
 
     const collector = COLLECTORS[sectorName];
