@@ -32,6 +32,7 @@ WORKER_CWD = "workers/sector-slow"
 SECTORS = {
     "treasuries":  {"kv_key": "treasuries_yield_10y_history", "fetcher": "fred_dgs10",    "days": 90},
     "environment": {"kv_key": "environment_co2_ppm_history",  "fetcher": "noaa_co2_daily", "days": 90},
+    "usgs-earthquakes": {"kv_key": "usgs-earthquakes_earthquakes_since_2026_history", "fetcher": "usgs_cumulative", "days": 90},
 }
 
 def fetch_fred_dgs10(days):
@@ -76,7 +77,34 @@ def fetch_noaa_co2_daily(days):
         out.append({"t": int(dt.timestamp() * 1000), "v": v})
     return out
 
-FETCHERS = {"fred_dgs10": fetch_fred_dgs10, "noaa_co2_daily": fetch_noaa_co2_daily}
+def fetch_usgs_cumulative(days):
+    """Cumulative earthquake count since 2026-01-01, one query per day.
+    Each day's value is the running total, which matches what the worker's
+    live collector would have computed that day. ~90 queries, ~30 seconds."""
+    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    cutoff = today - timedelta(days=days)
+    out = []
+    cursor = max(start, cutoff) + timedelta(days=1)
+    while cursor <= today:
+        start_str = start.strftime("%Y-%m-%d")
+        end_str = (cursor + timedelta(days=1)).strftime("%Y-%m-%d")
+        url = (
+            "https://earthquake.usgs.gov/fdsnws/event/1/count"
+            f"?format=geojson&starttime={start_str}&endtime={end_str}"
+        )
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
+            with urllib.request.urlopen(req, timeout=15, context=SSL_CTX) as r:
+                j = json.loads(r.read().decode())
+                if isinstance(j.get("count"), int):
+                    out.append({"t": int(cursor.timestamp() * 1000), "v": j["count"]})
+        except Exception as e:
+            print(f"  WARN {cursor.date()}: {e}", file=sys.stderr)
+        cursor += timedelta(days=1)
+    return out
+
+FETCHERS = {"fred_dgs10": fetch_fred_dgs10, "noaa_co2_daily": fetch_noaa_co2_daily, "usgs_cumulative": fetch_usgs_cumulative}
 
 def get_current(kv_key):
     r = subprocess.run(
