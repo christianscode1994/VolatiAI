@@ -10,6 +10,7 @@ const { BskyAgent } = pkg;
 import Mastodon from "mastodon-api";
 import { finalizeEvent } from "nostr-tools";
 import WebSocket from "ws";
+import { pause } from "./pacing.js";
 
 const briefing = JSON.parse(fs.readFileSync("docs/briefing.json", "utf8"));
 const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals in the latest run";
@@ -33,6 +34,7 @@ async function postTelegram() {
     console.log("telegram: skipped (no credentials)");
     return;
   }
+  await pause("telegram");
   try {
     await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -49,6 +51,7 @@ async function postDiscord() {
     console.log("discord: skipped (no webhook)");
     return;
   }
+  await pause("discord");
   try {
     await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: text });
     console.log("discord: ok");
@@ -62,6 +65,7 @@ async function postSlack() {
     console.log("slack: skipped (no webhook)");
     return;
   }
+  await pause("slack");
   try {
     await axios.post(process.env.SLACK_WEBHOOK_URL, { text });
     console.log("slack: ok");
@@ -75,6 +79,7 @@ async function postMastodon() {
     console.log("mastodon: skipped (no credentials)");
     return;
   }
+  await pause("mastodon");
   try {
     const M = new Mastodon({
       access_token: process.env.MASTODON_ACCESS_TOKEN,
@@ -93,6 +98,7 @@ async function postBluesky() {
     console.log("bluesky: skipped (no credentials)");
     return;
   }
+  await pause("bluesky");
   try {
     const agent = new BskyAgent({ service: "https://bsky.social" });
     await agent.login({
@@ -111,6 +117,7 @@ async function postNostr() {
     console.log("nostr: skipped (no credentials)");
     return;
   }
+  await pause("nostr");
   try {
     const privkey = Buffer.from(process.env.NOSTR_PRIVATE_KEY, "hex");
     const event = finalizeEvent(
