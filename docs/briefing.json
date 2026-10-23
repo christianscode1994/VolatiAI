@@ -1,272 +1,99 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-23T02:39:41Z",
+  "ts": "2026-10-23T10:45:00Z",
   "run_number": 24,
   "briefing": {
-    "headline": "17 signals across 262 sectors evaluated",
+    "headline": "4 signals across 264 sectors evaluated",
     "by_domain": {
-      "other": {
-        "count": 10,
+      "information": {
+        "count": 1,
         "sectors": [
-          "art-design",
-          "eu-open-data",
-          "food-products",
-          "jobs",
-          "micar-casps",
-          "open-source",
-          "open-source-packages",
-          "pypi-packages",
-          "tv",
-          "xbrl-frames"
+          "events"
         ]
       },
-      "information": {
+      "other": {
         "count": 3,
         "sectors": [
-          "arxiv-cs",
-          "npm-packages",
-          "wikipedia"
-        ]
-      },
-      "energy": {
-        "count": 1,
-        "sectors": [
-          "carbon-intensity"
-        ]
-      },
-      "security": {
-        "count": 1,
-        "sectors": [
-          "cve-feed"
-        ]
-      },
-      "crypto": {
-        "count": 1,
-        "sectors": [
-          "depin-network"
-        ]
-      },
-      "environment": {
-        "count": 1,
-        "sectors": [
-          "water"
+          "jobs",
+          "ripe-atlas-public",
+          "arbetsformedlingen"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "art-design",
+      "sector": "events",
       "severity": "notice",
-      "summary": "New: The Penitence of Saint Jerome \u2014 Joachim Patinir",
+      "summary": "New: [514] Docker is weird",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "arxiv-cs",
-      "severity": "notice",
-      "summary": "New: Different Tasks, Different Timesteps: Temporal Task-Aware Quantization for Diffusion Language Models",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "carbon-intensity",
-      "severity": "notice",
-      "summary": "New: UK grid: 61 gCO2/kWh (low)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 8
-    },
-    {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2026-115486: A flaw was found in the iscsiuio component of open-iscsi. The IPv6 Neighbor Discovery handler access",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 10
-    },
-    {
-      "sector": "depin-network",
-      "severity": "notice",
-      "summary": "New: Flux nodes: 6,845",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 13
-    },
-    {
-      "sector": "eu-open-data",
-      "severity": "critical",
-      "summary": "total_datasets 2039287 (+2.0%)",
-      "confidence": 1,
-      "magnitude": 20.16,
-      "pct_change": 2.0157659460368027,
-      "fires_24": 2
-    },
-    {
-      "sector": "food-products",
-      "severity": "notice",
-      "summary": "New: Nutella (Nutella, Ferrero)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 1
+      "fires_24": 9
     },
     {
       "sector": "jobs",
       "severity": "notice",
-      "summary": "New: Accounting & Finance Manager @ Political Asylum Lawyers",
+      "summary": "New: Senior Finance Manager Management Accountant @ D2B",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 3
+      "fires_24": 4
     },
     {
-      "sector": "micar-casps",
-      "severity": "critical",
-      "summary": "authorised_casps 436 (+6.1%)",
+      "sector": "ripe-atlas-public",
+      "severity": "alert",
+      "summary": "public_measurements 41552 (+1.2% vs 0.1d ago)",
       "confidence": 1,
-      "magnitude": 12.17,
-      "pct_change": 6.082725060827251,
-      "fires_24": 2
+      "magnitude": null,
+      "pct_change": 1.2081060015588463,
+      "fires_24": 1
     },
     {
-      "sector": "npm-packages",
+      "sector": "arbetsformedlingen",
       "severity": "notice",
-      "summary": "New: @ai-sdk/provider v4.0.33",
+      "summary": "job_vacancies 43867 (+1.0% vs 0.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "open-source",
-      "severity": "notice",
-      "summary": "New: 1.143.1 (vscode)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "open-source-packages",
-      "severity": "notice",
-      "summary": "New: lodash 4.18.1 (latest)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "pypi-packages",
-      "severity": "notice",
-      "summary": "New: Top PyPI: boto3 (2,460,723,068 downloads)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "tv",
-      "severity": "notice",
-      "summary": "New: unknown \u2014 Episode 207",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "water",
-      "severity": "notice",
-      "summary": "New: Mississippi flow: 178,000 cfs",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 5
-    },
-    {
-      "sector": "wikipedia",
-      "severity": "notice",
-      "summary": "New: Special:Search (990,313 views)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "xbrl-frames",
-      "severity": "warning",
-      "summary": "reporting_filers 225 (+33.9%)",
-      "confidence": 1,
-      "magnitude": 6.79,
-      "pct_change": 33.92857142857143,
-      "fires_24": 2
+      "pct_change": 1.0434422075828074,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 21:00",
-    "signals_before": 8,
-    "signals_after": 17,
+    "previous_ts": "2026-10-23 02:39",
+    "signals_before": 17,
+    "signals_after": 4,
     "new": [
+      "arbetsformedlingen",
+      "events",
+      "ripe-atlas-public"
+    ],
+    "dropped": [
       "art-design",
       "arxiv-cs",
       "carbon-intensity",
+      "cve-feed",
+      "depin-network",
+      "eu-open-data",
       "food-products",
-      "jobs",
+      "micar-casps",
+      "npm-packages",
+      "open-source",
       "open-source-packages",
       "pypi-packages",
       "tv",
       "water",
-      "wikipedia"
-    ],
-    "dropped": [
-      "events"
+      "wikipedia",
+      "xbrl-frames"
     ],
     "persistent": [
-      "cve-feed",
-      "depin-network",
-      "eu-open-data",
-      "micar-casps",
-      "npm-packages",
-      "open-source",
-      "xbrl-frames"
+      "jobs"
     ],
     "movements": [
       {
-        "sector": "cve-feed",
-        "previous": "New: CVE-2026-115506: libexpat through 2.9.0 contains a denial of service vulner",
-        "current": "New: CVE-2026-115486: A flaw was found in the iscsiuio component of open-iscsi. "
-      },
-      {
-        "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,832",
-        "current": "New: Flux nodes: 6,845"
-      },
-      {
-        "sector": "eu-open-data",
-        "previous": "total_datasets 2039102 (+2.0%)",
-        "current": "total_datasets 2039287 (+2.0%)"
-      },
-      {
-        "sector": "npm-packages",
-        "previous": "New: @ai-sdk/provider v4.0.32",
-        "current": "New: @ai-sdk/provider v4.0.33"
-      },
-      {
-        "sector": "open-source",
-        "previous": "New: 1.143.0 (vscode)",
-        "current": "New: 1.143.1 (vscode)"
-      },
-      {
-        "sector": "xbrl-frames",
-        "previous": "reporting_filers 220 (+31.0%)",
-        "current": "reporting_filers 225 (+33.9%)"
+        "sector": "jobs",
+        "previous": "New: Accounting & Finance Manager @ Political Asylum Lawyers",
+        "current": "New: Senior Finance Manager Management Accountant @ D2B"
       }
     ]
   },
@@ -282,6 +109,12 @@
       "avg_volatility": 10.47,
       "max_volatility": 20.93,
       "fires_in_window": 1
+    },
+    {
+      "sector": "xbrl-frames",
+      "avg_volatility": 10.42,
+      "max_volatility": 33.93,
+      "fires_in_window": 2
     },
     {
       "sector": "crypto-liquidations",
@@ -302,6 +135,12 @@
       "fires_in_window": 3
     },
     {
+      "sector": "micar-casps",
+      "avg_volatility": 6.08,
+      "max_volatility": 6.08,
+      "fires_in_window": 2
+    },
+    {
       "sector": "energy-carbon",
       "avg_volatility": 5.38,
       "max_volatility": 5.38,
@@ -318,24 +157,12 @@
       "avg_volatility": 2.56,
       "max_volatility": 2.56,
       "fires_in_window": 0
-    },
-    {
-      "sector": "grid-demand",
-      "avg_volatility": 1.67,
-      "max_volatility": 1.67,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "cloud-outages",
-      "avg_volatility": 1.35,
-      "max_volatility": 1.35,
-      "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 262,
-    "firing_sectors": 17,
-    "fire_rate_pct": 6.49,
+    "total_sectors": 264,
+    "firing_sectors": 4,
+    "fire_rate_pct": 1.52,
     "runs_in_history": 24
   }
 }
