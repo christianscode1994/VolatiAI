@@ -279,31 +279,139 @@ async function loadCorrelations() {
   const data = await fetchJson(WORKER + "/_correlation");
   if (data._error) { box.innerHTML = '<div class="err">_correlation: ' + data._error + '</div>'; return; }
 
-  const pairs = (data.pairs ?? []).slice(0, 8);   // top 8 by |r|
-  if (pairs.length === 0) {
-    box.innerHTML = '<div class="empty">no sector pairs with 30+ points yet</div>';
+  const names = data.sector_names || [];
+  const pairMap = {};
+  for (const p of (data.pairs || [])) {
+    const key = [p.a, p.b].sort().join("|");
+    pairMap[key] = p;
+  }
+
+  if (names.length === 0) {
+    box.innerHTML = '<div class="empty">no sectors with 30+ history points yet</div>';
     return;
   }
 
-  box.innerHTML = '<div style="font-size:12px;color:var(--dim);margin-bottom:8px">Sectors with 30+ history points: <strong style="color:var(--fg)">' + data.sectors + '</strong> · pairs: <strong style="color:var(--fg)">' + data.pairs_count + '</strong></div>';
+  // Info line
+  box.innerHTML = '<div style="font-size:12px;color:var(--dim);margin-bottom:12px">' +
+    '<strong style="color:var(--fg)">' + names.length + '</strong> sectors · ' +
+    '<strong style="color:var(--fg)">' + (data.pairs_count || 0) + '</strong> pairs · ' +
+    'cells color-coded by |r| (green=positive, red=negative). Hover for details.</div>';
 
-  for (const p of pairs) {
-    const row = el("div", "corr");
-    const isMeaningful = !p.warning && Math.abs(p.r) >= 0.5;
-    const cls = isMeaningful ? "meaningful" : "warned";
-    row.innerHTML = `<div class="pair">${p.a} ↔ ${p.b}</div>`
-      + `<div class="r ${cls}">${p.r >= 0 ? "+" : ""}${p.r.toFixed(2)}</div>`
-      + `<div class="n">n=${p.n}</div>`;
-    if (p.warning) {
-      const note = el("div", "note", "⚠ " + p.warning);
-      row.appendChild(note);
-    } else if (isMeaningful) {
-      const note = el("div", "note ok", "✓ same-domain, no mechanism warning");
-      row.appendChild(note);
-    }
-    box.appendChild(row);
+  // Build a heatmap grid
+  const grid = document.createElement("div");
+  grid.style.display = "grid";
+  grid.style.gridTemplateColumns = "140px repeat(" + names.length + ", 1fr)";
+  grid.style.gap = "1px";
+  grid.style.fontSize = "11px";
+
+  // Header row: empty corner + sector names (abbreviated)
+  grid.appendChild(el("div", "", ""));
+  for (const n of names) {
+    const h = el("div", "", abbreviate(n));
+    h.style.padding = "4px 2px";
+    h.style.textAlign = "center";
+    h.style.color = "var(--dim)";
+    h.style.fontFamily = "ui-monospace, monospace";
+    h.style.fontSize = "10px";
+    h.style.overflow = "hidden";
+    h.style.textOverflow = "ellipsis";
+    h.style.whiteSpace = "nowrap";
+    h.title = n;
+    grid.appendChild(h);
   }
+
+  // Data rows
+  for (let i = 0; i < names.length; i++) {
+    const row = el("div", "", abbreviate(names[i]));
+    row.style.padding = "4px 6px";
+    row.style.textAlign = "right";
+    row.style.color = "var(--dim)";
+    row.style.fontFamily = "ui-monospace, monospace";
+    row.style.fontSize = "10px";
+    row.style.overflow = "hidden";
+    row.style.textOverflow = "ellipsis";
+    row.style.whiteSpace = "nowrap";
+    row.title = names[i];
+    grid.appendChild(row);
+
+    for (let j = 0; j < names.length; j++) {
+      const cell = document.createElement("div");
+      cell.style.aspectRatio = "1";
+      cell.style.display = "flex";
+      cell.style.alignItems = "center";
+      cell.style.justifyContent = "center";
+      cell.style.fontSize = "9px";
+      cell.style.fontFamily = "ui-monospace, monospace";
+
+      if (i === j) {
+        cell.style.background = "var(--border)";
+        cell.style.color = "var(--dim)";
+        cell.textContent = "1";
+        cell.title = names[i] + " (self)";
+      } else {
+        const key = [names[i], names[j]].sort().join("|");
+        const pair = pairMap[key];
+        if (!pair) {
+          cell.style.background = "transparent";
+          cell.style.color = "var(--dim)";
+          cell.textContent = "·";
+        } else {
+          const r = pair.r;
+          const abs = Math.abs(r);
+          // Color: green (positive) or red (negative), intensity by |r|
+          const alpha = Math.min(1, abs * 0.9 + 0.1);
+          const color = r >= 0
+            ? `rgba(63,185,80,${alpha * 0.7})`
+            : `rgba(248,81,73,${alpha * 0.7})`;
+          cell.style.background = color;
+          cell.style.color = abs >= 0.4 ? "#0d1117" : "var(--fg)";
+          cell.style.fontWeight = abs >= 0.6 ? "600" : "normal";
+          cell.textContent = r.toFixed(2);
+
+          // Tooltip
+          const warn = pair.warning ? " [WARNING] " + pair.warning : "";
+          const prov = pair.same_metric ? " [PROVENANCE] same metric from two sources" : "";
+          cell.title = names[i] + " ↔ " + names[j] + "  r=" + r.toFixed(3) +
+                       "  n=" + pair.n + warn + prov;
+
+          // Border for warned pairs
+          if (pair.warning) {
+            cell.style.border = "1px dashed var(--bad)";
+          }
+          if (pair.same_metric) {
+            cell.style.border = "1px solid var(--ok)";
+          }
+        }
+      }
+      grid.appendChild(cell);
+    }
+  }
+  box.appendChild(grid);
+
+  // Legend
+  const legend = el("div");
+  legend.style.marginTop = "12px";
+  legend.style.fontSize = "11px";
+  legend.style.color = "var(--dim)";
+  legend.innerHTML =
+    '<span style="display:inline-block;width:12px;height:12px;background:rgba(63,185,80,0.7);vertical-align:middle;margin-right:4px"></span>positive ' +
+    '<span style="display:inline-block;width:12px;height:12px;background:rgba(248,81,73,0.7);vertical-align:middle;margin:0 4px 0 12px"></span>negative ' +
+    '<span style="display:inline-block;border:1px dashed #f85149;padding:0 4px;margin-left:12px;font-size:10px">dashed</span> = warning ' +
+    '<span style="display:inline-block;border:1px solid #3fb950;padding:0 4px;margin-left:12px;font-size:10px">solid</span> = provenance pair';
+  box.appendChild(legend);
 }
+
+function abbreviate(name) {
+  // "crossref-works" -> "crssrf"
+  // "treasuries-gov" -> "trsr-g"
+  // Keeps first syllables
+  const parts = name.split("-");
+  if (parts.length === 1) return name.slice(0, 6);
+  const first = parts[0].slice(0, 4);
+  const rest = parts.slice(1).map(p => p.slice(0, 1)).join("");
+  return first + "-" + rest;
+}
+
 
 async function load() {
   document.getElementById("stamp").textContent = new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC";
