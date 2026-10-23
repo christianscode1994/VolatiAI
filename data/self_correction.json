@@ -338,7 +338,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 23/24 runs (96%)",
+      "reason": "conf=0 in 22/24 runs (92%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -394,11 +394,6 @@
     {
       "sector": "food-products",
       "reason": "conf=0 in 22/24 runs (92%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "food-security",
-      "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -528,7 +523,7 @@
     },
     {
       "sector": "micar-casps",
-      "reason": "conf=0 in 23/24 runs (96%)",
+      "reason": "conf=0 in 22/24 runs (92%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -552,17 +547,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-neo",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "natural-disasters",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -678,6 +663,11 @@
     },
     {
       "sector": "refugees",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "religions",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -878,7 +868,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 23/24 runs (96%)",
+      "reason": "conf=0 in 22/24 runs (92%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -917,6 +907,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "food-security",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "global-trade-regulations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -932,7 +927,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "religions",
+      "sector": "nasa-neo",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -948,7 +948,7 @@
     },
     {
       "sector": "uk-legislation",
-      "reason": "conf=0 in 24/24 runs (100%)",
+      "reason": "conf=0 in 23/23 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -958,32 +958,32 @@
     },
     {
       "sector": "cisa-kev",
-      "reason": "conf=0 in 16/16 runs (100%)",
+      "reason": "conf=0 in 17/17 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nvd-new-cves",
-      "reason": "conf=0 in 16/16 runs (100%)",
+      "reason": "conf=0 in 17/17 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nasa-eonet",
-      "reason": "conf=0 in 14/14 runs (100%)",
+      "reason": "conf=0 in 15/15 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "usgs-water",
-      "reason": "conf=0 in 14/14 runs (100%)",
+      "reason": "conf=0 in 15/15 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "noaa-ndbc",
-      "reason": "conf=0 in 14/14 runs (100%)",
+      "reason": "conf=0 in 15/15 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "epa-envirofacts",
-      "reason": "conf=0 in 14/14 runs (100%)",
+      "reason": "conf=0 in 15/15 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -1122,16 +1122,16 @@
     {
       "sector": "treasuries",
       "runs": 24,
-      "avg_conf": 0.88
+      "avg_conf": 0.92
     },
     {
       "sector": "abuse-ch-feodo",
-      "runs": 16,
+      "runs": 17,
       "avg_conf": 1.0
     },
     {
       "sector": "rir-arin",
-      "runs": 14,
+      "runs": 15,
       "avg_conf": 1.0
     }
   ]

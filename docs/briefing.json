@@ -1,10 +1,39 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-22T21:00:45Z",
+  "ts": "2026-10-23T02:39:41Z",
   "run_number": 24,
   "briefing": {
-    "headline": "8 signals across 264 sectors evaluated",
+    "headline": "17 signals across 262 sectors evaluated",
     "by_domain": {
+      "other": {
+        "count": 10,
+        "sectors": [
+          "art-design",
+          "eu-open-data",
+          "food-products",
+          "jobs",
+          "micar-casps",
+          "open-source",
+          "open-source-packages",
+          "pypi-packages",
+          "tv",
+          "xbrl-frames"
+        ]
+      },
+      "information": {
+        "count": 3,
+        "sectors": [
+          "arxiv-cs",
+          "npm-packages",
+          "wikipedia"
+        ]
+      },
+      "energy": {
+        "count": 1,
+        "sectors": [
+          "carbon-intensity"
+        ]
+      },
       "security": {
         "count": 1,
         "sectors": [
@@ -17,29 +46,46 @@
           "depin-network"
         ]
       },
-      "other": {
-        "count": 4,
+      "environment": {
+        "count": 1,
         "sectors": [
-          "eu-open-data",
-          "micar-casps",
-          "open-source",
-          "xbrl-frames"
-        ]
-      },
-      "information": {
-        "count": 2,
-        "sectors": [
-          "events",
-          "npm-packages"
+          "water"
         ]
       }
     }
   },
   "signals": [
     {
+      "sector": "art-design",
+      "severity": "notice",
+      "summary": "New: The Penitence of Saint Jerome \u2014 Joachim Patinir",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "arxiv-cs",
+      "severity": "notice",
+      "summary": "New: Different Tasks, Different Timesteps: Temporal Task-Aware Quantization for Diffusion Language Models",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "carbon-intensity",
+      "severity": "notice",
+      "summary": "New: UK grid: 61 gCO2/kWh (low)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 8
+    },
+    {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-115506: libexpat through 2.9.0 contains a denial of service vulnerability because billion laughs protection ",
+      "summary": "New: CVE-2026-115486: A flaw was found in the iscsiuio component of open-iscsi. The IPv6 Neighbor Discovery handler access",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -48,7 +94,7 @@
     {
       "sector": "depin-network",
       "severity": "notice",
-      "summary": "New: Flux nodes: 6,832",
+      "summary": "New: Flux nodes: 6,845",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -57,20 +103,29 @@
     {
       "sector": "eu-open-data",
       "severity": "critical",
-      "summary": "total_datasets 2039102 (+2.0%)",
+      "summary": "total_datasets 2039287 (+2.0%)",
       "confidence": 1,
-      "magnitude": 20.07,
-      "pct_change": 2.00651128168597,
-      "fires_24": 1
+      "magnitude": 20.16,
+      "pct_change": 2.0157659460368027,
+      "fires_24": 2
     },
     {
-      "sector": "events",
+      "sector": "food-products",
       "severity": "notice",
-      "summary": "New: [711] Quad9 (DNS Resolver) to Exit France",
+      "summary": "New: Nutella (Nutella, Ferrero)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 10
+      "fires_24": 1
+    },
+    {
+      "sector": "jobs",
+      "severity": "notice",
+      "summary": "New: Accounting & Finance Manager @ Political Asylum Lawyers",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 3
     },
     {
       "sector": "micar-casps",
@@ -79,21 +134,66 @@
       "confidence": 1,
       "magnitude": 12.17,
       "pct_change": 6.082725060827251,
-      "fires_24": 1
+      "fires_24": 2
     },
     {
       "sector": "npm-packages",
       "severity": "notice",
-      "summary": "New: @ai-sdk/provider v4.0.32",
+      "summary": "New: @ai-sdk/provider v4.0.33",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 1
+      "fires_24": 2
     },
     {
       "sector": "open-source",
       "severity": "notice",
-      "summary": "New: 1.143.0 (vscode)",
+      "summary": "New: 1.143.1 (vscode)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 3
+    },
+    {
+      "sector": "open-source-packages",
+      "severity": "notice",
+      "summary": "New: lodash 4.18.1 (latest)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "pypi-packages",
+      "severity": "notice",
+      "summary": "New: Top PyPI: boto3 (2,460,723,068 downloads)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "tv",
+      "severity": "notice",
+      "summary": "New: unknown \u2014 Episode 207",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "water",
+      "severity": "notice",
+      "summary": "New: Mississippi flow: 178,000 cfs",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 5
+    },
+    {
+      "sector": "wikipedia",
+      "severity": "notice",
+      "summary": "New: Special:Search (990,313 views)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -102,35 +202,71 @@
     {
       "sector": "xbrl-frames",
       "severity": "warning",
-      "summary": "reporting_filers 220 (+31.0%)",
+      "summary": "reporting_filers 225 (+33.9%)",
       "confidence": 1,
-      "magnitude": 6.19,
-      "pct_change": 30.952380952380953,
-      "fires_24": 1
+      "magnitude": 6.79,
+      "pct_change": 33.92857142857143,
+      "fires_24": 2
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-22 17:14",
-    "signals_before": 1,
-    "signals_after": 8,
+    "previous_ts": "2026-10-22 21:00",
+    "signals_before": 8,
+    "signals_after": 17,
     "new": [
+      "art-design",
+      "arxiv-cs",
+      "carbon-intensity",
+      "food-products",
+      "jobs",
+      "open-source-packages",
+      "pypi-packages",
+      "tv",
+      "water",
+      "wikipedia"
+    ],
+    "dropped": [
+      "events"
+    ],
+    "persistent": [
       "cve-feed",
+      "depin-network",
       "eu-open-data",
-      "events",
       "micar-casps",
       "npm-packages",
       "open-source",
       "xbrl-frames"
     ],
-    "dropped": [],
-    "persistent": [
-      "depin-network"
-    ],
     "movements": [
       {
+        "sector": "cve-feed",
+        "previous": "New: CVE-2026-115506: libexpat through 2.9.0 contains a denial of service vulner",
+        "current": "New: CVE-2026-115486: A flaw was found in the iscsiuio component of open-iscsi. "
+      },
+      {
         "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,795",
-        "current": "New: Flux nodes: 6,832"
+        "previous": "New: Flux nodes: 6,832",
+        "current": "New: Flux nodes: 6,845"
+      },
+      {
+        "sector": "eu-open-data",
+        "previous": "total_datasets 2039102 (+2.0%)",
+        "current": "total_datasets 2039287 (+2.0%)"
+      },
+      {
+        "sector": "npm-packages",
+        "previous": "New: @ai-sdk/provider v4.0.32",
+        "current": "New: @ai-sdk/provider v4.0.33"
+      },
+      {
+        "sector": "open-source",
+        "previous": "New: 1.143.0 (vscode)",
+        "current": "New: 1.143.1 (vscode)"
+      },
+      {
+        "sector": "xbrl-frames",
+        "previous": "reporting_filers 220 (+31.0%)",
+        "current": "reporting_filers 225 (+33.9%)"
       }
     ]
   },
@@ -197,9 +333,9 @@
     }
   ],
   "stats": {
-    "total_sectors": 264,
-    "firing_sectors": 8,
-    "fire_rate_pct": 3.03,
+    "total_sectors": 262,
+    "firing_sectors": 17,
+    "fire_rate_pct": 6.49,
     "runs_in_history": 24
   }
 }
