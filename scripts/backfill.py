@@ -213,17 +213,6 @@ def fetch_doaj_cumulative(days):
         time.sleep(0.1)
     return out
 
-FETCHERS = {
-    "fred_dgs10":          fetch_fred_dgs10,
-    "noaa_co2_daily":      fetch_noaa_co2_daily,
-    "usgs_cumulative":     fetch_usgs_cumulative,
-    "crossref_cumulative": fetch_crossref_cumulative,
-    "openfda_cumulative":  fetch_openfda_cumulative,
-    "datacite_cumulative": fetch_datacite_cumulative,
-    "doaj_cumulative":     fetch_doaj_cumulative,
-    "treasuries_gov":      fetch_treasuries_gov,
-}
-
 def fetch_treasuries_gov(days):
     """Treasury.gov daily yield curve CSV. Returns {t,v} for each weekday
     with a 10-Yr value in the last `days` days. Single CSV fetch."""
@@ -251,9 +240,18 @@ def fetch_treasuries_gov(days):
         out.append({"t": int(dt.timestamp() * 1000), "v": val})
     return sorted(out, key=lambda x: x["t"])
 
-# Reassign FETCHERS to include the new entry (since fetch_treasuries_gov is
-# defined above, this works because Python evaluates FETCHERS after the def)
-FETCHERS = FETCHERS
+FETCHERS = {
+    "fred_dgs10":          fetch_fred_dgs10,
+    "noaa_co2_daily":      fetch_noaa_co2_daily,
+    "usgs_cumulative":     fetch_usgs_cumulative,
+    "crossref_cumulative": fetch_crossref_cumulative,
+    "openfda_cumulative":  fetch_openfda_cumulative,
+    "datacite_cumulative": fetch_datacite_cumulative,
+    "doaj_cumulative":     fetch_doaj_cumulative,
+    "treasuries_gov":      fetch_treasuries_gov,
+}
+
+
 
 def get_current(kv_key):
     r = subprocess.run(
