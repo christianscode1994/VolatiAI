@@ -39,7 +39,7 @@ export function coherenceScore(values, current) {
 //
 // When multi-source data arrives, add "cross_source_claim" nodes and
 // edges between them; the arbitration formula does not need to change.
-export function buildClaimGraph(snapshot) {
+export function buildClaimGraph(snapshot, thresholds = {}) {
   const nodes = [];
   const edges = [];
 
@@ -61,14 +61,21 @@ export function buildClaimGraph(snapshot) {
       timestamp: current.t,
     });
 
+    // Sector-specific threshold, falling back to 5% if not configured.
+    // Uses the same threshold_pct the live signal engine uses, so a
+    // sector's own config decides what counts as "supporting" evidence.
+    const sectorThreshold = (thresholds[sector] ?? 5.0) / 100;
+
     for (let i = 0; i < sorted.length - 1; i++) {
       const prior = sorted[i];
       const pctDelta = Math.abs(current.v - prior.v) / Math.max(Math.abs(prior.v), 1);
 
       let relation, weight;
-      if (pctDelta < 0.01)      { relation = "supports";    weight = 1.0; }
-      else if (pctDelta < 0.05) { relation = "supports";    weight = 0.5; }
-      else                      { relation = "contradicts"; weight = 0.3; }
+      // Supports: within sector threshold. Contradicts: beyond it.
+      // Weight tiers keep the arbitration responsive to closeness.
+      if (pctDelta < sectorThreshold / 2)      { relation = "supports";    weight = 1.0; }
+      else if (pctDelta < sectorThreshold)     { relation = "supports";    weight = 0.5; }
+      else                                      { relation = "contradicts"; weight = 0.3; }
 
       const priorId = `${sector}::prior::${prior.t}`;
       nodes.push({

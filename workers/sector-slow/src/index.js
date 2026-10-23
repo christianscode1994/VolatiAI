@@ -992,7 +992,11 @@ export default {
           snapshot.sectors[name] = { metric: c.config.metric, values: [], error: String(e).slice(0, 80) };
         }
       }
-      const graph = buildClaimGraph(snapshot);
+      const thresholds = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        thresholds[name] = c.config.threshold_pct || 5.0;
+      }
+      const graph = buildClaimGraph(snapshot, thresholds);
       const verdicts = arbitrate(graph);
       return json({
         timestamp: new Date().toISOString(),
