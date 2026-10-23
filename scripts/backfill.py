@@ -34,6 +34,9 @@ SECTORS = {
     "environment": {"kv_key": "environment_co2_ppm_history",  "fetcher": "noaa_co2_daily", "days": 90},
     "usgs-earthquakes": {"kv_key": "usgs-earthquakes_earthquakes_since_2026_history", "fetcher": "usgs_cumulative", "days": 90},
     "crossref-works":   {"kv_key": "crossref-works_total_works_history",                    "fetcher": "crossref_cumulative", "days": 90},
+    "openfda-drug-recalls": {"kv_key": "openfda-drug-recalls_drug_recalls_history",           "fetcher": "openfda_cumulative", "days": 90},
+    "datacite-dois":        {"kv_key": "datacite-dois_total_dois_history",                    "fetcher": "datacite_cumulative", "days": 90},
+    "doaj-articles":        {"kv_key": "doaj-articles_total_articles_history",                 "fetcher": "doaj_cumulative",     "days": 90},
 }
 
 def fetch_fred_dgs10(days):
@@ -133,7 +136,90 @@ def fetch_crossref_cumulative(days):
         time.sleep(0.1)
     return out
 
-FETCHERS = {"fred_dgs10": fetch_fred_dgs10, "noaa_co2_daily": fetch_noaa_co2_daily, "usgs_cumulative": fetch_usgs_cumulative, "crossref_cumulative": fetch_crossref_cumulative}
+def fetch_openfda_cumulative(days):
+    """openFDA drug enforcement reports, cumulative by report_date.
+    Each query returns 'reports filed on or before date X'.
+    ~90 queries @ 0.1s delay = ~30-45s."""
+    import time
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    cutoff = today - timedelta(days=days)
+    out = []
+    cursor = cutoff + timedelta(days=1)
+    while cursor <= today:
+        date_str = cursor.strftime("%Y%m%d")
+        url = f"https://api.fda.gov/drug/enforcement.json?search=report_date:[20040101+TO+{date_str}]&limit=1"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
+            with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
+                j = json.loads(r.read().decode())
+                total = j.get("meta", {}).get("results", {}).get("total")
+                if isinstance(total, int):
+                    out.append({"t": int(cursor.timestamp() * 1000), "v": total})
+        except Exception as e:
+            print(f"  WARN {date_str}: {e}", file=sys.stderr)
+        cursor += timedelta(days=1)
+        time.sleep(0.1)
+    return out
+
+
+def fetch_datacite_cumulative(days):
+    """DataCite DOIs registered, cumulative by created date."""
+    import time
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    cutoff = today - timedelta(days=days)
+    out = []
+    cursor = cutoff + timedelta(days=1)
+    while cursor <= today:
+        date_str = cursor.strftime("%Y-%m-%d")
+        # DataCite supports query=created:[* TO date]
+        url = f"https://api.datacite.org/dois?query=created:%5B*%20TO%20{date_str}%5D&page[size]=1"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
+            with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
+                j = json.loads(r.read().decode())
+                total = j.get("meta", {}).get("total")
+                if isinstance(total, int):
+                    out.append({"t": int(cursor.timestamp() * 1000), "v": total})
+        except Exception as e:
+            print(f"  WARN {date_str}: {e}", file=sys.stderr)
+        cursor += timedelta(days=1)
+        time.sleep(0.1)
+    return out
+
+
+def fetch_doaj_cumulative(days):
+    """DOAJ articles, cumulative by created_date.
+    DOAJ requires per-date query with sort=created_date:asc."""
+    import time
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    cutoff = today - timedelta(days=days)
+    out = []
+    cursor = cutoff + timedelta(days=1)
+    while cursor <= today:
+        date_str = cursor.strftime("%Y-%m-%d")
+        url = f"https://doaj.org/api/search/articles/*?pageSize=1&query=created_date:%5B*%20TO%20{date_str}T23:59:59Z%5D"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0", "accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
+                j = json.loads(r.read().decode())
+                total = j.get("total")
+                if isinstance(total, int):
+                    out.append({"t": int(cursor.timestamp() * 1000), "v": total})
+        except Exception as e:
+            print(f"  WARN {date_str}: {e}", file=sys.stderr)
+        cursor += timedelta(days=1)
+        time.sleep(0.1)
+    return out
+
+FETCHERS = {
+    "fred_dgs10":          fetch_fred_dgs10,
+    "noaa_co2_daily":      fetch_noaa_co2_daily,
+    "usgs_cumulative":     fetch_usgs_cumulative,
+    "crossref_cumulative": fetch_crossref_cumulative,
+    "openfda_cumulative":  fetch_openfda_cumulative,
+    "datacite_cumulative": fetch_datacite_cumulative,
+    "doaj_cumulative":     fetch_doaj_cumulative,
+}
 
 def get_current(kv_key):
     r = subprocess.run(
