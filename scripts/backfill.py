@@ -33,6 +33,7 @@ SECTORS = {
     "treasuries":  {"kv_key": "treasuries_yield_10y_history", "fetcher": "fred_dgs10",    "days": 90},
     "environment": {"kv_key": "environment_co2_ppm_history",  "fetcher": "noaa_co2_daily", "days": 90},
     "usgs-earthquakes": {"kv_key": "usgs-earthquakes_earthquakes_since_2026_history", "fetcher": "usgs_cumulative", "days": 90},
+    "crossref-works":   {"kv_key": "crossref-works_total_works_history",                    "fetcher": "crossref_cumulative", "days": 90},
 }
 
 def fetch_fred_dgs10(days):
@@ -104,7 +105,35 @@ def fetch_usgs_cumulative(days):
         cursor += timedelta(days=1)
     return out
 
-FETCHERS = {"fred_dgs10": fetch_fred_dgs10, "noaa_co2_daily": fetch_noaa_co2_daily, "usgs_cumulative": fetch_usgs_cumulative}
+def fetch_crossref_cumulative(days):
+    """Crossref cumulative work count via date-filtered queries.
+    Each query returns total works registered up to and including that date.
+    ~90 queries, ~30-45 seconds (with polite 0.1s delay between requests)."""
+    import time
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    cutoff = today - timedelta(days=days)
+    out = []
+    cursor = cutoff + timedelta(days=1)
+    while cursor <= today:
+        date_str = cursor.strftime("%Y-%m-%d")
+        url = f"https://api.crossref.org/works?filter=until-created-date:{date_str}&rows=0"
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "VolatiAI/1.0 (mailto:contact@volatiai.local)"},
+            )
+            with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
+                j = json.loads(r.read().decode())
+                total = j.get("message", {}).get("total-results")
+                if isinstance(total, int):
+                    out.append({"t": int(cursor.timestamp() * 1000), "v": total})
+        except Exception as e:
+            print(f"  WARN {date_str}: {e}", file=sys.stderr)
+        cursor += timedelta(days=1)
+        time.sleep(0.1)
+    return out
+
+FETCHERS = {"fred_dgs10": fetch_fred_dgs10, "noaa_co2_daily": fetch_noaa_co2_daily, "usgs_cumulative": fetch_usgs_cumulative, "crossref_cumulative": fetch_crossref_cumulative}
 
 def get_current(kv_key):
     r = subprocess.run(
