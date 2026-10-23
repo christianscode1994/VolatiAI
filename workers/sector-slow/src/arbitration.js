@@ -228,3 +228,51 @@ export function pearson(xs, ys) {
   if (denom === 0) return null;
   return num / denom;
 }
+
+
+// Two-tailed p-value from Pearson r using the t-distribution approximation.
+// t = r * sqrt((n-2)/(1-r^2)), df = n-2. Approximated with the
+// normal distribution for n > 30 (which is our case). For smaller n
+// this overstates significance.
+export function correlationPValue(r, n) {
+  if (!Number.isFinite(r) || !Number.isFinite(n) || n < 3) return null;
+  const absR = Math.min(Math.abs(r), 0.999999);
+  const t = absR * Math.sqrt((n - 2) / (1 - absR * absR));
+  // Normal approximation to two-tailed p
+  const p = 2 * (1 - normalCDF(t));
+  return Math.max(0, Math.min(1, p));
+}
+
+function normalCDF(x) {
+  // Abramowitz & Stegun 7.1.26
+  const t = 1 / (1 + 0.2316419 * Math.abs(x));
+  const d = 0.3989423 * Math.exp(-x * x / 2);
+  const prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return x >= 0 ? 1 - prob : prob;
+}
+
+// Flag mechanism plausibility heuristically. Two sectors from completely
+// different domains (physical + scholarly, economic + scholarly) with
+// strong |r| are almost certainly artifacts of unmodeled periodic structure
+// (weekday effects, aftershock clusters, seasonal patterns) that linear
+// detrend does not remove.
+const SECTOR_DOMAIN = {
+  "treasuries": "economic",
+  "environment": "physical",
+  "usgs-earthquakes": "physical",
+  "crossref-works": "scholarly",
+  "datacite-dois": "scholarly",
+  "doaj-articles": "scholarly",
+  "openfda-drug-recalls": "regulatory",
+};
+
+export function correlationWarning(a, b, absR, pValue) {
+  if (pValue === null || absR < 0.5) return null;
+  const da = SECTOR_DOMAIN[a] ?? "unknown";
+  const db = SECTOR_DOMAIN[b] ?? "unknown";
+  if (da === db) return null;
+  return `strong |r| across different domains (${da} vs ${db}). ` +
+         `Likely artifact of unmodeled periodic structure (weekday effects, ` +
+         `aftershock clusters, seasonal patterns). Statistical significance ` +
+         `does not imply mechanism.`;
+}

@@ -3,7 +3,7 @@
 
 const WINDOW_DAYS_DEFAULT = 7;
 
-import { coherenceScore, detrendedCoherence, detrendedResiduals, pearson, buildClaimGraph, arbitrate } from "./arbitration.js";
+import { coherenceScore, detrendedCoherence, detrendedResiduals, pearson, correlationPValue, correlationWarning, buildClaimGraph, arbitrate } from "./arbitration.js";
 
 const DASHBOARD_HTML = `<!doctype html>
 <html><head><meta charset="utf-8"><title>VolatiAI · sector-slow</title>
@@ -1078,12 +1078,18 @@ export default {
           const br = b.residuals.slice(-minLen);
           const r = pearson(ar, br);
           if (r !== null) {
+            const absR = Math.abs(r);
+            const pValue = correlationPValue(r, minLen);
+            const warning = correlationWarning(names[i], names[j], absR, pValue);
             pairs.push({
               a: names[i],
               b: names[j],
               r: Math.round(r * 1000) / 1000,
-              abs_r: Math.round(Math.abs(r) * 1000) / 1000,
+              abs_r: Math.round(absR * 1000) / 1000,
               n: minLen,
+              p_value: pValue !== null ? Math.round(pValue * 10000) / 10000 : null,
+              bonferroni_significant: pValue !== null && pValue < (0.05 / ((names.length * (names.length - 1)) / 2)),
+              warning: warning,
             });
           }
         }
