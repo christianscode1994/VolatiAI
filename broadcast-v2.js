@@ -86,7 +86,7 @@ const forNostr    = fullText;
 
 const ts = new Date().toISOString();
 
-console.log(`[${ts}] broadcasting: ${text.replace(/\n/g, " | ")}`);
+console.log(`[${ts}] broadcasting:\n${fullText}\n---`);
 
 async function postTelegram() {
   if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) {
