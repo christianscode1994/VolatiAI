@@ -516,6 +516,25 @@ const COLLECTORS = {
       },
     }),
   },
+  "cern-opendata": {
+    config: { metric: "total_records", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_records: await fetchSafe(async () => {
+          const r = await fetch("https://opendata.cern.ch/api/records/?size=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const raw = j?.hits?.total;
+          const total = typeof raw === "number" ? raw
+                      : (raw && typeof raw.value === "number") ? raw.value
+                      : null;
+          if (total === null) throw new Error("no_total: keys=" + Object.keys(j || {}).join(","));
+          return total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
