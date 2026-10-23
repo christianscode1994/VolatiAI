@@ -13,11 +13,13 @@ import WebSocket from "ws";
 
 const briefing = JSON.parse(fs.readFileSync("docs/briefing.json", "utf8"));
 const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals in the latest run";
-const signals = briefing?.briefing?.signals ?? briefing?.briefing?.firing_sectors ?? 0;
+
+// Extract count from headline string like "4 signals across 264 sectors evaluated"
+const m = headline.match(/(\d+)\s+signal/);
+const signals = m ? parseInt(m[1], 10) : (briefing?.briefing?.signals ?? 0);
 
 const lines = [
   `VolatiAI signal report`,
-  `${signals} signal${signals === 1 ? "" : "s"} across ${briefing?.briefing?.sectors_evaluated ?? "?"} sectors`,
   headline,
 ];
 
