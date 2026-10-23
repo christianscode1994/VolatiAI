@@ -257,12 +257,12 @@ function normalCDF(x) {
 // (weekday effects, aftershock clusters, seasonal patterns) that linear
 // detrend does not remove.
 const SECTOR_DOMAIN = {
-  "treasuries": "economic",
-  "environment": "physical",
-  "usgs-earthquakes": "physical",
-  "crossref-works": "scholarly",
-  "datacite-dois": "scholarly",
-  "doaj-articles": "scholarly",
+  "treasuries":         "economic",
+  "environment":        "atmospheric",
+  "usgs-earthquakes":   "geological",
+  "crossref-works":     "scholarly",
+  "datacite-dois":      "scholarly",
+  "doaj-articles":      "scholarly",
   "openfda-drug-recalls": "regulatory",
 };
 
