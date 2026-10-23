@@ -37,6 +37,7 @@ SECTORS = {
     "openfda-drug-recalls": {"kv_key": "openfda-drug-recalls_drug_recalls_history",           "fetcher": "openfda_cumulative", "days": 90},
     "datacite-dois":        {"kv_key": "datacite-dois_total_dois_history",                    "fetcher": "datacite_cumulative", "days": 90},
     "doaj-articles":        {"kv_key": "doaj-articles_total_articles_history",                 "fetcher": "doaj_cumulative",     "days": 90},
+    "treasuries-gov":       {"kv_key": "treasuries-gov_yield_10y_history",                    "fetcher": "treasuries_gov",      "days": 90},
 }
 
 def fetch_fred_dgs10(days):
@@ -219,7 +220,39 @@ FETCHERS = {
     "openfda_cumulative":  fetch_openfda_cumulative,
     "datacite_cumulative": fetch_datacite_cumulative,
     "doaj_cumulative":     fetch_doaj_cumulative,
+    "treasuries_gov":      fetch_treasuries_gov,
 }
+
+def fetch_treasuries_gov(days):
+    """Treasury.gov daily yield curve CSV. Returns {t,v} for each weekday
+    with a 10-Yr value in the last `days` days. Single CSV fetch."""
+    import csv as csvmod, io, time
+    year = datetime.now(timezone.utc).year
+    url = f"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{year}/all?type=daily_treasury_yield_curve&field_tdr_date_value={year}&page&_format=csv"
+    req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
+    with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as r:
+        text = r.read().decode()
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    out = []
+    reader = csvmod.DictReader(io.StringIO(text))
+    for row in reader:
+        d = row.get("Date", "").strip()
+        v = row.get("10 Yr", "").strip()
+        if not d or not v or v.upper() == "N/A":
+            continue
+        try:
+            dt = datetime.strptime(d, "%m/%d/%Y").replace(tzinfo=timezone.utc)
+            val = float(v)
+        except ValueError:
+            continue
+        if dt < cutoff:
+            continue
+        out.append({"t": int(dt.timestamp() * 1000), "v": val})
+    return sorted(out, key=lambda x: x["t"])
+
+# Reassign FETCHERS to include the new entry (since fetch_treasuries_gov is
+# defined above, this works because Python evaluates FETCHERS after the def)
+FETCHERS = FETCHERS
 
 def get_current(kv_key):
     r = subprocess.run(

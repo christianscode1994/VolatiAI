@@ -751,6 +751,31 @@ const COLLECTORS = {
       },
     }),
   },
+  "treasuries-gov": {
+    config: { metric: "yield_10y", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        yield_10y: await fetchSafe(async () => {
+          const year = new Date().getUTCFullYear();
+          const url = `https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/${year}/all?type=daily_treasury_yield_curve&field_tdr_date_value=${year}&page&_format=csv`;
+          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const lines = text.trim().split(/\r?\n/);
+          if (lines.length < 2) throw new Error("no_rows");
+          const header = lines[0].split(",").map(h => h.trim());
+          const tenYrIdx = header.findIndex(h => h === "10 Yr");
+          if (tenYrIdx < 0) throw new Error("no_10Yr_col: " + header.join("|"));
+          for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(",");
+            const v = parseFloat(parts[tenYrIdx]);
+            if (Number.isFinite(v) && v > 0) return v;
+          }
+          throw new Error("no_value");
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
