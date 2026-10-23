@@ -743,6 +743,22 @@ const COLLECTORS = {
       },
     }),
   },
+  "zenodo-records": {
+    config: { metric: "total_records", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_records: await fetchSafe(async () => {
+          const r = await fetch("https://zenodo.org/api/records?size=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.hits?.total;
+          if (typeof total !== "number") throw new Error("no_total: hits_keys=" + Object.keys(j?.hits || {}).join(","));
+          return total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
