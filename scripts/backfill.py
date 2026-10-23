@@ -36,7 +36,8 @@ SECTORS = {
     "crossref-works":   {"kv_key": "crossref-works_total_works_history",                    "fetcher": "crossref_cumulative", "days": 90},
     "openfda-drug-recalls": {"kv_key": "openfda-drug-recalls_drug_recalls_history",           "fetcher": "openfda_cumulative", "days": 90},
     "datacite-dois":        {"kv_key": "datacite-dois_total_dois_history",                    "fetcher": "datacite_cumulative", "days": 90},
-    "doaj-articles":        {"kv_key": "doaj-articles_total_articles_history",                 "fetcher": "doaj_cumulative",     "days": 90},
+    # "doaj-articles": NOT BACKFILLABLE — DOAJ created_date filter does not filter historically
+    # "doaj-articles": {"kv_key": "doaj-articles_total_articles_history", "fetcher": "doaj_cumulative", "days": 90},
     "treasuries-gov":       {"kv_key": "treasuries-gov_yield_10y_history",                    "fetcher": "treasuries_gov",      "days": 90},
 }
 

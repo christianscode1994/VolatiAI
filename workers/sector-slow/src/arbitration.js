@@ -258,6 +258,7 @@ function normalCDF(x) {
 // detrend does not remove.
 const SECTOR_DOMAIN = {
   "treasuries":         "economic",
+  "treasuries-gov":     "economic",
   "environment":        "atmospheric",
   "usgs-earthquakes":   "geological",
   "crossref-works":     "scholarly",
