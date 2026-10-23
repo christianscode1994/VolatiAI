@@ -133,3 +133,98 @@ export function arbitrate(graph) {
     };
   });
 }
+
+
+// ---- Detrended coherence ----
+// Fits y = a + b*t on the time series, computes residuals, z-scores today's
+// residual against the residual distribution.
+// Handles: trending series (CO2, crossref), cumulative counters (USGS, doaj),
+// oscillating series (treasuries). For oscillating, slope ~0 and result
+// matches raw coherence. For monotonic, this correctly measures "is today
+// unusually far from the trend?" rather than "is today far from the mean?"
+export function detrendedCoherence(values, current) {
+  if (!Array.isArray(values) || values.length < 3) return null;
+  if (typeof current !== "number") return null;
+
+  const pts = values.filter(v => Number.isFinite(v.t) && Number.isFinite(v.v));
+  const n = pts.length;
+  if (n < 3) return null;
+
+  // Normalize t to days-since-first to keep the regression numerically stable
+  const t0 = pts[0].t;
+  const ts = pts.map(p => (p.t - t0) / 86400000);
+  const vs = pts.map(p => p.v);
+
+  const sumT  = ts.reduce((a, b) => a + b, 0);
+  const sumV  = vs.reduce((a, b) => a + b, 0);
+  const sumTV = ts.reduce((a, b, i) => a + b * vs[i], 0);
+  const sumT2 = ts.reduce((a, b) => a + b * b, 0);
+
+  const denom = n * sumT2 - sumT * sumT;
+  if (denom === 0) return null;
+
+  const slope = (n * sumTV - sumT * sumV) / denom;
+  const intercept = (sumV - slope * sumT) / n;
+
+  const residuals = ts.map((t, i) => vs[i] - (intercept + slope * t));
+  const meanR = residuals.reduce((a, b) => a + b, 0) / n;
+  const varR = residuals.reduce((a, b) => a + (b - meanR) ** 2, 0) / n;
+  const stdR = Math.sqrt(varR);
+
+  if (stdR === 0) return 1.0;
+
+  const todayT = ts[n - 1];
+  const todayResidual = current - (intercept + slope * todayT);
+  const z = Math.abs(todayResidual - meanR) / stdR;
+
+  return Math.max(0, Math.min(1, 1 / (1 + z / 2)));
+}
+
+// ---- Detrended residual series ----
+// Returns the residuals array (per point) used by correlation.
+export function detrendedResiduals(values) {
+  if (!Array.isArray(values) || values.length < 3) return null;
+
+  const pts = values.filter(v => Number.isFinite(v.t) && Number.isFinite(v.v));
+  const n = pts.length;
+  if (n < 3) return null;
+
+  const t0 = pts[0].t;
+  const ts = pts.map(p => (p.t - t0) / 86400000);
+  const vs = pts.map(p => p.v);
+
+  const sumT  = ts.reduce((a, b) => a + b, 0);
+  const sumV  = vs.reduce((a, b) => a + b, 0);
+  const sumTV = ts.reduce((a, b, i) => a + b * vs[i], 0);
+  const sumT2 = ts.reduce((a, b) => a + b * b, 0);
+
+  const denom = n * sumT2 - sumT * sumT;
+  if (denom === 0) return null;
+
+  const slope = (n * sumTV - sumT * sumV) / denom;
+  const intercept = (sumV - slope * sumT) / n;
+
+  return {
+    ts,
+    residuals: ts.map((t, i) => vs[i] - (intercept + slope * t)),
+  };
+}
+
+// ---- Pearson correlation ----
+export function pearson(xs, ys) {
+  const n = Math.min(xs.length, ys.length);
+  if (n < 3) return null;
+  const mx = xs.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  const my = ys.slice(0, n).reduce((a, b) => a + b, 0) / n;
+  let num = 0, dx2 = 0, dy2 = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - mx;
+    const dy = ys[i] - my;
+    num += dx * dy;
+    dx2 += dx * dx;
+    dy2 += dy * dy;
+  }
+  const denom = Math.sqrt(dx2 * dy2);
+  if (denom === 0) return null;
+  return num / denom;
+}

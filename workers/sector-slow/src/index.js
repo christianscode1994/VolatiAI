@@ -3,7 +3,7 @@
 
 const WINDOW_DAYS_DEFAULT = 7;
 
-import { coherenceScore, buildClaimGraph, arbitrate } from "./arbitration.js";
+import { coherenceScore, detrendedCoherence, detrendedResiduals, pearson, buildClaimGraph, arbitrate } from "./arbitration.js";
 
 const DASHBOARD_HTML = `<!doctype html>
 <html><head><meta charset="utf-8"><title>VolatiAI · sector-slow</title>
@@ -953,16 +953,23 @@ export default {
             .filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v))
             .sort((a, b) => a.t - b.t);
           const current = sorted.length >= 1 ? sorted[sorted.length - 1].v : null;
-          const score = coherenceScore(sorted, current);
+          const rawScore = coherenceScore(sorted, current);
+          const detScore = detrendedCoherence(sorted, current);
           result[name] = {
             metric: c.config.metric,
             points: sorted.length,
             current,
-            coherence: score === null ? null : Math.round(score * 1000) / 1000,
-            verdict: score === null
+            coherence: rawScore === null ? null : Math.round(rawScore * 1000) / 1000,
+            detrended: detScore === null ? null : Math.round(detScore * 1000) / 1000,
+            verdict: rawScore === null
                    ? (sorted.length === 0 ? "no_data" : "insufficient_data")
-                   : score >= 0.85 ? "confirmed"
-                   : score >= 0.5  ? "likely"
+                   : rawScore >= 0.85 ? "confirmed"
+                   : rawScore >= 0.5  ? "likely"
+                   : "outlier",
+            detrended_verdict: detScore === null
+                   ? (sorted.length === 0 ? "no_data" : "insufficient_data")
+                   : detScore >= 0.85 ? "confirmed"
+                   : detScore >= 0.5  ? "likely"
                    : "outlier",
           };
         } catch (e) {
@@ -1029,6 +1036,66 @@ export default {
     if (sectorName === "dashboard") {
       return new Response(DASHBOARD_HTML, {
         headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    }
+
+    if (sectorName === "_correlation") {
+      // Load all sector histories with >= 30 points
+      const histories = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const kvKey = name + "_" + c.config.metric + "_history";
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          if (!raw) continue;
+          const h = JSON.parse(raw);
+          const sorted = (h || [])
+            .filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v))
+            .sort((a, b) => a.t - b.t);
+          if (sorted.length >= 30) {
+            const det = detrendedResiduals(sorted);
+            if (det) {
+              histories[name] = {
+                ts: det.ts,
+                residuals: det.residuals,
+                points: sorted.length,
+              };
+            }
+          }
+        } catch (e) { /* skip */ }
+      }
+
+      // Pairwise Pearson correlation on detrended residuals, aligned by common time window
+      const names = Object.keys(histories);
+      const pairs = [];
+      for (let i = 0; i < names.length; i++) {
+        for (let j = i + 1; j < names.length; j++) {
+          const a = histories[names[i]];
+          const b = histories[names[j]];
+          // Align by rounding ts to nearest day (they should already align for backfills)
+          const minLen = Math.min(a.residuals.length, b.residuals.length);
+          // Take last minLen points (most recent align)
+          const ar = a.residuals.slice(-minLen);
+          const br = b.residuals.slice(-minLen);
+          const r = pearson(ar, br);
+          if (r !== null) {
+            pairs.push({
+              a: names[i],
+              b: names[j],
+              r: Math.round(r * 1000) / 1000,
+              abs_r: Math.round(Math.abs(r) * 1000) / 1000,
+              n: minLen,
+            });
+          }
+        }
+      }
+      pairs.sort((x, y) => y.abs_r - x.abs_r);
+
+      return json({
+        timestamp: new Date().toISOString(),
+        sectors: names.length,
+        sector_names: names,
+        pairs_count: pairs.length,
+        pairs,
       });
     }
 
