@@ -659,7 +659,7 @@ const COLLECTORS = {
     }),
   },
   "usgs-earthquakes": {
-    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "30d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         earthquakes_since_2026: await fetchSafe(async () => {
