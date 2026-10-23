@@ -1310,21 +1310,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "developer-activity": {
-    config: { metric: "public_events", threshold_pct: 10, threshold_abs: 50, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        public_events: await fetchSafe(async () => {
-          const r = await fetch("https://api.github.com/events?per_page=100",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array");
-          return j.length;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -3339,6 +3324,7 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
+          if (typeof j?.total === "number") return j.total;
           const arr = Array.isArray(j) ? j
                     : Array.isArray(j?.nodes) ? j.nodes
                     : Array.isArray(j?.data) ? j.data
@@ -3359,7 +3345,7 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.com)", "accept": "application/atom+xml" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const text = await r.text();
-          const m = text.match(/<opensearch:totalResults[^>]*>(\d+)<\/opensearch:totalResults>/);
+          const m = text.match(/<(?:(?:opensearch|os):)?totalResults[^>]*>(\d+)<\/(?:(?:opensearch|os):)?totalResults>/i);
           if (!m) throw new Error("no_totalResults: len=" + text.length);
           return parseInt(m[1], 10);
         }),
@@ -3450,9 +3436,16 @@ Object.assign(COLLECTORS, {
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.articles ?? j?.data ?? j?.results ?? []);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
+          const candidates = [j, j?.articles, j?.results, j?.data, j?.data?.articles, j?.data?.items, j?.data?.results];
+          let arr = null;
+          for (const c of candidates) {
+            if (Array.isArray(c)) { arr = c; break; }
+          }
+          // Also accept {data: {total: N}} shape
+          const total = j?.total ?? j?.data?.total;
+          if (arr) return arr.length;
+          if (typeof total === "number") return total;
+          throw new Error("no_array: keys=" + Object.keys(j || {}).join(",") + " data_keys=" + Object.keys(j?.data || {}).join(","));
         }),
       },
     }),
@@ -3485,22 +3478,6 @@ Object.assign(COLLECTORS, {
           const arr = j?.items ?? j?.articles ?? j?.data;
           if (!Array.isArray(arr)) throw new Error("no_items: keys=" + Object.keys(j || {}).join(","));
           return arr.length;
-        }),
-      },
-    }),
-  },
-  "narcotics-enforcement": {
-    config: { metric: "enforcement_actions", threshold_pct: 0.5, threshold_abs: 2, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        enforcement_actions: await fetchSafe(async () => {
-          const r = await fetch("https://api.fda.gov/drug/enforcement.json?search=reason_for_recall:%22cannabis%22&limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.meta?.results?.total;
-          if (typeof n !== "number") throw new Error("no_total: keys=" + Object.keys(j?.meta || {}).join(","));
-          return n;
         }),
       },
     }),

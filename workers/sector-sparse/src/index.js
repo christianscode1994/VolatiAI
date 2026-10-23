@@ -480,37 +480,6 @@ const COLLECTORS = {
     }),
   },
 
-  spaceflight: {
-    event_source: "launch_library",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        launch_library: await fetchSafe(async () => {
-          // Try 2.2.0 first (public), fallback to 2.3.0
-          const urls = [
-            "https://ll.thespacedevs.com/2.2.0/launch/upcoming/?format=json&limit=1",
-            "https://ll.thespacedevs.com/2.3.0/launch/upcoming/?format=json&limit=1",
-          ];
-          let lastErr = "no attempt";
-          for (const url of urls) {
-            try {
-              const r = await fetch(url, {
-                headers: { "User-Agent": "VolatiAI/1.0" }
-              });
-              if (!r.ok) { lastErr = "status " + r.status + " from " + url; continue; }
-              const j = await r.json();
-              if (!j.results?.length) { lastErr = "no results from " + url; continue; }
-              const l = j.results[0];
-              const name = (l.name || 'Launch').slice(0, 80);
-              const net = l.net ? l.net.slice(0, 16) : 'TBD';
-              return { id: String(l.id || l.slug), title: name + " (" + net + ")" };
-            } catch (e) { lastErr = String(e).slice(0, 80); }
-          }
-          throw new Error(lastErr);
-        }),
-      },
-    }),
-  },
 
 
   crossref: {
@@ -663,23 +632,6 @@ const COLLECTORS = {
     }),
   },
 
-  sports: {
-    event_source: "sportsdb_events",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        sportsdb_events: await fetchSafe(async () => {
-          const today = new Date().toISOString().slice(0, 10);
-          const r = await fetch("https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=" + today + "&s=Soccer");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const ev = j.events?.[0];
-          if (!ev) throw new Error("no events");
-          return { id: ev.idEvent, title: (ev.strEvent || 'Match').slice(0, 100) };
-        }),
-      },
-    }),
-  },
 
   "sec-filings": {
     event_source: "sec_8k",
@@ -755,26 +707,6 @@ const COLLECTORS = {
     }),
   },
 
-  artic: {
-    event_source: "artic_chicago",
-    ttl: 86400,
-    collectAll: async (env) => ({
-      sources: {
-        artic_chicago: await fetchSafe(async () => {
-          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-          const ids = [4, 27992, 65632, 117266, 20684, 14598, 87088, 109819];
-          const objId = ids[dayOfYear % ids.length];
-          const r = await fetch(`https://api.artic.edu/api/v1/artworks/${objId}?fields=id,title,artist_display`);
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const art = j.data;
-          if (!art) throw new Error("no artwork");
-          const artist = (art.artist_display || '').split('\n')[0].slice(0, 40);
-          return { id: `${objId}_${dayOfYear}`, title: (art.title || 'Untitled').slice(0, 100) + (artist ? ' — ' + artist : '') };
-        }),
-      },
-    }),
-  },
 
   audius: {
     event_source: "audius_trending",
@@ -948,23 +880,6 @@ const COLLECTORS = {
     }),
   },
 
-  "test-data": {
-    event_source: "fakerapi",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        fakerapi: await fetchSafe(async () => {
-          const seed = new Date().toISOString().slice(0, 10);
-          const r = await fetch("https://fakerapi.it/api/v2/persons?_quantity=1&_seed=" + seed);
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const person = j.data?.[0];
-          if (!person) throw new Error("no person");
-          return { id: person.email, title: person.firstname + " " + person.lastname + " (" + person.email + ")" };
-        }),
-      },
-    }),
-  },
 
   "cloud-status": {
     event_source: "downstatus",
@@ -1032,24 +947,6 @@ const COLLECTORS = {
           const vuln = vulns[vulns.length - 1].cve;
           const desc = vuln.descriptions?.[0]?.value || "No description";
           return { id: vuln.id, title: vuln.id + ": " + desc.slice(0, 100) };
-        }),
-      },
-    }),
-  },
-  "defence-aircraft": {
-    event_source: "adsb_mil",
-    ttl: 1800,
-    collectAll: async (env) => ({
-      sources: {
-        adsb_mil: await fetchSafe(async () => {
-          const r = await fetch("https://api.adsb.lol/v2/mil");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const aircraft = j.ac || j.aircraft || [];
-          const count = aircraft.length;
-          const bucket = Math.floor(count / 50) * 50;
-          const day = new Date().toISOString().slice(0, 10);
-          return { id: "mil_" + bucket + "_" + day, title: count + " military aircraft tracked globally" };
         }),
       },
     }),
@@ -1314,37 +1211,6 @@ const COLLECTORS = {
     }),
   },
 
-  "iacr-crypto": {
-    event_source: "iacr_eprint_rss",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        iacr_eprint_rss: await fetchSafe(async () => {
-          const r = await fetch("https://eprint.iacr.org/rss/rss.xml", {
-            headers: { "user-agent": "VolatiAI/1.0" },
-          });
-          if (!r.ok) throw new Error("status " + r.status);
-          const text = await r.text();
-          // Debug: check what we got
-          if (text.length < 100) throw new Error("empty response, len=" + text.length);
-          // Try both RSS <item> and Atom <entry>
-          let items = text.match(/<item[\s>][\s\S]*?<\/item>/g);
-          if (!items || !items.length) {
-            items = text.match(/<entry[\s>][\s\S]*?<\/entry>/g);
-          }
-          if (!items || !items.length) throw new Error("no items, len=" + text.length + " preview=" + text.slice(0, 100));
-          const first = items[0];
-          const titleM = first.match(/<title[^>]*>(?:<!\[CDATA\[)?([^<\]]+)/);
-          const linkM = first.match(/<link[^>]*href="([^"]+)"/) || first.match(/<link>([^<]+)<\/link>/);
-          if (!titleM) throw new Error("no title");
-          return {
-            id: (linkM ? linkM[1] : titleM[1]).trim().slice(0, 80),
-            title: titleM[1].trim().slice(0, 100),
-          };
-        }),
-      },
-    }),
-  },
 
   "abuse-ch-feodo": {
     config: { metric: "new_c2_7d", threshold_pct: 0, threshold_abs: 1, window: "7d", ttl: 3600, context_keys: [] },
