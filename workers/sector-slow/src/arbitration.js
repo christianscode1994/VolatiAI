@@ -92,6 +92,28 @@ export function buildClaimGraph(snapshot, thresholds = {}, windows = {}) {
     }
   }
 
+  // Cross-source edges: same metric from different sectors get bidirectional
+  // supports/contradicts edges based on |a.value - b.value| / max(|a|,|b|).
+  const claimList = nodes.filter(n => n.type === "claim");
+  for (let i = 0; i < claimList.length; i++) {
+    for (let j = i + 1; j < claimList.length; j++) {
+      const a = claimList[i], b = claimList[j];
+      if (a.metric !== b.metric) continue;
+      if (a.sector === b.sector) continue;
+      if (typeof a.value !== "number" || typeof b.value !== "number") continue;
+      const denom = Math.max(Math.abs(a.value), Math.abs(b.value), 1e-9);
+      const pctDelta = Math.abs(a.value - b.value) / denom;
+
+      let relation, weight;
+      if (pctDelta < 0.005)     { relation = "supports";    weight = 1.0; }
+      else if (pctDelta < 0.02) { relation = "supports";    weight = 0.5; }
+      else                      { relation = "contradicts"; weight = 0.5; }
+
+      edges.push({ from: b.id, to: a.id, relation, weight, cross_source: true });
+      edges.push({ from: a.id, to: b.id, relation, weight, cross_source: true });
+    }
+  }
+
   return { nodes, edges };
 }
 

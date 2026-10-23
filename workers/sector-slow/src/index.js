@@ -1114,6 +1114,7 @@ export default {
               n: minLen,
               p_value: pValue !== null ? Math.round(pValue * 10000) / 10000 : null,
               bonferroni_significant: pValue !== null && pValue < (0.05 / ((names.length * (names.length - 1)) / 2)),
+              same_metric: (COLLECTORS[names[i]]?.config?.metric || "") === (COLLECTORS[names[j]]?.config?.metric || "") && (COLLECTORS[names[i]]?.config?.metric !== undefined),
               warning: warning,
             });
           }
