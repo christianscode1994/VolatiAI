@@ -586,6 +586,86 @@ const COLLECTORS = {
       },
     }),
   },
+  "openfda-drug-recalls": {
+    config: { metric: "drug_recalls", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        drug_recalls: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/drug/enforcement.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.meta?.results?.total;
+          if (typeof total !== "number") throw new Error("no_total");
+          return total;
+        }),
+      },
+    }),
+  },
+  "openfda-food-recalls": {
+    config: { metric: "food_recalls", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        food_recalls: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/food/enforcement.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.meta?.results?.total;
+          if (typeof total !== "number") throw new Error("no_total");
+          return total;
+        }),
+      },
+    }),
+  },
+  "openfda-device-recalls": {
+    config: { metric: "device_recalls", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        device_recalls: await fetchSafe(async () => {
+          const r = await fetch("https://api.fda.gov/device/enforcement.json?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.meta?.results?.total;
+          if (typeof total !== "number") throw new Error("no_total");
+          return total;
+        }),
+      },
+    }),
+  },
+  "cleveland-artworks": {
+    config: { metric: "total_artworks", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_artworks: await fetchSafe(async () => {
+          const r = await fetch("https://openaccess-api.clevelandart.org/api/artworks/?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.info?.total;
+          if (typeof total !== "number") throw new Error("no_total");
+          return total;
+        }),
+      },
+    }),
+  },
+  "apis-guru-directory": {
+    config: { metric: "num_apis", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        num_apis: await fetchSafe(async () => {
+          const r = await fetch("https://api.apis.guru/v2/metrics.json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.numAPIs;
+          if (typeof total !== "number") throw new Error("no_numAPIs");
+          return total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
