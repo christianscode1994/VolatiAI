@@ -3,6 +3,8 @@
 
 const WINDOW_DAYS_DEFAULT = 7;
 
+import { coherenceScore, buildClaimGraph, arbitrate } from "./arbitration.js";
+
 const DASHBOARD_HTML = `<!doctype html>
 <html><head><meta charset="utf-8"><title>VolatiAI · sector-slow</title>
 <style>
@@ -931,6 +933,73 @@ export default {
         }
       }
       return json({ timestamp: new Date().toISOString(), sector_count: Object.keys(snapshot).length, sectors: snapshot });
+    }
+
+    if (sectorName === "_coherence") {
+      // Per-sector coherence: is the current value consistent with its
+      // own history? Returns 0-1 confidence, or null for sectors with
+      // fewer than 2 historical observations.
+      const result = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const kvKey = name + "_" + c.config.metric + "_history";
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          const h = raw ? JSON.parse(raw) : [];
+          const sorted = (h || [])
+            .filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v))
+            .sort((a, b) => a.t - b.t);
+          const current = sorted.length >= 1 ? sorted[sorted.length - 1].v : null;
+          const score = coherenceScore(sorted, current);
+          result[name] = {
+            metric: c.config.metric,
+            points: sorted.length,
+            current,
+            coherence: score === null ? null : Math.round(score * 1000) / 1000,
+            verdict: score === null ? "insufficient_data"
+                   : score >= 0.85 ? "confirmed"
+                   : score >= 0.5  ? "likely"
+                   : "outlier",
+          };
+        } catch (e) {
+          result[name] = { error: String(e).slice(0, 80) };
+        }
+      }
+      return json({
+        timestamp: new Date().toISOString(),
+        sector_count: Object.keys(result).length,
+        sectors: result,
+      });
+    }
+
+    if (sectorName === "_claim_graph") {
+      // Build the claim graph from all sector history, then run arbitration.
+      // Same data the truth-worker consumes, computed inline (no HTTP hop).
+      const snapshot = { sectors: {} };
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const kvKey = name + "_" + c.config.metric + "_history";
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          const h = raw ? JSON.parse(raw) : [];
+          const sorted = (h || [])
+            .filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v))
+            .sort((a, b) => a.t - b.t);
+          snapshot.sectors[name] = {
+            metric: c.config.metric,
+            values: sorted,
+          };
+        } catch (e) {
+          snapshot.sectors[name] = { metric: c.config.metric, values: [], error: String(e).slice(0, 80) };
+        }
+      }
+      const graph = buildClaimGraph(snapshot);
+      const verdicts = arbitrate(graph);
+      return json({
+        timestamp: new Date().toISOString(),
+        nodes: graph.nodes.length,
+        edges: graph.edges.length,
+        claims: verdicts.length,
+        verdicts,
+      });
     }
 
     const collector = COLLECTORS[sectorName];
