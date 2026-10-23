@@ -1189,32 +1189,6 @@ const COLLECTORS = {
     }),
   },
 
-  "dev-security-trends": {
-    event_source: "stackexchange_security",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        stackexchange_security: await fetchSafe(async () => {
-          const url = "https://api.stackexchange.com/2.3/questions?order=desc&sort=week&tagged=security&site=stackoverflow&pagesize=1";
-          const r = await fetch(url, {
-            headers: {
-              "user-agent": "VolatiAI/1.0",
-              "accept": "application/json",
-              "accept-encoding": "identity",
-            },
-            signal: AbortSignal.timeout(20000),
-          });
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const items = j.items || [];
-          if (!items.length) throw new Error("no items");
-          // Use latest question ID as signal (weekly sorted)
-          const top = items[0];
-          return { id: "sec_q_" + top.question_id, title: "Latest security question: " + (top.title || "").slice(0, 80) };
-        }),
-      },
-    }),
-  },
 
 
   "abuse-ch-feodo": {

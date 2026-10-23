@@ -1675,19 +1675,28 @@ Object.assign(COLLECTORS, {
             throw new Error("no_rows: data_keys=" + Object.keys(j?.data || {}).join(","));
           }
           const last = rows[rows.length - 1];
-          // Row shape is {date, china, usa}. Prefer the sum of china+usa if
-          // both numeric; fall back to whichever is present; then generic
-          // value/y for schema changes.
-          const cn = typeof last?.china === "number" ? last.china : null;
-          const us = typeof last?.usa === "number" ? last.usa : null;
-          const v = (cn !== null && us !== null) ? cn + us
-                  : cn !== null ? cn
-                  : us !== null ? us
-                  : typeof last?.value === "number" ? last.value
-                  : typeof last?.y === "number" ? last.y
-                  : typeof last === "number" ? last
-                  : null;
-          if (v === null) throw new Error("no_value: row_keys=" + Object.keys(last || {}).join(","));
+          // Row shape is {date, china, usa}. Values may be numbers OR
+          // numeric strings. Coerce both, sum when both present.
+          const toNum = (x) => {
+            if (typeof x === "number") return Number.isFinite(x) ? x : null;
+            if (typeof x === "string") {
+              const n = parseFloat(x.replace(/[^0-9.\-]/g, ""));
+              return Number.isFinite(n) ? n : null;
+            }
+            return null;
+          };
+          const cn = toNum(last?.china);
+          const us = toNum(last?.usa);
+          let v = null;
+          if (cn !== null && us !== null) v = cn + us;
+          else if (cn !== null) v = cn;
+          else if (us !== null) v = us;
+          else if (toNum(last?.value) !== null) v = toNum(last?.value);
+          else if (toNum(last?.y) !== null) v = toNum(last?.y);
+          else if (typeof last === "number") v = last;
+          if (v === null) {
+            throw new Error("no_value: row_keys=" + Object.keys(last || {}).join(",") + " sample=" + JSON.stringify(last).slice(0, 200));
+          }
           return v;
         }),
       },
@@ -3344,30 +3353,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "uk-legislation": {
-    config: { metric: "total_acts", threshold_pct: 0.1, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_acts: await fetchSafe(async () => {
-          const r = await fetch("https://www.legislation.gov.uk/all/data.feed?results-count=1",
-            { headers: { "user-agent": "VolatiAI/1.0 (contact@volatiai.com)", "accept": "application/atom+xml" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const text = await r.text();
-          // Try several tag variants. UK legislation.gov.uk Atom feeds have
-          // historically used <opensearch:totalResults> but format drifts.
-          const m = text.match(/<(?:\w+:)?total[-_]?results[^>]*>\s*(\d+)/i);
-          if (!m) {
-            const probe = text.indexOf("totalResults");
-            const snippet = probe >= 0
-              ? text.slice(Math.max(0, probe - 80), probe + 200)
-              : text.slice(0, 400);
-            throw new Error("no_totalResults: len=" + text.length + " snippet=" + snippet.replace(/\s+/g, " ").slice(0, 400));
-          }
-          return parseInt(m[1], 10);
-        }),
-      },
-    }),
-  },
   "un-governance": {
     config: { metric: "total_entities", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -3456,16 +3441,25 @@ Object.assign(COLLECTORS, {
               }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const candidates = [j, j?.articles, j?.results, j?.data, j?.data?.articles, j?.data?.items, j?.data?.results];
+          // Response: {success, data: {events, pagination, stats, filters}}
+          const candidates = [
+            j, j?.articles, j?.results,
+            j?.data, j?.data?.articles, j?.data?.items, j?.data?.results,
+            j?.data?.events, j?.data?.events?.list, j?.data?.events?.items,
+          ];
           let arr = null;
           for (const c of candidates) {
             if (Array.isArray(c)) { arr = c; break; }
           }
-          // Also accept {data: {total: N}} shape
-          const total = j?.total ?? j?.data?.total;
           if (arr) return arr.length;
+          const total = j?.total
+            ?? j?.data?.total
+            ?? j?.data?.pagination?.total
+            ?? j?.data?.pagination?.totalCount
+            ?? j?.data?.stats?.total
+            ?? j?.data?.stats?.totalItems;
           if (typeof total === "number") return total;
-          throw new Error("no_array: keys=" + Object.keys(j || {}).join(",") + " data_keys=" + Object.keys(j?.data || {}).join(","));
+          throw new Error("no_array: keys=" + Object.keys(j || {}).join(",") + " data_keys=" + Object.keys(j?.data || {}).join(",") + " events_keys=" + Object.keys(j?.data?.events || {}).join(",") + " pag_keys=" + Object.keys(j?.data?.pagination || {}).join(","));
         }),
       },
     }),
