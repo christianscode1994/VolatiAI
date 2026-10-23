@@ -1,34 +1,32 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-23T16:10:38Z",
+  "ts": "2026-10-23T20:50:15Z",
   "run_number": 24,
   "briefing": {
-    "headline": "7 signals across 271 sectors evaluated",
+    "headline": "10 signals across 273 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 3,
+        "count": 7,
         "sectors": [
+          "anime",
           "audius",
-          "jobs",
-          "ripe-atlas-public"
-        ]
-      },
-      "energy": {
-        "count": 1,
-        "sectors": [
-          "carbon-intensity"
+          "treasuries",
+          "ripe-atlas-public",
+          "usgs-earthquakes",
+          "crossref-works",
+          "usgs-earthquakes-emsc"
         ]
       },
       "security": {
-        "count": 1,
+        "count": 2,
         "sectors": [
-          "cve-feed"
+          "cve-feed",
+          "security"
         ]
       },
       "information": {
-        "count": 2,
+        "count": 1,
         "sectors": [
-          "develop",
           "events"
         ]
       }
@@ -36,102 +34,139 @@
   },
   "signals": [
     {
-      "sector": "audius",
+      "sector": "anime",
       "severity": "notice",
-      "summary": "New: On The Floor \u2014 Ciara Graves",
+      "summary": "New: 1996",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 1
     },
     {
-      "sector": "carbon-intensity",
+      "sector": "audius",
       "severity": "notice",
-      "summary": "New: UK grid: 105 gCO2/kWh (moderate)",
+      "summary": "New: nazah - Return feat. Bee-z , Bolu Adubi & perdie \u2014 Radio Juicy",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 7
+      "fires_24": 2
     },
     {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-115728: @hapi/content from 6.0.1 before 6.0.3 contains a regular expression denial of service vulnerability ",
+      "summary": "New: CVE-2026-112342: Tandoor Recipes before 2.7.0 contains an improper cache-key design in cookbook/helper/permission_hel",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 9
     },
     {
-      "sector": "develop",
+      "sector": "events",
       "severity": "notice",
-      "summary": "New: Soil Reducer (v1.17.10)",
+      "summary": "New: [568] Today, we hacked what we'd set out to hack: the iPhone",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 9
+    },
+    {
+      "sector": "security",
+      "severity": "notice",
+      "summary": "New: CVE-2026-114625 \u2014 Arista VeloCloud Orchestrator SQL Injection Vulnerability",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 1
     },
     {
-      "sector": "events",
+      "sector": "treasuries",
       "severity": "notice",
-      "summary": "New: [871] Local Wikipedia: Wikipedia, but only for things a half hour walk from you",
+      "summary": "yield_10y 4.96 (+6.7% vs 88.9d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": null,
-      "fires_24": 9
-    },
-    {
-      "sector": "jobs",
-      "severity": "notice",
-      "summary": "New: Senior DevOps Engineer @ Lemon.io",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 4
+      "pct_change": 6.666666666666658,
+      "fires_24": 1
     },
     {
       "sector": "ripe-atlas-public",
       "severity": "alert",
-      "summary": "public_measurements 41031 (-1.0% vs 0.1d ago)",
+      "summary": "public_measurements 41346 (+0.8% vs 0.2d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -1.0251833269008104,
-      "fires_24": 2
+      "pct_change": 0.7677122175915772,
+      "fires_24": 3
+    },
+    {
+      "sector": "usgs-earthquakes",
+      "severity": "alert",
+      "summary": "earthquakes_since_2026 114787 (+41.2% vs 89.9d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 41.201579471787234,
+      "fires_24": 1
+    },
+    {
+      "sector": "crossref-works",
+      "severity": "alert",
+      "summary": "total_works 187978159 (+1.8% vs 89.9d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 1.8042971019242133,
+      "fires_24": 1
+    },
+    {
+      "sector": "usgs-earthquakes-emsc",
+      "severity": "alert",
+      "summary": "earthquakes_since_2026 130844 (+41.8% vs 89.9d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 41.81171829276223,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-23 10:45",
-    "signals_before": 4,
-    "signals_after": 7,
+    "previous_ts": "2026-10-23 16:10",
+    "signals_before": 7,
+    "signals_after": 10,
     "new": [
-      "audius",
-      "carbon-intensity",
-      "cve-feed",
-      "develop"
+      "anime",
+      "crossref-works",
+      "security",
+      "treasuries",
+      "usgs-earthquakes",
+      "usgs-earthquakes-emsc"
     ],
     "dropped": [
-      "arbetsformedlingen"
+      "carbon-intensity",
+      "develop",
+      "jobs"
     ],
     "persistent": [
+      "audius",
+      "cve-feed",
       "events",
-      "jobs",
       "ripe-atlas-public"
     ],
     "movements": [
       {
-        "sector": "events",
-        "previous": "New: [514] Docker is weird",
-        "current": "New: [871] Local Wikipedia: Wikipedia, but only for things a half hour walk from"
+        "sector": "audius",
+        "previous": "New: On The Floor \u2014 Ciara Graves",
+        "current": "New: nazah - Return feat. Bee-z , Bolu Adubi & perdie \u2014 Radio Juicy"
       },
       {
-        "sector": "jobs",
-        "previous": "New: Senior Finance Manager Management Accountant @ D2B",
-        "current": "New: Senior DevOps Engineer @ Lemon.io"
+        "sector": "cve-feed",
+        "previous": "New: CVE-2026-115728: @hapi/content from 6.0.1 before 6.0.3 contains a regular e",
+        "current": "New: CVE-2026-112342: Tandoor Recipes before 2.7.0 contains an improper cache-ke"
+      },
+      {
+        "sector": "events",
+        "previous": "New: [871] Local Wikipedia: Wikipedia, but only for things a half hour walk from",
+        "current": "New: [568] Today, we hacked what we'd set out to hack: the iPhone"
       },
       {
         "sector": "ripe-atlas-public",
-        "previous": "public_measurements 41552 (+1.2% vs 0.1d ago)",
-        "current": "public_measurements 41031 (-1.0% vs 0.1d ago)"
+        "previous": "public_measurements 41031 (-1.0% vs 0.1d ago)",
+        "current": "public_measurements 41346 (+0.8% vs 0.2d ago)"
       }
     ]
   },
@@ -150,7 +185,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 10.04,
+      "avg_volatility": 9.91,
       "max_volatility": 33.93,
       "fires_in_window": 2
     },
@@ -191,16 +226,16 @@
       "fires_in_window": 0
     },
     {
-      "sector": "grid-demand",
-      "avg_volatility": 1.67,
-      "max_volatility": 1.67,
+      "sector": "noaa-spaceweather-alerts",
+      "avg_volatility": 2.13,
+      "max_volatility": 2.13,
       "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 271,
-    "firing_sectors": 7,
-    "fire_rate_pct": 2.58,
+    "total_sectors": 273,
+    "firing_sectors": 10,
+    "fire_rate_pct": 3.66,
     "runs_in_history": 24
   }
 }

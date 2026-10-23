@@ -387,12 +387,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "flux-nodes",
+      "sector": "fintech",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "food-security",
+      "sector": "flux-nodes",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -412,22 +412,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "gdacs-disasters",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "generative-ai",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "government-data",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "grid-balance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -448,6 +438,11 @@
     },
     {
       "sector": "hedera-blocks",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "hedge-fund-monitor",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -543,11 +538,6 @@
     },
     {
       "sector": "natural-disasters",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -892,13 +882,18 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "fintech",
+      "sector": "food-products",
+      "reason": "conf=0 in 21/24 runs (88%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "food-security",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "food-products",
-      "reason": "conf=0 in 22/24 runs (92%)",
+      "sector": "gdacs-disasters",
+      "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -907,7 +902,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "hedge-fund-monitor",
+      "sector": "grid-balance",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -918,42 +918,67 @@
     },
     {
       "sector": "cisa-kev",
-      "reason": "conf=0 in 19/19 runs (100%)",
+      "reason": "conf=0 in 20/20 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nvd-new-cves",
-      "reason": "conf=0 in 19/19 runs (100%)",
+      "reason": "conf=0 in 20/20 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nasa-eonet",
-      "reason": "conf=0 in 17/17 runs (100%)",
+      "reason": "conf=0 in 18/18 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "usgs-water",
-      "reason": "conf=0 in 17/17 runs (100%)",
+      "reason": "conf=0 in 18/18 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "noaa-ndbc",
-      "reason": "conf=0 in 17/17 runs (100%)",
+      "reason": "conf=0 in 18/18 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "epa-envirofacts",
-      "reason": "conf=0 in 17/17 runs (100%)",
+      "reason": "conf=0 in 18/18 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "faostat",
+      "reason": "conf=0 in 5/5 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "global-forest-watch",
+      "reason": "conf=0 in 5/5 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "fcc-broadband",
+      "reason": "conf=0 in 5/5 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "bakom",
+      "reason": "conf=0 in 5/5 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "satlas",
+      "reason": "conf=0 in 5/5 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
-  "investigate": [],
-  "monitor_quiet": [
+  "investigate": [
     {
-      "sector": "anime",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
+      "sector": "ripe-atlas-public",
+      "reason": "spam (60%) but no config found in workers"
+    }
+  ],
+  "monitor_quiet": [
     {
       "sector": "arxiv-ai",
       "runs": 24,
@@ -988,6 +1013,11 @@
       "sector": "drug-recall",
       "runs": 24,
       "avg_conf": 1.0
+    },
+    {
+      "sector": "education",
+      "runs": 24,
+      "avg_conf": 0.96
     },
     {
       "sector": "environment",
@@ -1027,7 +1057,7 @@
     {
       "sector": "music",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "nft",
@@ -1055,27 +1085,22 @@
       "avg_conf": 0.96
     },
     {
+      "sector": "science-math",
+      "runs": 23,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "sec-filings",
       "runs": 24,
       "avg_conf": 0.96
     },
     {
-      "sector": "security",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "space",
       "runs": 24,
-      "avg_conf": 0.92
+      "avg_conf": 0.88
     },
     {
       "sector": "spaceweather",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "treasuries",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1091,12 +1116,12 @@
     },
     {
       "sector": "abuse-ch-feodo",
-      "runs": 19,
+      "runs": 20,
       "avg_conf": 1.0
     },
     {
       "sector": "rir-arin",
-      "runs": 17,
+      "runs": 18,
       "avg_conf": 1.0
     }
   ]
