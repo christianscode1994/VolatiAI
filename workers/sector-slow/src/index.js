@@ -356,16 +356,6 @@ const COLLECTORS = {
       },
     }),
   },
-  scb: {
-    config: { metric: "construction_index", threshold_pct: 0.3, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        construction_index: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
-        }),
-      },
-    }),
-  },
   arbetsformedlingen: {
     config: { metric: "job_vacancies", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
