@@ -550,21 +550,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "feodo-c2": {
-    config: { metric: "active_c2_servers", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        active_c2_servers: await fetchSafe(async () => {
-          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return j.length;
-        }),
-      },
-    }),
-  },
 };
 
 function json(obj, status = 200) {
