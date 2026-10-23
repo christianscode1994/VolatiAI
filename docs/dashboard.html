@@ -132,7 +132,7 @@ async function fetchJson(url) {
 
 async function loadBriefing() {
   const box = document.getElementById("briefing");
-  const data = await fetchJson("docs/briefing.json");
+  const data = await fetchJson("briefing.json");
   if (data._error) { box.innerHTML = '<div class="err">briefing.json: ' + data._error + '</div>'; return; }
 
   const b = data.briefing ?? {};
