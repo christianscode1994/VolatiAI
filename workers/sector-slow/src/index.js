@@ -776,6 +776,26 @@ const COLLECTORS = {
       },
     }),
   },
+  "usgs-earthquakes-emsc": {
+    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "30d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        earthquakes_since_2026: await fetchSafe(async () => {
+          // EMSC (European-Mediterranean Seismological Centre) FDSN-compatible
+          // count endpoint. Same metric name as usgs-earthquakes so the
+          // _correlation same_metric flag fires and _claim_graph adds a
+          // cross-source provenance edge between the two claims.
+          const r = await fetch("https://www.seismicportal.eu/fdsnws/event/1/count?starttime=2026-01-01&format=text",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = (await r.text()).trim();
+          const n = parseInt(text, 10);
+          if (!Number.isFinite(n) || n <= 0) throw new Error("no_count: body=" + text.slice(0, 80));
+          return n;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {

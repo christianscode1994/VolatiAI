@@ -39,6 +39,7 @@ SECTORS = {
     # "doaj-articles": NOT BACKFILLABLE — DOAJ created_date filter does not filter historically
     # "doaj-articles": {"kv_key": "doaj-articles_total_articles_history", "fetcher": "doaj_cumulative", "days": 90},
     "treasuries-gov":       {"kv_key": "treasuries-gov_yield_10y_history",                    "fetcher": "treasuries_gov",      "days": 90},
+    "usgs-earthquakes-emsc": {"kv_key": "usgs-earthquakes-emsc_earthquakes_since_2026_history", "fetcher": "emsc_cumulative",     "days": 90},
 }
 
 def fetch_fred_dgs10(days):
@@ -240,6 +241,31 @@ def fetch_treasuries_gov(days):
         out.append({"t": int(dt.timestamp() * 1000), "v": val})
     return sorted(out, key=lambda x: x["t"])
 
+def fetch_emsc_cumulative(days):
+    """EMSC FDSN cumulative earthquake count. Per-day queries with
+    endtime=D and starttime=2026-01-01 fixed."""
+    import time
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    cutoff = today - timedelta(days=days)
+    start = "2026-01-01"
+    out = []
+    cursor = cutoff + timedelta(days=1)
+    while cursor <= today:
+        end = cursor.strftime("%Y-%m-%d")
+        url = f"https://www.seismicportal.eu/fdsnws/event/1/count?starttime={start}&endtime={end}&format=text"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
+            with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
+                text = r.read().decode().strip()
+                n = int(text)
+                if n > 0:
+                    out.append({"t": int(cursor.timestamp() * 1000), "v": n})
+        except Exception as e:
+            print(f"  WARN {end}: {e}", file=sys.stderr)
+        cursor += timedelta(days=1)
+        time.sleep(0.1)
+    return sorted(out, key=lambda x: x["t"])
+
 FETCHERS = {
     "fred_dgs10":          fetch_fred_dgs10,
     "noaa_co2_daily":      fetch_noaa_co2_daily,
@@ -249,6 +275,7 @@ FETCHERS = {
     "datacite_cumulative": fetch_datacite_cumulative,
     "doaj_cumulative":     fetch_doaj_cumulative,
     "treasuries_gov":      fetch_treasuries_gov,
+    "emsc_cumulative":     fetch_emsc_cumulative,
 }
 
 
