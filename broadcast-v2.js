@@ -21,15 +21,38 @@ const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals";
 // Non-fatal — if the worker is down or slow, broadcast still proceeds.
 let coherence = null;
 let correlation = null;
+let cronStatus = null;
 try {
-  const [cohRes, corrRes] = await Promise.all([
+  const [cohRes, corrRes, cronRes] = await Promise.all([
     fetch(WORKER + "/_coherence", { signal: AbortSignal.timeout(8000) }),
     fetch(WORKER + "/_correlation", { signal: AbortSignal.timeout(8000) }),
+    fetch(WORKER + "/_cron_status", { signal: AbortSignal.timeout(8000) }),
   ]);
   if (cohRes.ok) coherence = await cohRes.json();
   if (corrRes.ok) correlation = await corrRes.json();
+  if (cronRes.ok) cronStatus = await cronRes.json();
 } catch (e) {
   console.log("enrichment fetch failed (non-fatal):", String(e).slice(0, 100));
+}
+
+// ---- Cron staleness check ----
+// Cron is scheduled at 17 3 * * * (daily, 03:17 UTC). Anything older
+// than 26 hours means a fire was missed. Surface as a warning line at
+// the top of the message so readers know the pipeline may be stale.
+const CRON_MAX_AGE_H = 26;
+let cronWarning = null;
+if (cronStatus === null) {
+  cronWarning = "CRON STATUS UNKNOWN — /_cron_status unreachable";
+} else if (cronStatus.last_run === undefined) {
+  cronWarning = "CRON NEVER FIRED — no _last_cron_run key";
+} else {
+  const last = cronStatus.last_run;
+  const ageMs = Date.now() - new Date(last.timestamp).getTime();
+  const ageH = ageMs / 3600000;
+  if (!Number.isFinite(ageH) || ageH > CRON_MAX_AGE_H) {
+    const ageTxt = Number.isFinite(ageH) ? ageH.toFixed(1) + "h" : "unknown";
+    cronWarning = `CRON STALE — last run ${ageTxt} ago (source=${last.source ?? "?"}, written=${last.written ?? "?"}, failed=${last.failed ?? "?"})`;
+  }
 }
 const signals = Array.isArray(briefing?.signals) ? briefing.signals : [];
 const byDomain = briefing?.briefing?.by_domain ?? {};
@@ -107,6 +130,11 @@ if (correlation?.pairs) {
   if (provenance) {
     fullLines.push(`Provenance: ${provenance.a} ↔ ${provenance.b} r=${provenance.r.toFixed(2)} (verified)`);
   }
+}
+
+if (cronWarning) {
+  fullLines.unshift("");
+  fullLines.unshift("⚠️ " + cronWarning);
 }
 
 const fullText = fullLines.join("\n");
