@@ -569,6 +569,23 @@ const COLLECTORS = {
       },
     }),
   },
+  "ballotwatch-bills": {
+    config: { metric: "total_bills", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_bills: await fetchSafe(async () => {
+          const r = await fetch("https://www.ballotwatch.io/api/v1/bills?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const raw = j?.pagination?.total ?? j?.pagination?.count ?? j?.meta?.total;
+          const total = typeof raw === "number" ? raw : parseInt(raw, 10);
+          if (!Number.isFinite(total)) throw new Error("no_total: pagination_keys=" + Object.keys(j?.pagination || {}).join(","));
+          return total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
