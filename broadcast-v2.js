@@ -12,8 +12,25 @@ import { finalizeEvent } from "nostr-tools";
 import WebSocket from "ws";
 import { pause } from "./pacing.js";
 
+const WORKER = "https://sector-slow.fourieranalys.workers.dev";
+
 const briefing = JSON.parse(fs.readFileSync("docs/briefing.json", "utf8"));
 const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals";
+
+// Enrichment: fetch epistemic state from the worker.
+// Non-fatal — if the worker is down or slow, broadcast still proceeds.
+let coherence = null;
+let correlation = null;
+try {
+  const [cohRes, corrRes] = await Promise.all([
+    fetch(WORKER + "/_coherence", { signal: AbortSignal.timeout(8000) }),
+    fetch(WORKER + "/_correlation", { signal: AbortSignal.timeout(8000) }),
+  ]);
+  if (cohRes.ok) coherence = await cohRes.json();
+  if (corrRes.ok) correlation = await corrRes.json();
+} catch (e) {
+  console.log("enrichment fetch failed (non-fatal):", String(e).slice(0, 100));
+}
 const signals = Array.isArray(briefing?.signals) ? briefing.signals : [];
 const byDomain = briefing?.briefing?.by_domain ?? {};
 const watchlist = Array.isArray(briefing?.watchlist) ? briefing.watchlist : [];
@@ -64,6 +81,34 @@ if (watchlist.length > 0) {
   fullLines.push("");
   fullLines.push("Watchlist: " + watchLines.join(", "));
 }
+// Enrichment lines: portfolio + correlation + provenance
+// (only in fullText, not compactText — those platforms have space)
+if (coherence?.sectors) {
+  const counts = { confirmed: 0, likely: 0, outlier: 0, insufficient: 0, no_data: 0 };
+  for (const v of Object.values(coherence.sectors)) {
+    const k = v.verdict || "no_data";
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  const portfolioLine = `Portfolio: ${counts.confirmed} confirmed · ${counts.likely} likely · ${counts.outlier} outlier · ${counts.insufficient} new`;
+  fullLines.push("");
+  fullLines.push(portfolioLine);
+}
+
+if (correlation?.pairs) {
+  // Highest |r| pair with no warning and same_metric=false (meaningful cross-sector)
+  const topMeaningful = correlation.pairs.find(p => !p.warning && !p.same_metric && Math.abs(p.r) >= 0.5);
+  if (topMeaningful) {
+    fullLines.push(`Top correlation: ${topMeaningful.a} ↔ ${topMeaningful.b} r=${topMeaningful.r.toFixed(2)}`);
+  }
+  // Provenance pair (same_metric=true, highest r)
+  const provenance = correlation.pairs
+    .filter(p => p.same_metric)
+    .sort((x, y) => Math.abs(y.r) - Math.abs(x.r))[0];
+  if (provenance) {
+    fullLines.push(`Provenance: ${provenance.a} ↔ ${provenance.b} r=${provenance.r.toFixed(2)} (verified)`);
+  }
+}
+
 const fullText = fullLines.join("\n");
 
 // Compact message — for Bluesky's 300-char limit
