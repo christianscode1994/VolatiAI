@@ -910,6 +910,29 @@ export default {
       }
     }
 
+    if (sectorName === "_graph_snapshot") {
+      const snapshot = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        const kvKey = name + "_" + c.config.metric + "_history";
+        try {
+          const raw = await env.SECTOR_KV.get(kvKey);
+          const h = raw ? JSON.parse(raw) : [];
+          const sorted = (h || []).filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v)).sort((a,b) => a.t - b.t);
+          snapshot[name] = {
+            metric: c.config.metric,
+            threshold_pct: c.config.threshold_pct || 0,
+            points: sorted.length,
+            first: sorted[0] ? { t: sorted[0].t, v: sorted[0].v } : null,
+            last: sorted[sorted.length-1] ? { t: sorted[sorted.length-1].t, v: sorted[sorted.length-1].v } : null,
+            values: sorted.map(x => ({ t: x.t, v: x.v })),
+          };
+        } catch (e) {
+          snapshot[name] = { error: String(e).slice(0, 80) };
+        }
+      }
+      return json({ timestamp: new Date().toISOString(), sector_count: Object.keys(snapshot).length, sectors: snapshot });
+    }
+
     const collector = COLLECTORS[sectorName];
 
     if (sectorName === "_sectors") {
