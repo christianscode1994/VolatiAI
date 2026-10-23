@@ -955,7 +955,8 @@ export default {
             points: sorted.length,
             current,
             coherence: score === null ? null : Math.round(score * 1000) / 1000,
-            verdict: score === null ? "insufficient_data"
+            verdict: score === null
+                   ? (sorted.length === 0 ? "no_data" : "insufficient_data")
                    : score >= 0.85 ? "confirmed"
                    : score >= 0.5  ? "likely"
                    : "outlier",

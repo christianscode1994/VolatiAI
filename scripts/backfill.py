@@ -17,8 +17,14 @@ Usage:
   python3 scripts/backfill.py treasuries   # only one
 """
 
-import csv, io, json, subprocess, sys, urllib.request
+import csv, io, json, ssl, subprocess, sys, urllib.request
 from datetime import datetime, timedelta, timezone
+
+try:
+    import certifi
+    SSL_CTX = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    SSL_CTX = ssl.create_default_context()
 
 KV_BINDING = "SECTOR_KV"
 WORKER_CWD = "workers/sector-slow"
@@ -32,7 +38,7 @@ def fetch_fred_dgs10(days):
     start = datetime.now(timezone.utc) - timedelta(days=days)
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd={start.strftime('%Y-%m-%d')}"
     req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0 (contact@volatiai.local)"})
-    with urllib.request.urlopen(req, timeout=30) as r:
+    with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as r:
         csv_text = r.read().decode()
     out = []
     for row in csv.DictReader(io.StringIO(csv_text)):
@@ -50,7 +56,7 @@ def fetch_fred_dgs10(days):
 def fetch_noaa_co2_daily(days):
     url = "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_daily_mlo.csv"
     req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as r:
+    with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as r:
         text = r.read().decode()
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
     out = []
