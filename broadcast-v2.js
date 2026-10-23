@@ -47,7 +47,7 @@ function fmtSignal(s) {
 // Domain summary for the header: "energy 1, security 1, info 2, other 3"
 const domainParts = Object.entries(byDomain)
   .filter(([, v]) => (v.sectors?.length ?? 0) > 0)
-  .map(([dom, v]) => `${dom.slice(0, 4)} ${v.sectors.length}`);
+  .map(([dom, v]) => `${dom} ${v.sectors.length}`);
 const domainLine = domainParts.length > 0 ? `(${domainParts.join(", ")})` : "";
 
 // Full message — for platforms with large or no limits
@@ -97,7 +97,7 @@ async function postTelegram() {
   try {
     await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      { chat_id: process.env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }
+      { chat_id: process.env.TELEGRAM_CHAT_ID, text: forTelegram, disable_web_page_preview: true }
     );
     console.log("telegram: ok");
   } catch (e) {
@@ -112,7 +112,7 @@ async function postDiscord() {
   }
   await pause("discord");
   try {
-    await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: text });
+    await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: forDiscord });
     console.log("discord: ok");
   } catch (e) {
     console.log(`discord: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -126,7 +126,7 @@ async function postSlack() {
   }
   await pause("slack");
   try {
-    await axios.post(process.env.SLACK_WEBHOOK_URL, { text });
+    await axios.post(process.env.SLACK_WEBHOOK_URL, { text: forSlack });
     console.log("slack: ok");
   } catch (e) {
     console.log(`slack: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -145,7 +145,7 @@ async function postMastodon() {
       api_url: `${process.env.MASTODON_INSTANCE.replace(/\/$/, "")}/api/v1/`,
     });
     // Bot labeling where the instance supports it
-    await M.post("statuses", { status: text.slice(0, 500) });
+    await M.post("statuses", { status: forMastodon });
     console.log("mastodon: ok");
   } catch (e) {
     console.log(`mastodon: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -164,7 +164,7 @@ async function postBluesky() {
       identifier: process.env.BLUESKY_HANDLE,
       password: process.env.BLUESKY_PASSWORD,
     });
-    await agent.post({ text: text.slice(0, 300), createdAt: new Date().toISOString() });
+    await agent.post({ text: forBluesky, createdAt: new Date().toISOString() });
     console.log("bluesky: ok");
   } catch (e) {
     console.log(`bluesky: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -184,7 +184,7 @@ async function postNostr() {
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
         tags: [["t", "volatiai"], ["t", "bot"]],
-        content: text,
+        content: forNostr,
       },
       privkey
     );
