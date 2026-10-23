@@ -1325,22 +1325,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "bitcoin-nodes": {
-    config: { metric: "reachable_nodes", threshold_pct: 2, threshold_abs: 100, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        reachable_nodes: await fetchSafe(async () => {
-          const r = await fetch("https://bitnodes.io/api/v1/snapshots/latest/",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const nodes = j?.total_nodes ?? j?.nodes?.length;
-          if (typeof nodes !== "number") throw new Error("no_count");
-          return nodes;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -1798,22 +1782,6 @@ Object.assign(COLLECTORS, {
                   : typeof t?.value === "number" ? t.value
                   : null;
           if (n === null) throw new Error("no_count: total_type=" + typeof t + " keys=" + Object.keys(t || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
-  satellites: {
-    config: { metric: "tracked_satellites", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        tracked_satellites: await fetchSafe(async () => {
-          const r = await fetch("https://tle.ivanstanojevic.me/api/tle?search=starlink",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.totalItems;
-          if (typeof n !== "number") throw new Error("no_count");
           return n;
         }),
       },
@@ -2512,22 +2480,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "malware-families": {
-    config: { metric: "tracked_families", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        tracked_families: await fetchSafe(async () => {
-          const r = await fetch("https://jordanricky1604-ship-it.github.io/malware-families-catalog/api/families.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.families;
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
 });
 
 
