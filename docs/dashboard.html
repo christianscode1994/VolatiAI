@@ -1,29 +1,104 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>VolatiAI · all workers</title>
+<html lang="en"><head><meta charset="utf-8"><title>VolatiAI · live dashboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 1.5em; color: #222; background: #fafafa; }
-  h1 { font-weight: 600; margin: 0 0 0.3em; }
-  h2 { font-weight: 600; font-size: 1em; margin: 1.5em 0 0.5em; color: #444; text-transform: uppercase; letter-spacing: 0.04em; }
-  .meta { color: #666; margin-bottom: 1em; }
-  .worker-status { font-size: 12px; color: #666; margin: 0.3em 0; }
-  .err { color: #dc2626; }
-  table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 1em; }
-  th, td { padding: 5px 9px; text-align: left; border-bottom: 1px solid #eee; white-space: nowrap; }
-  th { background: #f5f5f5; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
-  tr:hover td { background: #f8f8f8; }
-  .ok { color: #16a34a; } .warn { color: #ca8a04; } .bad { color: #dc2626; font-weight: 600; } .idle { color: #888; }
-  code { font-family: ui-monospace, monospace; font-size: 0.92em; }
-  a { color: #2563eb; text-decoration: none; } a:hover { text-decoration: underline; }
-  .empty { color: #888; font-style: italic; padding: 1em; background: #fff; }
+  :root { --bg: #0f1115; --card: #1a1d24; --border: #2a2e37; --fg: #e6e8eb; --dim: #8b949e; --accent: #58a6ff; --ok: #3fb950; --warn: #d29922; --bad: #f85149; }
+  * { box-sizing: border-box; }
+  body { font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 24px; max-width: 1400px; margin-left: auto; margin-right: auto; }
+  h1 { font-weight: 600; margin: 0; font-size: 22px; }
+  h2 { font-weight: 600; margin: 0 0 12px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); }
+  .header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; }
+  .header .stamp { font-size: 12px; color: var(--dim); }
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 16px; }
+  .full { grid-column: 1 / -1; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .headline { font-size: 17px; font-weight: 500; color: var(--fg); margin-bottom: 8px; }
+  .domain-line { font-size: 12px; color: var(--dim); margin-bottom: 12px; }
+
+  .signal { padding: 8px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 12px 180px 1fr; gap: 10px; align-items: baseline; }
+  .signal:last-child { border-bottom: 0; }
+  .signal .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); align-self: center; }
+  .signal.alert .dot { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
+  .signal.notice .dot { background: var(--warn); }
+  .signal .sector { font-family: ui-monospace, monospace; font-size: 13px; color: var(--accent); }
+  .signal .summary { color: var(--fg); font-size: 13px; overflow-wrap: anywhere; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dim); padding: 6px 8px; border-bottom: 1px solid var(--border); font-weight: 500; }
+  td { padding: 8px; border-bottom: 1px solid var(--border); font-family: ui-monospace, monospace; }
+  tr:last-child td { border-bottom: 0; }
+  .verdict-confirmed { color: var(--ok); }
+  .verdict-likely { color: var(--warn); }
+  .verdict-disputed, .verdict-outlier { color: var(--bad); }
+  .verdict-insufficient_data, .verdict-no_data { color: var(--dim); }
+  .verdict-no_evidence { color: var(--dim); }
+
+  .watch { padding: 6px 0; display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .watch:last-child { border-bottom: 0; }
+  .watch .name { font-family: ui-monospace, monospace; color: var(--accent); }
+  .watch .val { color: var(--dim); }
+
+  .err { color: var(--bad); font-size: 13px; padding: 12px; background: rgba(248,81,73,0.1); border-radius: 4px; }
+
+  .empty { color: var(--dim); font-style: italic; padding: 12px 0; font-size: 13px; }
+
+  .footer { margin-top: 24px; font-size: 12px; color: var(--dim); text-align: center; }
+  .footer a { color: var(--dim); text-decoration: none; border-bottom: 1px dotted var(--dim); margin: 0 6px; }
+  .footer a:hover { color: var(--accent); border-color: var(--accent); }
+
+  .counts { display: flex; gap: 24px; font-size: 13px; margin-top: 4px; }
+  .counts span { color: var(--dim); }
+  .counts strong { color: var(--fg); }
 </style></head>
 <body>
-<h1>VolatiAI · all workers</h1>
-<div class="meta">Refreshed <span id="ts">&mdash;</span></div>
-<div id="workers"></div>
+
+<div class="header">
+  <h1>VolatiAI</h1>
+  <div class="stamp" id="stamp">loading…</div>
+</div>
+
+<div class="grid">
+
+  <div class="card full">
+    <h2>Latest briefing</h2>
+    <div id="briefing"><div class="empty">loading…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Fired signals</h2>
+    <div id="signals"><div class="empty">loading…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Watchlist (high volatility)</h2>
+    <div id="watchlist"><div class="empty">loading…</div></div>
+  </div>
+
+  <div class="card full">
+    <h2>Coherence &amp; arbitration</h2>
+    <div id="coherence"><div class="empty">loading…</div></div>
+  </div>
+
+  <div class="card full">
+    <h2>Live sectors (with history)</h2>
+    <div id="sectors"><div class="empty">loading…</div></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <a href="https://sector-slow.fourieranalys.workers.dev/_health">_health</a>
+  <a href="https://sector-slow.fourieranalys.workers.dev/_coherence">_coherence</a>
+  <a href="https://sector-slow.fourieranalys.workers.dev/_claim_graph">_claim_graph</a>
+  <a href="https://sector-slow.fourieranalys.workers.dev/_graph_snapshot">_graph_snapshot</a>
+  <a href="https://sector-slow.fourieranalys.workers.dev/_cron_status">_cron_status</a>
+</div>
+
 <script>
-const WORKERS = ["sector-slow", "sector-dense", "sector-sparse"];
-const BASE = "https://{}.fourieranalys.workers.dev";
-const EM = "\u2014";
+const WORKER = "https://sector-slow.fourieranalys.workers.dev";
+const EM = "—";
 
 function el(tag, cls, html) {
   const e = document.createElement(tag);
@@ -32,70 +107,161 @@ function el(tag, cls, html) {
   return e;
 }
 
-async function fetchWorker(name) {
+function fmtNum(n) {
+  if (typeof n !== "number" || !Number.isFinite(n)) return EM;
+  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  return String(n);
+}
+
+function fmtPct(p) {
+  if (p === null || p === undefined) return EM;
+  return (p >= 0 ? "+" : "") + p.toFixed(2) + "%";
+}
+
+async function fetchJson(url) {
   try {
-    const r = await fetch(BASE.replace("{}", name) + "/_health", { cache: "no-store" });
-    if (!r.ok) return { worker: name, status: r.status, sectors: null };
-    const j = await r.json();
-    return { worker: name, status: 200, sectors: j.sectors || null };
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) return { _error: r.status };
+    return await r.json();
   } catch (e) {
-    return { worker: name, status: "network-error", sectors: null, error: String(e).slice(0, 120) };
+    return { _error: String(e) };
   }
 }
 
-function renderWorker(res) {
-  const box = el("div", "");
-  const h = el("h2", "", res.worker);
-  box.appendChild(h);
-  if (res.status !== 200 || !res.sectors) {
-    box.appendChild(el("div", "worker-status err", "_health unavailable (" + res.status + ")" + (res.error ? " · " + res.error : "")));
-    return box;
+async function loadBriefing() {
+  const box = document.getElementById("briefing");
+  const data = await fetchJson("docs/briefing.json");
+  if (data._error) { box.innerHTML = '<div class="err">briefing.json: ' + data._error + '</div>'; return; }
+
+  const b = data.briefing ?? {};
+  const headline = b.headline ?? "no signals";
+  const byDomain = b.by_domain ?? {};
+  const domainParts = Object.entries(byDomain)
+    .filter(([, v]) => (v.sectors?.length ?? 0) > 0)
+    .map(([d, v]) => `${d} ${v.sectors.length}`);
+  const domainLine = domainParts.length ? `(${domainParts.join(" · ")})` : "";
+
+  box.innerHTML = '';
+  box.appendChild(el("div", "headline", headline));
+  if (domainLine) box.appendChild(el("div", "domain-line", domainLine));
+
+  // Fired signals
+  const signals = Array.isArray(data.signals) ? data.signals : [];
+  const sBox = document.getElementById("signals");
+  if (signals.length === 0) { sBox.innerHTML = '<div class="empty">no signals fired</div>'; }
+  else {
+    sBox.innerHTML = '';
+    for (const s of signals) {
+      const sev = s.severity === "alert" ? "alert" : (s.severity === "notice" ? "notice" : "");
+      const row = el("div", "signal " + sev);
+      row.appendChild(el("div", "dot"));
+      row.appendChild(el("div", "sector", s.sector ?? "?"));
+      const summary = (s.summary ?? "").replace(/\s+/g, " ");
+      row.appendChild(el("div", "summary", summary));
+      sBox.appendChild(row);
+    }
   }
-  const names = Object.keys(res.sectors);
-  box.appendChild(el("div", "worker-status", names.length + " sectors · sorted by proximity to firing"));
 
-  const rows = names.map(n => {
-    const v = res.sectors[n];
-    const dist = (v.distance_pct !== null && v.distance_pct !== undefined) ? v.distance_pct : null;
-    return { name: n, v, sortKey: dist === null ? -Infinity : dist };
-  }).sort((a, b) => (a.sortKey !== b.sortKey ? b.sortKey - a.sortKey : a.name.localeCompare(b.name)));
+  // Watchlist
+  const watch = Array.isArray(data.watchlist) ? data.watchlist : [];
+  const wBox = document.getElementById("watchlist");
+  if (watch.length === 0) { wBox.innerHTML = '<div class="empty">watchlist empty</div>'; }
+  else {
+    wBox.innerHTML = '';
+    for (const w of watch) {
+      const row = el("div", "watch");
+      row.appendChild(el("span", "name", w.sector ?? "?"));
+      row.appendChild(el("span", "val", `vol=${Math.round(w.avg_volatility ?? 0)} fires=${w.fires_in_window ?? 0}`));
+      wBox.appendChild(row);
+    }
+  }
+}
 
-  const tbl = el("table");
-  tbl.innerHTML = "<thead><tr><th>sector</th><th>metric</th><th>n</th><th>last</th><th>prev</th><th>pct</th><th>thr</th><th>dist</th><th>age</th><th>links</th></tr></thead><tbody></tbody>";
-  const tb = tbl.querySelector("tbody");
+async function loadCoherence() {
+  const box = document.getElementById("coherence");
+  const [coh, graph] = await Promise.all([
+    fetchJson(WORKER + "/_coherence"),
+    fetchJson(WORKER + "/_claim_graph"),
+  ]);
 
-  for (const {name, v} of rows) {
+  if (coh._error) { box.innerHTML = '<div class="err">_coherence: ' + coh._error + '</div>'; return; }
+
+  const sectors = coh.sectors ?? {};
+  const verdicts = graph.verdicts ?? [];
+  const verdictMap = {};
+  for (const v of verdicts) verdictMap[v.sector] = v;
+
+  const rows = Object.entries(sectors)
+    .filter(([, v]) => v.points > 0)
+    .sort((a, b) => {
+      const aV = a[1].coherence ?? -1;
+      const bV = b[1].coherence ?? -1;
+      return bV - aV;
+    });
+
+  box.innerHTML = '';
+  const counts = el("div", "counts");
+  const confirmed = Object.values(sectors).filter(v => v.verdict === "confirmed").length;
+  const likely = Object.values(sectors).filter(v => v.verdict === "likely").length;
+  const outlier = Object.values(sectors).filter(v => v.verdict === "outlier").length;
+  counts.innerHTML = `<span>confirmed <strong>${confirmed}</strong></span><span>likely <strong>${likely}</strong></span><span>outlier <strong>${outlier}</strong></span><span>total <strong>${rows.length}</strong></span>`;
+  box.appendChild(counts);
+
+  if (rows.length === 0) { box.appendChild(el("div", "empty", "no sectors with history yet")); return; }
+
+  const t = el("table");
+  t.innerHTML = "<thead><tr><th>sector</th><th>metric</th><th>points</th><th>current</th><th>coherence</th><th>verdict</th><th>arbitration</th></tr></thead><tbody></tbody>";
+  const tb = t.querySelector("tbody");
+  for (const [name, v] of rows) {
     const tr = document.createElement("tr");
-    const age = v.newest_iso ? ((Date.now() - new Date(v.newest_iso).getTime()) / 3600000) : null;
-    let ageCls = "idle", ageTxt = EM;
-    if (age !== null) { ageTxt = age.toFixed(1) + "h"; ageCls = age < 25 ? "ok" : age < 48 ? "warn" : "bad"; }
-    const pct = v.pct_change;
-    const pctTxt = (pct === null || pct === undefined) ? EM : (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
-    const distTxt = (v.distance_pct === null || v.distance_pct === undefined) ? EM : v.distance_pct.toFixed(2) + "%";
-    const distCls = (v.distance_pct === null || v.distance_pct === undefined) ? "idle" : (v.distance_pct >= 0 ? "bad" : v.distance_pct >= -1 ? "warn" : "idle");
-    const linkBase = BASE.replace("{}", res.worker);
-    tr.innerHTML = "<td><code>" + name + "</code></td>"
-      + '<td class="idle">' + (v.metric || EM) + "</td>"
-      + "<td>" + (v.history_points != null ? v.history_points : EM) + "</td>"
-      + "<td>" + (v.last_value === null || v.last_value === undefined ? EM : v.last_value) + "</td>"
-      + '<td class="idle">' + (v.prev_value === null || v.prev_value === undefined ? EM : v.prev_value) + "</td>"
-      + "<td>" + pctTxt + "</td>"
-      + '<td class="idle">' + (v.threshold_pct != null ? v.threshold_pct + "%" : EM) + "</td>"
-      + '<td class="' + distCls + '">' + distTxt + "</td>"
-      + '<td class="' + ageCls + '">' + ageTxt + "</td>"
-      + '<td><a href="' + linkBase + "/" + name + '/signal">signal</a> &middot; <a href="' + linkBase + "/" + name + '/history">history</a></td>';
+    const vd = v.verdict ?? "—";
+    const av = verdictMap[name];
+    const arbText = av ? `${av.verdict} (${(av.confidence * 100).toFixed(0)}%)` : "—";
+    tr.innerHTML = `<td>${name}</td>`
+      + `<td>${v.metric ?? EM}</td>`
+      + `<td>${v.points}</td>`
+      + `<td>${fmtNum(v.current)}</td>`
+      + `<td>${v.coherence != null ? (v.coherence * 100).toFixed(0) + "%" : EM}</td>`
+      + `<td class="verdict-${vd}">${vd}</td>`
+      + `<td class="verdict-${av?.verdict ?? ''}">${arbText}</td>`;
     tb.appendChild(tr);
   }
-  box.appendChild(tbl);
-  return box;
+  box.appendChild(t);
+}
+
+async function loadSectors() {
+  const box = document.getElementById("sectors");
+  const data = await fetchJson(WORKER + "/_health");
+  if (data._error) { box.innerHTML = '<div class="err">_health: ' + data._error + '</div>'; return; }
+
+  const sectors = data.sectors ?? {};
+  const rows = Object.entries(sectors).sort((a, b) => a[0].localeCompare(b[0]));
+
+  box.innerHTML = '';
+  if (rows.length === 0) { box.appendChild(el("div", "empty", "no sectors")); return; }
+
+  const t = el("table");
+  t.innerHTML = "<thead><tr><th>sector</th><th>metric</th><th>points</th><th>last value</th><th>age</th></tr></thead><tbody></tbody>";
+  const tb = t.querySelector("tbody");
+  for (const [name, v] of rows) {
+    const tr = document.createElement("tr");
+    const age = v.newest_iso ? ((Date.now() - new Date(v.newest_iso).getTime()) / 3600000) : null;
+    const ageTxt = age === null ? EM : age.toFixed(1) + "h";
+    tr.innerHTML = `<td>${name}</td>`
+      + `<td>${v.metric ?? EM}</td>`
+      + `<td>${v.history_points ?? 0}</td>`
+      + `<td>${fmtNum(v.last_value)}</td>`
+      + `<td>${ageTxt}</td>`;
+    tb.appendChild(tr);
+  }
+  box.appendChild(t);
 }
 
 async function load() {
-  document.getElementById("ts").textContent = new Date().toISOString().slice(0,19).replace("T"," ") + " UTC";
-  const container = document.getElementById("workers");
-  container.innerHTML = "";
-  const results = await Promise.all(WORKERS.map(fetchWorker));
-  for (const res of results) container.appendChild(renderWorker(res));
+  document.getElementById("stamp").textContent = new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC";
+  await Promise.allSettled([loadBriefing(), loadCoherence(), loadSectors()]);
 }
 
 load();
