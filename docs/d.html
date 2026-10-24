@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VolatiAI · Live Dashboard</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;margin:0;padding:1.5em;background:#0b0d10;color:#d5d7db}
+header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1em}
+h1{font-weight:500;margin:0;font-size:1.5em}
+#ts{color:#8a8f96;font-size:.85em}
+.stats{display:flex;flex-wrap:wrap;gap:1.5em;margin-bottom:1em;padding:.8em 1em;background:#141820;border-radius:6px;font-size:.9em}
+.stats span{color:#8a8f96}
+.stats b{color:#d5d7db;font-weight:600;margin-right:.3em}
+.controls{display:flex;flex-wrap:wrap;gap:.6em;margin-bottom:.8em;align-items:center}
+.controls button{background:#1c2028;color:#d5d7db;border:1px solid #2c3140;padding:.4em .8em;border-radius:4px;cursor:pointer;font-size:.9em}
+.controls button.active{background:#2c3140;color:#fff;border-color:#4a5260}
+.controls input{flex:1;min-width:150px;background:#0b0d10;color:#d5d7db;border:1px solid #2c3140;padding:.4em .8em;border-radius:4px;font-size:.9em}
+table{width:100%;border-collapse:collapse;font-size:.85em;font-variant-numeric:tabular-nums}
+th,td{padding:.5em .6em;text-align:left;border-bottom:1px solid #1c2028}
+th{background:#141820;color:#8a8f96;font-weight:500;position:sticky;top:0;cursor:pointer;user-select:none}
+th:hover{color:#d5d7db}
+td.n{text-align:right;font-family:ui-monospace,Menlo,monospace}
+tr.row-info td:first-child{border-left:3px solid #2c3140}
+tr.row-warn td:first-child{border-left:3px solid #d4a017;background:#1a1610}
+tr.row-critical td:first-child{border-left:3px solid #d23b3b;background:#1f1010}
+tr.row-error td:first-child{border-left:3px solid #7a3bd2;background:#150f1a}
+tr:hover td{background:#141820}
+.pill{padding:.15em .5em;border-radius:10px;font-size:.8em;font-weight:500}
+.pill-info{background:#2c3140;color:#8a8f96}
+.pill-warn{background:#d4a017;color:#000}
+.pill-critical{background:#d23b3b;color:#fff}
+.pill-error{background:#7a3bd2;color:#fff}
+a{color:#6a9aef;text-decoration:none}
+a:hover{text-decoration:underline}
+.failed{color:#d23b3b;font-size:.85em}
+</style>
+</head>
+<body>
+<header>
+  <h1>VolatiAI · Live Dashboard</h1>
+  <div id="ts">loading…</div>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="controls">
+  <button data-filter="all" class="active">All</button>
+  <button data-filter="signals">Signals</button>
+  <button data-filter="failing">Failing</button>
+  <input id="search" placeholder="search sector…">
+  <button id="refresh">↻</button>
+  <a href="https://sector-slow.fourieranalys.workers.dev/latest" target="_blank" style="margin-left:auto;font-size:.85em">raw json</a>
+</div>
+
+<table id="tbl">
+  <thead><tr>
+    <th data-col="sector">sector</th>
+    <th data-col="current">current</th>
+    <th data-col="previous">prev</th>
+    <th data-col="pct_change">pct</th>
+    <th data-col="points">pts</th>
+    <th data-col="severity">sev</th>
+    <th>failed</th>
+  </tr></thead>
+  <tbody id="rows"><tr><td colspan="7" style="text-align:center;color:#8a8f96;padding:2em">loading…</td></tr></tbody>
+</table>
+
+<script>
+const BASE = "https://sector-slow.fourieranalys.workers.dev";
+const SEV_RANK = {error:3, critical:2, warn:1, info:0};
+let DATA = {rows:[]};
+let filter = "all";
+let sortCol = "pct_change";
+let sortDir = -1;
+let search = "";
+
+function fmt(v, d=4) {
+  if (v === null || v === undefined) return "—";
+  if (typeof v !== "number") return String(v);
+  if (Math.abs(v) > 1e6) return v.toLocaleString("en-US", {maximumFractionDigits:2});
+  if (Math.abs(v) < 0.001 && v !== 0) return v.toExponential(2);
+  return v.toLocaleString("en-US", {maximumFractionDigits:d});
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined) return "—";
+  const s = (v >= 0 ? "+" : "") + v.toFixed(2) + "%";
+  return s;
+}
+
+function render() {
+  const rows = DATA.rows.slice();
+  const ts = document.getElementById("ts");
+  const st = document.getElementById("stats");
+  const tbody = document.getElementById("rows");
+
+  const total = rows.length;
+  const withHist = rows.filter(r => (r.pts || 0) >= 2).length;
+  const signals = rows.filter(r => r.has_signal).length;
+  const failing = rows.filter(r => (r.failed || []).length > 0).length;
+  const warn = rows.filter(r => r.severity === "warn").length;
+  const crit = rows.filter(r => r.severity === "critical").length;
+
+  ts.textContent = DATA.ts ? "updated " + new Date(DATA.ts).toLocaleString() : "no timestamp";
+  st.innerHTML = `
+    <span><b>${total}</b>sectors</span>
+    <span><b>${withHist}</b>with history</span>
+    <span><b>${signals}</b>signals</span>
+    <span><b style="color:#d4a017">${warn}</b>warn</span>
+    <span><b style="color:#d23b3b">${crit}</b>critical</span>
+    <span><b>${failing}</b>failing sources</span>
+  `;
+
+  let filtered = rows;
+  if (filter === "signals") filtered = filtered.filter(r => r.has_signal);
+  if (filter === "failing") filtered = filtered.filter(r => (r.failed || []).length > 0);
+  if (search) filtered = filtered.filter(r => r.sector.toLowerCase().includes(search));
+
+  filtered.sort((a, b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (sortCol === "severity") {
+      av = SEV_RANK[a.severity] || 0;
+      bv = SEV_RANK[b.severity] || 0;
+    }
+    if (av === null || av === undefined) av = -Infinity;
+    if (bv === null || bv === undefined) bv = -Infinity;
+    return (av > bv ? 1 : av < bv ? -1 : 0) * sortDir;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#8a8f96;padding:2em">no matching sectors</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const sev = r.severity || "info";
+    const cls = "row-" + sev;
+    const fails = (r.failed || []).join(", ") || "";
+    return `<tr class="${cls}">
+      <td>${r.sector}</td>
+      <td class="n">${fmt(r.current)}</td>
+      <td class="n">${fmt(r.previous)}</td>
+      <td class="n">${fmtPct(r.pct_change)}</td>
+      <td class="n">${r.pts || 0}</td>
+      <td><span class="pill pill-${sev}">${sev}</span></td>
+      <td class="failed">${fails}</td>
+    </tr>`;
+  }).join("");
+}
+
+async function refresh() {
+  try {
+    const r = await fetch(BASE + "/latest", {cache: "no-store"});
+    DATA = await r.json();
+    render();
+  } catch (e) {
+    document.getElementById("ts").textContent = "fetch error: " + e.message;
+  }
+}
+
+document.querySelectorAll("[data-filter]").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll("[data-filter]").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    filter = b.dataset.filter;
+    render();
+  });
+});
+
+document.querySelectorAll("[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const c = th.dataset.col;
+    if (sortCol === c) sortDir *= -1;
+    else { sortCol = c; sortDir = -1; }
+    render();
+  });
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  search = e.target.value.toLowerCase().trim();
+  render();
+});
+
+document.getElementById("refresh").addEventListener("click", refresh);
+
+refresh();
+setInterval(refresh, 60000);
+</script>
+</body>
+</html>
