@@ -1203,42 +1203,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "fred-dgs10": {
-    config: { metric: "dgs10", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        dgs10: await fetchSafe(async () => {
-          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-09-24",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const text = await r.text();
-          const lines = text.trim().split("\n").filter(l => l && !l.startsWith("observation_date") && !l.endsWith(","));
-          const last = lines[lines.length - 1];
-          const v = parseFloat(last.split(",").pop());
-          if (!Number.isFinite(v)) throw new Error("no_value");
-          return v;
-        }),
-      },
-    }),
-  },
-  "fred-fedfunds": {
-    config: { metric: "fedfunds", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        fedfunds: await fetchSafe(async () => {
-          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS&cosd=2026-09-24",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const text = await r.text();
-          const lines = text.trim().split("\n").filter(l => l && !l.startsWith("observation_date") && !l.endsWith(","));
-          const last = lines[lines.length - 1];
-          const v = parseFloat(last.split(",").pop());
-          if (!Number.isFinite(v)) throw new Error("no_value");
-          return v;
-        }),
-      },
-    }),
-  },
 };
 
 
