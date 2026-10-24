@@ -1347,6 +1347,50 @@ export default {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
 
+    // ─── /latest — batch summary from KV, no upstream fetches ───
+    if (parts[0] === "latest") {
+      const rows = [];
+      const names = Object.keys(SECTORS || {});
+      // Batch reads to avoid KV throttling
+      for (let i = 0; i < names.length; i += 50) {
+        const batch = names.slice(i, i + 50);
+        const histList = await Promise.all(batch.map(n => {
+          const cfg = SECTORS[n].config;
+          return env.SECTOR_KV.get(`${n}_${cfg.metric}_history`, "json");
+        }));
+        batch.forEach((n, j) => {
+          const hist = histList[j];
+          const cfg = SECTORS[n].config;
+          if (!Array.isArray(hist) || hist.length === 0) {
+            rows.push({
+              sector: n, metric: cfg.metric,
+              current: null, previous: null, pct_change: null,
+              pts: 0, t: null, has_signal: false, severity: "info",
+            });
+            return;
+          }
+          const last = hist[hist.length - 1];
+          const prev = hist.length > 1 ? hist[hist.length - 2] : last;
+          const pct = prev.v !== 0 ? ((last.v - prev.v) / prev.v) * 100 : 0;
+          const sev = Math.abs(pct) >= (cfg.threshold_pct || 5) * 3 ? "critical"
+                    : Math.abs(pct) >= (cfg.threshold_pct || 5) ? "warn" : "info";
+          rows.push({
+            sector: n, metric: cfg.metric,
+            current: last.v, previous: prev.v, pct_change: pct,
+            pts: hist.length, t: last.t,
+            has_signal: sev !== "info", severity: sev,
+          });
+        });
+      }
+      return json({
+        ts: new Date().toISOString(),
+        count: rows.length,
+        with_history: rows.filter(r => r.pts > 0).length,
+        alerting: rows.filter(r => r.has_signal).length,
+        rows,
+      });
+    }
+
     if (parts.length === 0) {
       return json({ ok: true, density: "slow", sectors: Object.keys(COLLECTORS) });
     }
