@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
-"""
-volatiai_alert.py — push warn/critical sectors to ntfy.sh (free, keyless, no signup).
-
-Setup (one-time):
-    export VOLATIAI_NTFY_TOPIC="volati-$(openssl rand -hex 6)"
-    # Save that topic! Open https://ntfy.sh/<your-topic> to subscribe.
-
-Usage:
-    ./volatiai_alert.py             # send if any warn+
-    ./volatiai_alert.py --dry-run   # print what would be sent
-    ./volatiai_alert.py --all       # include info too
-"""
+"""volatiai_alert.py — push warn/critical sectors to ntfy.sh (keyless)."""
 import json, os, subprocess, sys, urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -20,17 +9,38 @@ BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.worker
 UA = os.environ.get("VOLATIAI_UA", "VolatiAI/1.0 (alert)")
 TIMEOUT = 20
 
-def fetch_signal(sector):
-    url = f"{BASE}/{sector}/signal"
+def http_get(url):
     try:
         req = urllib.request.Request(url, headers={"user-agent": UA})
         with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-            return json.loads(r.read())
+            return r.read()
     except Exception:
         out = subprocess.run(
             ["curl", "-sfL", "--max-time", str(TIMEOUT), "-A", UA, url],
-            capture_output=True, text=True)
-        return json.loads(out.stdout) if out.returncode == 0 else None
+            capture_output=True)
+        return out.stdout if out.returncode == 0 else None
+
+def http_post(url, data, headers):
+    try:
+        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.read()
+    except Exception:
+        cmd = ["curl", "-sfL", "--max-time", "10", "-X", "POST", "--data-binary", "@-"]
+        for k, v in headers.items():
+            cmd += ["-H", f"{k}: {v}"]
+        cmd.append(url)
+        out = subprocess.run(cmd, input=data, capture_output=True)
+        return out.stdout if out.returncode == 0 else None
+
+def fetch_signal(sector):
+    raw = http_get(f"{BASE}/{sector}/signal")
+    if raw is None:
+        return None
+    try:
+        return json.loads(raw)
+    except Exception:
+        return None
 
 def ntfy(title, message, priority="default", tags=None):
     if not TOPIC:
@@ -39,13 +49,7 @@ def ntfy(title, message, priority="default", tags=None):
     headers = {"Title": title, "Priority": priority}
     if tags:
         headers["Tags"] = ",".join(tags)
-    req = urllib.request.Request(
-        f"https://ntfy.sh/{TOPIC}",
-        data=message.encode("utf-8"),
-        headers=headers,
-        method="POST")
-    with urllib.request.urlopen(req, timeout=10) as r:
-        r.read()
+    http_post(f"https://ntfy.sh/{TOPIC}", message.encode("utf-8"), headers)
 
 def main():
     dry_run = "--dry-run" in sys.argv
@@ -74,9 +78,7 @@ def main():
 
     alerts.sort(key=lambda a: (a["severity"] != "critical", -abs(a["pct"] or 0)))
     crit = sum(1 for a in alerts if a["severity"] == "critical")
-    title = f"VolatiAI: {len(alerts)} alert{'s' if len(alerts)!=1 else ''}"
-    if crit:
-        title = f"VolatiAI: {crit} CRITICAL"
+    title = f"VolatiAI: {crit} CRITICAL" if crit else f"VolatiAI: {len(alerts)} alert(s)"
     body = "\n".join(
         f"{a['sector']:<30} {a['severity']:<8} "
         f"{(a['pct'] or 0):+7.2f}%  →  {a['current']}"
@@ -88,8 +90,8 @@ def main():
         print(body)
         return
 
-    priority = "urgent" if crit else ("high" if alerts else "default")
-    ntfy(title, body, priority=priority, tags=["chart_with_upwards_trend"])
+    priority = "urgent" if crit else "high"
+    ntfy(title, body, priority=priority, tags=["warning"])
     print(f"sent {len(alerts)} alerts to ntfy.sh/{TOPIC}")
 
 if __name__ == "__main__":
