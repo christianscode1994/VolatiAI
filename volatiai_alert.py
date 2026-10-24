@@ -4,6 +4,7 @@ import json, os, subprocess, sys, urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
 TOPIC = os.environ.get("VOLATIAI_NTFY_TOPIC", "").strip()
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 UA = os.environ.get("VOLATIAI_UA", "VolatiAI/1.0 (alert)")
@@ -55,8 +56,7 @@ def main():
     dry_run = "--dry-run" in sys.argv
     include_info = "--all" in sys.argv
 
-    BASE_DIR = Path(__file__).resolve().parent
-sectors = json.loads((BASE_DIR / "config" / "active_sectors.json").read_text())
+    sectors = json.loads((BASE_DIR / "config" / "active_sectors.json").read_text())
     alerts = []
     with ThreadPoolExecutor(max_workers=20) as ex:
         for fut in as_completed({ex.submit(fetch_signal, s): s for s in sectors}):
