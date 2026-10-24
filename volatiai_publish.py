@@ -79,8 +79,8 @@ def bluesky(text):
 def nostr(text):
     priv = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
     relay = os.environ.get("NOSTR_RELAY", "wss://relay.damus.io").strip()
-    if not priv:
-        return "skipped (no NOSTR_PRIVATE_KEY)"
+    if not priv or priv in ("PASTE_NEW_NSEC", "PASTE_NSEC_HERE", "nsec1REPLACE_WITH_YOUR_REAL_KEY"):
+        return "skipped (placeholder NOSTR_PRIVATE_KEY)"
     try:
         from pynostr.key import PrivateKey
         from pynostr.event import Event
