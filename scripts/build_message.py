@@ -3,6 +3,8 @@
 import json, os, sys, subprocess
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 def _run_cluster_signals():
     """Invoke cluster_signals.py to get current outliers + clusters."""
     try:
@@ -40,7 +42,7 @@ total = d.get("with_history", 0)
 
 # Load cluster graph if available
 try:
-    graph = json.loads(Path("config/graph.json").read_text())
+    graph = json.loads((BASE_DIR / "config" / "graph.json").read_text())
     s2c = graph.get("sector_to_cluster", {})
 except Exception:
     s2c = {}

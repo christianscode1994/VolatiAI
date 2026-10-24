@@ -3,6 +3,8 @@
 import json, os, sys, urllib.request, subprocess
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 OUTLIER_THRESHOLD = float(os.environ.get("VOLATIAI_OUTLIER", "3.0"))  # std devs from cluster mean
 MIN_CLUSTER_SIZE = 2
@@ -26,14 +28,14 @@ def stdev(vals):
 def load_cluster_history():
     """Load prior cluster state from KV (written by prior runs)."""
     try:
-        p = Path("config/cluster_history.json")
+        p = BASE_DIR / "config" / "cluster_history.json"
         return json.loads(p.read_text()) if p.exists() else {}
     except Exception:
         return {}
 
 def save_cluster_history(clusters):
     """Persist current cluster avg_pct for next-run comparison."""
-    p = Path("config/cluster_history.json")
+    p = BASE_DIR / "config" / "cluster_history.json"
     now = __import__("datetime").datetime.utcnow().isoformat() + "Z"
     prior = load_cluster_history()
     for c in clusters:
@@ -63,7 +65,7 @@ def add_momentum(clusters):
     return clusters
 
 def main():
-    graph = json.loads(Path("config/graph.json").read_text())
+    graph = json.loads((BASE_DIR / "config" / "graph.json").read_text())
     latest = fetch_json(f"{BASE}/latest")
     if not latest: sys.exit("/latest unreachable")
 

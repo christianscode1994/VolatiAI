@@ -7,6 +7,8 @@ from datetime import datetime
 from itertools import combinations
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 CORR_THRESHOLD = float(os.environ.get("VOLATIAI_CORR_THRESHOLD", "0.6"))
 MIN_POINTS = int(os.environ.get("VOLATIAI_MIN_POINTS", "10"))
@@ -102,7 +104,7 @@ def main():
     for i, c in enumerate(clusters):
         for s in c: sector_to_cluster[s] = f"cluster_{i}"
 
-    docs = Path("docs"); docs.mkdir(exist_ok=True)
+    docs = BASE_DIR / "docs"; docs.mkdir(exist_ok=True)
     graph = {
         "computed_at": datetime.utcnow().isoformat() + "Z",
         "threshold": CORR_THRESHOLD,
@@ -113,7 +115,7 @@ def main():
         "sector_to_cluster": sector_to_cluster,
     }
     (docs / "graph.json").write_text(json.dumps(graph, indent=2))
-    Path("config/graph.json").write_text(json.dumps(graph, indent=2))
+    (BASE_DIR / "config" / "graph.json").write_text(json.dumps(graph, indent=2))
 
     print(f"✅ {len(names)} nodes, {len(edges)} edges, {len(clusters)} clusters", file=sys.stderr)
     for c in graph["clusters"]:

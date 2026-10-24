@@ -55,7 +55,8 @@ def main():
     dry_run = "--dry-run" in sys.argv
     include_info = "--all" in sys.argv
 
-    sectors = json.loads(Path("config/active_sectors.json").read_text())
+    BASE_DIR = Path(__file__).resolve().parent
+sectors = json.loads((BASE_DIR / "config" / "active_sectors.json").read_text())
     alerts = []
     with ThreadPoolExecutor(max_workers=20) as ex:
         for fut in as_completed({ex.submit(fetch_signal, s): s for s in sectors}):

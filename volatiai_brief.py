@@ -5,11 +5,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
+
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 
 def _load_provenance():
     try:
-        with open("config/provenance.json") as f:
+        with open(str(BASE_DIR / "config" / "provenance.json")) as f:
             return json.load(f)
     except Exception:
         return {}
@@ -148,9 +150,9 @@ def fetch_latest():
             "confidence": r.get("confidence", 0),
             "points": r.get("pts", r.get("points", 0)),
             "failed": r.get("failed", []),
-            "cluster_id": (json.loads(Path("config/graph.json").read_text())
+            "cluster_id": (json.loads((BASE_DIR / "config" / "graph.json").read_text())
                           .get("sector_to_cluster", {}).get(sector)
-                          if Path("config/graph.json").exists() else None),
+                          if (BASE_DIR / "config" / "graph.json").exists() else None),
         })
     # Attach stamp to every row batch
     stamp = _stamp({"rows": out})
@@ -185,7 +187,7 @@ def brief_one(sector):
     }
 
 def load_sectors():
-    p = Path("config/active_sectors.json")
+    p = BASE_DIR / "config" / "active_sectors.json"
     if not p.exists():
         sys.exit("config/active_sectors.json not found — run from ~/VolatiAI")
     return json.loads(p.read_text())
@@ -329,7 +331,7 @@ def main():
         rows = [r for r in rows if r.get("has_signal")]
     if args.clusters:
         try:
-            graph = json.loads(Path("config/graph.json").read_text())
+            graph = json.loads((BASE_DIR / "config" / "graph.json").read_text())
         except Exception:
             sys.exit("config/graph.json missing — run: python3 scripts/compute_graph.py")
         s2c = graph.get("sector_to_cluster", {})
