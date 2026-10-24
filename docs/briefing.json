@@ -1,172 +1,308 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-23T20:50:15Z",
+  "ts": "2026-10-24T02:37:02Z",
   "run_number": 24,
   "briefing": {
-    "headline": "10 signals across 273 sectors evaluated",
+    "headline": "20 signals across 273 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 7,
+        "count": 13,
         "sectors": [
-          "anime",
-          "audius",
-          "treasuries",
+          "art-design",
+          "food-products",
+          "jobs",
+          "nft",
+          "open-source-packages",
+          "pypi-packages",
+          "tv",
           "ripe-atlas-public",
+          "arbetsformedlingen",
           "usgs-earthquakes",
           "crossref-works",
+          "datacite-dois",
           "usgs-earthquakes-emsc"
         ]
       },
-      "security": {
-        "count": 2,
+      "energy": {
+        "count": 1,
         "sectors": [
-          "cve-feed",
-          "security"
+          "carbon-intensity"
+        ]
+      },
+      "security": {
+        "count": 1,
+        "sectors": [
+          "cve-feed"
+        ]
+      },
+      "crypto": {
+        "count": 1,
+        "sectors": [
+          "depin-network"
         ]
       },
       "information": {
+        "count": 3,
+        "sectors": [
+          "events",
+          "podcasts",
+          "wikipedia"
+        ]
+      },
+      "environment": {
         "count": 1,
         "sectors": [
-          "events"
+          "water"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "anime",
+      "sector": "art-design",
       "severity": "notice",
-      "summary": "New: 1996",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 1
-    },
-    {
-      "sector": "audius",
-      "severity": "notice",
-      "summary": "New: nazah - Return feat. Bee-z , Bolu Adubi & perdie \u2014 Radio Juicy",
+      "summary": "New: The Abduction of Rebecca \u2014 Eug\u00e8ne Delacroix",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 2
     },
     {
-      "sector": "cve-feed",
+      "sector": "carbon-intensity",
       "severity": "notice",
-      "summary": "New: CVE-2026-112342: Tandoor Recipes before 2.7.0 contains an improper cache-key design in cookbook/helper/permission_hel",
+      "summary": "New: UK grid: 55 gCO2/kWh (low)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 9
+      "fires_24": 7
+    },
+    {
+      "sector": "cve-feed",
+      "severity": "notice",
+      "summary": "New: CVE-2026-115810: Tandoor Recipes before 2.7.0 contains a server-side request forgery vulnerability in the Pestle impo",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 10
+    },
+    {
+      "sector": "depin-network",
+      "severity": "notice",
+      "summary": "New: Flux nodes: 6,744",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 10
     },
     {
       "sector": "events",
       "severity": "notice",
-      "summary": "New: [568] Today, we hacked what we'd set out to hack: the iPhone",
+      "summary": "New: [746] Kimi K3.1 Pro and K3.1 Pro Highspeed",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 9
+      "fires_24": 10
     },
     {
-      "sector": "security",
+      "sector": "food-products",
       "severity": "notice",
-      "summary": "New: CVE-2026-114625 \u2014 Arista VeloCloud Orchestrator SQL Injection Vulnerability",
+      "summary": "New: Coca-Cola Original (COCA-COLA SERVICES SA/NV)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "jobs",
+      "severity": "notice",
+      "summary": "New: Travel Support Specialist @ Aisles &amp; Abroad",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 5
+    },
+    {
+      "sector": "nft",
+      "severity": "notice",
+      "summary": "New: moonbirds: floor 0.5098 ETH",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 1
     },
     {
-      "sector": "treasuries",
+      "sector": "open-source-packages",
       "severity": "notice",
-      "summary": "yield_10y 4.96 (+6.7% vs 88.9d ago)",
+      "summary": "New: lodash 4.18.1 (latest)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 6.666666666666658,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "podcasts",
+      "severity": "notice",
+      "summary": "New: How surveillance crept up on us",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
       "fires_24": 1
+    },
+    {
+      "sector": "pypi-packages",
+      "severity": "notice",
+      "summary": "New: Top PyPI: boto3 (2,460,723,068 downloads)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "tv",
+      "severity": "notice",
+      "summary": "New: unknown \u2014 Episode 208",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
+    },
+    {
+      "sector": "water",
+      "severity": "notice",
+      "summary": "New: Mississippi flow: 174,000 cfs",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 4
+    },
+    {
+      "sector": "wikipedia",
+      "severity": "notice",
+      "summary": "New: Special:Search (966,449 views)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
     },
     {
       "sector": "ripe-atlas-public",
       "severity": "alert",
-      "summary": "public_measurements 41346 (+0.8% vs 0.2d ago)",
+      "summary": "public_measurements 39977 (-3.3% vs 0.2d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 0.7677122175915772,
-      "fires_24": 3
+      "pct_change": -3.311082087747303,
+      "fires_24": 4
+    },
+    {
+      "sector": "arbetsformedlingen",
+      "severity": "alert",
+      "summary": "job_vacancies 43619 (-2.5% vs 0.2d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -2.5186608858892416,
+      "fires_24": 2
     },
     {
       "sector": "usgs-earthquakes",
       "severity": "alert",
-      "summary": "earthquakes_since_2026 114787 (+41.2% vs 89.9d ago)",
+      "summary": "earthquakes_since_2026 114907 (+9.3% vs 30.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 41.201579471787234,
-      "fires_24": 1
+      "pct_change": 9.293676761527927,
+      "fires_24": 2
     },
     {
       "sector": "crossref-works",
-      "severity": "alert",
-      "summary": "total_works 187978159 (+1.8% vs 89.9d ago)",
+      "severity": "notice",
+      "summary": "total_works 187983753 (+0.6% vs 30.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 1.8042971019242133,
+      "pct_change": 0.6272720242808472,
+      "fires_24": 2
+    },
+    {
+      "sector": "datacite-dois",
+      "severity": "alert",
+      "summary": "total_dois 139898742 (+5.5% vs 90.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 5.486472395683723,
       "fires_24": 1
     },
     {
       "sector": "usgs-earthquakes-emsc",
       "severity": "alert",
-      "summary": "earthquakes_since_2026 130844 (+41.8% vs 89.9d ago)",
+      "summary": "earthquakes_since_2026 130991 (+9.7% vs 30.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 41.81171829276223,
-      "fires_24": 1
+      "pct_change": 9.700355085086427,
+      "fires_24": 2
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-23 16:10",
-    "signals_before": 7,
-    "signals_after": 10,
+    "previous_ts": "2026-10-23 20:50",
+    "signals_before": 10,
+    "signals_after": 20,
     "new": [
+      "arbetsformedlingen",
+      "art-design",
+      "carbon-intensity",
+      "datacite-dois",
+      "depin-network",
+      "food-products",
+      "jobs",
+      "nft",
+      "open-source-packages",
+      "podcasts",
+      "pypi-packages",
+      "tv",
+      "water",
+      "wikipedia"
+    ],
+    "dropped": [
       "anime",
-      "crossref-works",
+      "audius",
       "security",
-      "treasuries",
+      "treasuries"
+    ],
+    "persistent": [
+      "crossref-works",
+      "cve-feed",
+      "events",
+      "ripe-atlas-public",
       "usgs-earthquakes",
       "usgs-earthquakes-emsc"
     ],
-    "dropped": [
-      "carbon-intensity",
-      "develop",
-      "jobs"
-    ],
-    "persistent": [
-      "audius",
-      "cve-feed",
-      "events",
-      "ripe-atlas-public"
-    ],
     "movements": [
       {
-        "sector": "audius",
-        "previous": "New: On The Floor \u2014 Ciara Graves",
-        "current": "New: nazah - Return feat. Bee-z , Bolu Adubi & perdie \u2014 Radio Juicy"
+        "sector": "crossref-works",
+        "previous": "total_works 187978159 (+1.8% vs 89.9d ago)",
+        "current": "total_works 187983753 (+0.6% vs 30.1d ago)"
       },
       {
         "sector": "cve-feed",
-        "previous": "New: CVE-2026-115728: @hapi/content from 6.0.1 before 6.0.3 contains a regular e",
-        "current": "New: CVE-2026-112342: Tandoor Recipes before 2.7.0 contains an improper cache-ke"
+        "previous": "New: CVE-2026-112342: Tandoor Recipes before 2.7.0 contains an improper cache-ke",
+        "current": "New: CVE-2026-115810: Tandoor Recipes before 2.7.0 contains a server-side reques"
       },
       {
         "sector": "events",
-        "previous": "New: [871] Local Wikipedia: Wikipedia, but only for things a half hour walk from",
-        "current": "New: [568] Today, we hacked what we'd set out to hack: the iPhone"
+        "previous": "New: [568] Today, we hacked what we'd set out to hack: the iPhone",
+        "current": "New: [746] Kimi K3.1 Pro and K3.1 Pro Highspeed"
       },
       {
         "sector": "ripe-atlas-public",
-        "previous": "public_measurements 41031 (-1.0% vs 0.1d ago)",
-        "current": "public_measurements 41346 (+0.8% vs 0.2d ago)"
+        "previous": "public_measurements 41346 (+0.8% vs 0.2d ago)",
+        "current": "public_measurements 39977 (-3.3% vs 0.2d ago)"
+      },
+      {
+        "sector": "usgs-earthquakes",
+        "previous": "earthquakes_since_2026 114787 (+41.2% vs 89.9d ago)",
+        "current": "earthquakes_since_2026 114907 (+9.3% vs 30.1d ago)"
+      },
+      {
+        "sector": "usgs-earthquakes-emsc",
+        "previous": "earthquakes_since_2026 130844 (+41.8% vs 89.9d ago)",
+        "current": "earthquakes_since_2026 130991 (+9.7% vs 30.1d ago)"
       }
     ]
   },
@@ -179,27 +315,21 @@
     },
     {
       "sector": "crypto-liquidations",
-      "avg_volatility": 10.13,
+      "avg_volatility": 11.29,
       "max_volatility": 17.65,
       "fires_in_window": 0
     },
     {
       "sector": "xbrl-frames",
-      "avg_volatility": 9.91,
+      "avg_volatility": 9.37,
       "max_volatility": 33.93,
       "fires_in_window": 2
     },
     {
       "sector": "grid-mix",
-      "avg_volatility": 7.97,
-      "max_volatility": 8.24,
+      "avg_volatility": 7.84,
+      "max_volatility": 7.98,
       "fires_in_window": 0
-    },
-    {
-      "sector": "privacy-zcash",
-      "avg_volatility": 7.47,
-      "max_volatility": 17.72,
-      "fires_in_window": 3
     },
     {
       "sector": "micar-casps",
@@ -208,14 +338,26 @@
       "fires_in_window": 2
     },
     {
+      "sector": "treasuries",
+      "avg_volatility": 5.46,
+      "max_volatility": 6.67,
+      "fires_in_window": 1
+    },
+    {
       "sector": "energy-carbon",
       "avg_volatility": 5.38,
       "max_volatility": 5.38,
       "fires_in_window": 0
     },
     {
+      "sector": "privacy-zcash",
+      "avg_volatility": 4.91,
+      "max_volatility": 9.24,
+      "fires_in_window": 2
+    },
+    {
       "sector": "cloudflare-status",
-      "avg_volatility": 2.63,
+      "avg_volatility": 3.3,
       "max_volatility": 3.9,
       "fires_in_window": 0
     },
@@ -224,18 +366,12 @@
       "avg_volatility": 2.56,
       "max_volatility": 2.56,
       "fires_in_window": 0
-    },
-    {
-      "sector": "noaa-spaceweather-alerts",
-      "avg_volatility": 2.13,
-      "max_volatility": 2.13,
-      "fires_in_window": 0
     }
   ],
   "stats": {
     "total_sectors": 273,
-    "firing_sectors": 10,
-    "fire_rate_pct": 3.66,
+    "firing_sectors": 20,
+    "fire_rate_pct": 7.33,
     "runs_in_history": 24
   }
 }

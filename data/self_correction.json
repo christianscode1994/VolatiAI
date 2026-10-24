@@ -308,7 +308,7 @@
     },
     {
       "sector": "electricity",
-      "reason": "conf=0 in 21/24 runs (88%)",
+      "reason": "conf=0 in 22/24 runs (92%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -408,6 +408,11 @@
     },
     {
       "sector": "frankfurter-fx",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "gdacs-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -532,11 +537,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-neo",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -623,7 +623,7 @@
     },
     {
       "sector": "privacy-zcash",
-      "reason": "conf=0 in 21/24 runs (88%)",
+      "reason": "conf=0 in 22/24 runs (92%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -883,16 +883,11 @@
     },
     {
       "sector": "food-products",
-      "reason": "conf=0 in 21/24 runs (88%)",
+      "reason": "conf=0 in 20/24 runs (83%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "food-security",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "gdacs-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -903,6 +898,11 @@
     },
     {
       "sector": "grid-balance",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -918,64 +918,64 @@
     },
     {
       "sector": "cisa-kev",
-      "reason": "conf=0 in 20/20 runs (100%)",
+      "reason": "conf=0 in 21/21 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nvd-new-cves",
-      "reason": "conf=0 in 20/20 runs (100%)",
+      "reason": "conf=0 in 21/21 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nasa-eonet",
-      "reason": "conf=0 in 18/18 runs (100%)",
+      "reason": "conf=0 in 19/19 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "usgs-water",
-      "reason": "conf=0 in 18/18 runs (100%)",
+      "reason": "conf=0 in 19/19 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "noaa-ndbc",
-      "reason": "conf=0 in 18/18 runs (100%)",
+      "reason": "conf=0 in 19/19 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "epa-envirofacts",
-      "reason": "conf=0 in 18/18 runs (100%)",
+      "reason": "conf=0 in 19/19 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "faostat",
-      "reason": "conf=0 in 5/5 runs (100%)",
+      "reason": "conf=0 in 6/6 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "global-forest-watch",
-      "reason": "conf=0 in 5/5 runs (100%)",
+      "reason": "conf=0 in 6/6 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "fcc-broadband",
-      "reason": "conf=0 in 5/5 runs (100%)",
+      "reason": "conf=0 in 6/6 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "bakom",
-      "reason": "conf=0 in 5/5 runs (100%)",
+      "reason": "conf=0 in 6/6 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "satlas",
-      "reason": "conf=0 in 5/5 runs (100%)",
+      "reason": "conf=0 in 6/6 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "ripe-atlas-public",
-      "reason": "spam (60%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -1060,17 +1060,7 @@
       "avg_conf": 0.96
     },
     {
-      "sector": "nft",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
       "sector": "osv-vulnerabilities",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "podcasts",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1116,12 +1106,12 @@
     },
     {
       "sector": "abuse-ch-feodo",
-      "runs": 20,
+      "runs": 21,
       "avg_conf": 1.0
     },
     {
       "sector": "rir-arin",
-      "runs": 18,
+      "runs": 19,
       "avg_conf": 1.0
     }
   ]
