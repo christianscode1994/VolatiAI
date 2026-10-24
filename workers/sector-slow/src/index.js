@@ -1312,6 +1312,51 @@ const COLLECTORS = {
 };
 
 
+
+// ─── Ed25519 signing for /latest ───
+async function sha256Hex(buf) {
+  const h = await crypto.subtle.digest("SHA-256", buf);
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function signLatest(payload, env) {
+  const privPem = env.VOLATI_ED25519_PRIV;
+  if (!privPem) return null;
+  try {
+    const b64 = privPem
+      .replace(/-----BEGIN PRIVATE KEY-----/g, "")
+      .replace(/-----END PRIVATE KEY-----/g, "")
+      .replace(/\s+/g, "");
+    const pkcs8 = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey(
+      "pkcs8", pkcs8,
+      { name: "Ed25519" },
+      false,
+      ["sign"]
+    );
+    function canonical(obj) {
+      if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
+      if (Array.isArray(obj)) return "[" + obj.map(canonical).join(",") + "]";
+      const keys = Object.keys(obj).sort();
+      return "{" + keys.map(k => JSON.stringify(k) + ":" + canonical(obj[k])).join(",") + "}";
+    }
+    const signable = { ...payload };
+    delete signable.signature;
+    const bytes = new TextEncoder().encode(canonical(signable) + "\n");
+    const sig = await crypto.subtle.sign("Ed25519", key, bytes);
+    const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig)));
+    return {
+      alg: "Ed25519",
+      key_id: "volati-2026-01",
+      value: sigB64,
+      canonical_sha256: await sha256Hex(bytes),
+    };
+  } catch (e) {
+    console.error("sign_failed", String(e));
+    return null;
+  }
+}
+
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
     status,
@@ -1521,14 +1566,17 @@ export default {
             });
           });
         }
-        return json({
+        const _latest = {
           ts: new Date().toISOString(),
           count: rows.length,
           with_history: rows.length,
           alerting: 0,
           source: "kv_list",
           rows,
-        });
+        };
+        const _sig = await signLatest(_latest, env);
+        if (_sig) _latest.signature = _sig;
+        return json(_latest);
       } catch (e) {
         return json({ error: "latest_failed", message: String(e && e.message || e) }, 500);
       }

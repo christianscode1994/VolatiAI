@@ -20,6 +20,8 @@ def _run_cluster_signals():
 
 
 URL = "https://christianscode1994.github.io/VolatiAI/d.html"
+DID = "did:web:christianscode1994.github.io"
+NPUB = "npub1ffnr0nau5rlajjf2syyqn287vvqjd04eld0cdrqayt520g8hznrs6nrwlq"
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 
 def fetch_json(url):
@@ -85,4 +87,5 @@ for r in sorted(singles, key=lambda x: abs(x.get("pct_change", 0) or 0), reverse
     lines.append(f"{r['sector']}: {cur_s} ({pct:+.1f}%)")
 
 lines.append(f"→ {URL}")
+lines.append(f"did: {DID}")
 print("\n".join(lines))
