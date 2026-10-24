@@ -1,32 +1,16 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-24T10:01:02Z",
+  "ts": "2026-10-24T15:06:03Z",
   "run_number": 24,
   "briefing": {
-    "headline": "13 signals across 295 sectors evaluated",
+    "headline": "14 signals across 302 sectors evaluated",
     "by_domain": {
-      "security": {
-        "count": 1,
-        "sectors": [
-          "cve-feed"
-        ]
-      },
-      "crypto": {
-        "count": 1,
-        "sectors": [
-          "depin-network"
-        ]
-      },
-      "environment": {
-        "count": 1,
-        "sectors": [
-          "earthquakes"
-        ]
-      },
       "other": {
-        "count": 9,
+        "count": 12,
         "sectors": [
-          "jobs",
+          "anime",
+          "environment",
+          "openlibrary-books",
           "treasuries",
           "ripe-atlas-public",
           "arbetsformedlingen",
@@ -34,7 +18,14 @@
           "usgs-earthquakes",
           "crossref-works",
           "datacite-dois",
-          "usgs-earthquakes-emsc"
+          "usgs-earthquakes-emsc",
+          "eth-exchange-spread"
+        ]
+      },
+      "security": {
+        "count": 1,
+        "sectors": [
+          "cve-feed"
         ]
       },
       "space": {
@@ -47,40 +38,40 @@
   },
   "signals": [
     {
-      "sector": "cve-feed",
+      "sector": "anime",
       "severity": "notice",
-      "summary": "New: CVE-2026-115807: The User Profile Builder \u2013 Beautiful User Registration Forms, User Profiles & User Role Editor plugi",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 11
-    },
-    {
-      "sector": "depin-network",
-      "severity": "notice",
-      "summary": "New: Flux nodes: 6,836",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 11
-    },
-    {
-      "sector": "earthquakes",
-      "severity": "notice",
-      "summary": "New: M6.3 \u2014 170 km NW of Port-Olry, Vanuatu",
+      "summary": "New: Zettai Reido (2024)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 2
     },
     {
-      "sector": "jobs",
+      "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: Accounting and Implementation Manager @ Aprio",
+      "summary": "New: CVE-2026-116019: Grav 2.0.15 before 2.2.13 contains an allowlist bypass vulnerability that allows page editors to inv",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 6
+      "fires_24": 12
+    },
+    {
+      "sector": "environment",
+      "severity": "notice",
+      "summary": "co2_ppm 428.08 (+0.5% vs 25.6d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 0.5472695243687572,
+      "fires_24": 1
+    },
+    {
+      "sector": "openlibrary-books",
+      "severity": "critical",
+      "summary": "num_found 0 (-100.0%)",
+      "confidence": 1,
+      "magnitude": 1000,
+      "pct_change": -100,
+      "fires_24": 1
     },
     {
       "sector": "spaceweather",
@@ -89,160 +80,162 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 1
+      "fires_24": 2
     },
     {
       "sector": "treasuries",
       "severity": "notice",
-      "summary": "yield_10y 4.96 (+6.7% vs 89.4d ago)",
+      "summary": "yield_10y 4.96 (+6.7% vs 89.6d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 6.666666666666658,
-      "fires_24": 2
+      "fires_24": 3
     },
     {
       "sector": "ripe-atlas-public",
       "severity": "alert",
-      "summary": "public_measurements 39638 (-4.1% vs 0.5d ago)",
+      "summary": "public_measurements 40174 (-2.8% vs 0.8d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -4.130992115319499,
-      "fires_24": 5
+      "pct_change": -2.834615198568181,
+      "fires_24": 6
     },
     {
       "sector": "arbetsformedlingen",
       "severity": "alert",
-      "summary": "job_vacancies 43672 (-2.4% vs 0.5d ago)",
+      "summary": "job_vacancies 43691 (-2.4% vs 0.8d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -2.4002145443168104,
-      "fires_24": 3
+      "pct_change": -2.3577526482814104,
+      "fires_24": 4
     },
     {
       "sector": "robonix",
       "severity": "alert",
-      "summary": "packages 61 (+3.4% vs 1.3d ago)",
+      "summary": "packages 61 (+3.4% vs 1.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 3.389830508474576,
-      "fires_24": 1
+      "fires_24": 2
     },
     {
       "sector": "usgs-earthquakes",
       "severity": "alert",
-      "summary": "earthquakes_since_2026 115013 (+9.0% vs 29.4d ago)",
+      "summary": "earthquakes_since_2026 115052 (+9.1% vs 29.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 9.03979976867214,
-      "fires_24": 3
+      "pct_change": 9.076774303646259,
+      "fires_24": 4
     },
     {
       "sector": "crossref-works",
       "severity": "notice",
-      "summary": "total_works 187989404 (+0.6% vs 29.4d ago)",
+      "summary": "total_works 187993073 (+0.6% vs 29.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 0.6043962457053884,
-      "fires_24": 3
+      "pct_change": 0.6063597474877841,
+      "fires_24": 4
     },
     {
       "sector": "datacite-dois",
       "severity": "alert",
-      "summary": "total_dois 139905839 (+3.1% vs 29.4d ago)",
+      "summary": "total_dois 139911265 (+3.1% vs 29.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 3.083107703234601,
-      "fires_24": 2
+      "pct_change": 3.0871055988649454,
+      "fires_24": 3
     },
     {
       "sector": "usgs-earthquakes-emsc",
       "severity": "alert",
-      "summary": "earthquakes_since_2026 131138 (+9.5% vs 29.4d ago)",
+      "summary": "earthquakes_since_2026 131232 (+9.6% vs 29.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 9.473244845145672,
-      "fires_24": 3
+      "pct_change": 9.551715502128726,
+      "fires_24": 4
+    },
+    {
+      "sector": "eth-exchange-spread",
+      "severity": "alert",
+      "summary": "spread_pct 0.03624673671491039 (+2728.3% vs 0d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 2728.3389069683794,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-24 02:37",
-    "signals_before": 20,
-    "signals_after": 13,
+    "previous_ts": "2026-10-24 10:01",
+    "signals_before": 13,
+    "signals_after": 14,
     "new": [
-      "earthquakes",
-      "robonix",
-      "spaceweather",
-      "treasuries"
+      "anime",
+      "environment",
+      "eth-exchange-spread",
+      "openlibrary-books"
     ],
     "dropped": [
-      "art-design",
-      "carbon-intensity",
-      "events",
-      "food-products",
-      "nft",
-      "open-source-packages",
-      "podcasts",
-      "pypi-packages",
-      "tv",
-      "water",
-      "wikipedia"
+      "depin-network",
+      "earthquakes",
+      "jobs"
     ],
     "persistent": [
       "arbetsformedlingen",
       "crossref-works",
       "cve-feed",
       "datacite-dois",
-      "depin-network",
-      "jobs",
       "ripe-atlas-public",
+      "robonix",
+      "spaceweather",
+      "treasuries",
       "usgs-earthquakes",
       "usgs-earthquakes-emsc"
     ],
     "movements": [
       {
         "sector": "arbetsformedlingen",
-        "previous": "job_vacancies 43619 (-2.5% vs 0.2d ago)",
-        "current": "job_vacancies 43672 (-2.4% vs 0.5d ago)"
+        "previous": "job_vacancies 43672 (-2.4% vs 0.5d ago)",
+        "current": "job_vacancies 43691 (-2.4% vs 0.8d ago)"
       },
       {
         "sector": "crossref-works",
-        "previous": "total_works 187983753 (+0.6% vs 30.1d ago)",
-        "current": "total_works 187989404 (+0.6% vs 29.4d ago)"
+        "previous": "total_works 187989404 (+0.6% vs 29.4d ago)",
+        "current": "total_works 187993073 (+0.6% vs 29.6d ago)"
       },
       {
         "sector": "cve-feed",
-        "previous": "New: CVE-2026-115810: Tandoor Recipes before 2.7.0 contains a server-side reques",
-        "current": "New: CVE-2026-115807: The User Profile Builder \u2013 Beautiful User Registration For"
+        "previous": "New: CVE-2026-115807: The User Profile Builder \u2013 Beautiful User Registration For",
+        "current": "New: CVE-2026-116019: Grav 2.0.15 before 2.2.13 contains an allowlist bypass vul"
       },
       {
         "sector": "datacite-dois",
-        "previous": "total_dois 139898742 (+5.5% vs 90.1d ago)",
-        "current": "total_dois 139905839 (+3.1% vs 29.4d ago)"
-      },
-      {
-        "sector": "depin-network",
-        "previous": "New: Flux nodes: 6,744",
-        "current": "New: Flux nodes: 6,836"
-      },
-      {
-        "sector": "jobs",
-        "previous": "New: Travel Support Specialist @ Aisles &amp; Abroad",
-        "current": "New: Accounting and Implementation Manager @ Aprio"
+        "previous": "total_dois 139905839 (+3.1% vs 29.4d ago)",
+        "current": "total_dois 139911265 (+3.1% vs 29.6d ago)"
       },
       {
         "sector": "ripe-atlas-public",
-        "previous": "public_measurements 39977 (-3.3% vs 0.2d ago)",
-        "current": "public_measurements 39638 (-4.1% vs 0.5d ago)"
+        "previous": "public_measurements 39638 (-4.1% vs 0.5d ago)",
+        "current": "public_measurements 40174 (-2.8% vs 0.8d ago)"
+      },
+      {
+        "sector": "robonix",
+        "previous": "packages 61 (+3.4% vs 1.3d ago)",
+        "current": "packages 61 (+3.4% vs 1.5d ago)"
+      },
+      {
+        "sector": "treasuries",
+        "previous": "yield_10y 4.96 (+6.7% vs 89.4d ago)",
+        "current": "yield_10y 4.96 (+6.7% vs 89.6d ago)"
       },
       {
         "sector": "usgs-earthquakes",
-        "previous": "earthquakes_since_2026 114907 (+9.3% vs 30.1d ago)",
-        "current": "earthquakes_since_2026 115013 (+9.0% vs 29.4d ago)"
+        "previous": "earthquakes_since_2026 115013 (+9.0% vs 29.4d ago)",
+        "current": "earthquakes_since_2026 115052 (+9.1% vs 29.6d ago)"
       },
       {
         "sector": "usgs-earthquakes-emsc",
-        "previous": "earthquakes_since_2026 130991 (+9.7% vs 30.1d ago)",
-        "current": "earthquakes_since_2026 131138 (+9.5% vs 29.4d ago)"
+        "previous": "earthquakes_since_2026 131138 (+9.5% vs 29.4d ago)",
+        "current": "earthquakes_since_2026 131232 (+9.6% vs 29.6d ago)"
       }
     ]
   },
@@ -254,21 +247,9 @@
       "fires_in_window": 1
     },
     {
-      "sector": "eth-exchange-spread",
-      "avg_volatility": 95.46,
-      "max_volatility": 95.46,
-      "fires_in_window": 0
-    },
-    {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 91.37,
+      "avg_volatility": 49.66,
       "max_volatility": 91.37,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "crypto-liquidations",
-      "avg_volatility": 11.29,
-      "max_volatility": 17.65,
       "fires_in_window": 0
     },
     {
@@ -278,8 +259,14 @@
       "fires_in_window": 2
     },
     {
+      "sector": "crypto-liquidations",
+      "avg_volatility": 8.11,
+      "max_volatility": 14.41,
+      "fires_in_window": 0
+    },
+    {
       "sector": "grid-mix",
-      "avg_volatility": 7.84,
+      "avg_volatility": 7.98,
       "max_volatility": 7.98,
       "fires_in_window": 0
     },
@@ -290,28 +277,34 @@
       "fires_in_window": 2
     },
     {
-      "sector": "privacy-zcash",
-      "avg_volatility": 5.41,
-      "max_volatility": 9.24,
-      "fires_in_window": 2
-    },
-    {
       "sector": "energy-carbon",
       "avg_volatility": 5.38,
       "max_volatility": 5.38,
       "fires_in_window": 0
     },
     {
+      "sector": "privacy-zcash",
+      "avg_volatility": 3.49,
+      "max_volatility": 6.68,
+      "fires_in_window": 1
+    },
+    {
       "sector": "cloudflare-status",
-      "avg_volatility": 3.3,
-      "max_volatility": 3.9,
+      "avg_volatility": 2.7,
+      "max_volatility": 2.7,
+      "fires_in_window": 0
+    },
+    {
+      "sector": "openfda-device-recalls",
+      "avg_volatility": 1.8,
+      "max_volatility": 1.8,
       "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 295,
-    "firing_sectors": 13,
-    "fire_rate_pct": 4.41,
+    "total_sectors": 302,
+    "firing_sectors": 14,
+    "fire_rate_pct": 4.64,
     "runs_in_history": 24
   }
 }
