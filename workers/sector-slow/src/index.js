@@ -1344,10 +1344,13 @@ export default {
             const withoutSuffix = k.name.replace(/_history$/, "");
             const firstUnderscore = withoutSuffix.indexOf("_");
             const sector = firstUnderscore === -1 ? withoutSuffix : withoutSuffix.substring(0, firstUnderscore);
+            const absPct = Math.abs(pct);
+            const sev = absPct >= 15 ? "critical"
+                      : absPct >= 5  ? "warn" : "info";
             rows.push({
               sector, current: last.v, previous: prev.v, pct_change: pct,
               pts: hist.length, t: last.t,
-              has_signal: false, severity: "info",
+              has_signal: sev !== "info", severity: sev,
             });
           });
         }
