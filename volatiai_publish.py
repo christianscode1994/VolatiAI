@@ -77,8 +77,8 @@ def bluesky(text):
     return "ok" if r and b'"uri"' in r else "fail"
 
 def nostr(text):
-    priv = os.environ.get("NOSTR_PRIVATE_KEY")
-    relay = os.environ.get("NOSTR_RELAY") or "wss://relay.damus.io"
+    priv = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
+    relay = os.environ.get("NOSTR_RELAY", "wss://relay.damus.io").strip()
     if not priv:
         return "skipped (no NOSTR_PRIVATE_KEY)"
     try:
@@ -86,27 +86,60 @@ def nostr(text):
         from pynostr.event import Event
         from pynostr.relay_manager import RelayManager
         import time
-    except ImportError:
-        return "skipped (pip install pynostr)"
+    except ImportError as e:
+        return f"fail import: {e}"
 
+    # 1. Key
     try:
-        if priv.startswith("nsec"):
-            sk = PrivateKey.from_nsec(priv)
-        else:
-            sk = PrivateKey(bytes.fromhex(priv))
+        sk = PrivateKey.from_nsec(priv) if priv.startswith("nsec") else PrivateKey(bytes.fromhex(priv))
+    except Exception as e:
+        return f"fail key: {type(e).__name__}: {e}"
 
-        event = Event(content=text[:500], kind=1)
+    # 2. Build event — try multiple constructor patterns
+    event = None
+    for ctor in [
+        lambda: Event(content=text[:500], kind=1),
+        lambda: Event(text[:500]),
+        lambda: Event(content=text[:500]),
+    ]:
+        try:
+            event = ctor()
+            break
+        except Exception:
+            continue
+    if event is None:
+        return "fail event: all constructor patterns failed"
+
+    # 3. Sign
+    try:
         event.sign(sk.hex())
+    except Exception as e:
+        return f"fail sign: {type(e).__name__}: {e}"
 
+    # 4. Publish — RelayManager
+    try:
         rm = RelayManager(timeout=8)
         rm.add_relay(relay)
         rm.publish_event(event)
         rm.run_sync()
         time.sleep(2)
-        rm.close_all_relay_connections()
+        try: rm.close_all_relay_connections()
+        except: pass
         return "ok"
     except Exception as e:
-        return f"fail: {type(e).__name__}: {str(e)[:80]}"
+        # Fallback: direct websocket
+        try:
+            import websocket
+            msg = event.to_message() if hasattr(event, "to_message") else None
+            if not msg:
+                return f"fail publish: {type(e).__name__}: {e} (no to_message for fallback)"
+            ws = websocket.create_connection(relay, timeout=10)
+            ws.send(msg)
+            resp = ws.recv()
+            ws.close()
+            return "ok (websocket)" if (event.id and event.id in resp) else f"ok (websocket, unconfirmed): {resp[:60]}"
+        except Exception as e2:
+            return f"fail publish: {type(e).__name__}: {e} (ws: {type(e2).__name__}: {e2})"
 
 PLATFORMS = [
     ("telegram", telegram),

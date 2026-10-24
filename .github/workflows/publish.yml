@@ -16,7 +16,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install nostr dependency
-        run: pip install --quiet pynostr
+        run: pip install --quiet pynostr websocket-client
 
       - name: Build message
         id: msg
