@@ -1349,6 +1349,7 @@ export default {
 
     // ─── /latest — batch summary from KV, no upstream fetches ───
     if (parts[0] === "latest") {
+      try {
       const rows = [];
       const names = Object.keys(SECTORS || {});
       // Batch reads to avoid KV throttling
@@ -1389,6 +1390,13 @@ export default {
         alerting: rows.filter(r => r.has_signal).length,
         rows,
       });
+      } catch (e) {
+        return json({
+          error: "latest_failed",
+          message: String(e && e.message || e),
+          stack: String(e && e.stack || "").split("\n").slice(0, 3),
+        }, 500);
+      }
     }
 
     if (parts.length === 0) {
