@@ -869,6 +869,206 @@ const COLLECTORS = {
       },
     }),
   },
+  "frankfurter-eurusd": {
+    config: { metric: "eur_usd", threshold_pct: 0.3, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        eur_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.rates?.USD;
+          if (typeof v !== "number") throw new Error("no_rate: keys=" + Object.keys(j?.rates || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "frankfurter-eursek": {
+    config: { metric: "eur_sek", threshold_pct: 0.3, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        eur_sek: await fetchSafe(async () => {
+          const r = await fetch("https://api.frankfurter.dev/v1/latest?base=EUR&symbols=SEK",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.rates?.SEK;
+          if (typeof v !== "number") throw new Error("no_rate");
+          return v;
+        }),
+      },
+    }),
+  },
+  "nbp-gold-spot": {
+    config: { metric: "pln_per_gram", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        pln_per_gram: await fetchSafe(async () => {
+          const r = await fetch("https://api.nbp.pl/api/cenyzlota/?format=json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = Array.isArray(j) && j[0]?.cena;
+          if (typeof v !== "number") throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "us-treasury-debt": {
+    config: { metric: "total_debt_usd", threshold_pct: 0.05, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_debt_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const s = j?.data?.[0]?.tot_pub_debt_out_amt;
+          if (!s) throw new Error("no_debt");
+          const v = parseFloat(s);
+          if (!Number.isFinite(v)) throw new Error("bad_debt");
+          return v;
+        }),
+      },
+    }),
+  },
+  "us-unemployment": {
+    config: { metric: "u3_rate", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        u3_rate: await fetchSafe(async () => {
+          const r = await fetch("https://api.bls.gov/publicAPI/v1/timeseries/data/LNS14000000",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (j?.status !== "REQUEST_SUCCEEDED") throw new Error("bls_" + (j?.status || "unknown"));
+          const data = j?.Results?.series?.[0]?.data || [];
+          const row = data.find(x => x && x.value !== undefined && x.value !== ".");
+          if (!row) throw new Error("no_data");
+          const v = parseFloat(row.value);
+          if (!Number.isFinite(v)) throw new Error("bad_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "worldbank-us-gdp": {
+    config: { metric: "gdp_usd", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        gdp_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD?format=json&per_page=10",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const rows = Array.isArray(j?.[1]) ? j[1] : [];
+          const row = rows.find(x => x && typeof x.value === "number");
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  "worldbank-se-gdp": {
+    config: { metric: "gdp_usd", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        gdp_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.worldbank.org/v2/country/SE/indicator/NY.GDP.MKTP.CD?format=json&per_page=10",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const rows = Array.isArray(j?.[1]) ? j[1] : [];
+          const row = rows.find(x => x && typeof x.value === "number");
+          if (!row) throw new Error("no_value");
+          return row.value;
+        }),
+      },
+    }),
+  },
+  "coingecko-btc-usd": {
+    config: { metric: "btc_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        btc_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.bitcoin?.usd;
+          if (typeof v !== "number") throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "coinbase-btc-usd": {
+    config: { metric: "btc_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        btc_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.exchange.coinbase.com/products/BTC-USD/ticker",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = parseFloat(j?.price);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "dexscreener-sol-usd": {
+    config: { metric: "sol_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        sol_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.dexscreener.com/latest/dex/tokens/So11111111111111111111111111111111111111112",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const pairs = (j?.pairs || []).slice().sort((a, b) => (b?.liquidity?.usd || 0) - (a?.liquidity?.usd || 0));
+          const v = parseFloat(pairs[0]?.priceUsd);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "defillama-protocol-count": {
+    config: { metric: "protocol_count", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        protocol_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/protocols",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(30000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "binance-btc-volume24h": {
+    config: { metric: "btc_quote_volume_usdt", threshold_pct: 25, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        btc_quote_volume_usdt: await fetchSafe(async () => {
+          const r = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = parseFloat(j?.quoteVolume);
+          if (!Number.isFinite(v)) throw new Error("no_volume");
+          return v;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
