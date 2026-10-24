@@ -83,30 +83,25 @@ def nostr(text):
         return "skipped (no NOSTR_PRIVATE_KEY)"
     try:
         from pynostr.key import PrivateKey
-        from pynostr.event import Event, EventKind
+        from pynostr.event import Event
         from pynostr.relay_manager import RelayManager
-        from pynostr.filters import FiltersList, Filters
-        from pynostr.message_pool import EventMessage
         import time
     except ImportError:
         return "skipped (pip install pynostr)"
-    
+
     try:
-        # Parse private key (accepts hex or nsec)
         if priv.startswith("nsec"):
-            pk = PrivateKey.from_nsec(priv)
+            sk = PrivateKey.from_nsec(priv)
         else:
-            pk = PrivateKey(bytes.fromhex(priv))
-        
-        # Build event
-        ev = Event(kind=EventKind.TEXT_NOTE, content=text[:500])
-        ev.sign(pk.raw_secret)
-        
-        # Publish to relay
-        rm = RelayManager(timeout=6)
+            sk = PrivateKey(bytes.fromhex(priv))
+
+        event = Event(content=text[:500], kind=1)
+        event.sign(sk.hex())
+
+        rm = RelayManager(timeout=8)
         rm.add_relay(relay)
-        rm.add_event(ev.to_message())
-        rm.publish_message()
+        rm.publish_event(event)
+        rm.run_sync()
         time.sleep(2)
         rm.close_all_relay_connections()
         return "ok"
