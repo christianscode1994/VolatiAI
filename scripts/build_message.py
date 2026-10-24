@@ -33,12 +33,32 @@ def fetch_json(url):
         out = subprocess.run(["curl","-sfL","--max-time","10",url], capture_output=True, text=True)
         return json.loads(out.stdout) if out.returncode == 0 else None
 
+
+def _verify_or_die(d):
+    """Verify /latest signature before displaying. Refuse if invalid."""
+    try:
+        sys.path.insert(0, str(BASE_DIR))
+        from scripts.verify_signature import verify as _v
+        import json as _json
+        with open(BASE_DIR / "docs" / ".well-known" / "volatiai-key.json") as f:
+            pub = _json.load(f)["publicKeyHex"]
+        r = _v(d, pub)
+        if r is False:
+            print(f"🚨 SIGNATURE INVALID — refusing to publish\n→ {URL}")
+            sys.exit(1)
+        # r is None (unsigned) or True (valid) → proceed
+    except FileNotFoundError:
+        pass  # crypto not configured, allow unsigned
+    except Exception:
+        pass
+
 try:
     d = json.load(sys.stdin)
 except Exception:
     print(f"VolatiAI · pipeline unreachable\n→ {URL}")
     sys.exit(0)
 
+_verify_or_die(d)
 signals = [r for r in d.get("rows", []) if r.get("has_signal")]
 total = d.get("with_history", 0)
 
@@ -50,7 +70,7 @@ except Exception:
     s2c = {}
 
 if not signals:
-    print(f"VolatiAI · {total} sectors active · all quiet\n→ {URL}")
+    print(f"VolatiAI · {total} sectors active · all quiet\n→ {URL}\ndid: {DID}")
     sys.exit(0)
 
 # Load cluster analysis
