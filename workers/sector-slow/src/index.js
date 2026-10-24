@@ -1359,22 +1359,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "github-stars-tensorflow": {
-    config: { metric: "stars", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        stars: await fetchSafe(async () => {
-          const r = await fetch("https://api.github.com/repos/tensorflow/tensorflow",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j.stargazers_count;
-          if (typeof v !== "number") throw new Error("no_stars");
-          return v;
-        }),
-      },
-    }),
-  },
   "hackernews-top-scores": {
     config: { metric: "top10_score_sum", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({

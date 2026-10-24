@@ -83,8 +83,6 @@ COMPOSITE_RULES = [
      lambda b: (b.get("ecosyste-ms-react") or {}).get("pct_change", 0) > 5),
     ("openrank-collapse", "VS Code OpenRank down >10%",
      lambda b: (b.get("open-digger-openrank-vscode") or {}).get("pct_change", 0) < -10),
-    ("star-surge", "TensorFlow stars +2%",
-     lambda b: (b.get("github-stars-tensorflow") or {}).get("pct_change", 0) > 2),
     ("hn-sentiment-shift", "HN top-10 score sum +25%",
      lambda b: (b.get("hackernews-top-scores") or {}).get("pct_change", 0) > 25),
 ]
