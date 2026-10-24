@@ -25,7 +25,22 @@ jobs:
             | python3 scripts/build_message.py > /tmp/message.txt
           cat /tmp/message.txt
 
+      - name: Check if message changed
+        id: check
+        run: |
+          NEW=$(sha256sum /tmp/message.txt | cut -d' ' -f1)
+          CACHED=$(curl -s "https://sector-slow.fourieranalys.workers.dev/status" | jq -r '.last_message_hash // "none"')
+          echo "new=$NEW"
+          echo "cached=$CACHED"
+          if [ "$NEW" = "$CACHED" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Message unchanged — skipping publish"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish
+        if: steps.check.outputs.changed == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -39,3 +54,10 @@ jobs:
           NOSTR_RELAY: ${{ secrets.NOSTR_RELAY }}
         run: |
           python3 volatiai_publish.py "$(cat /tmp/message.txt)"
+
+      - name: Record published hash
+        if: steps.dedup.outputs.changed == 'true'
+        run: |
+          curl -sfL -X POST "https://sector-slow.fourieranalys.workers.dev/publish-hash" \
+            -H "Content-Type: application/json" \
+            -d "{\"hash\":\"${{ steps.dedup.outputs.new_hash }}\"}"

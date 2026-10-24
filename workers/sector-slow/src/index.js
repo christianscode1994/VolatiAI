@@ -1437,6 +1437,24 @@ export default {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
 
+    // ─── POST /publish-hash — client stores last-published message hash ───
+    if (parts[0] === "publish-hash") {
+      if (request.method !== "POST") {
+        return json({ error: "method_not_allowed", allow: "POST" }, 405);
+      }
+      try {
+        const body = await request.json();
+        const hash = body && body.hash;
+        if (typeof hash !== "string" || hash.length < 8 || hash.length > 128) {
+          return json({ error: "invalid_hash" }, 400);
+        }
+        await env.SECTOR_KV.put("_last_publish_hash", hash, { expirationTtl: 86400 * 30 });
+        return json({ ok: true, hash, stored_at: new Date().toISOString() });
+      } catch (e) {
+        return json({ error: "put_failed", message: String(e && e.message || e) }, 500);
+      }
+    }
+
     // ─── /metrics — read-only health from history timestamps ───
     if (parts[0] === "metrics") {
       try {
@@ -1516,6 +1534,7 @@ export default {
         const list = await env.SECTOR_KV.list({ limit: 1000 });
         const histKeys = list.keys.filter(k => k.name.endsWith("_history"));
         const meta = await env.SECTOR_KV.get("_last_cron_run", "json");
+        const lastPublishHash = await env.SECTOR_KV.get("_last_publish_hash");
         return json({
           ts: new Date().toISOString(),
           worker: "sector-slow",
@@ -1524,6 +1543,7 @@ export default {
           kv_history_keys: histKeys.length,
           kv_other_keys: list.keys.length - histKeys.length,
           last_cron: meta || null,
+          last_publish_hash: lastPublishHash || null,
         });
       } catch (e) {
         return json({ error: "status_failed", message: String(e && e.message || e) }, 500);
