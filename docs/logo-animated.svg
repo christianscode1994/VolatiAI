@@ -1,68 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <radialGradient id="bg" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#181c26"/>
-      <stop offset="100%" stop-color="#050608"/>
+      <stop offset="0%" stop-color="#1c222e"/>
+      <stop offset="100%" stop-color="#06080c"/>
     </radialGradient>
-    <filter id="vGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="12" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <filter id="dotGlow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
     <linearGradient id="vGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#d4a017"/>
       <stop offset="50%" stop-color="#ffcc33"/>
       <stop offset="100%" stop-color="#d4a017"/>
     </linearGradient>
+    <filter id="vGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="dotGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-
-  <style>
-    @keyframes vPulse {
-      0%, 100% { filter: drop-shadow(0 0 8px #d4a017) drop-shadow(0 0 16px #d4a017); }
-      50%      { filter: drop-shadow(0 0 20px #ffcc33) drop-shadow(0 0 40px #ffcc33); }
-    }
-    @keyframes dotPulse {
-      0%, 100% { opacity: 1;   r: 28; }
-      50%      { opacity: 0.6; r: 32; }
-    }
-    @keyframes ringExpand {
-      0%   { r: 32; opacity: 0.8; }
-      100% { r: 96; opacity: 0; }
-    }
-    @keyframes scanMove {
-      0%   { transform: translateY(0); }
-      100% { transform: translateY(8px); }
-    }
-    @keyframes vFloat {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(-4px); }
-    }
-    .v-path   { animation: vPulse 2.4s ease-in-out infinite; }
-    .v-group  { animation: vFloat 4s ease-in-out infinite; transform-origin: center; }
-    .dot      { animation: dotPulse 1.6s ease-in-out infinite; }
-    .ring1    { animation: ringExpand 2s ease-out infinite; }
-    .ring2    { animation: ringExpand 2s ease-out infinite 0.7s; }
-    .ring3    { animation: ringExpand 2s ease-out infinite 1.4s; }
-    .scanline { animation: scanMove 0.4s linear infinite; }
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; }
-    }
-  </style>
 
   <!-- Background -->
   <rect width="512" height="512" rx="96" ry="96" fill="url(#bg)"/>
 
-  <!-- Subtle grid -->
-  <g opacity="0.05" stroke="#6a9aef" stroke-width="1">
+  <!-- Grid -->
+  <g opacity="0.06" stroke="#6a9aef" stroke-width="1">
     <line x1="96"  y1="0" x2="96"  y2="512"/>
     <line x1="192" y1="0" x2="192" y2="512"/>
     <line x1="288" y1="0" x2="288" y2="512"/>
@@ -73,26 +34,44 @@
     <line x1="0" y1="384" x2="512" y2="384"/>
   </g>
 
-  <!-- V with animated glow -->
-  <g class="v-group">
-    <path class="v-path"
-          d="M 112 112 L 256 384 L 400 112"
+  <!-- V with breathing glow -->
+  <g>
+    <path d="M 112 112 L 256 384 L 400 112"
           fill="none" stroke="url(#vGrad)" stroke-width="56"
           stroke-linejoin="round" stroke-linecap="round"
-          filter="url(#vGlow)"/>
+          filter="url(#vGlow)">
+      <animate attributeName="opacity" values="1;0.75;1" dur="2.4s" repeatCount="indefinite"/>
+    </path>
   </g>
 
-  <!-- Signal dot with pulse rings -->
-  <circle class="ring1" cx="256" cy="112" fill="none" stroke="#8cbeff" stroke-width="2" r="32" opacity="0"/>
-  <circle class="ring2" cx="256" cy="112" fill="none" stroke="#8cbeff" stroke-width="2" r="32" opacity="0"/>
-  <circle class="ring3" cx="256" cy="112" fill="none" stroke="#8cbeff" stroke-width="2" r="32" opacity="0"/>
-  <circle class="dot" cx="256" cy="112" r="28" fill="#8cbeff" filter="url(#dotGlow)"/>
+  <!-- Pulse rings around dot -->
+  <circle cx="256" cy="112" fill="none" stroke="#8cbeff" stroke-width="2" r="32" opacity="0.8">
+    <animate attributeName="r" values="32;96" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="256" cy="112" fill="none" stroke="#8cbeff" stroke-width="2" r="32" opacity="0.8">
+    <animate attributeName="r" values="32;96" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="256" cy="112" fill="none" stroke="#8cbeff" stroke-width="2" r="32" opacity="0.8">
+    <animate attributeName="r" values="32;96" dur="2s" begin="1.4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0" dur="2s" begin="1.4s" repeatCount="indefinite"/>
+  </circle>
 
-  <!-- Scanline overlay -->
-  <g opacity="0.08">
-    <rect class="scanline" x="0" y="0" width="512" height="2" fill="#ffffff"/>
-  </g>
+  <!-- Central dot with pulse -->
+  <circle cx="256" cy="112" r="28" fill="#8cbeff" filter="url(#dotGlow)">
+    <animate attributeName="r" values="28;32;28" dur="1.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.7;1" dur="1.6s" repeatCount="indefinite"/>
+  </circle>
 
-  <!-- Rounded clip -->
-  <rect width="512" height="512" rx="96" ry="96" fill="none"/>
+  <!-- Scanline sweep -->
+  <rect x="0" y="0" width="512" height="2" fill="#ffffff" opacity="0.15">
+    <animate attributeName="y" values="0;512" dur="3s" repeatCount="indefinite"/>
+  </rect>
+
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      animate, circle, path, rect { animation: none !important; }
+    }
+  </style>
 </svg>
