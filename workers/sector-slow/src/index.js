@@ -1315,12 +1315,24 @@ const COLLECTORS = {
       sources: {
         floor_eth: await fetchSafe(async () => {
           const r = await fetch("https://api.reservoir.tools/collections/v6?slug=boredapeyachtclub",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const c = (j.collections || [])[0];
-          const v = c && c.floorAsk && c.floorAsk.price && c.floorAsk.price.amount && c.floorAsk.price.amount.native;
-          if (!Number.isFinite(v)) throw new Error("no_floor");
+          const c = (j.collections || [])[0] || {};
+          // Try multiple paths for compatibility across Reservoir API versions
+          let v = null;
+          const p1 = c?.floorAsk?.price?.amount?.native;
+          const p2 = c?.floorAsk?.price?.amount?.decimal;
+          const p3 = c?.floorAsk?.price?.amount?.raw;
+          const p4 = typeof c?.floorAsk?.price === "number" ? c.floorAsk.price : null;
+          if (Number.isFinite(p1)) v = p1;
+          else if (Number.isFinite(p2)) v = p2;
+          else if (Number.isFinite(p3)) v = parseFloat(p3);
+          else if (Number.isFinite(p4)) v = p4;
+          if (!Number.isFinite(v)) {
+            const dbg = { keys: Object.keys(c).slice(0,10), floorAsk: c.floorAsk ? Object.keys(c.floorAsk) : null };
+            throw new Error("no_floor: " + JSON.stringify(dbg).slice(0, 200));
+          }
           return v;
         }),
       },
@@ -1332,12 +1344,24 @@ const COLLECTORS = {
       sources: {
         floor_eth: await fetchSafe(async () => {
           const r = await fetch("https://api.reservoir.tools/collections/v6?slug=cryptopunks",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const c = (j.collections || [])[0];
-          const v = c && c.floorAsk && c.floorAsk.price && c.floorAsk.price.amount && c.floorAsk.price.amount.native;
-          if (!Number.isFinite(v)) throw new Error("no_floor");
+          const c = (j.collections || [])[0] || {};
+          // Try multiple paths for compatibility across Reservoir API versions
+          let v = null;
+          const p1 = c?.floorAsk?.price?.amount?.native;
+          const p2 = c?.floorAsk?.price?.amount?.decimal;
+          const p3 = c?.floorAsk?.price?.amount?.raw;
+          const p4 = typeof c?.floorAsk?.price === "number" ? c.floorAsk.price : null;
+          if (Number.isFinite(p1)) v = p1;
+          else if (Number.isFinite(p2)) v = p2;
+          else if (Number.isFinite(p3)) v = parseFloat(p3);
+          else if (Number.isFinite(p4)) v = p4;
+          if (!Number.isFinite(v)) {
+            const dbg = { keys: Object.keys(c).slice(0,10), floorAsk: c.floorAsk ? Object.keys(c.floorAsk) : null };
+            throw new Error("no_floor: " + JSON.stringify(dbg).slice(0, 200));
+          }
           return v;
         }),
       },
@@ -1426,34 +1450,42 @@ export default {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
 
-    // ─── /metrics — 24h rolling health, aggregated from KV ───
+    // ─── /metrics — read-only health from history timestamps ───
     if (parts[0] === "metrics") {
       try {
-        const list = await env.SECTOR_KV.list({ prefix: "_health_" });
-        const rows = [];
+        const list = await env.SECTOR_KV.list({ limit: 1000 });
+        const histKeys = list.keys.filter(k => k.name.endsWith("_history") && !k.name.startsWith("_"));
+        const now = Date.now();
+        const H24 = 24 * 3600 * 1000;
+        const H7D = 7 * H24;
+        const H30D = 30 * H24;
+        let healthy = 0, stale24 = 0, stale7d = 0, stale30d = 0;
+        const stale = [];
         const BATCH = 25;
-        for (let i = 0; i < list.keys.length; i += BATCH) {
-          const batch = list.keys.slice(i, i + BATCH);
-          const vals = await Promise.all(batch.map(k => env.SECTOR_KV.get(k.name, "json")));
+        for (let i = 0; i < histKeys.length; i += BATCH) {
+          const batch = histKeys.slice(i, i + BATCH);
+          const hists = await Promise.all(batch.map(k => env.SECTOR_KV.get(k.name, "json")));
           batch.forEach((k, j) => {
-            if (!vals[j]) return;
-            rows.push({ sector: k.name.replace("_health_", ""), ...vals[j] });
+            const hist = hists[j];
+            if (!Array.isArray(hist) || hist.length === 0) return;
+            const last = hist[hist.length - 1];
+            const age = now - (last.t || 0);
+            const sector = k.name.replace(/_history$/, "").replace(/_([a-z_]+)$/, "");
+            if (age < H24) healthy++;
+            else if (age < H7D) { stale24++; stale.push({sector, age_hours: Math.round(age/3600000), tier: "24h"}); }
+            else if (age < H30D) { stale7d++; stale.push({sector, age_hours: Math.round(age/3600000), tier: "7d"}); }
+            else { stale30d++; stale.push({sector, age_hours: Math.round(age/3600000), tier: "30d"}); }
           });
         }
-        const now = Date.now();
-        const h24 = 24 * 3600 * 1000;
-        const failing_now = rows.filter(r => r.state === "fail");
-        const failing_24h = rows.filter(r => r.state === "fail" && (now - (r.since_ts || now)) < h24);
-        const failing_long = rows.filter(r => r.state === "fail" && (now - (r.since_ts || now)) >= h24);
-        const healthy = rows.filter(r => r.state === "ok");
+        stale.sort((a, b) => b.age_hours - a.age_hours);
         return json({
           ts: new Date().toISOString(),
-          tracked_sectors: rows.length,
-          healthy: healthy.length,
-          failing_now: failing_now.length,
-          failing_within_24h: failing_24h.length,
-          failing_over_24h: failing_long.length,
-          failing_sectors: failing_now.map(r => ({sector: r.sector, since: r.since_ts, error: r.last_error})),
+          total_with_history: histKeys.length,
+          healthy_24h: healthy,
+          stale_24h: stale24,
+          stale_7d: stale7d,
+          stale_30d: stale30d,
+          stale_sectors: stale.slice(0, 20),
         });
       } catch (e) {
         return json({ error: "metrics_failed", message: String(e && e.message || e) }, 500);

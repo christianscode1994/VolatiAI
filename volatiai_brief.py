@@ -101,6 +101,7 @@ def fetch_latest():
     for r in data["rows"]:
         out.append({
             "sector": r.get("sector"),
+            "category": next((c for c, members in CATEGORIES.items() if r.get("sector") in members), "other"),
             "provider": PROVENANCE.get(r.get("sector"), {}).get("provider"),
             "source_url": PROVENANCE.get(r.get("sector"), {}).get("url"),
             "license": PROVENANCE.get(r.get("sector"), {}).get("license"),
