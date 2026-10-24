@@ -30,7 +30,21 @@ def fetch_latest():
     data = fetch_json(f"{BASE}/latest")
     if not data or "rows" not in data:
         return None
-    return data["rows"]
+    # Normalize worker field names → brief field names
+    out = []
+    for r in data["rows"]:
+        out.append({
+            "sector": r.get("sector"),
+            "current": r.get("current"),
+            "previous": r.get("previous"),
+            "pct_change": r.get("pct_change"),
+            "has_signal": r.get("has_signal", False),
+            "severity": r.get("severity", "info"),
+            "confidence": r.get("confidence", 0),
+            "points": r.get("pts", r.get("points", 0)),
+            "failed": r.get("failed", []),
+        })
+    return out
 
 def brief_one(sector):
     data = fetch_json(f"{BASE}/{sector}/signal")
