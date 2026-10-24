@@ -40,7 +40,8 @@ jobs:
           fi
 
       - name: Publish
-        if: steps.check.outputs.changed == 'true'
+        id: publish
+        if: steps.dedup.outputs.changed == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -56,8 +57,17 @@ jobs:
           python3 volatiai_publish.py "$(cat /tmp/message.txt)"
 
       - name: Record published hash
-        if: steps.dedup.outputs.changed == 'true'
+        if: steps.dedup.outputs.changed == 'true' && steps.publish.outcome == 'success'
         run: |
-          curl -sfL -X POST "https://sector-slow.fourieranalys.workers.dev/publish-hash" \
+          HASH="${{ steps.dedup.outputs.new_hash }}"
+          echo "Recording hash: $HASH (length ${#HASH})"
+          RESPONSE=$(curl -sS -X POST "https://sector-slow.fourieranalys.workers.dev/publish-hash" \
             -H "Content-Type: application/json" \
-            -d "{\"hash\":\"${{ steps.dedup.outputs.new_hash }}\"}"
+            -d "{\"hash\":\"$HASH\"}")
+          echo "Response: $RESPONSE"
+          if echo "$RESPONSE" | grep -q '"ok":true'; then
+            echo "✅ Hash stored"
+          else
+            echo "❌ Hash storage failed"
+            exit 1
+          fi
