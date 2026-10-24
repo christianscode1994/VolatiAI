@@ -1071,6 +1071,102 @@ const COLLECTORS = {
       },
     }),
   },
+
+  "kraken-xrp-usd": {
+    config: { metric: "xrp_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        xrp_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=XRPUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "kraken-ada-usd": {
+    config: { metric: "ada_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        ada_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=ADAUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "kraken-doge-usd": {
+    config: { metric: "doge_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        doge_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=DOGEUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "kraken-dot-usd": {
+    config: { metric: "dot_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        dot_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=DOTUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "kraken-link-usd": {
+    config: { metric: "link_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        link_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=LINKUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
   "kraken-eth-usd": {
     config: { metric: "eth_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({

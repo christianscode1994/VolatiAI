@@ -128,6 +128,13 @@ COMPOSITE_RULES = [
     ("space-weather-events-spike", "Space weather event count +50%",
      lambda b: (b.get("pocketworld-space-weather") or {}).get("pct_change", 0) > 50),
 
+    # ─── Altcoin breadth ───
+    ("altcoin-breadth-up", "3+ altcoins up >3%",
+     lambda b: sum(1 for k in ["kraken-xrp-usd","kraken-ada-usd","kraken-doge-usd","kraken-dot-usd","kraken-link-usd"]
+                   if (b.get(k) or {}).get("pct_change", 0) > 3) >= 3),
+    ("altcoin-breadth-down", "3+ altcoins down >3%",
+     lambda b: sum(1 for k in ["kraken-xrp-usd","kraken-ada-usd","kraken-doge-usd","kraken-dot-usd","kraken-link-usd"]
+                   if (b.get(k) or {}).get("pct_change", 0) < -3) >= 3),
 ]
 
 def fetch_json(url):
