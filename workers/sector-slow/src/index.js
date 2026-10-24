@@ -917,24 +917,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "us-treasury-debt": {
-    config: { metric: "total_debt_usd", threshold_pct: 0.05, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        total_debt_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=1",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const s = j?.data?.[0]?.tot_pub_debt_out_amt;
-          if (!s) throw new Error("no_debt");
-          const v = parseFloat(s);
-          if (!Number.isFinite(v)) throw new Error("bad_debt");
-          return v;
-        }),
-      },
-    }),
-  },
   "worldbank-us-gdp": {
     config: { metric: "gdp_usd", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
     collectAll: async () => ({
@@ -1062,6 +1044,23 @@ const COLLECTORS = {
           const row = rows.find(x => x && typeof x.value === "number");
           if (!row) throw new Error("no_value");
           return row.value;
+        }),
+      },
+    }),
+  },
+  "dbnomics-us-debt": {
+    config: { metric: "debt_pct_gdp", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        debt_pct_gdp: await fetchSafe(async () => {
+          const r = await fetch("https://api.db.nomics.world/v22/series/IMF/WEO:2024-10/USA.GGXWDG_NGDP.pcent_gdp?observations=1",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const doc = j?.series?.docs?.[0];
+          const v = doc?.value?.[doc.value.length - 1];
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
         }),
       },
     }),
