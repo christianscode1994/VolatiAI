@@ -101,67 +101,16 @@ PRIORITY=(
   openfda-device-recalls
   cleveland-artworks
   apis-guru-directory
-  usgs-earthquakes
   noaa-spaceweather-alerts
   crossref-works
   doaj-articles
   datacite-dois
   zenodo-records
   treasuries-gov
-  usgs-earthquakes-emsc
   nvd-cve-count
-  cisa-kev-count
   phishunt-domains
   gleif-leis
-  frankfurter-eurusd
-  frankfurter-eursek
-  nbp-gold-spot
-  dbnomics-us-debt
-  worldbank-us-unemployment
-  worldbank-us-gdp
-  worldbank-se-gdp
-  kraken-btc-usd
-  coinbase-btc-usd
-  kraken-sol-usd
   defillama-protocol-count
-  coinbase-btc-volume24h
-  kraken-eth-usd
-  coinbase-eth-usd
-  btc-exchange-spread
-  fred-dgs10
-  fred-fedfunds
-  eth-exchange-spread
-  stablecoin-total-supply
-  stablecoin-usdt-supply
-  stablecoin-usdc-supply
-  dex-total-volume-24h
-  dex-uniswap-volume
-  dex-ethereum-volume
-  defi-total-tvl
-  ossf-scorecard-linux
-  ecosyste-ms-react
-  open-digger-openrank-vscode
-  hackernews-top-scores
-  osv-lodash-vuln-count
-  cisa-kev-total
-  epss-log4shell
-  deps-dev-react-versions
-  clearlydefined-react-license
-  hn-tech-sentiment
-  spaceflight-news-count
-  pypi-downloads-requests
-  npm-downloads-react
-  librariesio-sourcerank-react
-  usgs-earthquake-count
-  eurostat-eu-unemployment
-  uk-carbon-intensity
-  usgs-elevated-volcanoes
-  pocketworld-space-weather
-  kraken-xrp-usd
-  kraken-ada-usd
-  kraken-doge-usd
-  kraken-dot-usd
-  kraken-link-usd
 
 )
 
