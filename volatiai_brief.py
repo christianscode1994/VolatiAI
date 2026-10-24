@@ -113,6 +113,15 @@ COMPOSITE_RULES = [
      lambda b: (b.get("npm-downloads-react") or {}).get("pct_change", 0) < -20),
     ("sourcerank-drop", "React SourceRank -5%",
      lambda b: (b.get("librariesio-sourcerank-react") or {}).get("pct_change", 0) < -5),
+    # ─── Natural events & space & EU macro ───
+    ("quake-swarm", "USGS M4.5+ count +50%",
+     lambda b: (b.get("usgs-earthquake-count") or {}).get("pct_change", 0) > 50),
+    ("spacex-launch-burst", "SpaceX launches +2 in window",
+     lambda b: (b.get("spacex-launch-count") or {}).get("pct_change", 0) > 2),
+    ("eu-unemployment-spike", "EU unemployment +5%",
+     lambda b: (b.get("eurostat-eu-unemployment") or {}).get("pct_change", 0) > 5),
+    ("swiss-unemployment-spike", "Swiss unemployment +5%",
+     lambda b: (b.get("swiss-unemployment") or {}).get("pct_change", 0) > 5),
 ]
 
 def fetch_json(url):

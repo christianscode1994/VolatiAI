@@ -1546,6 +1546,91 @@ const COLLECTORS = {
         }),
       },
     }),
+  },
+  "usgs-earthquake-count": {
+    config: { metric: "m45_count", threshold_pct: 30.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        m45_count: await fetchSafe(async () => {
+          const r = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.metadata?.count;
+          if (typeof v !== "number") throw new Error("no_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  "spacex-launch-count": {
+    config: { metric: "launch_count", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        launch_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.spacexdata.com/v4/launches",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "eurostat-eu-unemployment": {
+    config: { metric: "unemployment_pct", threshold_pct: 5.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        unemployment_pct: await fetchSafe(async () => {
+          const url = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m?format=JSON&lang=EN&geo=EU27_2020&s_adj=SA&unit=PC_ACT&age=TOTAL&sex=T&sinceTimePeriod=2024-01";
+          const r = await fetch(url,
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const val = j?.value;
+          if (Array.isArray(val) && val.length > 0) return val[val.length - 1];
+          if (val && typeof val === "object") {
+            const keys = Object.keys(val).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+            return val[String(keys[keys.length - 1])];
+          }
+          throw new Error("no_value: keys=" + Object.keys(j || {}).slice(0, 5).join(","));
+        }),
+      },
+    }),
+  },
+  "swiss-unemployment": {
+    config: { metric: "unemployment_pct", threshold_pct: 5.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        unemployment_pct: await fetchSafe(async () => {
+          // PxWeb API — POST with JSON-stat query
+          const url = "https://www.pxweb.bfs.admin.ch/api/v1/en/px-x-0102030000_101/px-x-0102030000_101.px";
+          const query = {
+            query: [
+              { code: "Jahr", selection: { filter: "top", values: ["0"] } },
+              { code: "Monat", selection: { filter: "top", values: ["0"] } }
+            ],
+            response: { format: "json-stat" }
+          };
+          const r = await fetch(url, {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify(query),
+            signal: AbortSignal.timeout(30000)
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const val = j?.value;
+          if (Array.isArray(val) && val.length > 0) return val[val.length - 1];
+          if (val && typeof val === "object") {
+            const keys = Object.keys(val).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+            return val[String(keys[keys.length - 1])];
+          }
+          throw new Error("no_value");
+        }),
+      },
+    }),
   },};
 
 
