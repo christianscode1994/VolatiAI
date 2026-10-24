@@ -1071,6 +1071,65 @@ const COLLECTORS = {
       },
     }),
   },
+  "kraken-eth-usd": {
+    config: { metric: "eth_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        eth_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=ETHUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "coinbase-eth-usd": {
+    config: { metric: "eth_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        eth_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.exchange.coinbase.com/products/ETH-USD/ticker",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = parseFloat(j?.price);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "btc-exchange-spread": {
+    config: { metric: "spread_pct", threshold_pct: 500, window: "1h", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({
+      sources: {
+        spread_pct: await fetchSafe(async () => {
+          const [kr, cb] = await Promise.all([
+            fetch("https://api.kraken.com/0/public/Ticker?pair=XBTUSD",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) })
+              .then(r => { if (!r.ok) throw new Error("kraken_http_" + r.status); return r.json(); }),
+            fetch("https://api.exchange.coinbase.com/products/BTC-USD/ticker",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) })
+              .then(r => { if (!r.ok) throw new Error("coinbase_http_" + r.status); return r.json(); }),
+          ]);
+          const kResult = kr?.result || {};
+          const kKey = Object.keys(kResult)[0];
+          const kPrice = parseFloat(kResult[kKey]?.c?.[0]);
+          const cbPrice = parseFloat(cb?.price);
+          if (!Number.isFinite(kPrice) || !Number.isFinite(cbPrice)) throw new Error("missing_price");
+          const mid = (kPrice + cbPrice) / 2;
+          return Math.abs(kPrice - cbPrice) / mid * 100;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
