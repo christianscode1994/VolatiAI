@@ -96,15 +96,24 @@ def fetch_latest():
     data = fetch_json(f"{BASE}/latest")
     if not data or "rows" not in data:
         return None
-    # Normalize worker field names → brief field names
     out = []
     for r in data["rows"]:
+        sector = r.get("sector")
+        cat = "other"
+        try:
+            for c, members in (CATEGORIES or {}).items():
+                if isinstance(members, list) and sector in members:
+                    cat = c
+                    break
+        except Exception:
+            pass
+        prov = (PROVENANCE or {}).get(sector) or {}
         out.append({
-            "sector": r.get("sector"),
-            "category": _get_category(r.get("sector")),
-            "provider": PROVENANCE.get(r.get("sector"), {}).get("provider"),
-            "source_url": PROVENANCE.get(r.get("sector"), {}).get("url"),
-            "license": PROVENANCE.get(r.get("sector"), {}).get("license"),
+            "sector": sector,
+            "category": cat,
+            "provider": prov.get("provider"),
+            "source_url": prov.get("url"),
+            "license": prov.get("license"),
             "current": r.get("current"),
             "previous": r.get("previous"),
             "pct_change": r.get("pct_change"),

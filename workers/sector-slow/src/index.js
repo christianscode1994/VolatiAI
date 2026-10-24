@@ -1309,64 +1309,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "nft-bayc-floor": {
-    config: { metric: "floor_eth", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        floor_eth: await fetchSafe(async () => {
-          const r = await fetch("https://api.reservoir.tools/collections/v6?slug=boredapeyachtclub",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const c = (j.collections || [])[0] || {};
-          // Try multiple paths for compatibility across Reservoir API versions
-          let v = null;
-          const p1 = c?.floorAsk?.price?.amount?.native;
-          const p2 = c?.floorAsk?.price?.amount?.decimal;
-          const p3 = c?.floorAsk?.price?.amount?.raw;
-          const p4 = typeof c?.floorAsk?.price === "number" ? c.floorAsk.price : null;
-          if (Number.isFinite(p1)) v = p1;
-          else if (Number.isFinite(p2)) v = p2;
-          else if (Number.isFinite(p3)) v = parseFloat(p3);
-          else if (Number.isFinite(p4)) v = p4;
-          if (!Number.isFinite(v)) {
-            const dbg = { keys: Object.keys(c).slice(0,10), floorAsk: c.floorAsk ? Object.keys(c.floorAsk) : null };
-            throw new Error("no_floor: " + JSON.stringify(dbg).slice(0, 200));
-          }
-          return v;
-        }),
-      },
-    }),
-  },
-  "nft-punks-floor": {
-    config: { metric: "floor_eth", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        floor_eth: await fetchSafe(async () => {
-          const r = await fetch("https://api.reservoir.tools/collections/v6?slug=cryptopunks",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const c = (j.collections || [])[0] || {};
-          // Try multiple paths for compatibility across Reservoir API versions
-          let v = null;
-          const p1 = c?.floorAsk?.price?.amount?.native;
-          const p2 = c?.floorAsk?.price?.amount?.decimal;
-          const p3 = c?.floorAsk?.price?.amount?.raw;
-          const p4 = typeof c?.floorAsk?.price === "number" ? c.floorAsk.price : null;
-          if (Number.isFinite(p1)) v = p1;
-          else if (Number.isFinite(p2)) v = p2;
-          else if (Number.isFinite(p3)) v = parseFloat(p3);
-          else if (Number.isFinite(p4)) v = p4;
-          if (!Number.isFinite(v)) {
-            const dbg = { keys: Object.keys(c).slice(0,10), floorAsk: c.floorAsk ? Object.keys(c.floorAsk) : null };
-            throw new Error("no_floor: " + JSON.stringify(dbg).slice(0, 200));
-          }
-          return v;
-        }),
-      },
-    }),
-  },
 };
 
 
