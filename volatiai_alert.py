@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """volatiai_alert.py — push warn/critical sectors to ntfy.sh (keyless)."""
 import json, os, subprocess, sys, urllib.request
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -56,22 +55,22 @@ def main():
     dry_run = "--dry-run" in sys.argv
     include_info = "--all" in sys.argv
 
-    sectors = json.loads((BASE_DIR / "config" / "active_sectors.json").read_text())
+    # Single read-only call — no KV writes
+    raw = http_get(f"{BASE}/latest")
+    if not raw:
+        print("no alerts — /latest unreachable", file=sys.stderr)
+        return
+    latest = json.loads(raw)
     alerts = []
-    with ThreadPoolExecutor(max_workers=20) as ex:
-        for fut in as_completed({ex.submit(fetch_signal, s): s for s in sectors}):
-            data = fut.result()
-            if not data:
-                continue
-            sev = data.get("severity", "info")
-            if sev in ("warn", "critical") or (include_info and sev == "info"):
-                d = data.get("delta", {})
-                alerts.append({
-                    "sector": data.get("sector"),
-                    "severity": sev,
-                    "pct": d.get("pct_change"),
-                    "current": d.get("current"),
-                })
+    for r in latest.get("rows", []):
+        sev = r.get("severity", "info")
+        if sev in ("warn", "critical") or (include_info and sev == "info"):
+            alerts.append({
+                "sector": r.get("sector"),
+                "severity": sev,
+                "pct": r.get("pct_change"),
+                "current": r.get("current"),
+            })
 
     if not alerts:
         print("no alerts — all quiet")
