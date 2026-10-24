@@ -27,8 +27,7 @@ COMPOSITE_RULES = [
      lambda b: abs((b.get("eth-exchange-spread") or {}).get("current", 0) or 0) > 0.5),
     ("crypto-volume-burst", "Coinbase BTC 24h volume +50%",
      lambda b: (b.get("coinbase-btc-volume24h") or {}).get("pct_change", 0) > 50),
-
-    # ─── Macro (FRED + World Bank + DBnomics, public domain) ───
+    # ─── Macro ───
     ("yield-spike", "US 10Y yield up >5%",
      lambda b: (b.get("fred-dgs10") or {}).get("pct_change", 0) > 5),
     ("yield-collapse", "US 10Y yield down >5%",
@@ -37,31 +36,26 @@ COMPOSITE_RULES = [
      lambda b: (b.get("dbnomics-us-debt") or {}).get("current", 0) > 130),
     ("unemployment-regime", "US unemployment crosses 4.5%",
      lambda b: (b.get("worldbank-us-unemployment") or {}).get("current", 0) > 4.5),
-
-    # ─── FX (ECB / Frankfurter, MIT) ───
+    # ─── FX ───
     ("eur-stress", "EUR/USD down >2%",
      lambda b: (b.get("frankfurter-eurusd") or {}).get("pct_change", 0) < -2),
     ("sek-stress", "EUR/SEK up >2%",
      lambda b: (b.get("frankfurter-eursek") or {}).get("pct_change", 0) > 2),
-
-    # ─── Commodity (NBP, public domain) ───
+    # ─── Commodity ───
     ("gold-strength", "Gold up >2% in PLN",
      lambda b: (b.get("nbp-gold-spot") or {}).get("pct_change", 0) > 2),
     ("gold-weakness", "Gold down >2% in PLN",
      lambda b: (b.get("nbp-gold-spot") or {}).get("pct_change", 0) < -2),
-
-    # ─── Cross-domain divergence ───
+    # ─── Cross-domain ───
     ("gold-crypto-divergence", "Gold up >1% AND BTC down >3%",
      lambda b: (b.get("nbp-gold-spot") or {}).get("pct_change", 0) > 1
                and (b.get("kraken-btc-usd") or {}).get("pct_change", 0) < -3),
     ("crypto-macro-rally", "BTC up >3% AND 10Y yield down >2%",
      lambda b: (b.get("kraken-btc-usd") or {}).get("pct_change", 0) > 3
                and (b.get("fred-dgs10") or {}).get("pct_change", 0) < -2),
-
-    # ─── DeFi (DefiLlama, open) ───
-    ("defi-expansion", "DeFi protocol count +5 in window",
+    # ─── DeFi ───
+    ("defi-expansion", "DeFi protocol count +0.5%",
      lambda b: (b.get("defillama-protocol-count") or {}).get("pct_change", 0) > 0.5),
-])),
 ]
 
 def fetch_json(url):

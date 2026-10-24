@@ -1274,6 +1274,8 @@ export default {
 
   async fetch(request, env) {
     const url = new URL(request.url);
+    const parts = url.pathname.split("/").filter(Boolean);
+
     // ─── /history/<sector> — full history array, for client charts ───
     if (parts[0] === "history" && parts[1]) {
       try {
@@ -1316,7 +1318,6 @@ export default {
       }
     }
 
-    const parts = url.pathname.split("/").filter(Boolean);
 
     // ─── /latest — batch summary from KV, no upstream fetches ───
     if (parts[0] === "latest") {
