@@ -35,5 +35,7 @@ jobs:
           MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}
+          NOSTR_RELAY: ${{ secrets.NOSTR_RELAY }}
         run: |
           python3 volatiai_publish.py "$(cat /tmp/message.txt)"
