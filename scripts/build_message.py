@@ -3,6 +3,20 @@
 import json, os, sys, subprocess
 from pathlib import Path
 
+def _run_cluster_signals():
+    """Invoke cluster_signals.py to get current outliers + clusters."""
+    try:
+        out = subprocess.run(
+            ["python3", "scripts/cluster_signals.py"],
+            capture_output=True, text=True, timeout=20,
+            cwd=str(Path(__file__).parent.parent))
+        if out.returncode == 0:
+            return json.loads(out.stdout)
+    except Exception:
+        pass
+    return None
+
+
 URL = "https://christianscode1994.github.io/VolatiAI/d.html"
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 
@@ -35,34 +49,38 @@ if not signals:
     print(f"VolatiAI · {total} sectors active · all quiet\n→ {URL}")
     sys.exit(0)
 
-# Group signals by cluster
-by_cluster = {}
-singles = []
-for r in signals:
-    cid = s2c.get(r["sector"])
-    if cid: by_cluster.setdefault(cid, []).append(r)
-    else: singles.append(r)
+# Load cluster analysis
+analysis = _run_cluster_signals() or {}
+clusters_firing = analysis.get("clusters_firing", [])
+outliers = analysis.get("outliers", [])
 
 lines = [f"VolatiAI · {len(signals)} signal(s)"]
 
-# Cluster summaries first
-for cid, members in sorted(by_cluster.items(), key=lambda kv: -len(kv[1])):
-    moves = [m.get("pct_change", 0) or 0 for m in members]
-    avg = sum(moves) / len(moves)
-    direction = "▼" if avg < 0 else "▲"
-    lines.append(f"{cid} ×{len(members)}: {avg:+.1f}% {direction}")
+# 1. Cluster summaries with momentum (dedup the firehose)
+for c in clusters_firing[:2]:
+    arrow = "▼" if c["avg_pct"] < 0 else "▲"
+    mom = ""
+    if c.get("momentum") is not None:
+        mom = f", {c['acceleration']}" if c['acceleration'] else ""
+    lines.append(f"{c['cluster_id']} ×{c['firing_count']}: {c['avg_pct']:+.1f}% {arrow}{mom}")
 
-# Then top individual singles
+# 2. Outliers — THE signal worth posting
+for o in outliers[:2]:
+    arrow = "▲" if o["z_score"] > 0 else "▼"
+    lines.append(
+        f"⚠ {o['sector']} {o['pct']:+.1f}% {arrow} "
+        f"({o['z_score']:+.1f}σ vs {o['cluster_id']})"
+    )
+
+# 3. Remaining singles (non-clustered, non-outlier)
+handled = {c["cluster_id"] for c in clusters_firing} | {o["sector"] for o in outliers}
+singles = [r for r in signals
+           if r["sector"] not in handled and r["sector"] not in s2c]
 for r in sorted(singles, key=lambda x: abs(x.get("pct_change", 0) or 0), reverse=True)[:2]:
     pct = r.get("pct_change") or 0
     cur = r.get("current", 0)
-    cur_s = f"{cur:,.2f}" if isinstance(cur, (int, float)) and abs(cur) >= 1 else f"{cur:.4g}" if isinstance(cur, (int, float)) else str(cur)
+    cur_s = (f"{cur:,.2f}" if abs(cur) >= 1 else f"{cur:.4g}") if isinstance(cur, (int, float)) else str(cur)
     lines.append(f"{r['sector']}: {cur_s} ({pct:+.1f}%)")
-
-if len(signals) > len(by_cluster) + 2:
-    extra = len(signals) - len(by_cluster) - 2
-    if extra > 0:
-        lines.append(f"... +{extra} more")
 
 lines.append(f"→ {URL}")
 print("\n".join(lines))
