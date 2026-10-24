@@ -15,6 +15,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install nostr dependency
+        run: pip install --quiet pynostr
+
       - name: Build message
         id: msg
         run: |

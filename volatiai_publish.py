@@ -77,9 +77,41 @@ def bluesky(text):
     return "ok" if r and b'"uri"' in r else "fail"
 
 def nostr(text):
-    # Nostr needs secp256k1 signing — requires external lib (nostr-sdk or pynostr).
-    # pip install pynostr — then implement here.
-    return "skipped (needs pynostr)"
+    priv = os.environ.get("NOSTR_PRIVATE_KEY")
+    relay = os.environ.get("NOSTR_RELAY") or "wss://relay.damus.io"
+    if not priv:
+        return "skipped (no NOSTR_PRIVATE_KEY)"
+    try:
+        from pynostr.key import PrivateKey
+        from pynostr.event import Event, EventKind
+        from pynostr.relay_manager import RelayManager
+        from pynostr.filters import FiltersList, Filters
+        from pynostr.message_pool import EventMessage
+        import time
+    except ImportError:
+        return "skipped (pip install pynostr)"
+    
+    try:
+        # Parse private key (accepts hex or nsec)
+        if priv.startswith("nsec"):
+            pk = PrivateKey.from_nsec(priv)
+        else:
+            pk = PrivateKey(bytes.fromhex(priv))
+        
+        # Build event
+        ev = Event(kind=EventKind.TEXT_NOTE, content=text[:500])
+        ev.sign(pk.raw_secret)
+        
+        # Publish to relay
+        rm = RelayManager(timeout=6)
+        rm.add_relay(relay)
+        rm.add_event(ev.to_message())
+        rm.publish_message()
+        time.sleep(2)
+        rm.close_all_relay_connections()
+        return "ok"
+    except Exception as e:
+        return f"fail: {type(e).__name__}: {str(e)[:80]}"
 
 PLATFORMS = [
     ("telegram", telegram),
