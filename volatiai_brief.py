@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """volatiai_brief.py — fetch all sector signals; table / JSON / dashboard / cached."""
-import argparse, json, os, subprocess, sys, urllib.request
+import argparse, hashlib, json, os, subprocess, sys, urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
@@ -116,6 +116,16 @@ def _category(sector):
     return "other"
 
 
+def _stamp(data):
+    """Deterministic hash — verify data hasn't changed between reads."""
+    stable = {k: v for k, v in data.items() if k not in ("ts", "_stamp", "_cached_at")}
+    if "rows" in stable:
+        stable["rows"] = sorted(stable["rows"], key=lambda r: r.get("sector") or "")
+    return hashlib.sha256(
+        json.dumps(stable, sort_keys=True, default=str).encode()
+    ).hexdigest()[:16]
+
+
 def fetch_latest():
     data = fetch_json(f"{BASE}/latest")
     if not data or "rows" not in data:
@@ -138,7 +148,14 @@ def fetch_latest():
             "confidence": r.get("confidence", 0),
             "points": r.get("pts", r.get("points", 0)),
             "failed": r.get("failed", []),
+            "cluster_id": (json.loads(Path("config/graph.json").read_text())
+                          .get("sector_to_cluster", {}).get(sector)
+                          if Path("config/graph.json").exists() else None),
         })
+    # Attach stamp to every row batch
+    stamp = _stamp({"rows": out})
+    for row in out:
+        row["_batch_stamp"] = stamp
     return out
 
 def brief_one(sector):
@@ -229,6 +246,8 @@ def main():
     ap.add_argument("--no-color", action="store_true")
     ap.add_argument("--metrics", action="store_true",
                     help="show pipeline health from /metrics")
+    ap.add_argument("--clusters", action="store_true",
+                    help="show cluster-grouped view")
     ap.add_argument("--category", default=None,
                     help="filter by category (crypto|macro|fx|commodity|defi)")
     ap.add_argument("--composite", action="store_true",
@@ -308,6 +327,26 @@ def main():
         rows = [r for r in rows if sev_rank(r.get("severity", "info")) >= sev_rank(args.severity)]
     if args.signals:
         rows = [r for r in rows if r.get("has_signal")]
+    if args.clusters:
+        try:
+            graph = json.loads(Path("config/graph.json").read_text())
+        except Exception:
+            sys.exit("config/graph.json missing — run: python3 scripts/compute_graph.py")
+        s2c = graph.get("sector_to_cluster", {})
+        by_cluster = {}
+        for r in rows:
+            cid = s2c.get(r["sector"], "singles")
+            by_cluster.setdefault(cid, []).append(r)
+        print(f"{'cluster':<16} {'members':>7} {'avg_pct':>9} {'max':>8} {'min':>8}")
+        print("-" * 56)
+        for cid in sorted(by_cluster, key=lambda c: -len(by_cluster[c])):
+            grp = by_cluster[cid]
+            pcts = [r.get("pct_change") or 0 for r in grp]
+            avg = sum(pcts)/len(pcts) if pcts else 0
+            mx, mn = max(pcts) if pcts else 0, min(pcts) if pcts else 0
+            print(f"{cid:<16} {len(grp):>7} {avg:>+8.2f}% {mx:>+7.2f}% {mn:>+7.2f}%")
+        return
+
     if args.category:
         # Support alias groups (e.g., defi-nft = stablecoin + dex + defi + tvl)
         aliases = {

@@ -1,0 +1,67 @@
+{
+  "computed_at": "2026-10-24T14:33:01.279589Z",
+  "threshold": 0.6,
+  "min_points": 10,
+  "nodes": [
+    "crossref-works",
+    "datacite-dois",
+    "environment",
+    "openfda-device-recalls",
+    "openfda-drug-recalls",
+    "openfda-food-recalls",
+    "treasuries",
+    "treasuries-gov",
+    "usgs-earthquakes",
+    "usgs-earthquakes-emsc"
+  ],
+  "edges": [
+    {
+      "a": "openfda-device-recalls",
+      "b": "openfda-drug-recalls",
+      "corr": 0.681,
+      "n": 90
+    },
+    {
+      "a": "openfda-device-recalls",
+      "b": "openfda-food-recalls",
+      "corr": 0.819,
+      "n": 90
+    },
+    {
+      "a": "openfda-drug-recalls",
+      "b": "openfda-food-recalls",
+      "corr": 0.688,
+      "n": 90
+    },
+    {
+      "a": "treasuries",
+      "b": "treasuries-gov",
+      "corr": 1.0,
+      "n": 62
+    }
+  ],
+  "clusters": [
+    {
+      "id": "cluster_0",
+      "members": [
+        "openfda-device-recalls",
+        "openfda-drug-recalls",
+        "openfda-food-recalls"
+      ]
+    },
+    {
+      "id": "cluster_1",
+      "members": [
+        "treasuries",
+        "treasuries-gov"
+      ]
+    }
+  ],
+  "sector_to_cluster": {
+    "openfda-device-recalls": "cluster_0",
+    "openfda-drug-recalls": "cluster_0",
+    "openfda-food-recalls": "cluster_0",
+    "treasuries": "cluster_1",
+    "treasuries-gov": "cluster_1"
+  }
+}
