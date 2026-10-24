@@ -72,14 +72,6 @@ PRIORITY=(
   usgs-earthquakes-emsc
   datacite-dois
   crossref-works
-  total-cves
-  total-leis
-  total-bills
-  total-works
-  total-articles
-  total-records
-  total-triples
-  total-artworks
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
