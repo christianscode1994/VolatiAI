@@ -951,22 +951,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "coingecko-btc-usd": {
-    config: { metric: "btc_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        btc_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.bitcoin?.usd;
-          if (typeof v !== "number") throw new Error("no_price");
-          return v;
-        }),
-      },
-    }),
-  },
   "coinbase-btc-usd": {
     config: { metric: "btc_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
@@ -1015,22 +999,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "coingecko-sol-usd": {
-    config: { metric: "sol_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        sol_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.solana?.usd;
-          if (typeof v !== "number") throw new Error("no_price");
-          return v;
-        }),
-      },
-    }),
-  },
   "worldbank-us-unemployment": {
     config: { metric: "unemployment_pct", threshold_pct: 2.0, window: "365d", window_days: 365, ttl: 604800 },
     collectAll: async () => ({
@@ -1060,6 +1028,44 @@ const COLLECTORS = {
           const doc = j?.series?.docs?.[0];
           const v = doc?.value?.[doc.value.length - 1];
           if (typeof v !== "number") throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "kraken-btc-usd": {
+    config: { metric: "btc_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        btc_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=XBTUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
+          return v;
+        }),
+      },
+    }),
+  },
+  "kraken-sol-usd": {
+    config: { metric: "sol_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        sol_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=SOLUSD",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
+          const result = j?.result || {};
+          const key = Object.keys(result)[0];
+          const v = parseFloat(result[key]?.c?.[0]);
+          if (!Number.isFinite(v)) throw new Error("no_price");
           return v;
         }),
       },
