@@ -113,8 +113,10 @@ def brief_one(sector):
     d = data.get("delta", {}) or {}
     c = data.get("context", {}) or {}
     prov = PROVENANCE.get(sector, {})
+    cat = next((c for c, members in CATEGORIES.items() if sector in members), "other")
     return {
         "sector": sector,
+        "category": cat,
         "provider": prov.get("provider"),
         "source_url": prov.get("url"),
         "license": prov.get("license"),
@@ -266,6 +268,8 @@ def main():
         rows = [r for r in rows if sev_rank(r.get("severity", "info")) >= sev_rank(args.severity)]
     if args.signals:
         rows = [r for r in rows if r.get("has_signal")]
+    if args.category:
+        rows = [r for r in rows if r.get("category") == args.category]
     rows.sort(key=lambda r: abs(r.get("pct_change") or 0), reverse=True)
 
     if args.dashboard:
