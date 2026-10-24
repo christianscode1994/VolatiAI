@@ -1203,6 +1203,67 @@ const COLLECTORS = {
       },
     }),
   },
+
+  "fred-dgs10": {
+    config: { metric: "dgs10", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        dgs10: await fetchSafe(async () => {
+          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-09-24",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const lines = text.trim().split("\n").filter(l => l && !l.startsWith("observation_date") && !l.endsWith(","));
+          const last = lines[lines.length - 1];
+          const v = parseFloat(last.split(",").pop());
+          if (!Number.isFinite(v)) throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "fred-fedfunds": {
+    config: { metric: "fedfunds", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        fedfunds: await fetchSafe(async () => {
+          const r = await fetch("https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS&cosd=2026-09-24",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const lines = text.trim().split("\n").filter(l => l && !l.startsWith("observation_date") && !l.endsWith(","));
+          const last = lines[lines.length - 1];
+          const v = parseFloat(last.split(",").pop());
+          if (!Number.isFinite(v)) throw new Error("no_value");
+          return v;
+        }),
+      },
+    }),
+  },
+  "eth-exchange-spread": {
+    config: { metric: "spread_pct", threshold_pct: 300, window: "1h", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({
+      sources: {
+        spread_pct: await fetchSafe(async () => {
+          const [kr, cb] = await Promise.all([
+            fetch("https://api.kraken.com/0/public/Ticker?pair=ETHUSD",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) })
+              .then(r => { if (!r.ok) throw new Error("kraken_http_" + r.status); return r.json(); }),
+            fetch("https://api.exchange.coinbase.com/products/ETH-USD/ticker",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) })
+              .then(r => { if (!r.ok) throw new Error("coinbase_http_" + r.status); return r.json(); }),
+          ]);
+          const kResult = kr?.result || {};
+          const kKey = Object.keys(kResult)[0];
+          const kPrice = parseFloat(kResult[kKey]?.c?.[0]);
+          const cbPrice = parseFloat(cb?.price);
+          if (!Number.isFinite(kPrice) || !Number.isFinite(cbPrice)) throw new Error("missing_price");
+          const mid = (kPrice + cbPrice) / 2;
+          return Math.abs(kPrice - cbPrice) / mid * 100;
+        }),
+      },
+    }),
+  },
 };
 
 

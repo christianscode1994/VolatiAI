@@ -61,7 +61,15 @@ Examples:
 
 Orphan keys (`history:<sector>`, `sector:<sector>`) are silently ignored. If a backfill doesn't show up in `/signal`, first run `grep -n "kvKey" workers/sector-slow/src/index.js`.
 
-## KV write budget — read this before polling
+## KV write budget — actual behavior
+
+The worker writes to KV **only when the value changed or the calendar day rolled over**. Response field `kv_put_skipped: "unchanged_today"` proves it. So:
+
+- Polling a stable sector (VIX, DXY, gold) — **free**, no writes
+- Polling BTC — 1 write per second (value changes constantly)
+- Daily cron — 292 writes (one per sector per day)
+
+Real budget is much safer than the original worst-case estimate.
 
 | Call | Writes |
 | :--- | :--- |
