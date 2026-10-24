@@ -94,7 +94,8 @@ def nostr(text):
         event = Event(content=text[:500], kind=1)
         event.sign(sk.hex())
         rm = RelayManager(timeout=8)
-        rm.add_relay(relay)
+        for r in [x.strip() for x in relay.split(",") if x.strip()]:
+            rm.add_relay(r)
         rm.publish_event(event)
         rm.run_sync()
         time.sleep(2)
