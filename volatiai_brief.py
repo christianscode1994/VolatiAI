@@ -10,6 +10,60 @@ UA = os.environ.get("VOLATIAI_UA", "VolatiAI/1.0 (brief)")
 TIMEOUT = int(os.environ.get("VOLATIAI_TIMEOUT", "20"))
 PARALLEL = int(os.environ.get("VOLATIAI_PARALLEL", "20"))
 
+# Composite signals — evaluated against the /latest snapshot
+COMPOSITE_RULES = [
+    # ─── Crypto (Kraken + Coinbase, redistribution-safe) ───
+    ("crypto-crash", "3+ crypto down >5%",
+     lambda b: sum(1 for k in ["kraken-btc-usd","kraken-eth-usd","kraken-sol-usd",
+                                "coinbase-btc-usd","coinbase-eth-usd"]
+                   if (b.get(k) or {}).get("pct_change", 0) < -5) >= 3),
+    ("crypto-meltup", "3+ crypto up >5%",
+     lambda b: sum(1 for k in ["kraken-btc-usd","kraken-eth-usd","kraken-sol-usd",
+                                "coinbase-btc-usd","coinbase-eth-usd"]
+                   if (b.get(k) or {}).get("pct_change", 0) > 5) >= 3),
+    ("btc-exchange-divergence", "Kraken vs Coinbase BTC spread >0.5%",
+     lambda b: abs((b.get("btc-exchange-spread") or {}).get("current", 0) or 0) > 0.5),
+    ("eth-exchange-divergence", "Kraken vs Coinbase ETH spread >0.5%",
+     lambda b: abs((b.get("eth-exchange-spread") or {}).get("current", 0) or 0) > 0.5),
+    ("crypto-volume-burst", "Coinbase BTC 24h volume +50%",
+     lambda b: (b.get("coinbase-btc-volume24h") or {}).get("pct_change", 0) > 50),
+
+    # ─── Macro (FRED + World Bank + DBnomics, public domain) ───
+    ("yield-spike", "US 10Y yield up >5%",
+     lambda b: (b.get("fred-dgs10") or {}).get("pct_change", 0) > 5),
+    ("yield-collapse", "US 10Y yield down >5%",
+     lambda b: (b.get("fred-dgs10") or {}).get("pct_change", 0) < -5),
+    ("debt-alarm", "US debt/GDP > 130%",
+     lambda b: (b.get("dbnomics-us-debt") or {}).get("current", 0) > 130),
+    ("unemployment-regime", "US unemployment crosses 4.5%",
+     lambda b: (b.get("worldbank-us-unemployment") or {}).get("current", 0) > 4.5),
+
+    # ─── FX (ECB / Frankfurter, MIT) ───
+    ("eur-stress", "EUR/USD down >2%",
+     lambda b: (b.get("frankfurter-eurusd") or {}).get("pct_change", 0) < -2),
+    ("sek-stress", "EUR/SEK up >2%",
+     lambda b: (b.get("frankfurter-eursek") or {}).get("pct_change", 0) > 2),
+
+    # ─── Commodity (NBP, public domain) ───
+    ("gold-strength", "Gold up >2% in PLN",
+     lambda b: (b.get("nbp-gold-spot") or {}).get("pct_change", 0) > 2),
+    ("gold-weakness", "Gold down >2% in PLN",
+     lambda b: (b.get("nbp-gold-spot") or {}).get("pct_change", 0) < -2),
+
+    # ─── Cross-domain divergence ───
+    ("gold-crypto-divergence", "Gold up >1% AND BTC down >3%",
+     lambda b: (b.get("nbp-gold-spot") or {}).get("pct_change", 0) > 1
+               and (b.get("kraken-btc-usd") or {}).get("pct_change", 0) < -3),
+    ("crypto-macro-rally", "BTC up >3% AND 10Y yield down >2%",
+     lambda b: (b.get("kraken-btc-usd") or {}).get("pct_change", 0) > 3
+               and (b.get("fred-dgs10") or {}).get("pct_change", 0) < -2),
+
+    # ─── DeFi (DefiLlama, open) ───
+    ("defi-expansion", "DeFi protocol count +5 in window",
+     lambda b: (b.get("defillama-protocol-count") or {}).get("pct_change", 0) > 0.5),
+])),
+]
+
 def fetch_json(url):
     try:
         req = urllib.request.Request(url, headers={"user-agent": UA})
@@ -126,6 +180,8 @@ def main():
     ap.add_argument("--dashboard", action="store_true")
     ap.add_argument("--audit-history", action="store_true")
     ap.add_argument("--no-color", action="store_true")
+    ap.add_argument("--composite", action="store_true",
+                    help="show composite signal evaluation against /latest")
     args = ap.parse_args()
 
     sectors = [args.sector] if args.sector else load_sectors()
@@ -151,6 +207,24 @@ def main():
             futures = {ex.submit(brief_one, s): s for s in sectors}
             for fut in as_completed(futures):
                 rows.append(fut.result())
+
+    if args.composite:
+        by_sector = {r["sector"]: r for r in rows}
+        print(f"{'signal':<24} {'status':<8} rule")
+        print("-" * 80)
+        fired = []
+        for name, desc, rule in COMPOSITE_RULES:
+            try:
+                active = rule(by_sector)
+            except Exception:
+                active = False
+            status = "\033[1;31mFIRING\033[0m" if active else "quiet"
+            print(f"{name:<24} {status:<8} {desc}")
+            if active:
+                fired.append(name)
+        print()
+        print(f"{len(fired)} composite signal(s) firing")
+        return
 
     if args.audit_history:
         need = sorted([r for r in rows if r.get("points", 0) < 5], key=lambda r: r.get("points", 0))
