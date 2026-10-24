@@ -1,20 +1,137 @@
 {
-  "kraken-btc-usd": {"provider":"Kraken","url":"https://api.kraken.com/0/public/Ticker?pair=XBTUSD","license":"Public market data"},
-  "kraken-eth-usd": {"provider":"Kraken","url":"https://api.kraken.com/0/public/Ticker?pair=ETHUSD","license":"Public market data"},
-  "kraken-sol-usd": {"provider":"Kraken","url":"https://api.kraken.com/0/public/Ticker?pair=SOLUSD","license":"Public market data"},
-  "coinbase-btc-usd": {"provider":"Coinbase","url":"https://api.exchange.coinbase.com/products/BTC-USD/ticker","license":"Public market data"},
-  "coinbase-eth-usd": {"provider":"Coinbase","url":"https://api.exchange.coinbase.com/products/ETH-USD/ticker","license":"Public market data"},
-  "coinbase-btc-volume24h": {"provider":"Coinbase","url":"https://api.exchange.coinbase.com/products/BTC-USD/stats","license":"Public market data"},
-  "btc-exchange-spread": {"provider":"Derived","url":"Kraken+Coinbase","license":"Derived from open data"},
-  "eth-exchange-spread": {"provider":"Derived","url":"Kraken+Coinbase","license":"Derived from open data"},
-  "frankfurter-eurusd": {"provider":"ECB / Frankfurter","url":"https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD","license":"MIT"},
-  "frankfurter-eursek": {"provider":"ECB / Frankfurter","url":"https://api.frankfurter.dev/v1/latest?base=EUR&symbols=SEK","license":"MIT"},
-  "nbp-gold-spot": {"provider":"NBP Poland","url":"https://api.nbp.pl/api/cenyzlota/","license":"Public domain"},
-  "fred-dgs10": {"provider":"US Federal Reserve","url":"https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10","license":"Public domain"},
-  "fred-fedfunds": {"provider":"US Federal Reserve","url":"https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS","license":"Public domain"},
-  "dbnomics-us-debt": {"provider":"IMF WEO / DBnomics","url":"https://api.db.nomics.world/v22/series/IMF/WEO:2024-10/USA.GGXWDG_NGDP.pcent_gdp","license":"Open"},
-  "worldbank-us-unemployment": {"provider":"World Bank (ILO)","url":"https://api.worldbank.org/v2/country/US/indicator/SL.UEM.TOTL.ZS","license":"CC BY 4.0"},
-  "worldbank-us-gdp": {"provider":"World Bank","url":"https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD","license":"CC BY 4.0"},
-  "worldbank-se-gdp": {"provider":"World Bank","url":"https://api.worldbank.org/v2/country/SE/indicator/NY.GDP.MKTP.CD","license":"CC BY 4.0"},
-  "defillama-protocol-count": {"provider":"DefiLlama","url":"https://api.llama.fi/protocols","license":"Open"}
+  "kraken-btc-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=XBTUSD",
+    "license": "Public market data"
+  },
+  "kraken-eth-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=ETHUSD",
+    "license": "Public market data"
+  },
+  "kraken-sol-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=SOLUSD",
+    "license": "Public market data"
+  },
+  "coinbase-btc-usd": {
+    "provider": "Coinbase",
+    "url": "https://api.exchange.coinbase.com/products/BTC-USD/ticker",
+    "license": "Public market data"
+  },
+  "coinbase-eth-usd": {
+    "provider": "Coinbase",
+    "url": "https://api.exchange.coinbase.com/products/ETH-USD/ticker",
+    "license": "Public market data"
+  },
+  "coinbase-btc-volume24h": {
+    "provider": "Coinbase",
+    "url": "https://api.exchange.coinbase.com/products/BTC-USD/stats",
+    "license": "Public market data"
+  },
+  "btc-exchange-spread": {
+    "provider": "Derived",
+    "url": "Kraken+Coinbase",
+    "license": "Derived from open data"
+  },
+  "eth-exchange-spread": {
+    "provider": "Derived",
+    "url": "Kraken+Coinbase",
+    "license": "Derived from open data"
+  },
+  "frankfurter-eurusd": {
+    "provider": "ECB / Frankfurter",
+    "url": "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD",
+    "license": "MIT"
+  },
+  "frankfurter-eursek": {
+    "provider": "ECB / Frankfurter",
+    "url": "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=SEK",
+    "license": "MIT"
+  },
+  "nbp-gold-spot": {
+    "provider": "NBP Poland",
+    "url": "https://api.nbp.pl/api/cenyzlota/",
+    "license": "Public domain"
+  },
+  "fred-dgs10": {
+    "provider": "US Federal Reserve",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+    "license": "Public domain"
+  },
+  "fred-fedfunds": {
+    "provider": "US Federal Reserve",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS",
+    "license": "Public domain"
+  },
+  "dbnomics-us-debt": {
+    "provider": "IMF WEO / DBnomics",
+    "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10/USA.GGXWDG_NGDP.pcent_gdp",
+    "license": "Open"
+  },
+  "worldbank-us-unemployment": {
+    "provider": "World Bank (ILO)",
+    "url": "https://api.worldbank.org/v2/country/US/indicator/SL.UEM.TOTL.ZS",
+    "license": "CC BY 4.0"
+  },
+  "worldbank-us-gdp": {
+    "provider": "World Bank",
+    "url": "https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD",
+    "license": "CC BY 4.0"
+  },
+  "worldbank-se-gdp": {
+    "provider": "World Bank",
+    "url": "https://api.worldbank.org/v2/country/SE/indicator/NY.GDP.MKTP.CD",
+    "license": "CC BY 4.0"
+  },
+  "defillama-protocol-count": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/protocols",
+    "license": "Open"
+  },
+  "stablecoin-total-supply": {
+    "provider": "DefiLlama",
+    "url": "https://stablecoins.llama.fi/stablecoins",
+    "license": "Free public API"
+  },
+  "stablecoin-usdt-supply": {
+    "provider": "DefiLlama",
+    "url": "https://stablecoins.llama.fi/stablecoins",
+    "license": "Free public API"
+  },
+  "stablecoin-usdc-supply": {
+    "provider": "DefiLlama",
+    "url": "https://stablecoins.llama.fi/stablecoins",
+    "license": "Free public API"
+  },
+  "dex-total-volume-24h": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/overview/dexs",
+    "license": "Free public API"
+  },
+  "dex-uniswap-volume": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/summary/dexs/uniswap",
+    "license": "Free public API"
+  },
+  "dex-ethereum-volume": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/overview/dexs/ethereum",
+    "license": "Free public API"
+  },
+  "defi-total-tvl": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/v2/historicalChainTvl",
+    "license": "Free public API"
+  },
+  "nft-bayc-floor": {
+    "provider": "Reservoir",
+    "url": "https://api.reservoir.tools/collections/v6?slug=boredapeyachtclub",
+    "license": "Free public API"
+  },
+  "nft-punks-floor": {
+    "provider": "Reservoir",
+    "url": "https://api.reservoir.tools/collections/v6?slug=cryptopunks",
+    "license": "Free public API"
+  }
 }

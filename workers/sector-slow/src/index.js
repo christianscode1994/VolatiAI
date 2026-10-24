@@ -1193,6 +1193,156 @@ const COLLECTORS = {
     }),
   },
 
+
+  "stablecoin-total-supply": {
+    config: { metric: "total_usd", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        total_usd: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=true",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = (j.peggedAssets || []).reduce((s, a) => s + ((a.circulating && a.circulating.peggedUSD) || 0), 0);
+          if (!Number.isFinite(total) || total <= 0) throw new Error("no_total");
+          return total;
+        }),
+      },
+    }),
+  },
+  "stablecoin-usdt-supply": {
+    config: { metric: "usdt_usd", threshold_pct: 1.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        usdt_usd: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=true",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const a = (j.peggedAssets || []).find(x => x.symbol === "USDT");
+          const v = a && a.circulating && a.circulating.peggedUSD;
+          if (!Number.isFinite(v) || v <= 0) throw new Error("no_usdt");
+          return v;
+        }),
+      },
+    }),
+  },
+  "stablecoin-usdc-supply": {
+    config: { metric: "usdc_usd", threshold_pct: 1.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        usdc_usd: await fetchSafe(async () => {
+          const r = await fetch("https://stablecoins.llama.fi/stablecoins?includePrices=true",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const a = (j.peggedAssets || []).find(x => x.symbol === "USDC");
+          const v = a && a.circulating && a.circulating.peggedUSD;
+          if (!Number.isFinite(v) || v <= 0) throw new Error("no_usdc");
+          return v;
+        }),
+      },
+    }),
+  },
+  "dex-total-volume-24h": {
+    config: { metric: "total24h", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        total24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/overview/dexs?excludeTotalDataChart=true",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.total24h;
+          if (!Number.isFinite(v)) throw new Error("no_total24h");
+          return v;
+        }),
+      },
+    }),
+  },
+  "dex-uniswap-volume": {
+    config: { metric: "uniswap_24h", threshold_pct: 25.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        uniswap_24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/summary/dexs/uniswap",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.total24h;
+          if (!Number.isFinite(v)) throw new Error("no_total24h");
+          return v;
+        }),
+      },
+    }),
+  },
+  "dex-ethereum-volume": {
+    config: { metric: "eth_24h", threshold_pct: 25.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        eth_24h: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/overview/dexs/ethereum?excludeTotalDataChart=true",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.total24h;
+          if (!Number.isFinite(v)) throw new Error("no_total24h");
+          return v;
+        }),
+      },
+    }),
+  },
+  "defi-total-tvl": {
+    config: { metric: "tvl_usd", threshold_pct: 3.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        tvl_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/v2/historicalChainTvl",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const last = Array.isArray(j) && j[j.length - 1];
+          const v = last && last.tvl;
+          if (!Number.isFinite(v)) throw new Error("no_tvl");
+          return v;
+        }),
+      },
+    }),
+  },
+  "nft-bayc-floor": {
+    config: { metric: "floor_eth", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        floor_eth: await fetchSafe(async () => {
+          const r = await fetch("https://api.reservoir.tools/collections/v6?slug=boredapeyachtclub",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const c = (j.collections || [])[0];
+          const v = c && c.floorAsk && c.floorAsk.price && c.floorAsk.price.amount && c.floorAsk.price.amount.native;
+          if (!Number.isFinite(v)) throw new Error("no_floor");
+          return v;
+        }),
+      },
+    }),
+  },
+  "nft-punks-floor": {
+    config: { metric: "floor_eth", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        floor_eth: await fetchSafe(async () => {
+          const r = await fetch("https://api.reservoir.tools/collections/v6?slug=cryptopunks",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const c = (j.collections || [])[0];
+          const v = c && c.floorAsk && c.floorAsk.price && c.floorAsk.price.amount && c.floorAsk.price.amount.native;
+          if (!Number.isFinite(v)) throw new Error("no_floor");
+          return v;
+        }),
+      },
+    }),
+  },
 };
 
 
