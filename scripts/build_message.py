@@ -39,18 +39,21 @@ def _verify_or_die(d):
     try:
         sys.path.insert(0, str(BASE_DIR))
         from scripts.verify_signature import verify as _v
-        import json as _json
         with open(BASE_DIR / "docs" / ".well-known" / "volatiai-key.json") as f:
-            pub = _json.load(f)["publicKeyHex"]
+            pub = json.load(f)["publicKeyHex"]
         r = _v(d, pub)
         if r is False:
-            print(f"🚨 SIGNATURE INVALID — refusing to publish\n→ {URL}")
+            print(f"🚨 SIGNATURE INVALID — refusing to publish", file=sys.stderr)
             sys.exit(1)
-        # r is None (unsigned) or True (valid) → proceed
-    except FileNotFoundError:
-        pass  # crypto not configured, allow unsigned
-    except Exception:
-        pass
+        elif r is True:
+            print(f"✅ signature valid", file=sys.stderr)
+        else:
+            print(f"⚠️  unsigned payload (no signature field)", file=sys.stderr)
+    except FileNotFoundError as e:
+        print(f"⚠️  verify skipped: key file missing ({e})", file=sys.stderr)
+    except Exception as e:
+        print(f"⚠️  verify exception: {type(e).__name__}: {e}", file=sys.stderr)
+
 
 try:
     d = json.load(sys.stdin)
