@@ -73,6 +73,26 @@ a:hover{text-decoration:underline}
 const BASE = "https://sector-slow.fourieranalys.workers.dev";
 const SEV_RANK = {error:3, critical:2, warn:1, info:0};
 let DATA = {rows:[]};
+let CATEGORIES = {};
+
+async function loadCategories() {
+  try {
+    const r = await fetch("categories.json", {cache: "no-store"});
+    CATEGORIES = await r.json();
+  } catch (e) {
+    CATEGORIES = {};
+  }
+}
+
+function enrichCategory(sector) {
+  for (const [cat, members] of Object.entries(CATEGORIES)) {
+    if (Array.isArray(members) && members.includes(sector)) return cat;
+  }
+  if (sector.includes("stablecoin") || sector.includes("dex") || sector.includes("defi") || sector.includes("nft")) {
+    return "defi-nft";
+  }
+  return "other";
+}
 let filter = "all";
 let sortCol = "pct_change";
 let sortDir = -1;
@@ -159,6 +179,11 @@ async function refresh() {
   try {
     const r = await fetch(BASE + "/latest", {cache: "no-store"});
     DATA = await r.json();
+    // Enrich each row with its category before rendering
+    DATA.rows = DATA.rows.map(row => ({
+      ...row,
+      category: row.category || enrichCategory(row.sector)
+    }));
     render();
   } catch (e) {
     document.getElementById("ts").textContent = "fetch error: " + e.message;
@@ -246,8 +271,11 @@ function renderComposites() {
 
 document.getElementById("refresh").addEventListener("click", refresh);
 
-refresh();
-setInterval(refresh, 60000);
+(async () => {
+  await loadCategories();
+  await refresh();
+  setInterval(refresh, 60000);
+})();
 </script>
 </body>
 </html>

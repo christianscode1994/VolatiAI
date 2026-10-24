@@ -1453,6 +1453,11 @@ export default {
     // ─── /metrics — read-only health from history timestamps ───
     if (parts[0] === "metrics") {
       try {
+        const force = url.searchParams.get("force") === "1";
+        if (!force) {
+          const cached = await env.SECTOR_KV.get("_metrics_cache", "json");
+          if (cached) return json(cached);
+        }
         const list = await env.SECTOR_KV.list({ limit: 1000 });
         const histKeys = list.keys.filter(k => k.name.endsWith("_history") && !k.name.startsWith("_"));
         const now = Date.now();
@@ -1478,7 +1483,7 @@ export default {
           });
         }
         stale.sort((a, b) => b.age_hours - a.age_hours);
-        return json({
+        const result = {
           ts: new Date().toISOString(),
           total_with_history: histKeys.length,
           healthy_24h: healthy,
@@ -1486,7 +1491,11 @@ export default {
           stale_7d: stale7d,
           stale_30d: stale30d,
           stale_sectors: stale.slice(0, 20),
-        });
+          _cached_at: new Date().toISOString(),
+        };
+        // Cache 120s (KV minimum TTL is 60s)
+        await env.SECTOR_KV.put("_metrics_cache", JSON.stringify(result), { expirationTtl: 120 });
+        return json(result);
       } catch (e) {
         return json({ error: "metrics_failed", message: String(e && e.message || e) }, 500);
       }
