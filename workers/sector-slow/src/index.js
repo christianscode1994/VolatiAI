@@ -1584,7 +1584,76 @@ const COLLECTORS = {
       },
     }),
   },
-};
+
+  "uk-carbon-intensity": {
+    config: { metric: "gco2_kwh", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        gco2_kwh: await fetchSafe(async () => {
+          const r = await fetch("https://api.carbonintensity.org.uk/intensity",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.data?.[0]?.intensity?.actual;
+          if (typeof v !== "number") throw new Error("no_intensity: keys=" + Object.keys(j || {}).slice(0,3).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "usgs-elevated-volcanoes": {
+    config: { metric: "elevated_count", threshold_pct: 20.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        elevated_count: await fetchSafe(async () => {
+          const r = await fetch("https://volcanoes.usgs.gov/hans-public/api/volcano/getElevatedVolcanoes",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (Array.isArray(j)) return j.length;
+          if (typeof j?.count === "number") return j.count;
+          if (Array.isArray(j?.volcanoes)) return j.volcanoes.length;
+          throw new Error("no_count: type=" + typeof j);
+        }),
+      },
+    }),
+  },
+  "pocketworld-space-weather": {
+    config: { metric: "kp_index", threshold_pct: 30.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        kp_index: await fetchSafe(async () => {
+          const r = await fetch("https://pocketworld.org/api/space-weather",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const item = (j.items || [])[0] || {};
+          const v = item.kp ?? item.kp_index ?? item.kpIndex;
+          if (typeof v !== "number") throw new Error("no_kp: keys=" + Object.keys(item).slice(0,5).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "imf-us-gdp-growth": {
+    config: { metric: "gdp_growth_pct", threshold_pct: 10.0, window: "365d", window_days: 365, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        gdp_growth_pct: await fetchSafe(async () => {
+          const r = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH/USA?periods=2024,2025",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const years = j?.values?.NGDP_RPCH?.USA || {};
+          const keys = Object.keys(years).sort();
+          const latest = keys[keys.length - 1];
+          const v = years[latest];
+          if (typeof v !== "number") throw new Error("no_gdp: keys=" + keys.join(","));
+          return v;
+        }),
+      },
+    }),
+  },};
 
 
 
