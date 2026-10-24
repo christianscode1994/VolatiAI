@@ -1563,21 +1563,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "spacex-launch-count": {
-    config: { metric: "launch_count", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        launch_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.spacexdata.com/v4/launches",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array");
-          return j.length;
-        }),
-      },
-    }),
-  },
   "eurostat-eu-unemployment": {
     config: { metric: "unemployment_pct", threshold_pct: 5.0, window: "30d", window_days: 30, ttl: 86400 },
     collectAll: async () => ({
@@ -1599,39 +1584,7 @@ const COLLECTORS = {
       },
     }),
   },
-  "swiss-unemployment": {
-    config: { metric: "unemployment_pct", threshold_pct: 5.0, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        unemployment_pct: await fetchSafe(async () => {
-          // PxWeb API — POST with JSON-stat query
-          const url = "https://www.pxweb.bfs.admin.ch/api/v1/en/px-x-0102030000_101/px-x-0102030000_101.px";
-          const query = {
-            query: [
-              { code: "Jahr", selection: { filter: "top", values: ["0"] } },
-              { code: "Monat", selection: { filter: "top", values: ["0"] } }
-            ],
-            response: { format: "json-stat" }
-          };
-          const r = await fetch(url, {
-            method: "POST",
-            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
-            body: JSON.stringify(query),
-            signal: AbortSignal.timeout(30000)
-          });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const val = j?.value;
-          if (Array.isArray(val) && val.length > 0) return val[val.length - 1];
-          if (val && typeof val === "object") {
-            const keys = Object.keys(val).map(k => parseInt(k, 10)).sort((a, b) => a - b);
-            return val[String(keys[keys.length - 1])];
-          }
-          throw new Error("no_value");
-        }),
-      },
-    }),
-  },};
+};
 
 
 
