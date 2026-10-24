@@ -138,6 +138,8 @@ def fetch_crossref_cumulative(days):
         except Exception as e:
             print(f"  WARN {date_str}: {e}", file=sys.stderr)
         cursor += timedelta(days=1)
+        if len(out) % 10 == 0 and len(out) > 0:
+            print(f"  ... {len(out)}/{days} fetched (latest: {out[-1]['v']})", flush=True)
         time.sleep(0.1)
     return out
 
