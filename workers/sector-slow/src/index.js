@@ -1350,10 +1350,7 @@ export default {
     // ─── /latest — batch summary from KV, no upstream fetches ───
     if (parts[0] === "latest") {
       try {
-        const summary = await env.SECTOR_KV.get("_last_cron_run", "json");
-        if (summary) return json(summary);
-
-        // Cron has not run yet — read history keys directly
+        // Always read from history keys — consistent shape, no cron dependency
         const list = await env.SECTOR_KV.list({ limit: 1000 });
         const rows = [];
         for (const key of list.keys) {
