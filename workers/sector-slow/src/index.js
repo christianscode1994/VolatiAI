@@ -850,6 +850,25 @@ const COLLECTORS = {
       },
     }),
   },
+  "gleif-leis": {
+    config: { metric: "total_leis", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_leis: await fetchSafe(async () => {
+          // GLEIF LEI registry — CC0, keyless, live count of legal entities
+          // with a Legal Entity Identifier. URL-encoded brackets because
+          // some environments mangle the raw [ ] form.
+          const r = await fetch("https://api.gleif.org/api/v1/lei-records?page%5Bsize%5D=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.api+json" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.meta?.pagination?.total;
+          if (typeof total !== "number") throw new Error("no_total: meta_keys=" + Object.keys(j?.meta || {}).join(","));
+          return total;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
