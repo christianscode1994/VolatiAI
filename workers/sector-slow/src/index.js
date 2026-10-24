@@ -1619,41 +1619,22 @@ const COLLECTORS = {
     }),
   },
   "pocketworld-space-weather": {
-    config: { metric: "kp_index", threshold_pct: 30.0, window: "1d", window_days: 1, ttl: 3600 },
+    config: { metric: "event_count", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
       sources: {
-        kp_index: await fetchSafe(async () => {
+        event_count: await fetchSafe(async () => {
           const r = await fetch("https://pocketworld.org/api/space-weather",
             { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const item = (j.items || [])[0] || {};
-          const v = item.kp ?? item.kp_index ?? item.kpIndex;
-          if (typeof v !== "number") throw new Error("no_kp: keys=" + Object.keys(item).slice(0,5).join(","));
-          return v;
+          if (typeof j.count === "number") return j.count;
+          if (Array.isArray(j.events)) return j.events.length;
+          throw new Error("no_count: keys=" + Object.keys(j).slice(0,5).join(","));
         }),
       },
     }),
   },
-  "imf-us-gdp-growth": {
-    config: { metric: "gdp_growth_pct", threshold_pct: 10.0, window: "365d", window_days: 365, ttl: 604800 },
-    collectAll: async () => ({
-      sources: {
-        gdp_growth_pct: await fetchSafe(async () => {
-          const r = await fetch("https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH/USA?periods=2024,2025",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const years = j?.values?.NGDP_RPCH?.USA || {};
-          const keys = Object.keys(years).sort();
-          const latest = keys[keys.length - 1];
-          const v = years[latest];
-          if (typeof v !== "number") throw new Error("no_gdp: keys=" + keys.join(","));
-          return v;
-        }),
-      },
-    }),
-  },};
+};
 
 
 

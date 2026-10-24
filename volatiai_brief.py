@@ -125,10 +125,9 @@ COMPOSITE_RULES = [
      lambda b: (b.get("uk-carbon-intensity") or {}).get("pct_change", 0) > 30),
     ("volcano-alert", "USGS elevated volcanoes +2",
      lambda b: (b.get("usgs-elevated-volcanoes") or {}).get("pct_change", 0) > 20),
-    ("geomagnetic-storm", "Kp index >5 (G1+ storm)",
-     lambda b: (b.get("pocketworld-space-weather") or {}).get("current", 0) > 5),
-    ("imf-gdp-revision", "IMF US GDP growth ±0.5pp",
-     lambda b: abs((b.get("imf-us-gdp-growth") or {}).get("pct_change", 0)) > 10),
+    ("space-weather-events-spike", "Space weather event count +50%",
+     lambda b: (b.get("pocketworld-space-weather") or {}).get("pct_change", 0) > 50),
+
 ]
 
 def fetch_json(url):
