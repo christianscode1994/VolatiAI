@@ -1352,19 +1352,31 @@ export default {
       try {
         // Always read from history keys — consistent shape, no cron dependency
         const list = await env.SECTOR_KV.list({ limit: 1000 });
+        const histKeys = list.keys
+          .filter(k => k.name.endsWith("_history") && !k.name.startsWith("_"));
+
         const rows = [];
-        for (const key of list.keys) {
-          if (!key.name.endsWith("_history") || key.name.startsWith("_")) continue;
-          const hist = await env.SECTOR_KV.get(key.name, "json");
-          if (!Array.isArray(hist) || hist.length === 0) continue;
-          const last = hist[hist.length - 1];
-          const prev = hist.length > 1 ? hist[hist.length - 2] : last;
-          const pct = prev.v !== 0 ? ((last.v - prev.v) / prev.v) * 100 : 0;
-          const sector = key.name.replace(/_history$/, "").split("_").slice(0, -1).join("_");
-          rows.push({
-            sector, current: last.v, previous: prev.v, pct_change: pct,
-            pts: hist.length, t: last.t,
-            has_signal: false, severity: "info",
+        // Parallel KV reads in batches of 25 to avoid connection thrash
+        const BATCH = 25;
+        for (let i = 0; i < histKeys.length; i += BATCH) {
+          const batch = histKeys.slice(i, i + BATCH);
+          const hists = await Promise.all(batch.map(k => env.SECTOR_KV.get(k.name, "json")));
+          batch.forEach((k, j) => {
+            const hist = hists[j];
+            if (!Array.isArray(hist) || hist.length === 0) return;
+            const last = hist[hist.length - 1];
+            const prev = hist.length > 1 ? hist[hist.length - 2] : last;
+            const pct = prev.v !== 0 ? ((last.v - prev.v) / prev.v) * 100 : 0;
+            // Key pattern: <sector>_<metric>_history.
+            // Sector names use dashes (never underscores), so split on FIRST _.
+            const withoutSuffix = k.name.replace(/_history$/, "");
+            const firstUnderscore = withoutSuffix.indexOf("_");
+            const sector = firstUnderscore === -1 ? withoutSuffix : withoutSuffix.substring(0, firstUnderscore);
+            rows.push({
+              sector, current: last.v, previous: prev.v, pct_change: pct,
+              pts: hist.length, t: last.t,
+              has_signal: false, severity: "info",
+            });
           });
         }
         return json({
