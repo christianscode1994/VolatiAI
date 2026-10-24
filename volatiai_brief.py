@@ -104,6 +104,15 @@ COMPOSITE_RULES = [
      lambda b: (b.get("hn-tech-sentiment") or {}).get("pct_change", 0) < -15),
     ("space-activity-spike", "Spaceflight article count +50%",
      lambda b: (b.get("spaceflight-news-count") or {}).get("pct_change", 0) > 50),
+    # ─── Software usage (downloads & quality) ───
+    ("python-usage-surge", "PyPI requests downloads +20%",
+     lambda b: (b.get("pypi-downloads-requests") or {}).get("pct_change", 0) > 20),
+    ("npm-usage-surge", "npm react downloads +20%",
+     lambda b: (b.get("npm-downloads-react") or {}).get("pct_change", 0) > 20),
+    ("npm-usage-collapse", "npm react downloads -20%",
+     lambda b: (b.get("npm-downloads-react") or {}).get("pct_change", 0) < -20),
+    ("sourcerank-drop", "React SourceRank -5%",
+     lambda b: (b.get("librariesio-sourcerank-react") or {}).get("pct_change", 0) < -5),
 ]
 
 def fetch_json(url):

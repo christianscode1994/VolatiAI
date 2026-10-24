@@ -1498,6 +1498,54 @@ const COLLECTORS = {
         }),
       },
     }),
+  },
+  "pypi-downloads-requests": {
+    config: { metric: "last_day", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        last_day: await fetchSafe(async () => {
+          const r = await fetch("https://pypistats.org/api/packages/requests/recent",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.data?.last_day;
+          if (typeof v !== "number") throw new Error("no_last_day");
+          return v;
+        }),
+      },
+    }),
+  },
+  "npm-downloads-react": {
+    config: { metric: "downloads", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        downloads: await fetchSafe(async () => {
+          const r = await fetch("https://api.npmjs.org/downloads/point/last-day/react",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.downloads;
+          if (typeof v !== "number") throw new Error("no_downloads");
+          return v;
+        }),
+      },
+    }),
+  },
+  "librariesio-sourcerank-react": {
+    config: { metric: "sourcerank", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        sourcerank: await fetchSafe(async () => {
+          const r = await fetch("https://libraries.io/api/npm/react",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.sourcerank;
+          if (typeof v !== "number") throw new Error("no_sourcerank: keys=" + Object.keys(j || {}).slice(0,5).join(","));
+          return v;
+        }),
+      },
+    }),
   },};
 
 
