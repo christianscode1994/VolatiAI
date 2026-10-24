@@ -114,9 +114,7 @@ PRIORITY=(
 
   # ─── New cybersecurity & developer activity ───
   feodo-c2-count
-  sans-isc-daily-records
   nvd-new-cves-count
-  stackoverflow-questions-total
   github-recent-commits
   pypi-daily-requests
 )

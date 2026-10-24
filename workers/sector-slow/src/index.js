@@ -1806,6 +1806,55 @@ const COLLECTORS = {
       },
     }),
   },
+  "feodo-c2-count": {
+    config: { metric: "c2_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        c2_count: await fetchSafe(async () => {
+          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "nvd-new-cves-count": {
+    config: { metric: "new_cves", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        new_cves: await fetchSafe(async () => {
+          const since = new Date(Date.now() - 86400000).toISOString().replace(/\.\d{3}Z$/, '.000');
+          const r = await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=${since}&pubEndDate=${new Date().toISOString().replace(/\.\d{3}Z$/, '.000')}`,
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.totalResults;
+          if (typeof v !== "number") throw new Error("no_totalResults");
+          return v;
+        }),
+      },
+    }),
+  },
+  "github-recent-commits": {
+    config: { metric: "commit_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        commit_count: await fetchSafe(async () => {
+          const since = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          const r = await fetch(`https://api.github.com/search/commits?q=committer-date:>=${since}`,
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github.cloak-preview" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.total_count;
+          if (typeof v !== "number") throw new Error("no_total_count");
+          return v;
+        }),
+      },
+    }),
+  },
 };
 
 
@@ -1848,87 +1897,6 @@ async function signLatest(payload, env) {
       value: sigB64,
       canonical_sha256: await sha256Hex(bytes),
 
-  "feodo-c2-count": {
-    config: { metric: "c2_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        c2_count: await fetchSafe(async () => {
-          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array");
-          return j.length;
-        }),
-      },
-    }),
-  },
-  "sans-isc-daily-records": {
-    config: { metric: "daily_records", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        daily_records: await fetchSafe(async () => {
-          const r = await fetch("https://isc.sans.edu/api/dailysummary?json",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.records ?? j?.total;
-          if (typeof v !== "number") throw new Error("no_records: keys=" + Object.keys(j || {}).slice(0,5).join(","));
-          return v;
-        }),
-      },
-    }),
-  },
-  "nvd-new-cves-count": {
-    config: { metric: "new_cves", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        new_cves: await fetchSafe(async () => {
-          const since = new Date(Date.now() - 86400000).toISOString().replace(/\.\d{3}Z$/, '.000');
-          const r = await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=${since}&pubEndDate=${new Date().toISOString().replace(/\.\d{3}Z$/, '.000')}`,
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.totalResults;
-          if (typeof v !== "number") throw new Error("no_totalResults");
-          return v;
-        }),
-      },
-    }),
-  },
-  "stackoverflow-questions-total": {
-    config: { metric: "total_questions", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        total_questions: await fetchSafe(async () => {
-          const r = await fetch("https://api.stackexchange.com/2.3/info?site=stackoverflow",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.items?.[0]?.total_questions;
-          if (typeof v !== "number") throw new Error("no_total_questions");
-          return v;
-        }),
-      },
-    }),
-  },
-  "github-recent-commits": {
-    config: { metric: "commit_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        commit_count: await fetchSafe(async () => {
-          const since = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-          const r = await fetch(`https://api.github.com/search/commits?q=committer-date:>=${since}`,
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github.cloak-preview" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.total_count;
-          if (typeof v !== "number") throw new Error("no_total_count");
-          return v;
-        }),
-      },
-    }),
-  },
   "pypi-daily-requests": {
     config: { metric: "last_day", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
