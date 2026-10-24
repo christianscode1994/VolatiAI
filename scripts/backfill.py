@@ -139,10 +139,10 @@ def fetch_crossref_cumulative(days):
         time.sleep(0.1)
     return out
 
-def fetch_openfda_cumulative(days):
-    """openFDA drug enforcement reports, cumulative by report_date.
-    Each query returns 'reports filed on or before date X'.
-    ~90 queries @ 0.1s delay = ~30-45s."""
+def _fetch_openfda_cumulative(days, endpoint):
+    """Generic openFDA enforcement cumulative-by-report_date fetcher.
+    endpoint is 'drug', 'food', or 'device'. All three share the same
+    response schema (meta.results.total) and rate limiter."""
     import time
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     cutoff = today - timedelta(days=days)
@@ -150,7 +150,7 @@ def fetch_openfda_cumulative(days):
     cursor = cutoff + timedelta(days=1)
     while cursor <= today:
         date_str = cursor.strftime("%Y%m%d")
-        url = f"https://api.fda.gov/drug/enforcement.json?search=report_date:[20040101+TO+{date_str}]&limit=1"
+        url = f"https://api.fda.gov/{endpoint}/enforcement.json?search=report_date:[20040101+TO+{date_str}]&limit=1"
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "VolatiAI/1.0"})
             with urllib.request.urlopen(req, timeout=20, context=SSL_CTX) as r:
@@ -163,6 +163,15 @@ def fetch_openfda_cumulative(days):
         cursor += timedelta(days=1)
         time.sleep(0.1)
     return out
+
+def fetch_openfda_cumulative(days):
+    return _fetch_openfda_cumulative(days, "drug")
+
+def fetch_openfda_food_cumulative(days):
+    return _fetch_openfda_cumulative(days, "food")
+
+def fetch_openfda_device_cumulative(days):
+    return _fetch_openfda_cumulative(days, "device")
 
 
 def fetch_datacite_cumulative(days):
