@@ -62,6 +62,16 @@ COMPOSITE_RULES = [
      lambda b: (b.get("kraken-btc-usd") or {}).get("pct_change", 0) > 3
                and (b.get("fred-dgs10") or {}).get("pct_change", 0) < -2),
     # ─── DeFi ───
+    ("stablecoin-flight", "Total stablecoin supply down >3%",
+     lambda b: (b.get("stablecoin-total-supply") or {}).get("pct_change", 0) < -3),
+    ("stablecoin-inflow", "Total stablecoin supply up >3%",
+     lambda b: (b.get("stablecoin-total-supply") or {}).get("pct_change", 0) > 3),
+    ("dex-volume-burst", "Total DEX volume +50%",
+     lambda b: (b.get("dex-total-volume-24h") or {}).get("pct_change", 0) > 50),
+    ("tvl-crash", "DeFi total TVL down >5%",
+     lambda b: (b.get("defi-total-tvl") or {}).get("pct_change", 0) < -5),
+    ("nft-crash", "BAYC floor down >10%",
+     lambda b: (b.get("nft-bayc-floor") or {}).get("pct_change", 0) < -10),
     ("defi-expansion", "DeFi protocol count +0.5%",
      lambda b: (b.get("defillama-protocol-count") or {}).get("pct_change", 0) > 0.5),
 ]
