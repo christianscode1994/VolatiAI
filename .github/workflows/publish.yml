@@ -19,7 +19,6 @@ jobs:
         run: pip install --quiet pynostr websocket-client
 
       - name: Build message
-        id: msg
         run: |
           curl -s "https://sector-slow.fourieranalys.workers.dev/latest" \
             | python3 scripts/build_message.py > /tmp/message.txt
@@ -29,19 +28,22 @@ jobs:
         id: check
         run: |
           NEW=$(sha256sum /tmp/message.txt | cut -d' ' -f1)
-          CACHED=$(curl -s "https://sector-slow.fourieranalys.workers.dev/status" | jq -r '.last_message_hash // "none"')
+          CACHED=$(curl -s "https://sector-slow.fourieranalys.workers.dev/status" | jq -r '.last_publish_hash // "none"')
+          echo "new_hash=$NEW"        >> $GITHUB_OUTPUT
+          echo "cached_hash=$CACHED"  >> $GITHUB_OUTPUT
           echo "new=$NEW"
           echo "cached=$CACHED"
           if [ "$NEW" = "$CACHED" ]; then
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "Message unchanged — skipping publish"
+            echo "⏭️  Message unchanged — skipping publish"
           else
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "changed=true"  >> $GITHUB_OUTPUT
+            echo "📣 Message changed — publishing"
           fi
 
       - name: Publish
         id: publish
-        if: steps.dedup.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -57,15 +59,15 @@ jobs:
           python3 volatiai_publish.py "$(cat /tmp/message.txt)"
 
       - name: Record published hash
-        if: steps.dedup.outputs.changed == 'true' && steps.publish.outcome == 'success'
+        if: steps.check.outputs.changed == 'true' && steps.publish.outcome == 'success'
         run: |
-          HASH="${{ steps.dedup.outputs.new_hash }}"
-          echo "Recording hash: $HASH (length ${#HASH})"
-          RESPONSE=$(curl -sS -X POST "https://sector-slow.fourieranalys.workers.dev/publish-hash" \
+          HASH="${{ steps.check.outputs.new_hash }}"
+          echo "Recording hash: [$HASH] (length: ${#HASH})"
+          RESP=$(curl -sS -X POST "https://sector-slow.fourieranalys.workers.dev/publish-hash" \
             -H "Content-Type: application/json" \
             -d "{\"hash\":\"$HASH\"}")
-          echo "Response: $RESPONSE"
-          if echo "$RESPONSE" | grep -q '"ok":true'; then
+          echo "Response: $RESP"
+          if echo "$RESP" | grep -q '"ok":true'; then
             echo "✅ Hash stored"
           else
             echo "❌ Hash storage failed"
