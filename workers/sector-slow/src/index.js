@@ -1350,7 +1350,95 @@ async function signLatest(payload, env) {
       key_id: "volati-2026-01",
       value: sigB64,
       canonical_sha256: await sha256Hex(bytes),
-    };
+    
+  "ossf-scorecard-linux": {
+    config: { metric: "score", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        score: await fetchSafe(async () => {
+          const r = await fetch("https://api.securityscorecards.dev/projects/github.com/torvalds/linux",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.score;
+          if (typeof v !== "number") throw new Error("no_score");
+          return v;
+        }),
+      },
+    }),
+  },
+  "ecosyste-ms-react": {
+    config: { metric: "dependent_count", threshold_pct: 2.0, window: "7d", window_days: 7, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        dependent_count: await fetchSafe(async () => {
+          const r = await fetch("https://packages.ecosyste.ms/api/v1/registries/npmjs.org/packages/react",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.dependent_packages_count;
+          if (typeof v !== "number") throw new Error("no_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  "open-digger-openrank-vscode": {
+    config: { metric: "openrank", threshold_pct: 5.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        openrank: await fetchSafe(async () => {
+          const r = await fetch("https://oss.open-digger.cn/github/microsoft/vscode/openrank.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const months = Object.keys(j).filter(k => /^\d{4}-\d{2}$/.test(k)).sort();
+          const latest = months[months.length - 1];
+          const v = j[latest];
+          if (typeof v !== "number") throw new Error("no_openrank");
+          return v;
+        }),
+      },
+    }),
+  },
+  "github-stars-tensorflow": {
+    config: { metric: "stars", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        stars: await fetchSafe(async () => {
+          const r = await fetch("https://api.github.com/repos/tensorflow/tensorflow",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.stargazers_count;
+          if (typeof v !== "number") throw new Error("no_stars");
+          return v;
+        }),
+      },
+    }),
+  },
+  "hackernews-top-scores": {
+    config: { metric: "top10_score_sum", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        top10_score_sum: await fetchSafe(async () => {
+          const r = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const ids = (await r.json()).slice(0, 10);
+          const scores = await Promise.all(ids.map(async (id) => {
+            const ir = await fetch("https://hacker-news.firebaseio.com/v0/item/" + id + ".json",
+              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
+            if (!ir.ok) return 0;
+            const item = await ir.json();
+            return item.score || 0;
+          }));
+          return scores.reduce((a, b) => a + b, 0);
+        }),
+      },
+    }),
+  },
+};
   } catch (e) {
     console.error("sign_failed", String(e));
     return null;

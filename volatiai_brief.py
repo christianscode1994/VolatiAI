@@ -76,6 +76,17 @@ COMPOSITE_RULES = [
      lambda b: (b.get("nft-bayc-floor") or {}).get("pct_change", 0) < -10),
     ("defi-expansion", "DeFi protocol count +0.5%",
      lambda b: (b.get("defillama-protocol-count") or {}).get("pct_change", 0) > 0.5),
+    # ─── Software ecosystem ───
+    ("scorecard-drop", "OpenSSF score drops >10%",
+     lambda b: (b.get("ossf-scorecard-linux") or {}).get("pct_change", 0) < -10),
+    ("dependency-spike", "React dependents +5%",
+     lambda b: (b.get("ecosyste-ms-react") or {}).get("pct_change", 0) > 5),
+    ("openrank-collapse", "VS Code OpenRank down >10%",
+     lambda b: (b.get("open-digger-openrank-vscode") or {}).get("pct_change", 0) < -10),
+    ("star-surge", "TensorFlow stars +2%",
+     lambda b: (b.get("github-stars-tensorflow") or {}).get("pct_change", 0) > 2),
+    ("hn-sentiment-shift", "HN top-10 score sum +25%",
+     lambda b: (b.get("hackernews-top-scores") or {}).get("pct_change", 0) > 25),
 ]
 
 def fetch_json(url):
