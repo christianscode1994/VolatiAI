@@ -850,23 +850,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "tweetfeed-phishing": {
-    config: { metric: "phishing_urls_24h", threshold_pct: 20.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        phishing_urls_24h: await fetchSafe(async () => {
-          // TweetFeed — CC0, no auth, no API key. JSON array of IOCs.
-          // /v1/today/phishing/url returns all phishing URLs shared today.
-          const r = await fetch("https://api.tweetfeed.live/v1/today/phishing/url",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return j.length;
-        }),
-      },
-    }),
-  },
 };
 
 function json(obj, status = 200) {
