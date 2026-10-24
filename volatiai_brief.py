@@ -96,6 +96,17 @@ COMPOSITE_RULES = [
      lambda b: (b.get("deps-dev-react-versions") or {}).get("pct_change", 0) > 5),
     ("license-degradation", "React license score -5%",
      lambda b: (b.get("clearlydefined-react-license") or {}).get("pct_change", 0) < -5),
+    # ─── Global news sentiment ───
+    ("global-news-negative", "GDELT global tone drops below -10",
+     lambda b: (b.get("gdelt-global-tone") or {}).get("current", 0) < -10),
+    ("global-news-positive", "GDELT global tone rises above +10",
+     lambda b: (b.get("gdelt-global-tone") or {}).get("current", 0) > 10),
+    ("news-volume-spike", "GDELT article volume +30%",
+     lambda b: (b.get("gdelt-article-volume") or {}).get("pct_change", 0) > 30),
+    ("tech-sentiment-drop", "HN tech avg score -15%",
+     lambda b: (b.get("hn-tech-sentiment") or {}).get("pct_change", 0) < -15),
+    ("space-activity-spike", "Spaceflight article count +50%",
+     lambda b: (b.get("spaceflight-news-count") or {}).get("pct_change", 0) > 50),
 ]
 
 def fetch_json(url):

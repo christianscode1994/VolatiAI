@@ -1464,6 +1464,78 @@ const COLLECTORS = {
         }),
       },
     }),
+  },
+  "gdelt-global-tone": {
+    config: { metric: "avg_tone", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        avg_tone: await fetchSafe(async () => {
+          const r = await fetch("https://api.gdeltproject.org/api/v2/doc/doc?query=theme:TAX_FNCACT&mode=timelinetone&format=json&timespan=1d",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const j = JSON.parse(text);
+          const series = j.timeline?.[0]?.data || [];
+          if (series.length === 0) throw new Error("no_tone_data");
+          const v = series[series.length - 1].value;
+          if (typeof v !== "number") throw new Error("no_tone");
+          return v;
+        }),
+      },
+    }),
+  },
+  "gdelt-article-volume": {
+    config: { metric: "volume", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        volume: await fetchSafe(async () => {
+          const r = await fetch("https://api.gdeltproject.org/api/v2/doc/doc?query=theme:TAX_FNCACT&mode=timelinevol&format=json&timespan=1d",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          const j = JSON.parse(text);
+          const series = j.timeline?.[0]?.data || [];
+          if (series.length === 0) throw new Error("no_volume_data");
+          const v = series[series.length - 1].value;
+          if (typeof v !== "number") throw new Error("no_volume");
+          return v;
+        }),
+      },
+    }),
+  },
+  "hn-tech-sentiment": {
+    config: { metric: "avg_score", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        avg_score: await fetchSafe(async () => {
+          const r = await fetch("https://hn.algolia.com/api/v1/search?tags=story&hitsPerPage=50",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const scores = (j.hits || []).map(h => h.points).filter(n => typeof n === "number");
+          if (scores.length === 0) throw new Error("no_scores");
+          const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+          if (!Number.isFinite(avg)) throw new Error("bad_avg");
+          return avg;
+        }),
+      },
+    }),
+  },
+  "spaceflight-news-count": {
+    config: { metric: "article_count", threshold_pct: 30.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        article_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.spaceflightnewsapi.net/v4/articles?limit=100&ordering=-published_at",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.count;
+          if (typeof v !== "number") throw new Error("no_count");
+          return v;
+        }),
+      },
+    }),
   },};
 
 
