@@ -387,11 +387,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "fintech",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "flux-nodes",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -408,11 +403,6 @@
     },
     {
       "sector": "frankfurter-fx",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "gdacs-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -537,7 +527,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "natural-disasters",
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -787,11 +777,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "uk-flood-warnings",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "un-governance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -882,12 +867,22 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "fintech",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "food-products",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 19/24 runs (79%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "food-security",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "gdacs-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -907,7 +902,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
+      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -917,65 +912,70 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "uk-flood-warnings",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "cisa-kev",
-      "reason": "conf=0 in 21/21 runs (100%)",
+      "reason": "conf=0 in 22/22 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nvd-new-cves",
-      "reason": "conf=0 in 21/21 runs (100%)",
+      "reason": "conf=0 in 22/22 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nasa-eonet",
-      "reason": "conf=0 in 19/19 runs (100%)",
+      "reason": "conf=0 in 20/20 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "usgs-water",
-      "reason": "conf=0 in 19/19 runs (100%)",
+      "reason": "conf=0 in 20/20 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "noaa-ndbc",
-      "reason": "conf=0 in 19/19 runs (100%)",
+      "reason": "conf=0 in 20/20 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "epa-envirofacts",
-      "reason": "conf=0 in 19/19 runs (100%)",
+      "reason": "conf=0 in 20/20 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "faostat",
-      "reason": "conf=0 in 6/6 runs (100%)",
+      "reason": "conf=0 in 7/7 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "global-forest-watch",
-      "reason": "conf=0 in 6/6 runs (100%)",
+      "reason": "conf=0 in 7/7 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "fcc-broadband",
-      "reason": "conf=0 in 6/6 runs (100%)",
+      "reason": "conf=0 in 7/7 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "bakom",
-      "reason": "conf=0 in 6/6 runs (100%)",
+      "reason": "conf=0 in 7/7 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "satlas",
-      "reason": "conf=0 in 6/6 runs (100%)",
+      "reason": "conf=0 in 7/7 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "ripe-atlas-public",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -1072,7 +1072,7 @@
     {
       "sector": "pubmed",
       "runs": 24,
-      "avg_conf": 0.96
+      "avg_conf": 0.92
     },
     {
       "sector": "science-math",
@@ -1090,11 +1090,6 @@
       "avg_conf": 0.88
     },
     {
-      "sector": "spaceweather",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "unemployment",
       "runs": 24,
       "avg_conf": 1.0
@@ -1106,12 +1101,12 @@
     },
     {
       "sector": "abuse-ch-feodo",
-      "runs": 21,
+      "runs": 22,
       "avg_conf": 1.0
     },
     {
       "sector": "rir-arin",
-      "runs": 19,
+      "runs": 20,
       "avg_conf": 1.0
     }
   ]
