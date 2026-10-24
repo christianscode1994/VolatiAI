@@ -214,6 +214,11 @@ const COMPOSITE_RULES = [
   ["gold-weakness","Gold -2%",b=>(b["nbp-gold-spot"]?.pct_change||0)<-2],
   ["gold-crypto-divergence","Gold +1% & BTC -3%",b=>(b["nbp-gold-spot"]?.pct_change||0)>1&&(b["kraken-btc-usd"]?.pct_change||0)<-3],
   ["crypto-macro-rally","BTC +3% & 10Y -2%",b=>(b["kraken-btc-usd"]?.pct_change||0)>3&&(b["fred-dgs10"]?.pct_change||0)<-2],
+  ["stablecoin-flight","Stablecoin supply -3%",b=>(b["stablecoin-total-supply"]?.pct_change||0)<-3],
+  ["stablecoin-inflow","Stablecoin supply +3%",b=>(b["stablecoin-total-supply"]?.pct_change||0)>3],
+  ["dex-volume-burst","DEX volume +50%",b=>(b["dex-total-volume-24h"]?.pct_change||0)>50],
+  ["tvl-crash","DeFi TVL -5%",b=>(b["defi-total-tvl"]?.pct_change||0)<-5],
+  ["nft-crash","BAYC floor -10%",b=>(b["nft-bayc-floor"]?.pct_change||0)<-10],
   ["defi-expansion","DeFi +0.5%",b=>(b["defillama-protocol-count"]?.pct_change||0)>0.5],
 ];
 
