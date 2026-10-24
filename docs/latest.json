@@ -296,7 +296,17 @@
               1792855725
             ],
             [
-              "79334.40000",
+              "79351.00000",
+              "0.282",
+              1792855904
+            ],
+            [
+              "79350.90000",
+              "3.151",
+              1792855903
+            ],
+            [
+              "79346.40000",
               "0.001",
               1792855718
             ],
@@ -1335,20 +1345,20 @@
     },
     "sentiment": {
       "metric": "sentiment",
-      "count": 28,
-      "mean": -0.0536,
+      "count": 27,
+      "mean": -0.0556,
       "min": -0.1,
       "max": 0.05
     },
     "volatility": {
       "metric": "volatility",
-      "count": 224,
-      "mean": -0.1772,
+      "count": 216,
+      "mean": -0.1504,
       "min": -3.59975,
       "max": 3.20027
     }
   },
-  "score": -0.1066,
+  "score": -0.0962,
   "alerts": [],
   "onchain": {
     "chain_health": {
@@ -1608,13 +1618,13 @@
           "type": "transfer"
         },
         {
-          "hash": "0x8813580b6ed5553a9ba069161473f3b9465ca20aa5fa0e479892da2cdb1326c1",
-          "from": "0x446ed7a8f70011db648451c668317e9c7390a7d8",
-          "to": "0xe8a80c66fcaa4cd9268bc48a387f354d3f2fc171",
+          "hash": "0x74ddef0c59c6384f62e6f88767ae3fcea4030d15debe1960f88e5457f4dc742f",
+          "from": "0x079f012e5ed4e4581b58a2c1204513f8ca8537bb",
+          "to": "0x1a6b01fc8ca8914b8a9ee046cc1146d621eae23c",
           "token": "USDC",
-          "value": 3422199.87,
-          "timestamp": 1792854551,
-          "block": 26263308,
+          "value": 3309998.5,
+          "timestamp": 1792855211,
+          "block": 26263363,
           "legs": 1,
           "type": "transfer"
         },
@@ -1683,18 +1693,6 @@
           "block": 26263360,
           "legs": 1,
           "type": "transfer"
-        },
-        {
-          "hash": "0x7caedd0f919dccf9ef3ae3c5c65ae8a326e028a850707bb4c03adbccbe7c8366",
-          "from": "0x17bc9aa135cef1a5c3a91925e0f865d526318718",
-          "to": "0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb",
-          "token": "USDC",
-          "value": 1836328.05,
-          "timestamp": 1792854407,
-          "block": 26263296,
-          "legs": 4,
-          "type": "round_trip",
-          "net_flow": 0
         },
         {
           "hash": "0x7d8e435894acbe1986da10814a7aab2568c11df262275a1bd7996aec5ec0e0c2",
