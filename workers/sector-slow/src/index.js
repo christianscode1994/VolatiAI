@@ -1540,8 +1540,8 @@ const COLLECTORS = {
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const v = j?.sourcerank;
-          if (typeof v !== "number") throw new Error("no_sourcerank: keys=" + Object.keys(j || {}).slice(0,5).join(","));
+          const v = j?.rank;
+          if (typeof v !== "number") throw new Error("no_rank: keys=" + Object.keys(j || {}).slice(0,5).join(","));
           return v;
         }),
       },
