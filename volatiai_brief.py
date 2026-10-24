@@ -309,7 +309,13 @@ def main():
     if args.signals:
         rows = [r for r in rows if r.get("has_signal")]
     if args.category:
-        rows = [r for r in rows if r.get("category") == args.category]
+        # Support alias groups (e.g., defi-nft = stablecoin + dex + defi + tvl)
+        aliases = {
+            "defi-nft": {"stablecoin", "dex", "defi", "tvl"},
+            "defi-all": {"stablecoin", "dex", "defi", "tvl"},
+        }
+        targets = aliases.get(args.category, {args.category})
+        rows = [r for r in rows if r.get("category") in targets]
     rows.sort(key=lambda r: abs(r.get("pct_change") or 0), reverse=True)
 
     if args.dashboard:
