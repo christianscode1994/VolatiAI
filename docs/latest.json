@@ -276,12 +276,32 @@
               1792836727
             ],
             [
-              "80537.60000",
+              "80500.10000",
+              "0.137",
+              1792836856
+            ],
+            [
+              "80500.00000",
+              "0.955",
+              1792836855
+            ],
+            [
+              "80499.40000",
+              "1.672",
+              1792836857
+            ],
+            [
+              "80499.30000",
+              "3.106",
+              1792836855
+            ],
+            [
+              "80497.40000",
               "0.001",
               1792836727
             ],
             [
-              "80533.60000",
+              "80493.10000",
               "0.001",
               1792836728
             ],
@@ -814,7 +834,7 @@
               "80610.8",
               "0.41742661",
               "0",
-              "3"
+              "1"
             ],
             [
               "80610.3",
@@ -1053,6 +1073,11 @@
     "depth_heatmaps": {
       "kraken": [
         {
+          "side": "bid",
+          "bucket_price": 80400.0,
+          "notional": 1248393.6151000003
+        },
+        {
           "side": "ask",
           "bucket_price": 80500.0,
           "notional": 1523679.1042
@@ -1064,6 +1089,11 @@
         }
       ],
       "okx": [
+        {
+          "side": "bid",
+          "bucket_price": 80500.0,
+          "notional": 498985.5770015782
+        },
         {
           "side": "ask",
           "bucket_price": 80600.0,
@@ -1080,8 +1110,8 @@
       "protocols_tracked": 45,
       "protocols_active": 19,
       "protocols_dormant": 26,
-      "commits_total": 589,
-      "commits_avg": 13.09,
+      "commits_total": 590,
+      "commits_avg": 13.11,
       "active_developers": 192,
       "releases_total": 36,
       "top_active": [
@@ -1113,7 +1143,7 @@
           "protocol": "reth",
           "repo": "paradigmxyz/reth",
           "category": "tooling",
-          "commits": 58,
+          "commits": 59,
           "releases": 2,
           "stars": 5841
         },
@@ -1186,8 +1216,8 @@
         "tooling": {
           "tracked": 3,
           "active": 3,
-          "commits": 210,
-          "avg": 70.0,
+          "commits": 211,
+          "avg": 70.33,
           "signal": "very_high"
         },
         "wallets": {
@@ -1458,17 +1488,6 @@
           "type": "transfer"
         },
         {
-          "hash": "0x20e6f1dd6cabfc8c0666c004e9f9624510c526e7f1ac6e4c2b7534048a884aae",
-          "from": "0x100ae042ef0ea159ecc3513e9a378ff21f3829ba",
-          "to": "0x367c42a6f261ec54ffbecf5f41c226be12a3dca0",
-          "token": "USDC",
-          "value": 2360981.0,
-          "timestamp": 1792835411,
-          "block": 26261716,
-          "legs": 1,
-          "type": "transfer"
-        },
-        {
           "hash": "0x809c68e3d8866e63cba00d9ef44f4e3555e17c85d50713d03fbd7f91fbe402b4",
           "from": "0x445f16314284b43dfa1fd3cd77b9dea4a1bebd97",
           "to": "0x1dfc6bec8499fcb5e3151c7c6d27feb9d7eae1d4",
@@ -1489,30 +1508,6 @@
           "block": 26261732,
           "legs": 1,
           "type": "transfer"
-        },
-        {
-          "hash": "0x9c69b630c83bff2ec7f59417b134ce93b155adfd7ff3508289f113623e72d704",
-          "from": "0x5aae4d2f360e156de3416936049837a7bb685588",
-          "to": "0x000000000004444c5dc75cb358380d2e3de08a90",
-          "token": "USDC",
-          "value": 1106425.89,
-          "timestamp": 1792835507,
-          "block": 26261724,
-          "legs": 2,
-          "type": "round_trip",
-          "net_flow": 0
-        },
-        {
-          "hash": "0xd0783847f00fed799d908af41f87d1ac06d6b8b276c90b7ee9704f0f65c90cb5",
-          "from": "0x5aae4d2f360e156de3416936049837a7bb685588",
-          "to": "0x000000000004444c5dc75cb358380d2e3de08a90",
-          "token": "USDC",
-          "value": 1081556.35,
-          "timestamp": 1792835507,
-          "block": 26261724,
-          "legs": 2,
-          "type": "round_trip",
-          "net_flow": 0
         },
         {
           "hash": "0xd9c160c60c5a6c2f4bb045eae25b7eb1421a64ca2a1a5a232984aab159e8dcf5",
