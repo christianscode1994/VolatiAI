@@ -1365,7 +1365,7 @@ const COLLECTORS = {
       sources: {
         stars: await fetchSafe(async () => {
           const r = await fetch("https://api.github.com/repos/tensorflow/tensorflow",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           const v = j.stargazers_count;
