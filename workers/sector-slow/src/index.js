@@ -1380,7 +1380,91 @@ const COLLECTORS = {
       },
     }),
   },
-};
+
+  "osv-lodash-vuln-count": {
+    config: { metric: "vuln_count", threshold_pct: 10.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        vuln_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.osv.dev/v1/query", {
+            method: "POST",
+            headers: { "content-type": "application/json", "user-agent": "VolatiAI/1.0" },
+            body: JSON.stringify({ package: { name: "lodash", ecosystem: "npm" } }),
+            signal: AbortSignal.timeout(20000)
+          });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = (j.vulns || []).length;
+          if (typeof v !== "number") throw new Error("no_vulns");
+          return v;
+        }),
+      },
+    }),
+  },
+  "cisa-kev-total": {
+    config: { metric: "kev_count", threshold_pct: 2.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        kev_count: await fetchSafe(async () => {
+          const r = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(30000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = (j.vulnerabilities || []).length;
+          if (typeof v !== "number") throw new Error("no_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  "epss-log4shell": {
+    config: { metric: "epss", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        epss: await fetchSafe(async () => {
+          const r = await fetch("https://api.first.org/data/v1/epss?cve=CVE-2021-44228",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = parseFloat(j.data?.[0]?.epss);
+          if (!Number.isFinite(v)) throw new Error("no_epss");
+          return v;
+        }),
+      },
+    }),
+  },
+  "deps-dev-react-versions": {
+    config: { metric: "version_count", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        version_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.deps.dev/v3/systems/npm/packages/react",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = (j.versions || []).length;
+          if (typeof v !== "number") throw new Error("no_versions");
+          return v;
+        }),
+      },
+    }),
+  },
+  "clearlydefined-react-license": {
+    config: { metric: "license_score", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 604800 },
+    collectAll: async () => ({
+      sources: {
+        license_score: await fetchSafe(async () => {
+          const r = await fetch("https://api.clearlydefined.io/definitions/npm/npmjs/-/react/18.2.0",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.licensed?.score?.total;
+          if (typeof v !== "number") throw new Error("no_score");
+          return v;
+        }),
+      },
+    }),
+  },};
 
 
 

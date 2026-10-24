@@ -85,6 +85,17 @@ COMPOSITE_RULES = [
      lambda b: (b.get("open-digger-openrank-vscode") or {}).get("pct_change", 0) < -10),
     ("hn-sentiment-shift", "HN top-10 score sum +25%",
      lambda b: (b.get("hackernews-top-scores") or {}).get("pct_change", 0) > 25),
+    # ─── Software security & release ───
+    ("osv-vuln-spike", "OSV lodash vuln count +10%",
+     lambda b: (b.get("osv-lodash-vuln-count") or {}).get("pct_change", 0) > 10),
+    ("kev-growth", "CISA KEV catalog +2%",
+     lambda b: (b.get("cisa-kev-total") or {}).get("pct_change", 0) > 2),
+    ("epss-spike", "EPSS Log4Shell +20%",
+     lambda b: (b.get("epss-log4shell") or {}).get("pct_change", 0) > 20),
+    ("react-version-burst", "React version count +5%",
+     lambda b: (b.get("deps-dev-react-versions") or {}).get("pct_change", 0) > 5),
+    ("license-degradation", "React license score -5%",
+     lambda b: (b.get("clearlydefined-react-license") or {}).get("pct_change", 0) < -5),
 ]
 
 def fetch_json(url):

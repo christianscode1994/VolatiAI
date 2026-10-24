@@ -143,5 +143,30 @@
     "provider": "Hacker News",
     "url": "https://hacker-news.firebaseio.com/v0/topstories.json",
     "license": "Public API"
+  },
+  "osv-lodash-vuln-count": {
+    "provider": "OSV.dev (Google)",
+    "url": "https://api.osv.dev/v1/query",
+    "license": "Open"
+  },
+  "cisa-kev-total": {
+    "provider": "CISA",
+    "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "license": "Public domain"
+  },
+  "epss-log4shell": {
+    "provider": "FIRST.org",
+    "url": "https://api.first.org/data/v1/epss?cve=CVE-2021-44228",
+    "license": "Open"
+  },
+  "deps-dev-react-versions": {
+    "provider": "deps.dev (Google)",
+    "url": "https://api.deps.dev/v3/systems/npm/packages/react",
+    "license": "Open"
+  },
+  "clearlydefined-react-license": {
+    "provider": "ClearlyDefined",
+    "url": "https://api.clearlydefined.io/definitions/npm/npmjs/-/react/18.2.0",
+    "license": "Open"
   }
 }
