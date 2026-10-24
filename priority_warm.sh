@@ -10,6 +10,19 @@ PRIORITY=(
   dbnomics-us-debt worldbank-us-unemployment
   worldbank-us-gdp worldbank-se-gdp
   nbp-gold-spot defillama-protocol-count
+
+  usgs-earthquakes
+  usgs-earthquakes-emsc
+  datacite-dois
+  crossref-works
+  total-cves
+  total-leis
+  total-bills
+  total-works
+  total-articles
+  total-records
+  total-triples
+  total-artworks
 )
 BASE="https://sector-slow.fourieranalys.workers.dev"
 ok=0; fail=0
