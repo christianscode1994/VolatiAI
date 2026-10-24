@@ -82,7 +82,6 @@ PRIORITY=(
   bakom
   ripestat
   ietf-datatracker
-  fhfa
   arbetsformedlingen
   poligraph
   satlas
