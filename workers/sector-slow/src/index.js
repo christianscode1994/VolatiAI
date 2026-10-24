@@ -1264,6 +1264,439 @@ const COLLECTORS = {
       },
     }),
   },
+
+  "yahoo-nasdaq": {
+    config: { metric: "nasdaq", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        nasdaq: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-russell2000": {
+    config: { metric: "rut", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        rut: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5ERUT?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-dax": {
+    config: { metric: "dax", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        dax: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EGDAXI?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-nikkei": {
+    config: { metric: "nikkei", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        nikkei: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-hsi": {
+    config: { metric: "hsi", threshold_pct: 3.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        hsi: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EHSI?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-gold": {
+    config: { metric: "gold_usd", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        gold_usd: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-silver": {
+    config: { metric: "silver_usd", threshold_pct: 4.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        silver_usd: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/SI%3DF?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-copper": {
+    config: { metric: "copper_usd", threshold_pct: 3.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        copper_usd: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/HG%3DF?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-natgas": {
+    config: { metric: "natgas_usd", threshold_pct: 6.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        natgas_usd: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/NG%3DF?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-xle": {
+    config: { metric: "xle", threshold_pct: 2.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        xle: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/XLE?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-xlf": {
+    config: { metric: "xlf", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        xlf: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/XLF?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-xlu": {
+    config: { metric: "xlu", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        xlu: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/XLU?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-xlp": {
+    config: { metric: "xlp", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        xlp: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/XLP?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-smh": {
+    config: { metric: "smh", threshold_pct: 3.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        smh: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/SMH?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-xbi": {
+    config: { metric: "xbi", threshold_pct: 3.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        xbi: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/XBI?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-tlt": {
+    config: { metric: "tlt", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        tlt: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/TLT?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-hyg": {
+    config: { metric: "hyg", threshold_pct: 1.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        hyg: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/HYG?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-tip": {
+    config: { metric: "tip", threshold_pct: 1.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        tip: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/TIP?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-eem": {
+    config: { metric: "eem", threshold_pct: 2.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        eem: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/EEM?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-efa": {
+    config: { metric: "efa", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        efa: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/EFA?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-coin": {
+    config: { metric: "coin", threshold_pct: 6.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        coin: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/COIN?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-mstr": {
+    config: { metric: "mstr", threshold_pct: 8.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        mstr: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/MSTR?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-usdjpy": {
+    config: { metric: "usdjpy", threshold_pct: 1.5, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        usdjpy: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/JPY%3DX?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
+  "yahoo-gdx": {
+    config: { metric: "gdx", threshold_pct: 3.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        gdx: await fetchSafe(async () => {
+          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/GDX?range=1d&interval=1d",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const arr = j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+          if (!Array.isArray(arr) || !arr.length) throw new Error("no_close");
+          const last = arr.filter(x => typeof x === "number").pop();
+          if (!Number.isFinite(last)) throw new Error("no_price");
+          return last;
+        }),
+      },
+    }),
+  },
 };
 
 
@@ -1345,6 +1778,48 @@ export default {
 
   async fetch(request, env) {
     const url = new URL(request.url);
+    // ─── /history/<sector> — full history array, for client charts ───
+    if (parts[0] === "history" && parts[1]) {
+      try {
+        const sector = parts[1];
+        const list = await env.SECTOR_KV.list({ prefix: `${sector}_`, limit: 10 });
+        const key = list.keys.find(k => k.name.endsWith("_history"));
+        if (!key) return json({ error: "not_found", sector }, 404);
+        const hist = await env.SECTOR_KV.get(key.name, "json");
+        if (!Array.isArray(hist)) return json({ error: "no_history", sector }, 404);
+        return json({
+          sector,
+          metric: key.name.replace(`_history`, "").replace(`${sector}_`, ""),
+          points: hist.length,
+          first: hist[0]?.t || null,
+          last: hist[hist.length - 1]?.t || null,
+          history: hist,
+        });
+      } catch (e) {
+        return json({ error: "history_failed", message: String(e && e.message || e) }, 500);
+      }
+    }
+
+    // ─── /status — pipeline health ───
+    if (parts[0] === "status") {
+      try {
+        const list = await env.SECTOR_KV.list({ limit: 1000 });
+        const histKeys = list.keys.filter(k => k.name.endsWith("_history"));
+        const meta = await env.SECTOR_KV.get("_last_cron_run", "json");
+        return json({
+          ts: new Date().toISOString(),
+          worker: "sector-slow",
+          density: env.DENSITY || null,
+          kv_total_keys: list.keys.length,
+          kv_history_keys: histKeys.length,
+          kv_other_keys: list.keys.length - histKeys.length,
+          last_cron: meta || null,
+        });
+      } catch (e) {
+        return json({ error: "status_failed", message: String(e && e.message || e) }, 500);
+      }
+    }
+
     const parts = url.pathname.split("/").filter(Boolean);
 
     // ─── /latest — batch summary from KV, no upstream fetches ───
