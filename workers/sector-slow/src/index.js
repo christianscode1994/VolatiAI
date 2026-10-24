@@ -155,7 +155,7 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 
 const COLLECTORS = {
   "ripe-atlas-public": {
-    config: { metric: "public_measurements", threshold_pct: 0.1, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
+    config: { metric: "public_measurements", threshold_pct: 5.0, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
       sources: {
         public_measurements: await fetchSafe(async () => {
@@ -359,7 +359,7 @@ const COLLECTORS = {
     }),
   },
   arbetsformedlingen: {
-    config: { metric: "job_vacancies", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    config: { metric: "job_vacancies", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         job_vacancies: await fetchSafe(async () => {
@@ -436,7 +436,7 @@ const COLLECTORS = {
     }),
   },
   robonix: {
-    config: { metric: "packages", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    config: { metric: "packages", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         packages: await fetchSafe(async () => {
@@ -494,7 +494,7 @@ const COLLECTORS = {
   },
 
   "met-artworks": {
-    config: { metric: "total_artworks", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_artworks", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_artworks: await fetchSafe(async () => {
@@ -509,7 +509,7 @@ const COLLECTORS = {
     }),
   },
   "cern-opendata": {
-    config: { metric: "total_records", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_records", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_records: await fetchSafe(async () => {
@@ -543,7 +543,7 @@ const COLLECTORS = {
     }),
   },
   "wikidata-triples": {
-    config: { metric: "total_triples", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_triples", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_triples: await fetchSafe(async () => {
@@ -562,7 +562,7 @@ const COLLECTORS = {
     }),
   },
   "ballotwatch-bills": {
-    config: { metric: "total_bills", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_bills", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_bills: await fetchSafe(async () => {
@@ -627,7 +627,7 @@ const COLLECTORS = {
     }),
   },
   "cleveland-artworks": {
-    config: { metric: "total_artworks", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_artworks", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_artworks: await fetchSafe(async () => {
@@ -659,7 +659,7 @@ const COLLECTORS = {
     }),
   },
   "usgs-earthquakes": {
-    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "30d", window_days: 7, ttl: 86400 },
+    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         earthquakes_since_2026: await fetchSafe(async () => {
@@ -689,7 +689,7 @@ const COLLECTORS = {
     }),
   },
   "crossref-works": {
-    config: { metric: "total_works", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_works", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_works: await fetchSafe(async () => {
@@ -705,7 +705,7 @@ const COLLECTORS = {
     }),
   },
   "doaj-articles": {
-    config: { metric: "total_articles", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_articles", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_articles: await fetchSafe(async () => {
@@ -720,7 +720,7 @@ const COLLECTORS = {
     }),
   },
   "datacite-dois": {
-    config: { metric: "total_dois", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_dois", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_dois: await fetchSafe(async () => {
@@ -736,7 +736,7 @@ const COLLECTORS = {
     }),
   },
   "zenodo-records": {
-    config: { metric: "total_records", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_records", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_records: await fetchSafe(async () => {
@@ -777,7 +777,7 @@ const COLLECTORS = {
     }),
   },
   "usgs-earthquakes-emsc": {
-    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "30d", window_days: 7, ttl: 86400 },
+    config: { metric: "earthquakes_since_2026", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         earthquakes_since_2026: await fetchSafe(async () => {
@@ -797,7 +797,7 @@ const COLLECTORS = {
     }),
   },
   "nvd-cve-count": {
-    config: { metric: "total_cves", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_cves", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_cves: await fetchSafe(async () => {
@@ -851,7 +851,7 @@ const COLLECTORS = {
     }),
   },
   "gleif-leis": {
-    config: { metric: "total_leis", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    config: { metric: "total_leis", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
         total_leis: await fetchSafe(async () => {
