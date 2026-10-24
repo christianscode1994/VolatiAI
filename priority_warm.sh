@@ -1,24 +1,23 @@
 #!/bin/bash
-# priority_warm.sh — daily warm for the 60 sectors that matter
-# Runs 04:00 local via launchd
-# Total KV impact: ~30-40 writes/day (only when value changes)
+# priority_warm.sh — auto-generated from seed_history.sh winners
+# Regenerated: $(date -u +%Y-%m-%dT%H:%M:%SZ) — DO NOT edit manually
 set -u
 
 PRIORITY=(
-  # ─── Crypto spot (13) ───
+  # ─── Crypto (13) ───
   kraken-btc-usd
-  kraken-eth-usd
+  coinbase-btc-usd
   kraken-sol-usd
+  coinbase-btc-volume24h
+  kraken-eth-usd
+  coinbase-eth-usd
+  btc-exchange-spread
+  eth-exchange-spread
   kraken-xrp-usd
   kraken-ada-usd
   kraken-doge-usd
   kraken-dot-usd
   kraken-link-usd
-  coinbase-btc-usd
-  coinbase-eth-usd
-  coinbase-btc-volume24h
-  btc-exchange-spread
-  eth-exchange-spread
 
   # ─── DeFi (7) ───
   stablecoin-total-supply
@@ -35,7 +34,8 @@ PRIORITY=(
   open-digger-openrank-vscode
   hackernews-top-scores
 
-  # ─── Software security (5) ───
+  # ─── Software security (6) ───
+  cisa-kev-count
   osv-lodash-vuln-count
   cisa-kev-total
   epss-log4shell
@@ -47,31 +47,122 @@ PRIORITY=(
   npm-downloads-react
   librariesio-sourcerank-react
 
-  # ─── News + environmental (6) ───
+  # ─── News + science (9) ───
+  usgs-earthquakes
+  usgs-earthquakes-emsc
   hn-tech-sentiment
   spaceflight-news-count
   usgs-earthquake-count
-  usgs-elevated-volcanoes
+  eurostat-eu-unemployment
   uk-carbon-intensity
+  usgs-elevated-volcanoes
   pocketworld-space-weather
 
-  # ─── Macro + FX (10) ───
+  # ─── FX + Macro (9) ───
   frankfurter-eurusd
   frankfurter-eursek
-  fred-dgs10
-  fred-fedfunds
+  nbp-gold-spot
   dbnomics-us-debt
   worldbank-us-unemployment
   worldbank-us-gdp
   worldbank-se-gdp
-  nbp-gold-spot
-  eurostat-eu-unemployment
+  fred-dgs10
+  fred-fedfunds
 
-  # ─── Cumulative counters (12) ───
+  # ─── Cumulative counters (92) ───
+  environment
+  gdp
+  treasuries
+  unemployment
+  rir-arin
+  ripe-atlas-public
+  faostat
+  global-forest-watch
+  fcc-broadband
+  bakom
+  ripestat
+  ietf-datatracker
+  fhfa
+  arbetsformedlingen
+  poligraph
+  satlas
+  mattercatalog
+  home-assistant
+  robonix
+  saos
+  dc-crime
+  met-artworks
+  cern-opendata
+  tweetfeed-c2
+  wikidata-triples
+  ballotwatch-bills
+  openfda-drug-recalls
+  openfda-food-recalls
+  openfda-device-recalls
+  cleveland-artworks
+  apis-guru-directory
   usgs-earthquakes
-  usgs-earthquakes-emsc
-  datacite-dois
+  noaa-spaceweather-alerts
   crossref-works
+  doaj-articles
+  datacite-dois
+  zenodo-records
+  treasuries-gov
+  usgs-earthquakes-emsc
+  nvd-cve-count
+  cisa-kev-count
+  phishunt-domains
+  gleif-leis
+  frankfurter-eurusd
+  frankfurter-eursek
+  nbp-gold-spot
+  dbnomics-us-debt
+  worldbank-us-unemployment
+  worldbank-us-gdp
+  worldbank-se-gdp
+  kraken-btc-usd
+  coinbase-btc-usd
+  kraken-sol-usd
+  defillama-protocol-count
+  coinbase-btc-volume24h
+  kraken-eth-usd
+  coinbase-eth-usd
+  btc-exchange-spread
+  fred-dgs10
+  fred-fedfunds
+  eth-exchange-spread
+  stablecoin-total-supply
+  stablecoin-usdt-supply
+  stablecoin-usdc-supply
+  dex-total-volume-24h
+  dex-uniswap-volume
+  dex-ethereum-volume
+  defi-total-tvl
+  ossf-scorecard-linux
+  ecosyste-ms-react
+  open-digger-openrank-vscode
+  hackernews-top-scores
+  osv-lodash-vuln-count
+  cisa-kev-total
+  epss-log4shell
+  deps-dev-react-versions
+  clearlydefined-react-license
+  hn-tech-sentiment
+  spaceflight-news-count
+  pypi-downloads-requests
+  npm-downloads-react
+  librariesio-sourcerank-react
+  usgs-earthquake-count
+  eurostat-eu-unemployment
+  uk-carbon-intensity
+  usgs-elevated-volcanoes
+  pocketworld-space-weather
+  kraken-xrp-usd
+  kraken-ada-usd
+  kraken-doge-usd
+  kraken-dot-usd
+  kraken-link-usd
+
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
@@ -81,22 +172,19 @@ failed_sectors=()
 START_TS=$(date +%s)
 
 for s in "${PRIORITY[@]}"; do
-  if curl -sf --max-time 20 "$BASE/$s/signal" > /dev/null 2>&1; then
+  if curl -sf --max-time 15 "$BASE/$s/signal" > /dev/null 2>&1; then
     ok=$((ok+1))
   else
     fail=$((fail+1))
     failed_sectors+=("$s")
   fi
-  sleep 0.3
+  sleep 0.2
 done
 
 END_TS=$(date +%s)
 DURATION=$((END_TS - START_TS))
 
-# Log line
 echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) priority_warm: $ok ok, $fail failed, ${DURATION}s"
-
-# Log failures specifically (so you can debug)
 if [ $fail -gt 0 ]; then
   echo "  Failed: ${failed_sectors[*]}"
 fi

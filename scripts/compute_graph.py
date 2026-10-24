@@ -10,7 +10,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
-CORR_THRESHOLD = float(os.environ.get("VOLATIAI_CORR_THRESHOLD", "0.6"))
+CORR_THRESHOLD = float(os.environ.get("VOLATIAI_CORR_THRESHOLD", "0.8"))
 MIN_POINTS = int(os.environ.get("VOLATIAI_MIN_POINTS", "10"))
 
 def fetch_json(url):
