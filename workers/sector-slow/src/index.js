@@ -1405,6 +1405,82 @@ const COLLECTORS = {
       },
     }),
   },
+
+  "defi-fees-aave": {
+    config: { metric: "fees_24h_usd", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        fees_24h_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/summary/fees/aave",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j.total24h;
+          if (typeof v !== "number") throw new Error("no_total24h: keys=" + Object.keys(j || {}).slice(0,5).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "defi-open-interest-total": {
+    config: { metric: "oi_24h_usd", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        oi_24h_usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.llama.fi/overview/open-interest?excludeTotalDataChart=true",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const protocols = j.protocols || [];
+          const total = protocols.reduce((sum, p) => sum + (p.total24h || 0), 0);
+          if (!Number.isFinite(total) || total <= 0) throw new Error("no_oi: protocols=" + protocols.length);
+          return total;
+        }),
+      },
+    }),
+  },
+  "pypi-daily-requests": {
+    config: { metric: "downloads", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        downloads: await fetchSafe(async () => {
+          const r = await fetch("https://pypistats.org/api/packages/requests/overall",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const data = j.data || [];
+          const withoutMirrors = data.filter(d => d.category === "without_mirrors");
+          if (withoutMirrors.length === 0) throw new Error("no_data");
+          const latest = withoutMirrors[withoutMirrors.length - 1];
+          const v = latest.downloads;
+          if (typeof v !== "number") throw new Error("no_downloads");
+          return v;
+        }),
+      },
+    }),
+  },
+  "usgs-streamflow-mississippi": {
+    config: { metric: "discharge_cfs", threshold_pct: 25.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        discharge_cfs: await fetchSafe(async () => {
+          const url = "https://waterservices.usgs.gov/nwis/dv/?format=json&sites=07010000&parameterCd=00060&period=P7D";
+          const r = await fetch(url,
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const series = j?.value?.timeSeries || [];
+          if (series.length === 0) throw new Error("no_series");
+          const values = series[0]?.values?.[0]?.value || [];
+          if (values.length === 0) throw new Error("no_values");
+          const latest = values[values.length - 1];
+          const v = parseFloat(latest.value);
+          if (!Number.isFinite(v)) throw new Error("no_discharge");
+          return v;
+        }),
+      },
+    }),
+  },
   "ossf-scorecard-linux": {
     config: { metric: "score", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 604800 },
     collectAll: async () => ({
@@ -1771,6 +1847,104 @@ async function signLatest(payload, env) {
       key_id: "volati-2026-01",
       value: sigB64,
       canonical_sha256: await sha256Hex(bytes),
+
+  "feodo-c2-count": {
+    config: { metric: "c2_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        c2_count: await fetchSafe(async () => {
+          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "sans-isc-daily-records": {
+    config: { metric: "daily_records", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        daily_records: await fetchSafe(async () => {
+          const r = await fetch("https://isc.sans.edu/api/dailysummary?json",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.records ?? j?.total;
+          if (typeof v !== "number") throw new Error("no_records: keys=" + Object.keys(j || {}).slice(0,5).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "nvd-new-cves-count": {
+    config: { metric: "new_cves", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        new_cves: await fetchSafe(async () => {
+          const since = new Date(Date.now() - 86400000).toISOString().replace(/\.\d{3}Z$/, '.000');
+          const r = await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=${since}&pubEndDate=${new Date().toISOString().replace(/\.\d{3}Z$/, '.000')}`,
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.totalResults;
+          if (typeof v !== "number") throw new Error("no_totalResults");
+          return v;
+        }),
+      },
+    }),
+  },
+  "stackoverflow-questions-total": {
+    config: { metric: "total_questions", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_questions: await fetchSafe(async () => {
+          const r = await fetch("https://api.stackexchange.com/2.3/info?site=stackoverflow",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.items?.[0]?.total_questions;
+          if (typeof v !== "number") throw new Error("no_total_questions");
+          return v;
+        }),
+      },
+    }),
+  },
+  "github-recent-commits": {
+    config: { metric: "commit_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        commit_count: await fetchSafe(async () => {
+          const since = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          const r = await fetch(`https://api.github.com/search/commits?q=committer-date:>=${since}`,
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/vnd.github.cloak-preview" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.total_count;
+          if (typeof v !== "number") throw new Error("no_total_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  "pypi-daily-requests": {
+    config: { metric: "last_day", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        last_day: await fetchSafe(async () => {
+          const r = await fetch("https://pypistats.org/api/packages/requests/recent",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.data?.last_day;
+          if (typeof v !== "number") throw new Error("no_last_day");
+          return v;
+        }),
+      },
+    }),
+  },
 };
   } catch (e) {
     console.error("sign_failed", String(e));

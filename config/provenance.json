@@ -243,5 +243,50 @@
     "provider": "Kraken",
     "url": "https://api.kraken.com/0/public/Ticker?pair=LINKUSD",
     "license": "Public market data"
+  },
+  "defi-fees-aave": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/summary/fees/aave",
+    "license": "Open"
+  },
+  "defi-open-interest-total": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/overview/open-interest",
+    "license": "Open"
+  },
+  "pypi-daily-requests": {
+    "provider": "pypistats.org",
+    "url": "https://pypistats.org/api/packages/requests/overall",
+    "license": "Open"
+  },
+  "usgs-streamflow-mississippi": {
+    "provider": "USGS NWIS",
+    "url": "https://waterservices.usgs.gov/nwis/dv/?format=json&sites=07010000&parameterCd=00060&period=P7D",
+    "license": "Public domain"
+  },
+  "feodo-c2-count": {
+    "provider": "abuse.ch Feodo Tracker",
+    "url": "https://feodotracker.abuse.ch/downloads/ipblocklist.json",
+    "license": "Free public feed"
+  },
+  "sans-isc-daily-records": {
+    "provider": "SANS ISC",
+    "url": "https://isc.sans.edu/api/dailysummary?json",
+    "license": "Free public API"
+  },
+  "nvd-new-cves-count": {
+    "provider": "NIST NVD",
+    "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=...",
+    "license": "Public domain"
+  },
+  "stackoverflow-questions-total": {
+    "provider": "Stack Exchange",
+    "url": "https://api.stackexchange.com/2.3/info?site=stackoverflow",
+    "license": "Free public API"
+  },
+  "github-recent-commits": {
+    "provider": "GitHub",
+    "url": "https://api.github.com/search/commits?q=created:>...",
+    "license": "Free public API"
   }
 }

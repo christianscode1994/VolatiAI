@@ -135,6 +135,20 @@ COMPOSITE_RULES = [
     ("altcoin-breadth-down", "3+ altcoins down >3%",
      lambda b: sum(1 for k in ["kraken-xrp-usd","kraken-ada-usd","kraken-doge-usd","kraken-dot-usd","kraken-link-usd"]
                    if (b.get(k) or {}).get("pct_change", 0) < -3) >= 3),
+    # ─── Cybersecurity ───
+    ("cyber-threat-spike", "Botnet C2 count or SANS daily records +10%",
+     lambda b: max(
+         (b.get("feodo-c2-count") or {}).get("pct_change", 0) or 0,
+         (b.get("sans-isc-daily-records") or {}).get("pct_change", 0) or 0
+     ) > 10),
+    ("cve-disclosure-spike", "NVD new CVEs +20%",
+     lambda b: (b.get("nvd-new-cves-count") or {}).get("pct_change", 0) > 20),
+    # ─── Developer activity ───
+    ("dev-activity-surge", "GitHub commits or PyPI downloads +15%",
+     lambda b: max(
+         (b.get("github-recent-commits") or {}).get("pct_change", 0) or 0,
+         (b.get("pypi-daily-requests") or {}).get("pct_change", 0) or 0
+     ) > 15),
 ]
 
 def fetch_json(url):
