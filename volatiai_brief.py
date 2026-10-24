@@ -92,6 +92,30 @@ def fetch_json(url):
         except Exception:
             return None
 
+def _category(sector):
+    """Category with JSON-first, substring-fallback. Never raises."""
+    if not sector:
+        return "other"
+    # Try CATEGORIES dict
+    try:
+        if isinstance(CATEGORIES, dict):
+            for c, members in CATEGORIES.items():
+                if isinstance(members, list) and sector in members:
+                    return c
+    except Exception:
+        pass
+    # Fallback: substring on sector name
+    s = sector.lower()
+    if "stablecoin" in s: return "stablecoin"
+    if s.startswith("dex-"): return "dex"
+    if s.startswith("defi-"): return "defi"
+    if any(k in s for k in ("kraken-", "coinbase-", "btc-", "eth-", "sol-", "spread")): return "crypto"
+    if any(s.startswith(k) for k in ("fred-", "worldbank-", "dbnomics-")): return "macro"
+    if s.startswith("frankfurter-"): return "fx"
+    if "gold" in s: return "commodity"
+    return "other"
+
+
 def fetch_latest():
     data = fetch_json(f"{BASE}/latest")
     if not data or "rows" not in data:
@@ -99,18 +123,10 @@ def fetch_latest():
     out = []
     for r in data["rows"]:
         sector = r.get("sector")
-        cat = "other"
-        try:
-            for c, members in (CATEGORIES or {}).items():
-                if isinstance(members, list) and sector in members:
-                    cat = c
-                    break
-        except Exception:
-            pass
         prov = (PROVENANCE or {}).get(sector) or {}
         out.append({
             "sector": sector,
-            "category": cat,
+            "category": _category(sector),
             "provider": prov.get("provider"),
             "source_url": prov.get("url"),
             "license": prov.get("license"),
