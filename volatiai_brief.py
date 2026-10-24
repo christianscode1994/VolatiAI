@@ -6,6 +6,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
+
+def _load_provenance():
+    try:
+        with open("config/provenance.json") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+PROVENANCE = _load_provenance()
 UA = os.environ.get("VOLATIAI_UA", "VolatiAI/1.0 (brief)")
 TIMEOUT = int(os.environ.get("VOLATIAI_TIMEOUT", "20"))
 PARALLEL = int(os.environ.get("VOLATIAI_PARALLEL", "20"))
@@ -83,6 +91,9 @@ def fetch_latest():
     for r in data["rows"]:
         out.append({
             "sector": r.get("sector"),
+            "provider": PROVENANCE.get(r.get("sector"), {}).get("provider"),
+            "source_url": PROVENANCE.get(r.get("sector"), {}).get("url"),
+            "license": PROVENANCE.get(r.get("sector"), {}).get("license"),
             "current": r.get("current"),
             "previous": r.get("previous"),
             "pct_change": r.get("pct_change"),
@@ -101,8 +112,12 @@ def brief_one(sector):
                 "severity": "error", "points": 0, "failed": []}
     d = data.get("delta", {}) or {}
     c = data.get("context", {}) or {}
+    prov = PROVENANCE.get(sector, {})
     return {
         "sector": sector,
+        "provider": prov.get("provider"),
+        "source_url": prov.get("url"),
+        "license": prov.get("license"),
         "current": d.get("current"),
         "previous": d.get("previous"),
         "pct_change": d.get("pct_change"),
@@ -174,6 +189,8 @@ def main():
     ap.add_argument("--dashboard", action="store_true")
     ap.add_argument("--audit-history", action="store_true")
     ap.add_argument("--no-color", action="store_true")
+    ap.add_argument("--metrics", action="store_true",
+                    help="show pipeline health from /metrics")
     ap.add_argument("--composite", action="store_true",
                     help="show composite signal evaluation against /latest")
     args = ap.parse_args()
@@ -201,6 +218,24 @@ def main():
             futures = {ex.submit(brief_one, s): s for s in sectors}
             for fut in as_completed(futures):
                 rows.append(fut.result())
+
+    if args.metrics:
+        m = fetch_json(f"{BASE}/metrics")
+        if m is None:
+            sys.exit("/metrics unreachable")
+        print(f"Pipeline health · {m.get('ts')}")
+        print("-" * 40)
+        print(f"  tracked:          {m.get('tracked_sectors', 0)}")
+        print(f"  healthy:          {m.get('healthy', 0)}")
+        print(f"  failing now:      {m.get('failing_now', 0)}")
+        print(f"  failing <24h:     {m.get('failing_within_24h', 0)}")
+        print(f"  failing >24h:     {m.get('failing_over_24h', 0)}")
+        fails = m.get("failing_sectors", [])
+        if fails:
+            print("\nfailing sectors:")
+            for f in fails[:10]:
+                print(f"  {f['sector']:<30} {f.get('error') or '?'}")
+        return
 
     if args.composite:
         by_sector = {r["sector"]: r for r in rows}

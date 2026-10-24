@@ -54,6 +54,8 @@ a:hover{text-decoration:underline}
   <a href="https://sector-slow.fourieranalys.workers.dev/latest" target="_blank" style="margin-left:auto;font-size:.85em">raw json</a>
 </div>
 
+<div id="composites"></div>
+
 <table id="tbl">
   <thead><tr>
     <th data-col="sector">sector</th>
@@ -134,6 +136,7 @@ function render() {
     return;
   }
 
+  renderComposites();
   tbody.innerHTML = filtered.map(r => {
     const sev = r.severity || "info";
     const cls = "row-" + sev;
@@ -182,6 +185,48 @@ document.getElementById("search").addEventListener("input", e => {
   search = e.target.value.toLowerCase().trim();
   render();
 });
+
+// ─── Composite rules (mirror of volatiai_brief.py) ───
+const COMPOSITE_RULES = [
+  ["crypto-crash","3+ crypto down >5%",b=>["kraken-btc-usd","kraken-eth-usd","kraken-sol-usd","coinbase-btc-usd","coinbase-eth-usd"].filter(k=>(b[k]?.pct_change||0)<-5).length>=3],
+  ["crypto-meltup","3+ crypto up >5%",b=>["kraken-btc-usd","kraken-eth-usd","kraken-sol-usd","coinbase-btc-usd","coinbase-eth-usd"].filter(k=>(b[k]?.pct_change||0)>5).length>=3],
+  ["btc-exchange-divergence","BTC spread >0.5%",b=>Math.abs(b["btc-exchange-spread"]?.current||0)>0.5],
+  ["eth-exchange-divergence","ETH spread >0.5%",b=>Math.abs(b["eth-exchange-spread"]?.current||0)>0.5],
+  ["crypto-volume-burst","BTC vol +50%",b=>(b["coinbase-btc-volume24h"]?.pct_change||0)>50],
+  ["yield-spike","US 10Y +5%",b=>(b["fred-dgs10"]?.pct_change||0)>5],
+  ["yield-collapse","US 10Y -5%",b=>(b["fred-dgs10"]?.pct_change||0)<-5],
+  ["debt-alarm","US debt/GDP >130",b=>(b["dbnomics-us-debt"]?.current||0)>130],
+  ["unemployment-regime","US unemp >4.5",b=>(b["worldbank-us-unemployment"]?.current||0)>4.5],
+  ["eur-stress","EUR/USD -2%",b=>(b["frankfurter-eurusd"]?.pct_change||0)<-2],
+  ["sek-stress","EUR/SEK +2%",b=>(b["frankfurter-eursek"]?.pct_change||0)>2],
+  ["gold-strength","Gold +2%",b=>(b["nbp-gold-spot"]?.pct_change||0)>2],
+  ["gold-weakness","Gold -2%",b=>(b["nbp-gold-spot"]?.pct_change||0)<-2],
+  ["gold-crypto-divergence","Gold +1% & BTC -3%",b=>(b["nbp-gold-spot"]?.pct_change||0)>1&&(b["kraken-btc-usd"]?.pct_change||0)<-3],
+  ["crypto-macro-rally","BTC +3% & 10Y -2%",b=>(b["kraken-btc-usd"]?.pct_change||0)>3&&(b["fred-dgs10"]?.pct_change||0)<-2],
+  ["defi-expansion","DeFi +0.5%",b=>(b["defillama-protocol-count"]?.pct_change||0)>0.5],
+];
+
+function renderComposites() {
+  const bySector = {};
+  DATA.rows.forEach(r => bySector[r.sector] = r);
+  const firing = COMPOSITE_RULES.filter(([_,__,rule]) => {
+    try { return rule(bySector); } catch { return false; }
+  });
+  const el = document.getElementById("composites");
+  if (firing.length === 0) {
+    el.innerHTML = `<div style="padding:.7em 1em;margin-bottom:1em;background:#141820;border-radius:6px;color:#8a8f96;font-size:.9em">
+      <b style="color:#d5d7db">0 composites firing</b> · ${COMPOSITE_RULES.length} rules evaluated
+    </div>`;
+  } else {
+    const items = firing.map(([name,desc]) =>
+      `<span style="background:#d23b3b;color:#fff;padding:.15em .55em;border-radius:10px;font-size:.8em;font-weight:500;margin-right:.4em">${name}</span><span style="color:#8a8f96;font-size:.85em;margin-right:1em">${desc}</span>`
+    ).join("");
+    el.innerHTML = `<div style="padding:.7em 1em;margin-bottom:1em;background:#1f1010;border:1px solid #d23b3b;border-radius:6px;font-size:.9em">
+      <b style="color:#d23b3b">${firing.length} composite${firing.length>1?"s":""} firing</b><br>
+      <div style="margin-top:.5em">${items}</div>
+    </div>`;
+  }
+}
 
 document.getElementById("refresh").addEventListener("click", refresh);
 

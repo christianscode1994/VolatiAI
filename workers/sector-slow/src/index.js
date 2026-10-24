@@ -1276,6 +1276,40 @@ export default {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
 
+    // ─── /metrics — 24h rolling health, aggregated from KV ───
+    if (parts[0] === "metrics") {
+      try {
+        const list = await env.SECTOR_KV.list({ prefix: "_health_" });
+        const rows = [];
+        const BATCH = 25;
+        for (let i = 0; i < list.keys.length; i += BATCH) {
+          const batch = list.keys.slice(i, i + BATCH);
+          const vals = await Promise.all(batch.map(k => env.SECTOR_KV.get(k.name, "json")));
+          batch.forEach((k, j) => {
+            if (!vals[j]) return;
+            rows.push({ sector: k.name.replace("_health_", ""), ...vals[j] });
+          });
+        }
+        const now = Date.now();
+        const h24 = 24 * 3600 * 1000;
+        const failing_now = rows.filter(r => r.state === "fail");
+        const failing_24h = rows.filter(r => r.state === "fail" && (now - (r.since_ts || now)) < h24);
+        const failing_long = rows.filter(r => r.state === "fail" && (now - (r.since_ts || now)) >= h24);
+        const healthy = rows.filter(r => r.state === "ok");
+        return json({
+          ts: new Date().toISOString(),
+          tracked_sectors: rows.length,
+          healthy: healthy.length,
+          failing_now: failing_now.length,
+          failing_within_24h: failing_24h.length,
+          failing_over_24h: failing_long.length,
+          failing_sectors: failing_now.map(r => ({sector: r.sector, since: r.since_ts, error: r.last_error})),
+        });
+      } catch (e) {
+        return json({ error: "metrics_failed", message: String(e && e.message || e) }, 500);
+      }
+    }
+
     // ─── /history/<sector> — full history array, for client charts ───
     if (parts[0] === "history" && parts[1]) {
       try {
