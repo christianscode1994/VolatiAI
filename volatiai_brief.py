@@ -56,6 +56,14 @@ def brief_one(sector):
         "failed": data.get("sources", {}).get("failed", []),
     }
 
+def fetch_latest():
+    """One-shot: GET /latest. Returns list of rows or None."""
+    data = fetch_json(f"{BASE}/latest")
+    if not data or "rows" not in data:
+        return None
+    return data["rows"]
+
+
 def load_sectors():
     p = Path("config/active_sectors.json")
     if not p.exists():
@@ -156,6 +164,8 @@ def main():
     ap.add_argument("--dashboard", action="store_true")
     ap.add_argument("--audit-history", action="store_true")
     ap.add_argument("--no-color", action="store_true")
+    ap.add_argument("--cached", action="store_true",
+                    help="Use /latest endpoint (1 HTTP call) instead of per-sector fetches")
     args = ap.parse_args()
 
     sectors = [args.sector] if args.sector else load_sectors()
@@ -164,9 +174,20 @@ def main():
     if not sectors:
         sys.exit("no sectors")
 
-    print(f"fetching {len(sectors)} sectors with {PARALLEL} workers...", file=sys.stderr)
-    rows = []
-    with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
+    if args.cached:
+        print(f"fetching /latest (cached)...", file=sys.stderr)
+        cached = fetch_latest()
+        if cached is None:
+            sys.exit("/latest failed — deploy the worker first, or omit --cached")
+        if args.group:
+            cached = [r for r in cached if args.group in r["sector"]]
+        if args.sector:
+            cached = [r for r in cached if r["sector"] == args.sector]
+        rows = cached
+    else:
+        print(f"fetching {len(sectors)} sectors with {PARALLEL} workers...", file=sys.stderr)
+        rows = []
+        with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
         futures = {ex.submit(brief_one, s): s for s in sectors}
         for fut in as_completed(futures):
             rows.append(fut.result())
