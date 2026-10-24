@@ -796,6 +796,39 @@ const COLLECTORS = {
       },
     }),
   },
+  "nvd-cve-count": {
+    config: { metric: "total_cves", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_cves: await fetchSafe(async () => {
+          // NVD API 2.0 — returns totalResults for the whole CVE catalog.
+          const r = await fetch("https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=1",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const total = j?.totalResults;
+          if (typeof total !== "number") throw new Error("no_totalResults");
+          return total;
+        }),
+      },
+    }),
+  },
+  "cisa-kev-count": {
+    config: { metric: "known_exploited", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        known_exploited: await fetchSafe(async () => {
+          const r = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const count = j?.count;
+          if (typeof count !== "number") throw new Error("no_count");
+          return count;
+        }),
+      },
+    }),
+  },
 };
 
 function json(obj, status = 200) {
