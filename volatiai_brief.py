@@ -203,9 +203,30 @@ def main():
     ap.add_argument("--no-color", action="store_true")
     ap.add_argument("--metrics", action="store_true",
                     help="show pipeline health from /metrics")
+    ap.add_argument("--category", default=None,
+                    help="filter by category (crypto|macro|fx|commodity|defi)")
     ap.add_argument("--composite", action="store_true",
                     help="show composite signal evaluation against /latest")
     args = ap.parse_args()
+
+    if args.metrics:
+        m = fetch_json(f"{BASE}/metrics")
+        if m is None:
+            sys.exit("/metrics unreachable")
+        print(f"Pipeline health · {m.get('ts')}")
+        print("-" * 40)
+        print(f"  tracked:          {m.get('tracked_sectors', 0)}")
+        print(f"  healthy:          {m.get('healthy', 0)}")
+        print(f"  failing now:      {m.get('failing_now', 0)}")
+        print(f"  failing <24h:     {m.get('failing_within_24h', 0)}")
+        print(f"  failing >24h:     {m.get('failing_over_24h', 0)}")
+        fails = m.get("failing_sectors", [])
+        if fails:
+            print("\nfailing sectors:")
+            for f in fails[:10]:
+                print(f"  {f['sector']:<30} {f.get('error') or '?'}")
+        return
+
 
     sectors = [args.sector] if args.sector else load_sectors()
     if args.group:
@@ -231,23 +252,6 @@ def main():
             for fut in as_completed(futures):
                 rows.append(fut.result())
 
-    if args.metrics:
-        m = fetch_json(f"{BASE}/metrics")
-        if m is None:
-            sys.exit("/metrics unreachable")
-        print(f"Pipeline health · {m.get('ts')}")
-        print("-" * 40)
-        print(f"  tracked:          {m.get('tracked_sectors', 0)}")
-        print(f"  healthy:          {m.get('healthy', 0)}")
-        print(f"  failing now:      {m.get('failing_now', 0)}")
-        print(f"  failing <24h:     {m.get('failing_within_24h', 0)}")
-        print(f"  failing >24h:     {m.get('failing_over_24h', 0)}")
-        fails = m.get("failing_sectors", [])
-        if fails:
-            print("\nfailing sectors:")
-            for f in fails[:10]:
-                print(f"  {f['sector']:<30} {f.get('error') or '?'}")
-        return
 
     if args.composite:
         by_sector = {r["sector"]: r for r in rows}
