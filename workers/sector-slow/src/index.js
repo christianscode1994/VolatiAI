@@ -883,7 +883,7 @@ async function runSectorForCron(sectorName, collector, env) {
   }
   history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
   history.push({ t: Date.now(), v: current });
-  history = history.filter(h => h.t > Date.now() - 30 * 24 * 60 * 60 * 1000);
+  history = history.filter(h => h.t > Date.now() - 90 * 24 * 60 * 60 * 1000);
   try {
     await env.SECTOR_KV.put(kvKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
     return { sector: sectorName, written: true, value: current, has_signal: envelope.has_signal };

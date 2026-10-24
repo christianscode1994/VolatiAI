@@ -35,6 +35,8 @@ SECTORS = {
     "usgs-earthquakes": {"kv_key": "usgs-earthquakes_earthquakes_since_2026_history", "fetcher": "usgs_cumulative", "days": 90},
     "crossref-works":   {"kv_key": "crossref-works_total_works_history",                    "fetcher": "crossref_cumulative", "days": 90},
     "openfda-drug-recalls": {"kv_key": "openfda-drug-recalls_drug_recalls_history",           "fetcher": "openfda_cumulative", "days": 90},
+    "openfda-food-recalls": {"kv_key": "openfda-food-recalls_food_recalls_history",           "fetcher": "openfda_food_cumulative", "days": 90},
+    "openfda-device-recalls": {"kv_key": "openfda-device-recalls_device_recalls_history",     "fetcher": "openfda_device_cumulative", "days": 90},
     "datacite-dois":        {"kv_key": "datacite-dois_total_dois_history",                    "fetcher": "datacite_cumulative", "days": 90},
     # "doaj-articles": NOT BACKFILLABLE — DOAJ created_date filter does not filter historically
     # "doaj-articles": {"kv_key": "doaj-articles_total_articles_history", "fetcher": "doaj_cumulative", "days": 90},
@@ -276,6 +278,8 @@ def fetch_emsc_cumulative(days):
     return sorted(out, key=lambda x: x["t"])
 
 FETCHERS = {
+    "openfda_food_cumulative":   fetch_openfda_food_cumulative,
+    "openfda_device_cumulative": fetch_openfda_device_cumulative,
     "fred_dgs10":          fetch_fred_dgs10,
     "noaa_co2_daily":      fetch_noaa_co2_daily,
     "usgs_cumulative":     fetch_usgs_cumulative,
