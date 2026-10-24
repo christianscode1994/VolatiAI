@@ -25,29 +25,6 @@ jobs:
             | python3 scripts/build_message.py > /tmp/message.txt
           cat /tmp/message.txt
 
-      - name: Debug Mastodon
-        env:
-          MASTODON_INSTANCE: ${{ secrets.MASTODON_INSTANCE }}
-          MASTODON_SERVER: ${{ secrets.MASTODON_SERVER }}
-          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
-        run: |
-          echo "=== secret inspection (safe, no values leaked) ==="
-          echo "INSTANCE:         [${MASTODON_INSTANCE}]"
-          echo "SERVER:           [${MASTODON_SERVER}]"
-          echo "TOKEN length:     ${#MASTODON_ACCESS_TOKEN}"
-          echo "TOKEN prefix:     ${MASTODON_ACCESS_TOKEN:0:6}..."
-          echo "TOKEN suffix:     ...${MASTODON_ACCESS_TOKEN: -4}"
-          echo ""
-          echo "=== verify against each host ==="
-          for host in "$MASTODON_INSTANCE" "$MASTODON_SERVER"; do
-            [ -z "$host" ] && continue
-            echo "--- https://$host ---"
-            curl -s -w "HTTP %{http_code}\n" \
-              -H "Authorization: Bearer $MASTODON_ACCESS_TOKEN" \
-              "https://$host/api/v1/accounts/verify_credentials"
-            echo
-          done
-
       - name: Publish
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
