@@ -166,6 +166,14 @@ COMPOSITE_RULES = [
          (b.get("steam-csgo-players") or {}).get("pct_change", 0) or 0,
          (b.get("steam-dota2-players") or {}).get("pct_change", 0) or 0
      ) > 15),
+    # ─── New dense keyless sectors ───
+    ("air-quality-spike", "PM2.5 > 35 µg/m³ (unhealthy)",
+     lambda b: (b.get("open-meteo-pm25") or {}).get("current", 0) > 35),
+    ("major-quake", "Significant earthquake count > 0",
+     lambda b: (b.get("usgs-significant-quakes") or {}).get("current", 0) > 0),
+    ("crew-change", "Astronaut count changed",
+     lambda b: (b.get("open-notify-astronauts") or {}).get("pct_change", 0) != 0),
+
 ]
 
 def fetch_json(url):
