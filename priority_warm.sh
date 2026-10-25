@@ -119,8 +119,6 @@ PRIORITY=(
   # ─── Event sectors (1) ───
   drug-approvals
   # ─── Data center infra ───
-  peeringdb-facilities
-  peeringdb-exchanges
   geocables-incidents
 )
 

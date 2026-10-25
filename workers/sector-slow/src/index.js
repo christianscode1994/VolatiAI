@@ -1844,43 +1844,6 @@ const COLLECTORS = {
     }),
   },
 
-  "peeringdb-facilities": {
-    config: { metric: "total_facilities", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        total_facilities: await fetchSafe(async () => {
-          const r = await fetch("https://www.peeringdb.com/api/fac?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.meta?.total_count 
-                 ?? j?.total_count 
-                 ?? j?.meta?.count
-                 ?? j?.count;
-          if (typeof v !== "number") {
-            throw new Error("no_count: meta=[" + Object.keys(j?.meta || {}).join(",") + "] top=[" + Object.keys(j || {}).join(",") + "]");
-          }
-          return v;
-        }),
-      },
-    }),
-  },
-  "peeringdb-exchanges": {
-    config: { metric: "total_exchanges", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        total_exchanges: await fetchSafe(async () => {
-          const r = await fetch("https://www.peeringdb.com/api/ix?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.meta?.total_count;
-          if (typeof v !== "number") throw new Error("no_total_count: keys=" + Object.keys(j?.meta || {}).join(","));
-          return v;
-        }),
-      },
-    }),
-  },
   "geocables-incidents": {
     config: { metric: "incident_count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
