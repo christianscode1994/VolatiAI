@@ -161,6 +161,18 @@ PRIORITY=(
   shodan-google-dns-ports
   wikipedia-bitcoin-extract-len
   wttr-dhaka-temp
+  # ─── Genomics/wellness (2026-10-25) ───
+  ensembl-brca1-gene
+  mygene-brca1-hits
+  myvariant-rs113488022-hits
+  europepmc-crispr-therapy
+  open-mindfulness-resource-count
+  affirmations-length
+  cdc-covid-total-deaths
+  who-gho-indicator-count
+  viruswatch-disease-count
+  pubmed-acupuncture-papers
+  pubmed-meditation-papers
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

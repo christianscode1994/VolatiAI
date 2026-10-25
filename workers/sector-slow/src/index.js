@@ -2360,6 +2360,125 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "ensembl-brca1-gene": {
+    config: { metric: "strand", threshold_pct: 100.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { strand: await fetchSafe(async () => {
+      const r = await fetch("https://rest.ensembl.org/lookup/symbol/homo_sapiens/BRCA1?content-type=application/json");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.strand);
+      if (!Number.isFinite(v)) throw new Error("no_strand");
+      return v;
+    }) } }),
+  },
+  "mygene-brca1-hits": {
+    config: { metric: "hits", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { hits: await fetchSafe(async () => {
+      const r = await fetch("https://mygene.info/v3/query?q=symbol:BRCA1&species=human");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.total);
+      if (!Number.isFinite(v)) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "myvariant-rs113488022-hits": {
+    config: { metric: "hits", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { hits: await fetchSafe(async () => {
+      const r = await fetch("https://myvariant.info/v1/query?q=dbsnp.rsid:rs113488022");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.total);
+      if (!Number.isFinite(v)) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "europepmc-crispr-therapy": {
+    config: { metric: "hitCount", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { hitCount: await fetchSafe(async () => {
+      const r = await fetch("https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=CRISPR%20gene%20therapy&format=json");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.hitCount);
+      if (!Number.isFinite(v)) throw new Error("no_hitCount");
+      return v;
+    }) } }),
+  },
+  "open-mindfulness-resource-count": {
+    config: { metric: "resource_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { resource_count: await fetchSafe(async () => {
+      const r = await fetch("https://api.theholisticcare.com/v1/resources");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j?.data)) throw new Error("no_data");
+      return j.data.length;
+    }) } }),
+  },
+  "affirmations-length": {
+    config: { metric: "affirmation_length", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { affirmation_length: await fetchSafe(async () => {
+      const r = await fetch("https://www.affirmations.dev/");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = j?.affirmation?.length;
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_affirmation");
+      return v;
+    }) } }),
+  },
+  "cdc-covid-total-deaths": {
+    config: { metric: "deaths", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { deaths: await fetchSafe(async () => {
+      const r = await fetch("https://data.cdc.gov/resource/9bhg-hcku.json?$limit=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.[0]?.total_deaths);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total_deaths");
+      return v;
+    }) } }),
+  },
+  "who-gho-indicator-count": {
+    config: { metric: "indicator_count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { indicator_count: await fetchSafe(async () => {
+      const r = await fetch("https://ghoapi.azureedge.net/api/Indicator");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j?.value)) throw new Error("no_value");
+      return j.value.length;
+    }) } }),
+  },
+  "viruswatch-disease-count": {
+    config: { metric: "disease_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { disease_count: await fetchSafe(async () => {
+      const r = await fetch("https://api.viruswatch.health/v1/diseases");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Object.keys(j?.diseases || {}).length;
+      if (v === 0) throw new Error("no_diseases");
+      return v;
+    }) } }),
+  },
+  "pubmed-acupuncture-papers": {
+    config: { metric: "count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=acupuncture&retmode=json");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.esearchresult?.count);
+      if (!Number.isFinite(v)) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
+  "pubmed-meditation-papers": {
+    config: { metric: "count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=meditation&retmode=json");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.esearchresult?.count);
+      if (!Number.isFinite(v)) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
 };
 
 
