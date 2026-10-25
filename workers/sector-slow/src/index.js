@@ -2180,14 +2180,16 @@ const COLLECTORS = {
     }) } }),
   },
   "worldbank-us-gdp": {
-    config: { metric: "usd", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
+    config: { metric: "usd", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
     collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
-      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD?format=json&per_page=1");
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD?format=json&per_page=10",
+        { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
       if (!r.ok) throw new Error("http_" + r.status);
       const j = await r.json();
-      const v = Number(j?.[1]?.[0]?.value);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_gdp");
-      return v;
+      const rows = Array.isArray(j?.[1]) ? j[1] : [];
+      const row = rows.find(x => x && typeof x.value === "number");
+      if (!row) throw new Error("no_gdp");
+      return Number(row.value);
     }) } }),
   },
   "crossref-deep-learning": {
@@ -2532,6 +2534,20 @@ const COLLECTORS = {
       const j = await r.json();
       const v = Number(j?.totalCount);
       if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "restcountries-germany-pop": {
+    config: { metric: "population", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
+    collectAll: async () => ({ sources: { population: await fetchSafe(async () => {
+      const r = await fetch("https://restcountries.com/v3.1/name/germany");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      let v;
+      if (Array.isArray(j)) v = Number(j[0]?.population);
+      else if (j && typeof j === "object") v = Number(j.population);
+      else throw new Error("bad_shape");
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_pop");
       return v;
     }) } }),
   },
