@@ -2152,6 +2152,146 @@ const COLLECTORS = {
       },
     }),
   },
+  "frankfurter-eur-usd": {
+    config: { metric: "rate", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { rate: await fetchSafe(async () => {
+      const r = await fetch("https://api.frankfurter.dev/v1/latest?base=USD&symbols=EUR");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.rates?.EUR);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_rate");
+      return v;
+    }) } }),
+  },
+  "openlibrary-ml-books": {
+    config: { metric: "num_found", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { num_found: await fetchSafe(async () => {
+      const r = await fetch("https://openlibrary.org/search.json?q=machine+learning&limit=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.numFound);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_numFound");
+      return v;
+    }) } }),
+  },
+  "npm-scraper-packages": {
+    config: { metric: "total", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://registry.npmjs.org/-/v1/search?text=scraper&size=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.total);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "sunrise-berlin-daylength": {
+    config: { metric: "seconds", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { seconds: await fetchSafe(async () => {
+      const r = await fetch("https://api.sunrise-sunset.org/json?lat=52.52&lng=13.41&formatted=0");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.results?.day_length);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_daylength");
+      return v;
+    }) } }),
+  },
+  "worldbank-us-gdp": {
+    config: { metric: "usd", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD?format=json&per_page=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.[1]?.[0]?.value);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_gdp");
+      return v;
+    }) } }),
+  },
+  "crossref-deep-learning": {
+    config: { metric: "total", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://api.crossref.org/works?query=deep+learning&rows=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.["message"]?.["total-results"]);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "pubmed-covid-papers": {
+    config: { metric: "count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=covid&retmode=json&retmax=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.esearchresult?.count);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
+  "pypistats-fastapi-downloads": {
+    config: { metric: "last_day", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { last_day: await fetchSafe(async () => {
+      const r = await fetch("https://pypistats.org/api/packages/fastapi/recent");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.data?.last_day);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_last_day");
+      return v;
+    }) } }),
+  },
+  "openverse-cat-images": {
+    config: { metric: "result_count", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { result_count: await fetchSafe(async () => {
+      const r = await fetch("https://api.openverse.org/v1/images/?q=cat&page_size=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.result_count);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_result_count");
+      return v;
+    }) } }),
+  },
+  "zippopotam-10001-places": {
+    config: { metric: "places", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { places: await fetchSafe(async () => {
+      const r = await fetch("https://api.zippopotam.us/us/10001");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j?.places)) throw new Error("no_places");
+      return j.places.length;
+    }) } }),
+  },
+  "7timer-berlin-temp": {
+    config: { metric: "temp2m", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { temp2m: await fetchSafe(async () => {
+      const r = await fetch("https://www.7timer.info/bin/api.pl?lon=13.41&lat=52.52&product=civil&output=json");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.dataseries?.[0]?.temp2m);
+      if (!Number.isFinite(v)) throw new Error("no_temp");
+      return v;
+    }) } }),
+  },
+  "pypi-requests-releases": {
+    config: { metric: "releases", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { releases: await fetchSafe(async () => {
+      const r = await fetch("https://pypi.org/pypi/requests/json");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!j?.releases || typeof j.releases !== "object") throw new Error("no_releases");
+      return Object.keys(j.releases).length;
+    }) } }),
+  },
+  "randomuser-heartbeat": {
+    config: { metric: "results", threshold_pct: 100.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { results: await fetchSafe(async () => {
+      const r = await fetch("https://randomuser.me/api/?results=3");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j?.results)) throw new Error("no_results");
+      return j.results.length;
+    }) } }),
+  },
 };
 
 

@@ -142,6 +142,19 @@ PRIORITY=(
   coinpaprika-top100-marketcap
   whitebit-btc-usdt
   usgs-significant-hour
+  # ─── Group 1 verified (2026-10-25) ───
+  frankfurter-eur-usd
+  openlibrary-ml-books
+  npm-scraper-packages
+  sunrise-berlin-daylength
+  crossref-deep-learning
+  pubmed-covid-papers
+  pypistats-fastapi-downloads
+  openverse-cat-images
+  zippopotam-10001-places
+  7timer-berlin-temp
+  pypi-requests-releases
+  randomuser-heartbeat
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
