@@ -1,170 +1,66 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-25T02:25:33Z",
+  "ts": "2026-10-25T10:26:24Z",
   "run_number": 24,
   "briefing": {
-    "headline": "20 signals across 331 sectors evaluated",
+    "headline": "11 signals across 329 sectors evaluated",
     "by_domain": {
-      "other": {
-        "count": 15,
-        "sectors": [
-          "anime",
-          "art-design",
-          "environment",
-          "food-products",
-          "free-games",
-          "jobs",
-          "nft",
-          "open-source-packages",
-          "pypi-packages",
-          "treasuries",
-          "tv",
-          "robonix",
-          "hackernews-top-scores",
-          "pypi-downloads-requests",
-          "uk-carbon-intensity"
-        ]
-      },
-      "energy": {
-        "count": 1,
-        "sectors": [
-          "carbon-intensity"
-        ]
-      },
       "security": {
         "count": 1,
         "sectors": [
           "cve-feed"
         ]
       },
-      "crypto": {
-        "count": 1,
+      "other": {
+        "count": 8,
         "sectors": [
-          "depin-network"
+          "environment",
+          "treasuries",
+          "robonix",
+          "hackernews-top-scores",
+          "pypi-downloads-requests",
+          "usgs-earthquake-count",
+          "uk-carbon-intensity",
+          "nvd-new-cves-count"
         ]
       },
-      "environment": {
-        "count": 2,
+      "space": {
+        "count": 1,
         "sectors": [
-          "earthquakes",
-          "water"
+          "spaceweather"
+        ]
+      },
+      "information": {
+        "count": 1,
+        "sectors": [
+          "wikipedia"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "anime",
-      "severity": "notice",
-      "summary": "New: Wareware wa Uchuujin",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "art-design",
-      "severity": "notice",
-      "summary": "New: The Penitent Magdalen \u2014 Georges de La Tour",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "carbon-intensity",
-      "severity": "notice",
-      "summary": "New: UK grid: 62 gCO2/kWh (low)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 8
-    },
-    {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-115999: A vulnerability has been found in mansi-k Restaurant_IMS d7ad49f61ab7cc1ec6eb359ac2b5378bdbde0694. A",
+      "summary": "New: CVE-2026-116050: A vulnerability has been found in krupalshah Employee Recruitment System up to 922ff6d208278282e7c8e",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 13
-    },
-    {
-      "sector": "depin-network",
-      "severity": "notice",
-      "summary": "New: Flux nodes: 6,850",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 11
-    },
-    {
-      "sector": "earthquakes",
-      "severity": "notice",
-      "summary": "New: M6.5 \u2014 Bonin Islands, Japan region",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
+      "fires_24": 14
     },
     {
       "sector": "environment",
       "severity": "notice",
-      "summary": "co2_ppm 428.08 (+0.5% vs 26.1d ago)",
+      "summary": "co2_ppm 428.08 (+0.5% vs 26.4d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 0.5472695243687572,
-      "fires_24": 3
+      "fires_24": 4
     },
     {
-      "sector": "food-products",
+      "sector": "spaceweather",
       "severity": "notice",
-      "summary": "New: Prince (Mondelez Schweiz GmbH)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "free-games",
-      "severity": "notice",
-      "summary": "New: MAFIA HOTEL (Epic Games) Giveaway",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
-    },
-    {
-      "sector": "jobs",
-      "severity": "notice",
-      "summary": "New: Solutions Engineer @ Onebrief",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 8
-    },
-    {
-      "sector": "nft",
-      "severity": "notice",
-      "summary": "New: meebits: floor 0.2632824378000002 ETH",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "open-source-packages",
-      "severity": "notice",
-      "summary": "New: lodash 4.18.1 (latest)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "pypi-packages",
-      "severity": "notice",
-      "summary": "New: Top PyPI: boto3 (2,460,723,068 downloads)",
+      "summary": "New: Space Weather Message Code: WARK04\r",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -173,72 +69,87 @@
     {
       "sector": "treasuries",
       "severity": "notice",
-      "summary": "yield_10y 4.96 (+6.7% vs 90.1d ago)",
+      "summary": "yield_10y 4.96 (-5.3% vs 27.4d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 6.666666666666658,
-      "fires_24": 5
+      "pct_change": -5.343511450381684,
+      "fires_24": 6
     },
     {
-      "sector": "tv",
+      "sector": "wikipedia",
       "severity": "notice",
-      "summary": "New: unknown \u2014 Episode 1",
+      "summary": "New: Special:Search (895,114 views)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 3
     },
     {
-      "sector": "water",
-      "severity": "notice",
-      "summary": "New: Mississippi flow: 159,000 cfs",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 6
-    },
-    {
       "sector": "robonix",
       "severity": "alert",
-      "summary": "packages 67 (+13.6% vs 2d ago)",
+      "summary": "packages 67 (+13.6% vs 2.3d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 13.559322033898304,
-      "fires_24": 4
+      "fires_24": 5
     },
     {
       "sector": "hackernews-top-scores",
-      "severity": "notice",
-      "summary": "top10_score_sum 972 (+29.9% vs 0.3d ago)",
+      "severity": "alert",
+      "summary": "top10_score_sum 1559 (+108.4% vs 0.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 29.946524064171122,
-      "fires_24": 2
+      "pct_change": 108.42245989304813,
+      "fires_24": 3
     },
     {
       "sector": "pypi-downloads-requests",
       "severity": "alert",
-      "summary": "last_day 34301355 (-33.3% vs 0.3d ago)",
+      "summary": "last_day 34301355 (-33.3% vs 0.7d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -33.33584366765091,
+      "fires_24": 2
+    },
+    {
+      "sector": "usgs-earthquake-count",
+      "severity": "notice",
+      "summary": "m45_count 30 (-40.0% vs 0.6d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -40,
       "fires_24": 1
     },
     {
       "sector": "uk-carbon-intensity",
       "severity": "alert",
-      "summary": "gco2_kwh 62 (-30.3% vs 0.3d ago)",
+      "summary": "gco2_kwh 56 (-37.1% vs 0.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -30.337078651685395,
+      "pct_change": -37.07865168539326,
+      "fires_24": 2
+    },
+    {
+      "sector": "nvd-new-cves-count",
+      "severity": "notice",
+      "summary": "new_cves 62 (-6.1% vs 0d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -6.0606060606060606,
       "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-24 20:00",
-    "signals_before": 12,
-    "signals_after": 20,
+    "previous_ts": "2026-10-25 02:25",
+    "signals_before": 20,
+    "signals_after": 11,
     "new": [
+      "nvd-new-cves-count",
+      "spaceweather",
+      "usgs-earthquake-count",
+      "wikipedia"
+    ],
+    "dropped": [
       "anime",
       "art-design",
       "carbon-intensity",
@@ -246,88 +157,71 @@
       "earthquakes",
       "food-products",
       "free-games",
+      "jobs",
+      "nft",
       "open-source-packages",
-      "pypi-downloads-requests",
       "pypi-packages",
       "tv",
-      "uk-carbon-intensity"
-    ],
-    "dropped": [
-      "btc-exchange-spread",
-      "eth-exchange-spread",
-      "npm-packages",
-      "phishunt-domains"
+      "water"
     ],
     "persistent": [
       "cve-feed",
       "environment",
       "hackernews-top-scores",
-      "jobs",
-      "nft",
+      "pypi-downloads-requests",
       "robonix",
       "treasuries",
-      "water"
+      "uk-carbon-intensity"
     ],
     "movements": [
       {
         "sector": "cve-feed",
-        "previous": "New: CVE-2026-115973: A vulnerability was identified in FaveoSuite Faveo Helpdes",
-        "current": "New: CVE-2026-115999: A vulnerability has been found in mansi-k Restaurant_IMS d"
+        "previous": "New: CVE-2026-115999: A vulnerability has been found in mansi-k Restaurant_IMS d",
+        "current": "New: CVE-2026-116050: A vulnerability has been found in krupalshah Employee Recr"
       },
       {
         "sector": "environment",
-        "previous": "co2_ppm 428.08 (+0.5% vs 25.8d ago)",
-        "current": "co2_ppm 428.08 (+0.5% vs 26.1d ago)"
+        "previous": "co2_ppm 428.08 (+0.5% vs 26.1d ago)",
+        "current": "co2_ppm 428.08 (+0.5% vs 26.4d ago)"
       },
       {
         "sector": "hackernews-top-scores",
-        "previous": "top10_score_sum 717 (-21.0% vs 0d ago)",
-        "current": "top10_score_sum 972 (+29.9% vs 0.3d ago)"
+        "previous": "top10_score_sum 972 (+29.9% vs 0.3d ago)",
+        "current": "top10_score_sum 1559 (+108.4% vs 0.6d ago)"
       },
       {
-        "sector": "jobs",
-        "previous": "New: Sales Development Representative German Speaking @ Huzzle",
-        "current": "New: Solutions Engineer @ Onebrief"
-      },
-      {
-        "sector": "nft",
-        "previous": "New: moonbirds: floor 0.484 ETH",
-        "current": "New: meebits: floor 0.2632824378000002 ETH"
+        "sector": "pypi-downloads-requests",
+        "previous": "last_day 34301355 (-33.3% vs 0.3d ago)",
+        "current": "last_day 34301355 (-33.3% vs 0.7d ago)"
       },
       {
         "sector": "robonix",
-        "previous": "packages 67 (+13.6% vs 1.7d ago)",
-        "current": "packages 67 (+13.6% vs 2d ago)"
+        "previous": "packages 67 (+13.6% vs 2d ago)",
+        "current": "packages 67 (+13.6% vs 2.3d ago)"
       },
       {
         "sector": "treasuries",
-        "previous": "yield_10y 4.96 (+6.7% vs 89.8d ago)",
-        "current": "yield_10y 4.96 (+6.7% vs 90.1d ago)"
+        "previous": "yield_10y 4.96 (+6.7% vs 90.1d ago)",
+        "current": "yield_10y 4.96 (-5.3% vs 27.4d ago)"
       },
       {
-        "sector": "water",
-        "previous": "New: Mississippi flow: 168,000 cfs",
-        "current": "New: Mississippi flow: 159,000 cfs"
+        "sector": "uk-carbon-intensity",
+        "previous": "gco2_kwh 62 (-30.3% vs 0.3d ago)",
+        "current": "gco2_kwh 56 (-37.1% vs 0.6d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "eth-exchange-spread",
-      "avg_volatility": 1875.6,
+      "avg_volatility": 1515.16,
       "max_volatility": 4591.73,
       "fires_in_window": 2
     },
     {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 1795.23,
+      "avg_volatility": 1472.99,
       "max_volatility": 6965.54,
-      "fires_in_window": 1
-    },
-    {
-      "sector": "web-apps",
-      "avg_volatility": 100,
-      "max_volatility": 100,
       "fires_in_window": 1
     },
     {
@@ -337,21 +231,15 @@
       "fires_in_window": 0
     },
     {
-      "sector": "usgs-earthquakes-emsc",
-      "avg_volatility": 14.98,
-      "max_volatility": 41.81,
-      "fires_in_window": 4
-    },
-    {
       "sector": "dex-total-volume-24h",
-      "avg_volatility": 14.76,
-      "max_volatility": 14.76,
+      "avg_volatility": 16.09,
+      "max_volatility": 17.42,
       "fires_in_window": 0
     },
     {
-      "sector": "usgs-earthquakes",
-      "avg_volatility": 12.42,
-      "max_volatility": 41.2,
+      "sector": "usgs-earthquakes-emsc",
+      "avg_volatility": 14.2,
+      "max_volatility": 41.81,
       "fires_in_window": 4
     },
     {
@@ -359,6 +247,12 @@
       "avg_volatility": 12.05,
       "max_volatility": 12.05,
       "fires_in_window": 0
+    },
+    {
+      "sector": "usgs-earthquakes",
+      "avg_volatility": 11.98,
+      "max_volatility": 41.2,
+      "fires_in_window": 4
     },
     {
       "sector": "xbrl-frames",
@@ -371,12 +265,18 @@
       "avg_volatility": 7.98,
       "max_volatility": 7.98,
       "fires_in_window": 0
+    },
+    {
+      "sector": "coinbase-btc-volume24h",
+      "avg_volatility": 7.89,
+      "max_volatility": 20.09,
+      "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 331,
-    "firing_sectors": 20,
-    "fire_rate_pct": 6.04,
+    "total_sectors": 329,
+    "firing_sectors": 11,
+    "fire_rate_pct": 3.34,
     "runs_in_history": 24
   }
 }
