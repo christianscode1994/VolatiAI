@@ -176,6 +176,11 @@ PRIORITY=(
   # ─── Tech (2026-10-25) ───
   langpop-python-composite-score
   dcentral-miner-count
+  # ─── Gov/energy/health (2026-10-25) ───
+  uk-carbon-intensity-now
+  corona-zahlen-germany-week-incidence
+  gbif-homo-sapiens-key
+  clinicaltrials-total-studies
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

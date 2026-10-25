@@ -2488,6 +2488,53 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "uk-carbon-intensity-now": {
+    config: { metric: "gco2_per_kwh", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({ sources: { gco2_per_kwh: await fetchSafe(async () => {
+      const r = await fetch("https://api.carbonintensity.org.uk/intensity");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const int = j?.data?.[0]?.intensity;
+      if (!int) throw new Error("no_intensity");
+      const raw = int.actual !== null ? int.actual : int.forecast;
+      const v = Number(raw);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_value");
+      return v;
+    }) } }),
+  },
+  "corona-zahlen-germany-week-incidence": {
+    config: { metric: "per_100k", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { per_100k: await fetchSafe(async () => {
+      const r = await fetch("https://api.corona-zahlen.org/germany");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.weekIncidence);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_incidence");
+      return v;
+    }) } }),
+  },
+  "gbif-homo-sapiens-key": {
+    config: { metric: "usage_key", threshold_pct: 100.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { usage_key: await fetchSafe(async () => {
+      const r = await fetch("https://api.gbif.org/v1/species/match?name=Homo+sapiens");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.usageKey);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_usageKey");
+      return v;
+    }) } }),
+  },
+  "clinicaltrials-total-studies": {
+    config: { metric: "count", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://clinicaltrials.gov/api/v2/studies?pageSize=1&countTotal=true");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.totalCount);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
 };
 
 
