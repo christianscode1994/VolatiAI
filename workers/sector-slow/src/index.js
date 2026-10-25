@@ -1970,7 +1970,8 @@ const COLLECTORS = {
         }),
       },
     }),
-  },  "geocables-incidents": {
+  },
+  "geocables-incidents": {
     config: { metric: "incident_count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
       sources: {
