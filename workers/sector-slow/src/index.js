@@ -2292,6 +2292,74 @@ const COLLECTORS = {
       return j.results.length;
     }) } }),
   },
+  "coinmarketcap-btc-usd": {
+    config: { metric: "usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 900 },
+    collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
+      const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/simple/price?ids=1&convert=USD");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.data?.[0]?.price);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_price");
+      return v;
+    }) } }),
+  },
+  "allratestoday-usd-eur": {
+    config: { metric: "rate", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { rate: await fetchSafe(async () => {
+      const r = await fetch("https://allratestoday.com/api/open/latest/USD");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.rates?.EUR ?? j?.EUR);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_rate");
+      return v;
+    }) } }),
+  },
+  "github-torvalds-followers": {
+    config: { metric: "count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://api.github.com/users/torvalds", { headers: { "user-agent": "VolatiAI/1.0" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.followers);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_followers");
+      return v;
+    }) } }),
+  },
+  "shodan-google-dns-ports": {
+    config: { metric: "count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://internetdb.shodan.io/8.8.8.8");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j?.ports)) throw new Error("no_ports");
+      return j.ports.length;
+    }) } }),
+  },
+  "wikipedia-bitcoin-extract-len": {
+    config: { metric: "chars", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { chars: await fetchSafe(async () => {
+      const r = await fetch("https://en.wikipedia.org/w/api.php?action=query&titles=Bitcoin&prop=extracts&exintro&format=json&explaintext=1", { headers: { "user-agent": "VolatiAI/1.0 (https://fourieranalys.se; admin@fourieranalys.se)" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const pages = j?.query?.pages;
+      if (!pages || typeof pages !== "object") throw new Error("no_pages");
+      const first = Object.values(pages)[0];
+      const v = first?.extract?.length;
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_extract");
+      return v;
+    }) } }),
+  },
+  "wttr-dhaka-temp": {
+    config: { metric: "temp_c", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { temp_c: await fetchSafe(async () => {
+      const r = await fetch("https://wttr.in/Dhaka?format=j1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.current_condition?.[0]?.temp_C);
+      if (!Number.isFinite(v)) throw new Error("no_temp");
+      return v;
+    }) } }),
+  },
 };
 
 

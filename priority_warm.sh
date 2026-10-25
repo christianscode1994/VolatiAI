@@ -155,6 +155,12 @@ PRIORITY=(
   7timer-berlin-temp
   pypi-requests-releases
   randomuser-heartbeat
+  coinmarketcap-btc-usd
+  allratestoday-usd-eur
+  github-torvalds-followers
+  shodan-google-dns-ports
+  wikipedia-bitcoin-extract-len
+  wttr-dhaka-temp
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
