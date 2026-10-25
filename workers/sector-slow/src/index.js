@@ -1853,8 +1853,13 @@ const COLLECTORS = {
             { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          const v = j?.meta?.total_count;
-          if (typeof v !== "number") throw new Error("no_total_count: keys=" + Object.keys(j?.meta || {}).join(","));
+          const v = j?.meta?.total_count 
+                 ?? j?.total_count 
+                 ?? j?.meta?.count
+                 ?? j?.count;
+          if (typeof v !== "number") {
+            throw new Error("no_count: meta=[" + Object.keys(j?.meta || {}).join(",") + "] top=[" + Object.keys(j || {}).join(",") + "]");
+          }
           return v;
         }),
       },
@@ -1891,7 +1896,8 @@ const COLLECTORS = {
         }),
       },
     }),
-  },  "nvd-new-cves-count": {
+  },
+  "nvd-new-cves-count": {
     config: { metric: "new_cves", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
