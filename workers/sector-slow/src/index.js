@@ -917,23 +917,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "worldbank-us-gdp": {
-    config: { metric: "gdp_usd", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
-    collectAll: async () => ({
-      sources: {
-        gdp_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD?format=json&per_page=10",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const rows = Array.isArray(j?.[1]) ? j[1] : [];
-          const row = rows.find(x => x && typeof x.value === "number");
-          if (!row) throw new Error("no_value");
-          return row.value;
-        }),
-      },
-    }),
-  },
   "worldbank-se-gdp": {
     config: { metric: "gdp_usd", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
     collectAll: async () => ({
