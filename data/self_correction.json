@@ -218,7 +218,7 @@
     },
     {
       "sector": "crypto-oi",
-      "reason": "conf=0 in 22/24 runs (92%)",
+      "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -353,7 +353,7 @@
     },
     {
       "sector": "events",
-      "reason": "conf=0 in 10/24 runs (42%)",
+      "reason": "conf=0 in 11/24 runs (46%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -547,11 +547,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "networking",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -624,11 +619,6 @@
     {
       "sector": "privacy-monero",
       "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "privacy-zcash",
-      "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -708,6 +698,11 @@
     },
     {
       "sector": "snapshot-proposals",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "space-launches",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -893,7 +888,7 @@
     },
     {
       "sector": "food-products",
-      "reason": "conf=0 in 17/24 runs (71%)",
+      "reason": "conf=0 in 16/24 runs (67%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -917,63 +912,63 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "space-launches",
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "privacy-zcash",
+      "reason": "conf=0 in 23/24 runs (96%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "nasa-eonet",
-      "reason": "conf=0 in 22/22 runs (100%)",
+      "reason": "conf=0 in 23/23 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "usgs-water",
-      "reason": "conf=0 in 22/22 runs (100%)",
+      "reason": "conf=0 in 23/23 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "noaa-ndbc",
-      "reason": "conf=0 in 22/22 runs (100%)",
+      "reason": "conf=0 in 23/23 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "epa-envirofacts",
-      "reason": "conf=0 in 22/22 runs (100%)",
+      "reason": "conf=0 in 23/23 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "faostat",
-      "reason": "conf=0 in 9/9 runs (100%)",
+      "reason": "conf=0 in 10/10 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "global-forest-watch",
-      "reason": "conf=0 in 9/9 runs (100%)",
+      "reason": "conf=0 in 10/10 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "fcc-broadband",
-      "reason": "conf=0 in 9/9 runs (100%)",
+      "reason": "conf=0 in 10/10 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "bakom",
-      "reason": "conf=0 in 9/9 runs (100%)",
+      "reason": "conf=0 in 10/10 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "satlas",
-      "reason": "conf=0 in 9/9 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "datacite-dois",
-      "reason": "conf=0 in 2/6 runs (33%)",
+      "reason": "conf=0 in 10/10 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "treasuries-gov",
-      "reason": "conf=0 in 5/5 runs (100%)",
+      "reason": "conf=0 in 6/6 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -984,19 +979,19 @@
     },
     {
       "sector": "ripe-atlas-public",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (60%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquakes",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (57%) but no config found in workers"
     },
     {
       "sector": "crossref-works",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (57%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquakes-emsc",
-      "reason": "spam (80%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -1008,7 +1003,7 @@
     {
       "sector": "biology",
       "runs": 24,
-      "avg_conf": 0.96
+      "avg_conf": 0.92
     },
     {
       "sector": "books",
@@ -1088,7 +1083,7 @@
     {
       "sector": "pubmed",
       "runs": 24,
-      "avg_conf": 0.92
+      "avg_conf": 0.88
     },
     {
       "sector": "science-math",
@@ -1099,6 +1094,11 @@
       "sector": "sec-filings",
       "runs": 24,
       "avg_conf": 0.96
+    },
+    {
+      "sector": "space",
+      "runs": 24,
+      "avg_conf": 0.92
     },
     {
       "sector": "unemployment",
@@ -1116,13 +1116,43 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "space",
-      "runs": 24,
-      "avg_conf": 0.88
+      "sector": "rir-arin",
+      "runs": 23,
+      "avg_conf": 1.0
     },
     {
-      "sector": "rir-arin",
-      "runs": 22,
+      "sector": "ripestat",
+      "runs": 10,
+      "avg_conf": 0.9
+    },
+    {
+      "sector": "ietf-datatracker",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "poligraph",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "mattercatalog",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "home-assistant",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "saos",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "dc-crime",
+      "runs": 10,
       "avg_conf": 1.0
     }
   ]
