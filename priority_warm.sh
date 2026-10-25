@@ -118,6 +118,10 @@ PRIORITY=(
   pypi-daily-requests
   # ─── Event sectors (1) ───
   drug-approvals
+  # ─── Data center infra ───
+  peeringdb-facilities
+  peeringdb-exchanges
+  geocables-incidents
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

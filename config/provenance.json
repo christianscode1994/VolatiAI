@@ -283,5 +283,20 @@
     "provider": "openFDA",
     "url": "https://api.fda.gov/drug/drugsfda.json",
     "license": "Public domain"
+  },
+  "peeringdb-facilities": {
+    "provider": "PeeringDB",
+    "url": "https://www.peeringdb.com/api/fac?limit=1",
+    "license": "CC BY 4.0"
+  },
+  "peeringdb-exchanges": {
+    "provider": "PeeringDB",
+    "url": "https://www.peeringdb.com/api/ix?limit=1",
+    "license": "CC BY 4.0"
+  },
+  "geocables-incidents": {
+    "provider": "GeoCables",
+    "url": "https://geocables.com/api/v1/incidents",
+    "license": "CC BY 4.0"
   }
 }

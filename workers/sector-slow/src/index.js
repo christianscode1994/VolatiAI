@@ -1843,7 +1843,55 @@ const COLLECTORS = {
       },
     }),
   },
-  "nvd-new-cves-count": {
+
+  "peeringdb-facilities": {
+    config: { metric: "total_facilities", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_facilities: await fetchSafe(async () => {
+          const r = await fetch("https://www.peeringdb.com/api/fac?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.meta?.total_count;
+          if (typeof v !== "number") throw new Error("no_total_count: keys=" + Object.keys(j?.meta || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "peeringdb-exchanges": {
+    config: { metric: "total_exchanges", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        total_exchanges: await fetchSafe(async () => {
+          const r = await fetch("https://www.peeringdb.com/api/ix?limit=1",
+            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.meta?.total_count;
+          if (typeof v !== "number") throw new Error("no_total_count: keys=" + Object.keys(j?.meta || {}).join(","));
+          return v;
+        }),
+      },
+    }),
+  },
+  "geocables-incidents": {
+    config: { metric: "incident_count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        incident_count: await fetchSafe(async () => {
+          const r = await fetch("https://geocables.com/api/v1/incidents",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const data = j?.data || [];
+          if (!Array.isArray(data)) throw new Error("no_data_array");
+          return data.length;
+        }),
+      },
+    }),
+  },  "nvd-new-cves-count": {
     config: { metric: "new_cves", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {
