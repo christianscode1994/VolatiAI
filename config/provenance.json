@@ -278,5 +278,20 @@
     "provider": "GitHub",
     "url": "https://api.github.com/search/commits?q=created:>...",
     "license": "Free public API"
+  },
+  "gdacs-disasters": {
+    "provider": "GDACS (EU JRC)",
+    "url": "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH",
+    "license": "Open"
+  },
+  "nws-alerts": {
+    "provider": "NWS / NOAA",
+    "url": "https://api.weather.gov/alerts/active",
+    "license": "Public domain"
+  },
+  "drug-approvals": {
+    "provider": "openFDA",
+    "url": "https://api.fda.gov/drug/drugsfda.json",
+    "license": "Public domain"
   }
 }

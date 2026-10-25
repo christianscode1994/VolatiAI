@@ -141,3 +141,7 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) priority_warm: $ok ok, $fail failed, ${DURA
 if [ $fail -gt 0 ]; then
   echo "  Failed: ${failed_sectors[*]}"
 fi
+  # ─── Event sectors ───
+  gdacs-disasters
+  nws-alerts
+  drug-approvals
