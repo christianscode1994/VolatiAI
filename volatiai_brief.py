@@ -169,8 +169,8 @@ COMPOSITE_RULES = [
     # ─── New dense keyless sectors ───
     ("air-quality-spike", "PM2.5 > 35 µg/m³ (unhealthy)",
      lambda b: (b.get("open-meteo-pm25") or {}).get("current", 0) > 35),
-    ("major-quake", "Significant earthquake count > 0",
-     lambda b: (b.get("usgs-significant-quakes") or {}).get("current", 0) > 0),
+    ("major-quake", "Significant earthquake count >= 3",
+     lambda b: (b.get("usgs-significant-quakes") or {}).get("current", 0) >= 3),
     ("crew-change", "Astronaut count changed",
      lambda b: (b.get("open-notify-astronauts") or {}).get("pct_change", 0) != 0),
 
