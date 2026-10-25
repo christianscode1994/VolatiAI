@@ -2063,6 +2063,48 @@ const COLLECTORS = {
       },
     }),
   },
+  "tvmaze-us-schedule-count": {
+    config: { metric: "episode_count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        episode_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.tvmaze.com/schedule?country=US");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("no_schedule");
+          return j.length;
+        }),
+      },
+    }),
+  },
+  "dailymotion-video-views": {
+    config: { metric: "views", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        views: await fetchSafe(async () => {
+          const r = await fetch("https://api.dailymotion.com/videos?search=technology&fields=views_total&limit=1");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.list?.[0]?.views_total;
+          if (typeof v !== "number") throw new Error("no_views");
+          return v;
+        }),
+      },
+    }),
+  },
+  "iptv-org-channel-count": {
+    config: { metric: "channel_count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        channel_count: await fetchSafe(async () => {
+          const r = await fetch("https://iptv-org.github.io/iptv/index.m3u");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const text = await r.text();
+          return (text.match(/^#EXTINF/gm) || []).length;
+        }),
+      },
+    }),
+  },
 };
 
 

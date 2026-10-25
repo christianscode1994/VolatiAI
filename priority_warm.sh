@@ -134,6 +134,10 @@ PRIORITY=(
   open-meteo-pm25
   usgs-significant-quakes
   open-notify-astronauts
+  # ─── Streaming/video (2026-10-25) ───
+  tvmaze-us-schedule-count
+  dailymotion-video-views
+  iptv-org-channel-count
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
