@@ -130,6 +130,10 @@ PRIORITY=(
   open-meteo-berlin-temp
   steam-csgo-players
   steam-dota2-players
+  # ─── Dense keyless (verified 2026-10-25) ───
+  open-meteo-pm25
+  usgs-significant-quakes
+  open-notify-astronauts
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

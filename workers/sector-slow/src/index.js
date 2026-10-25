@@ -2021,6 +2021,48 @@ const COLLECTORS = {
       },
     }),
   },
+  "open-meteo-pm25": {
+    config: { metric: "pm25", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        pm25: await fetchSafe(async () => {
+          const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=52.52&longitude=13.41&current=pm2_5");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.current?.pm2_5;
+          if (typeof v !== "number") throw new Error("no_pm25");
+          return v;
+        }),
+      },
+    }),
+  },
+  "usgs-significant-quakes": {
+    config: { metric: "quakes", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        quakes: await fetchSafe(async () => {
+          const r = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          return (j.features || []).length;
+        }),
+      },
+    }),
+  },
+  "open-notify-astronauts": {
+    config: { metric: "people", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        people: await fetchSafe(async () => {
+          const r = await fetch("http://api.open-notify.org/astros.json");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (typeof j.number !== "number") throw new Error("no_number");
+          return j.number;
+        }),
+      },
+    }),
+  },
 };
 
 
