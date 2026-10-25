@@ -187,6 +187,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "computer-networks",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "construction",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -317,11 +322,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "energy-carbon",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "entertainment",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -337,13 +337,8 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "eurostat-hicp",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "events",
-      "reason": "conf=0 in 12/24 runs (50%)",
+      "reason": "conf=0 in 13/24 runs (54%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -413,6 +408,11 @@
     },
     {
       "sector": "government-data",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "grid-balance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -537,11 +537,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "networking",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -613,7 +608,7 @@
     },
     {
       "sector": "privacy-zcash",
-      "reason": "conf=0 in 23/24 runs (96%)",
+      "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -693,11 +688,6 @@
     },
     {
       "sector": "snapshot-proposals",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "space-launches",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -892,11 +882,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "computer-networks",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "crypto-regulatory-feed",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -907,13 +892,23 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "energy-carbon",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "eurostat-hicp",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "ev",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "food-products",
-      "reason": "conf=0 in 14/24 runs (58%)",
+      "reason": "conf=0 in 13/24 runs (54%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -927,57 +922,70 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "grid-balance",
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "space-launches",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "faostat",
-      "reason": "conf=0 in 12/12 runs (100%)",
+      "reason": "conf=0 in 13/13 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "global-forest-watch",
-      "reason": "conf=0 in 12/12 runs (100%)",
+      "reason": "conf=0 in 13/13 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "fcc-broadband",
-      "reason": "conf=0 in 12/12 runs (100%)",
+      "reason": "conf=0 in 13/13 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "bakom",
-      "reason": "conf=0 in 12/12 runs (100%)",
+      "reason": "conf=0 in 13/13 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "satlas",
-      "reason": "conf=0 in 12/12 runs (100%)",
+      "reason": "conf=0 in 13/13 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "treasuries-gov",
-      "reason": "conf=0 in 8/8 runs (100%)",
+      "reason": "conf=0 in 9/9 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "cve-feed",
-      "reason": "spam (58%) but no config found in workers"
-    },
-    {
-      "sector": "ripe-atlas-public",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "robonix",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
-      "sector": "usgs-earthquakes-emsc",
-      "reason": "spam (50%) but no config found in workers"
+      "sector": "hackernews-top-scores",
+      "reason": "spam (100%) but no config found in workers"
+    },
+    {
+      "sector": "pypi-downloads-requests",
+      "reason": "spam (80%) but no config found in workers"
+    },
+    {
+      "sector": "usgs-earthquake-count",
+      "reason": "spam (60%) but no config found in workers"
+    },
+    {
+      "sector": "uk-carbon-intensity",
+      "reason": "spam (60%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -1082,6 +1090,11 @@
       "avg_conf": 0.96
     },
     {
+      "sector": "space",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
       "sector": "unemployment",
       "runs": 24,
       "avg_conf": 1.0
@@ -1102,43 +1115,103 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "space",
-      "runs": 24,
-      "avg_conf": 0.92
-    },
-    {
       "sector": "ripestat",
-      "runs": 12,
+      "runs": 13,
       "avg_conf": 0.92
     },
     {
       "sector": "ietf-datatracker",
-      "runs": 12,
+      "runs": 13,
       "avg_conf": 1.0
     },
     {
       "sector": "poligraph",
-      "runs": 12,
+      "runs": 13,
       "avg_conf": 1.0
     },
     {
       "sector": "mattercatalog",
-      "runs": 12,
+      "runs": 13,
       "avg_conf": 1.0
     },
     {
       "sector": "home-assistant",
-      "runs": 12,
+      "runs": 13,
       "avg_conf": 1.0
     },
     {
       "sector": "saos",
-      "runs": 12,
+      "runs": 13,
       "avg_conf": 1.0
     },
     {
       "sector": "dc-crime",
-      "runs": 12,
+      "runs": 13,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "met-artworks",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "cern-opendata",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "tweetfeed-c2",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "wikidata-triples",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "ballotwatch-bills",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "openfda-drug-recalls",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "openfda-food-recalls",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "openfda-device-recalls",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "cleveland-artworks",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "apis-guru-directory",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "noaa-spaceweather-alerts",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "doaj-articles",
+      "runs": 10,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "zenodo-records",
+      "runs": 10,
       "avg_conf": 1.0
     }
   ]

@@ -1,24 +1,22 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-25T15:18:34Z",
+  "ts": "2026-10-25T20:11:02Z",
   "run_number": 24,
   "briefing": {
-    "headline": "14 signals across 329 sectors evaluated",
+    "headline": "10 signals across 338 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 11,
+        "count": 9,
         "sectors": [
-          "anime",
-          "environment",
-          "treasuries",
-          "robonix",
           "coinbase-btc-volume24h",
+          "environment",
           "hackernews-top-scores",
+          "jobs",
+          "phishunt-domains",
           "pypi-downloads-requests",
-          "usgs-earthquake-count",
-          "uk-carbon-intensity",
-          "nvd-new-cves-count",
-          "github-recent-commits"
+          "robonix",
+          "treasuries",
+          "usgs-earthquake-count"
         ]
       },
       "security": {
@@ -26,235 +24,194 @@
         "sectors": [
           "cve-feed"
         ]
-      },
-      "crypto": {
-        "count": 1,
-        "sectors": [
-          "depin-network"
-        ]
-      },
-      "information": {
-        "count": 1,
-        "sectors": [
-          "events"
-        ]
       }
     }
   },
   "signals": [
     {
-      "sector": "anime",
-      "severity": "notice",
-      "summary": "New: Da Wang Rao Ming 3",
+      "sector": "coinbase-btc-volume24h",
+      "severity": "alert",
+      "summary": "btc_quote_volume_usd 150161484.86653206 (-54.6% vs 1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": null,
-      "fires_24": 4
+      "pct_change": -54.64060256862052,
+      "fires_24": 2
     },
     {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-116211: YesWiki 4.5.0 before 4.7.0 contains an SQL injection vulnerability in PageManager::save(), where the",
+      "summary": "New: CVE-2026-116062: A security flaw has been discovered in SourceCodester Performance Indicator System 1.0. This issue a",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 14
-    },
-    {
-      "sector": "depin-network",
-      "severity": "notice",
-      "summary": "New: Flux nodes: 6,739",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 10
+      "fires_24": 15
     },
     {
       "sector": "environment",
       "severity": "notice",
-      "summary": "co2_ppm 428.08 (+0.5% vs 26.6d ago)",
+      "summary": "co2_ppm 428.09 (+0.5% vs 26.8d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 0.5472695243687572,
+      "pct_change": 0.5496183206106812,
+      "fires_24": 6
+    },
+    {
+      "sector": "hackernews-top-scores",
+      "severity": "alert",
+      "summary": "top10_score_sum 1741 (+132.8% vs 1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 132.75401069518716,
       "fires_24": 5
     },
     {
-      "sector": "events",
+      "sector": "jobs",
       "severity": "notice",
-      "summary": "New: [568] We should be more ambitious with the software we build",
+      "summary": "New: Field Phlebotomy Supervisor Northern California @ Getlabs",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
       "fires_24": 9
     },
     {
-      "sector": "treasuries",
+      "sector": "phishunt-domains",
       "severity": "notice",
-      "summary": "yield_10y 4.96 (-5.3% vs 27.6d ago)",
+      "summary": "active_phishings 1190 (-6.8% vs 1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -5.343511450381684,
-      "fires_24": 7
-    },
-    {
-      "sector": "robonix",
-      "severity": "alert",
-      "summary": "packages 67 (+13.6% vs 2.5d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": 13.559322033898304,
-      "fires_24": 6
-    },
-    {
-      "sector": "coinbase-btc-volume24h",
-      "severity": "notice",
-      "summary": "btc_quote_volume_usd 186569412.2741976 (-43.6% vs 0.8d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": -43.64283139976877,
-      "fires_24": 1
-    },
-    {
-      "sector": "hackernews-top-scores",
-      "severity": "alert",
-      "summary": "top10_score_sum 1755 (+134.6% vs 0.8d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": 134.62566844919786,
-      "fires_24": 4
+      "pct_change": -6.812842599843383,
+      "fires_24": 2
     },
     {
       "sector": "pypi-downloads-requests",
       "severity": "alert",
-      "summary": "last_day 34301355 (-33.3% vs 0.9d ago)",
+      "summary": "last_day 34301355 (-33.3% vs 1.1d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -33.33584366765091,
-      "fires_24": 3
+      "fires_24": 4
+    },
+    {
+      "sector": "robonix",
+      "severity": "alert",
+      "summary": "packages 67 (+13.6% vs 2.7d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 13.559322033898304,
+      "fires_24": 7
+    },
+    {
+      "sector": "treasuries",
+      "severity": "notice",
+      "summary": "yield_10y 4.96 (-5.3% vs 27.8d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -5.343511450381684,
+      "fires_24": 8
     },
     {
       "sector": "usgs-earthquake-count",
       "severity": "notice",
-      "summary": "m45_count 27 (-46.0% vs 0.8d ago)",
+      "summary": "m45_count 24 (-52.0% vs 1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -46,
-      "fires_24": 2
-    },
-    {
-      "sector": "uk-carbon-intensity",
-      "severity": "alert",
-      "summary": "gco2_kwh 57 (-36.0% vs 0.8d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": -35.95505617977528,
+      "pct_change": -52,
       "fires_24": 3
-    },
-    {
-      "sector": "nvd-new-cves-count",
-      "severity": "alert",
-      "summary": "new_cves 126 (+103.2% vs 0.2d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": 103.2258064516129,
-      "fires_24": 2
-    },
-    {
-      "sector": "github-recent-commits",
-      "severity": "alert",
-      "summary": "commit_count 25604637 (+14.5% vs 0.2d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": 14.497743975658612,
-      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-25 10:26",
-    "signals_before": 11,
-    "signals_after": 14,
+    "previous_ts": "2026-10-25 15:18",
+    "signals_before": 14,
+    "signals_after": 10,
     "new": [
-      "anime",
-      "coinbase-btc-volume24h",
-      "depin-network",
-      "events",
-      "github-recent-commits"
+      "jobs",
+      "phishunt-domains"
     ],
     "dropped": [
-      "spaceweather",
-      "wikipedia"
+      "anime",
+      "depin-network",
+      "events",
+      "github-recent-commits",
+      "nvd-new-cves-count",
+      "uk-carbon-intensity"
     ],
     "persistent": [
+      "coinbase-btc-volume24h",
       "cve-feed",
       "environment",
       "hackernews-top-scores",
-      "nvd-new-cves-count",
       "pypi-downloads-requests",
       "robonix",
       "treasuries",
-      "uk-carbon-intensity",
       "usgs-earthquake-count"
     ],
     "movements": [
       {
+        "sector": "coinbase-btc-volume24h",
+        "previous": "btc_quote_volume_usd 186569412.2741976 (-43.6% vs 0.8d ago)",
+        "current": "btc_quote_volume_usd 150161484.86653206 (-54.6% vs 1d ago)"
+      },
+      {
         "sector": "cve-feed",
-        "previous": "New: CVE-2026-116050: A vulnerability has been found in krupalshah Employee Recr",
-        "current": "New: CVE-2026-116211: YesWiki 4.5.0 before 4.7.0 contains an SQL injection vulne"
+        "previous": "New: CVE-2026-116211: YesWiki 4.5.0 before 4.7.0 contains an SQL injection vulne",
+        "current": "New: CVE-2026-116062: A security flaw has been discovered in SourceCodester Perf"
       },
       {
         "sector": "environment",
-        "previous": "co2_ppm 428.08 (+0.5% vs 26.4d ago)",
-        "current": "co2_ppm 428.08 (+0.5% vs 26.6d ago)"
+        "previous": "co2_ppm 428.08 (+0.5% vs 26.6d ago)",
+        "current": "co2_ppm 428.09 (+0.5% vs 26.8d ago)"
       },
       {
         "sector": "hackernews-top-scores",
-        "previous": "top10_score_sum 1559 (+108.4% vs 0.6d ago)",
-        "current": "top10_score_sum 1755 (+134.6% vs 0.8d ago)"
-      },
-      {
-        "sector": "nvd-new-cves-count",
-        "previous": "new_cves 62 (-6.1% vs 0d ago)",
-        "current": "new_cves 126 (+103.2% vs 0.2d ago)"
+        "previous": "top10_score_sum 1755 (+134.6% vs 0.8d ago)",
+        "current": "top10_score_sum 1741 (+132.8% vs 1d ago)"
       },
       {
         "sector": "pypi-downloads-requests",
-        "previous": "last_day 34301355 (-33.3% vs 0.7d ago)",
-        "current": "last_day 34301355 (-33.3% vs 0.9d ago)"
+        "previous": "last_day 34301355 (-33.3% vs 0.9d ago)",
+        "current": "last_day 34301355 (-33.3% vs 1.1d ago)"
       },
       {
         "sector": "robonix",
-        "previous": "packages 67 (+13.6% vs 2.3d ago)",
-        "current": "packages 67 (+13.6% vs 2.5d ago)"
+        "previous": "packages 67 (+13.6% vs 2.5d ago)",
+        "current": "packages 67 (+13.6% vs 2.7d ago)"
       },
       {
         "sector": "treasuries",
-        "previous": "yield_10y 4.96 (-5.3% vs 27.4d ago)",
-        "current": "yield_10y 4.96 (-5.3% vs 27.6d ago)"
-      },
-      {
-        "sector": "uk-carbon-intensity",
-        "previous": "gco2_kwh 56 (-37.1% vs 0.6d ago)",
-        "current": "gco2_kwh 57 (-36.0% vs 0.8d ago)"
+        "previous": "yield_10y 4.96 (-5.3% vs 27.6d ago)",
+        "current": "yield_10y 4.96 (-5.3% vs 27.8d ago)"
       },
       {
         "sector": "usgs-earthquake-count",
-        "previous": "m45_count 30 (-40.0% vs 0.6d ago)",
-        "current": "m45_count 27 (-46.0% vs 0.8d ago)"
+        "previous": "m45_count 27 (-46.0% vs 0.8d ago)",
+        "current": "m45_count 24 (-52.0% vs 1d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "eth-exchange-spread",
-      "avg_volatility": 1278.98,
+      "avg_volatility": 1107.87,
       "max_volatility": 4591.73,
       "fires_in_window": 2
     },
     {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 1231.25,
+      "avg_volatility": 1084.21,
       "max_volatility": 6965.54,
       "fires_in_window": 1
+    },
+    {
+      "sector": "nvd-new-cves-count",
+      "avg_volatility": 54.64,
+      "max_volatility": 103.23,
+      "fires_in_window": 2
+    },
+    {
+      "sector": "uk-carbon-intensity",
+      "avg_volatility": 34.46,
+      "max_volatility": 37.08,
+      "fires_in_window": 3
     },
     {
       "sector": "dex-uniswap-volume",
@@ -264,25 +221,25 @@
     },
     {
       "sector": "dex-total-volume-24h",
-      "avg_volatility": 17.16,
+      "avg_volatility": 17.7,
       "max_volatility": 19.31,
       "fires_in_window": 0
     },
     {
       "sector": "usgs-earthquakes-emsc",
-      "avg_volatility": 13.62,
+      "avg_volatility": 13.18,
       "max_volatility": 41.81,
       "fires_in_window": 4
     },
     {
       "sector": "dex-ethereum-volume",
-      "avg_volatility": 12.38,
+      "avg_volatility": 12.54,
       "max_volatility": 13.04,
       "fires_in_window": 0
     },
     {
       "sector": "usgs-earthquakes",
-      "avg_volatility": 11.64,
+      "avg_volatility": 11.37,
       "max_volatility": 41.2,
       "fires_in_window": 4
     },
@@ -291,24 +248,12 @@
       "avg_volatility": 9.37,
       "max_volatility": 33.93,
       "fires_in_window": 2
-    },
-    {
-      "sector": "grid-mix",
-      "avg_volatility": 7.98,
-      "max_volatility": 7.98,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "privacy-zcash",
-      "avg_volatility": 6.68,
-      "max_volatility": 6.68,
-      "fires_in_window": 1
     }
   ],
   "stats": {
-    "total_sectors": 329,
-    "firing_sectors": 14,
-    "fire_rate_pct": 4.26,
+    "total_sectors": 338,
+    "firing_sectors": 10,
+    "fire_rate_pct": 2.96,
     "runs_in_history": 24
   }
 }
