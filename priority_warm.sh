@@ -138,6 +138,10 @@ PRIORITY=(
   tvmaze-us-schedule-count
   dailymotion-video-views
   iptv-org-channel-count
+  # ─── Dense/fast batch 2 (2026-10-25) ───
+  coinpaprika-top100-marketcap
+  whitebit-btc-usdt
+  usgs-significant-hour
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

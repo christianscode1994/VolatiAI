@@ -2105,6 +2105,53 @@ const COLLECTORS = {
       },
     }),
   },
+  "coinpaprika-top100-marketcap": {
+    config: { metric: "usd", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        usd: await fetchSafe(async () => {
+          const r = await fetch("https://api.coinpaprika.com/v1/tickers");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          const top100 = j.slice(0, 100);
+          const total = top100.reduce((sum, c) => sum + (Number(c.quotes?.USD?.market_cap) || 0), 0);
+          if (total <= 0) throw new Error("no_market_cap");
+          return total;
+        }),
+      },
+    }),
+  },
+  "whitebit-btc-usdt": {
+    config: { metric: "usd", threshold_pct: 3.0, window: "1h", window_days: 1, ttl: 900 },
+    collectAll: async () => ({
+      sources: {
+        usd: await fetchSafe(async () => {
+          const r = await fetch("https://whitebit.com/api/v1/public/ticker?market=BTC_USDT");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!j.success || !j.result) throw new Error("bad_shape");
+          const v = Number(j.result.last);
+          if (!Number.isFinite(v) || v <= 0) throw new Error("no_last");
+          return v;
+        }),
+      },
+    }),
+  },
+  "usgs-significant-hour": {
+    config: { metric: "quakes", threshold_pct: 100.0, window: "1h", window_days: 1, ttl: 900 },
+    collectAll: async () => ({
+      sources: {
+        quakes: await fetchSafe(async () => {
+          const r = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson");
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j.features)) throw new Error("no_features");
+          return j.features.length;
+        }),
+      },
+    }),
+  },
 };
 
 
