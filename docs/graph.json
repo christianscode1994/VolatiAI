@@ -1,11 +1,24 @@
 {
-  "computed_at": "2026-10-24T14:33:01.279589Z",
-  "threshold": 0.6,
+  "computed_at": "2026-10-25T09:07:19.426112Z",
+  "threshold": 0.8,
   "min_points": 10,
   "nodes": [
+    "coinbase-btc-usd",
+    "coinbase-eth-usd",
     "crossref-works",
     "datacite-dois",
     "environment",
+    "frankfurter-eursek",
+    "frankfurter-eurusd",
+    "kraken-ada-usd",
+    "kraken-btc-usd",
+    "kraken-doge-usd",
+    "kraken-dot-usd",
+    "kraken-eth-usd",
+    "kraken-link-usd",
+    "kraken-sol-usd",
+    "kraken-xrp-usd",
+    "nbp-gold-spot",
     "openfda-device-recalls",
     "openfda-drug-recalls",
     "openfda-food-recalls",
@@ -16,33 +29,184 @@
   ],
   "edges": [
     {
-      "a": "openfda-device-recalls",
-      "b": "openfda-drug-recalls",
-      "corr": 0.681,
-      "n": 90
+      "a": "coinbase-btc-usd",
+      "b": "coinbase-eth-usd",
+      "corr": 0.926,
+      "n": 30
+    },
+    {
+      "a": "coinbase-btc-usd",
+      "b": "kraken-btc-usd",
+      "corr": 1.0,
+      "n": 30
+    },
+    {
+      "a": "coinbase-btc-usd",
+      "b": "kraken-doge-usd",
+      "corr": 0.887,
+      "n": 30
+    },
+    {
+      "a": "coinbase-btc-usd",
+      "b": "kraken-eth-usd",
+      "corr": 0.925,
+      "n": 30
+    },
+    {
+      "a": "coinbase-btc-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.855,
+      "n": 30
+    },
+    {
+      "a": "coinbase-btc-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.939,
+      "n": 30
+    },
+    {
+      "a": "coinbase-eth-usd",
+      "b": "kraken-btc-usd",
+      "corr": 0.927,
+      "n": 30
+    },
+    {
+      "a": "coinbase-eth-usd",
+      "b": "kraken-doge-usd",
+      "corr": 0.906,
+      "n": 30
+    },
+    {
+      "a": "coinbase-eth-usd",
+      "b": "kraken-eth-usd",
+      "corr": 1.0,
+      "n": 30
+    },
+    {
+      "a": "coinbase-eth-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.877,
+      "n": 30
+    },
+    {
+      "a": "coinbase-eth-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.919,
+      "n": 30
+    },
+    {
+      "a": "kraken-ada-usd",
+      "b": "kraken-doge-usd",
+      "corr": 0.895,
+      "n": 30
+    },
+    {
+      "a": "kraken-ada-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.828,
+      "n": 30
+    },
+    {
+      "a": "kraken-ada-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.805,
+      "n": 30
+    },
+    {
+      "a": "kraken-btc-usd",
+      "b": "kraken-doge-usd",
+      "corr": 0.888,
+      "n": 30
+    },
+    {
+      "a": "kraken-btc-usd",
+      "b": "kraken-eth-usd",
+      "corr": 0.926,
+      "n": 30
+    },
+    {
+      "a": "kraken-btc-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.855,
+      "n": 30
+    },
+    {
+      "a": "kraken-btc-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.94,
+      "n": 30
+    },
+    {
+      "a": "kraken-doge-usd",
+      "b": "kraken-eth-usd",
+      "corr": 0.906,
+      "n": 30
+    },
+    {
+      "a": "kraken-doge-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.891,
+      "n": 30
+    },
+    {
+      "a": "kraken-doge-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.891,
+      "n": 30
+    },
+    {
+      "a": "kraken-eth-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.877,
+      "n": 30
+    },
+    {
+      "a": "kraken-eth-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.919,
+      "n": 30
+    },
+    {
+      "a": "kraken-sol-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.855,
+      "n": 30
     },
     {
       "a": "openfda-device-recalls",
       "b": "openfda-food-recalls",
-      "corr": 0.819,
-      "n": 90
+      "corr": 0.818,
+      "n": 30
     },
     {
       "a": "openfda-drug-recalls",
       "b": "openfda-food-recalls",
-      "corr": 0.688,
-      "n": 90
+      "corr": 0.948,
+      "n": 30
     },
     {
       "a": "treasuries",
       "b": "treasuries-gov",
       "corr": 1.0,
-      "n": 62
+      "n": 18
     }
   ],
   "clusters": [
     {
       "id": "cluster_0",
+      "members": [
+        "coinbase-btc-usd",
+        "coinbase-eth-usd",
+        "kraken-ada-usd",
+        "kraken-btc-usd",
+        "kraken-doge-usd",
+        "kraken-eth-usd",
+        "kraken-sol-usd",
+        "kraken-xrp-usd"
+      ]
+    },
+    {
+      "id": "cluster_1",
       "members": [
         "openfda-device-recalls",
         "openfda-drug-recalls",
@@ -50,7 +214,7 @@
       ]
     },
     {
-      "id": "cluster_1",
+      "id": "cluster_2",
       "members": [
         "treasuries",
         "treasuries-gov"
@@ -58,10 +222,18 @@
     }
   ],
   "sector_to_cluster": {
-    "openfda-device-recalls": "cluster_0",
-    "openfda-drug-recalls": "cluster_0",
-    "openfda-food-recalls": "cluster_0",
-    "treasuries": "cluster_1",
-    "treasuries-gov": "cluster_1"
+    "coinbase-btc-usd": "cluster_0",
+    "coinbase-eth-usd": "cluster_0",
+    "kraken-ada-usd": "cluster_0",
+    "kraken-btc-usd": "cluster_0",
+    "kraken-doge-usd": "cluster_0",
+    "kraken-eth-usd": "cluster_0",
+    "kraken-sol-usd": "cluster_0",
+    "kraken-xrp-usd": "cluster_0",
+    "openfda-device-recalls": "cluster_1",
+    "openfda-drug-recalls": "cluster_1",
+    "openfda-food-recalls": "cluster_1",
+    "treasuries": "cluster_2",
+    "treasuries-gov": "cluster_2"
   }
 }
