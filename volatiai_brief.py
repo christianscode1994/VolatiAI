@@ -266,7 +266,7 @@ def brief_one(sector):
     d = data.get("delta", {}) or {}
     c = data.get("context", {}) or {}
     prov = PROVENANCE.get(sector, {})
-    cat = next((c for c, members in CATEGORIES.items() if sector in members), "other")
+    cat = _category(sector)
     return {
         "sector": sector,
         "category": cat,
