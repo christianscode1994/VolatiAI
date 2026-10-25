@@ -149,6 +149,13 @@ COMPOSITE_RULES = [
          (b.get("github-recent-commits") or {}).get("pct_change", 0) or 0,
          (b.get("pypi-daily-requests") or {}).get("pct_change", 0) or 0
      ) > 15),
+    # ─── Auctions & e-commerce ───
+    ("auction-lot-surge", "Whisky auction lots +10%",
+     lambda b: (b.get("whiskyhunter-lot-count") or {}).get("pct_change", 0) > 10),
+    ("shopify-catalog-expansion", "Shopify product count +2%",
+     lambda b: (b.get("shopify-allbirds-product-count") or {}).get("pct_change", 0) > 2),
+    ("game-deal-spike", "CheapShark deal count +25%",
+     lambda b: (b.get("cheapshark-deal-count") or {}).get("pct_change", 0) > 25),
 ]
 
 def fetch_json(url):

@@ -120,6 +120,10 @@ PRIORITY=(
   drug-approvals
   # ─── Data center infra ───
   geocables-incidents
+  # ─── Auctions & e-commerce ───
+  whiskyhunter-lot-count
+  shopify-allbirds-product-count
+  cheapshark-deal-count
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

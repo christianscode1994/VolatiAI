@@ -1844,6 +1844,54 @@ const COLLECTORS = {
     }),
   },
 
+  "whiskyhunter-lot-count": {
+    config: { metric: "all_auctions_lots_count", threshold_pct: 5.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        all_auctions_lots_count: await fetchSafe(async () => {
+          const r = await fetch("https://whiskyhunter.net/api/auctions_data/?format=json",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j) || j.length === 0) throw new Error("empty_array");
+          const v = j[0]?.all_auctions_lots_count;
+          if (typeof v !== "number") throw new Error("no_lots_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  "shopify-allbirds-product-count": {
+    config: { metric: "product_count", threshold_pct: 2.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({
+      sources: {
+        product_count: await fetchSafe(async () => {
+          const r = await fetch("https://allbirds.com/products.json?limit=250",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const products = j?.products || [];
+          if (!Array.isArray(products)) throw new Error("no_products_array");
+          return products.length;
+        }),
+      },
+    }),
+  },
+  "cheapshark-deal-count": {
+    config: { metric: "deal_count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        deal_count: await fetchSafe(async () => {
+          const r = await fetch("https://www.cheapshark.com/api/1.0/deals?storeID=1",
+            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          if (!Array.isArray(j)) throw new Error("not_array");
+          return j.length;
+        }),
+      },
+    }),
+  },
   "geocables-incidents": {
     config: { metric: "incident_count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
