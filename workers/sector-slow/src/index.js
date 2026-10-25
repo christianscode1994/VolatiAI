@@ -2578,23 +2578,6 @@ async function signLatest(payload, env) {
       key_id: "volati-2026-01",
       value: sigB64,
       canonical_sha256: await sha256Hex(bytes),
-
-  "pypi-daily-requests": {
-    config: { metric: "last_day", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        last_day: await fetchSafe(async () => {
-          const r = await fetch("https://pypistats.org/api/packages/requests/recent",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.data?.last_day;
-          if (typeof v !== "number") throw new Error("no_last_day");
-          return v;
-        }),
-      },
-    }),
-  },
 };
   } catch (e) {
     console.error("sign_failed", String(e));
