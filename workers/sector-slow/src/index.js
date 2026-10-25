@@ -1822,45 +1822,6 @@ const COLLECTORS = {
     }),
   },
 
-  "gdacs-disasters": {
-    config: { metric: "latest_event_id", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        latest_event_id: await fetchSafe(async () => {
-          const today = new Date().toISOString().slice(0, 10);
-          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-          const url = `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?fromDate=${yesterday}&toDate=${today}`;
-          const r = await fetch(url,
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const features = j?.features || [];
-          if (features.length === 0) return "none";
-          const latest = features[0].properties;
-          const id = `${latest.eventtype || "?"}-${latest.eventid || "?"}-${(latest.name || "").slice(0, 40)}`;
-          return id;
-        }),
-      },
-    }),
-  },
-  "nws-alerts": {
-    config: { metric: "latest_alert_id", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 1800 },
-    collectAll: async () => ({
-      sources: {
-        latest_alert_id: await fetchSafe(async () => {
-          const r = await fetch("https://api.weather.gov/alerts/active?limit=1&severity=Severe,Extreme",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)", "accept": "application/geo+json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const features = j?.features || [];
-          if (features.length === 0) return "none";
-          const props = features[0].properties;
-          const id = `${props.event || "?"}:${(props.areaDesc || "").slice(0, 30)}:${props.id || ""}`.slice(0, 100);
-          return id;
-        }),
-      },
-    }),
-  },
   "drug-approvals": {
     config: { metric: "latest_approval_id", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
@@ -1881,7 +1842,8 @@ const COLLECTORS = {
         }),
       },
     }),
-  },  "nvd-new-cves-count": {
+  },
+  "nvd-new-cves-count": {
     config: { metric: "new_cves", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({
       sources: {

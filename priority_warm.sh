@@ -142,6 +142,4 @@ if [ $fail -gt 0 ]; then
   echo "  Failed: ${failed_sectors[*]}"
 fi
   # ─── Event sectors ───
-  gdacs-disasters
-  nws-alerts
   drug-approvals
