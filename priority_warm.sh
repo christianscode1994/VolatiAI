@@ -175,7 +175,6 @@ PRIORITY=(
   pubmed-meditation-papers
   # ─── Tech (2026-10-25) ───
   langpop-python-composite-score
-  wakatime-top100-running-total
   dcentral-miner-count
 )
 

@@ -2477,19 +2477,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "wakatime-top100-running-total": {
-    config: { metric: "seconds", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { seconds: await fetchSafe(async () => {
-      const r = await fetch("https://wakatime.com/api/v1/leaders");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const arr = j?.data;
-      if (!Array.isArray(arr) || arr.length === 0) throw new Error("no_data");
-      const total = arr.reduce((s, x) => s + (Number(x?.running_total) || 0), 0);
-      if (total <= 0) throw new Error("no_total");
-      return total;
-    }) } }),
-  },
   "dcentral-miner-count": {
     config: { metric: "count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
