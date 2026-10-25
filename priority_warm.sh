@@ -181,7 +181,6 @@ PRIORITY=(
   corona-zahlen-germany-week-incidence
   gbif-homo-sapiens-key
   clinicaltrials-total-studies
-  restcountries-germany-pop
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

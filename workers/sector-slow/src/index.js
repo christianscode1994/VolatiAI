@@ -2537,20 +2537,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "restcountries-germany-pop": {
-    config: { metric: "population", threshold_pct: 0.5, window: "365d", window_days: 365, ttl: 604800 },
-    collectAll: async () => ({ sources: { population: await fetchSafe(async () => {
-      const r = await fetch("https://restcountries.com/v3.1/name/germany");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      let v;
-      if (Array.isArray(j)) v = Number(j[0]?.population);
-      else if (j && typeof j === "object") v = Number(j.population);
-      else throw new Error("bad_shape");
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_pop");
-      return v;
-    }) } }),
-  },
 };
 
 
