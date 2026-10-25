@@ -116,6 +116,8 @@ PRIORITY=(
   nvd-new-cves-count
   github-recent-commits
   pypi-daily-requests
+  # ─── Event sectors (1) ───
+  drug-approvals
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
@@ -141,5 +143,3 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) priority_warm: $ok ok, $fail failed, ${DURA
 if [ $fail -gt 0 ]; then
   echo "  Failed: ${failed_sectors[*]}"
 fi
-  # ─── Event sectors ───
-  drug-approvals
