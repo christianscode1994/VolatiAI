@@ -124,6 +124,12 @@ PRIORITY=(
   whiskyhunter-lot-count
   shopify-allbirds-product-count
   cheapshark-deal-count
+  # ─── Sports/weather/gaming ───
+  espn-nfl-score-count
+  espn-nba-score-count
+  open-meteo-berlin-temp
+  steam-csgo-players
+  steam-dota2-players
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

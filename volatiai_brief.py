@@ -156,6 +156,16 @@ COMPOSITE_RULES = [
      lambda b: (b.get("shopify-allbirds-product-count") or {}).get("pct_change", 0) > 2),
     ("game-deal-spike", "CheapShark deal count +25%",
      lambda b: (b.get("cheapshark-deal-count") or {}).get("pct_change", 0) > 25),
+    # ─── Sports, weather, gaming ───
+    ("sports-day", "10+ combined NFL/NBA games",
+     lambda b: ((b.get("espn-nfl-score-count") or {}).get("current", 0) or 0) + ((b.get("espn-nba-score-count") or {}).get("current", 0) or 0) >= 10),
+    ("weather-extreme", "Berlin temp >30°C or <-10°C",
+     lambda b: (b.get("open-meteo-berlin-temp") or {}).get("current", 0) > 30 or (b.get("open-meteo-berlin-temp") or {}).get("current", 0) < -10),
+    ("gaming-weekend-surge", "CS:GO or Dota 2 player count +15%",
+     lambda b: max(
+         (b.get("steam-csgo-players") or {}).get("pct_change", 0) or 0,
+         (b.get("steam-dota2-players") or {}).get("pct_change", 0) or 0
+     ) > 15),
 ]
 
 def fetch_json(url):

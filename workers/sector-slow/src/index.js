@@ -1892,7 +1892,85 @@ const COLLECTORS = {
       },
     }),
   },
-  "geocables-incidents": {
+
+  "espn-nfl-score-count": {
+    config: { metric: "game_count", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        game_count: await fetchSafe(async () => {
+          const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const events = j?.events || [];
+          return events.length;
+        }),
+      },
+    }),
+  },
+  "espn-nba-score-count": {
+    config: { metric: "game_count", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        game_count: await fetchSafe(async () => {
+          const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const events = j?.events || [];
+          return events.length;
+        }),
+      },
+    }),
+  },
+  "open-meteo-berlin-temp": {
+    config: { metric: "temp_c", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({
+      sources: {
+        temp_c: await fetchSafe(async () => {
+          const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.current?.temperature_2m;
+          if (typeof v !== "number") throw new Error("no_temp");
+          return v;
+        }),
+      },
+    }),
+  },
+  "steam-csgo-players": {
+    config: { metric: "player_count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({
+      sources: {
+        player_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=730",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.response?.player_count;
+          if (typeof v !== "number") throw new Error("no_player_count");
+          return v;
+        }),
+      },
+    }),
+  },
+  "steam-dota2-players": {
+    config: { metric: "player_count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({
+      sources: {
+        player_count: await fetchSafe(async () => {
+          const r = await fetch("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=570",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          if (!r.ok) throw new Error("http_" + r.status);
+          const j = await r.json();
+          const v = j?.response?.player_count;
+          if (typeof v !== "number") throw new Error("no_player_count");
+          return v;
+        }),
+      },
+    }),
+  },  "geocables-incidents": {
     config: { metric: "incident_count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
       sources: {

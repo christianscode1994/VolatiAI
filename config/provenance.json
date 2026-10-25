@@ -303,5 +303,30 @@
     "provider": "CheapShark",
     "url": "https://www.cheapshark.com/api/1.0/deals?storeID=1",
     "license": "Free public"
+  },
+  "espn-nfl-score-count": {
+    "provider": "ESPN",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+    "license": "Public API"
+  },
+  "espn-nba-score-count": {
+    "provider": "ESPN",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+    "license": "Public API"
+  },
+  "open-meteo-berlin-temp": {
+    "provider": "Open-Meteo",
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m",
+    "license": "CC BY 4.0"
+  },
+  "steam-csgo-players": {
+    "provider": "Valve/Steam",
+    "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=730",
+    "license": "Public API"
+  },
+  "steam-dota2-players": {
+    "provider": "Valve/Steam",
+    "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=570",
+    "license": "Public API"
   }
 }
