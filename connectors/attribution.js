@@ -20,11 +20,49 @@ export async function loadSources() {
 
 export function isWhitelisted(info) {
   if (!info) return false;
+  if (info.status === 'REVIEW' || info.status === 'REMOVED') return false;
+
   const lic = (info.license || '').toLowerCase();
-  if (lic.includes('unverified')) return false;
-  if (info.status === 'REVIEW') return false;
-  if (info.status === 'REMOVED') return false;
-  return true;
+
+  // 1. Explicit risky patterns → block (fail closed)
+  const RISKY = [
+    'unverified', 'unknown',
+    'non-commercial', 'noncommercial', 'nc-', 'cc by-nc',
+    'share-alike', 'cc by-sa',
+    'kraken', 'coinbase', 'binance', 'bitstamp', 'gemini',
+    'okx', 'bybit', 'kucoin', 'huobi',
+    'exchange tos', 'exchange terms', 'public market data',
+    'commercial api', 'commercial use only',
+    'redistribution prohibited', 'no redistribution',
+    'all rights reserved',
+  ];
+  for (const pat of RISKY) {
+    if (lic.includes(pat)) return false;
+  }
+
+  // 2. Explicit safe patterns → allow
+  const SAFE = [
+    'public domain',
+    'cc0',
+    'cc by 4.0', 'cc by 3.0', 'cc by 2.5',   // NOT cc by-sa, NOT cc by-nc
+    'mit ', 'mit,', 'mit license', 'mit data',
+    'apache', 'bsd',
+    'free reuse, commercial ok',
+    'free, keyless public api',
+    'open public api',
+    'open data',
+    'open repository',
+    'open (eu',
+    'open preprint',
+    'open access',
+    'public api (open)',        // explicit "open" in parens
+  ];
+  for (const pat of SAFE) {
+    if (lic.includes(pat)) return true;
+  }
+
+  // 3. Default: block (fail closed)
+  return false;
 }
 
 /**
