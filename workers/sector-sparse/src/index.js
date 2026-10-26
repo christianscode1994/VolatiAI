@@ -31,7 +31,7 @@ const COLLECTORS = {
   "thesportsdb-team-count": {
     config: { metric: "league_count", threshold_pct: null, window: "7d", window_days: 7 },
     async collectAll(env) {
-      const r = await fetch("https://www.thesportsdb.com/api/v1/json/3/all_leagues.php");
+      const r = await fetch("https://www.thesportsdb.com/api/v1/json/123/all_leagues.php");
       if (!r.ok) return { value: null, sources: { thesportsdb: { ok: false } } };
       const j = await r.json();
       return { value: Array.isArray(j.leagues) ? j.leagues.length : null, sources: { thesportsdb: { ok: true } }, context: { endpoint: "all_leagues" } };
