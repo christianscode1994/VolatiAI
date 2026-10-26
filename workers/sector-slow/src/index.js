@@ -2673,6 +2673,77 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "datafirst-african-surveys": {
+    config: { metric: "total", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://www.datafirst.uct.ac.za/dataportal/index.php/api/catalog?limit=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.result?.total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "first-org-csirt-teams": {
+    config: { metric: "total", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://api.first.org/data/v1/teams?limit=1",
+        { headers: { "user-agent": "VolatiAI/1.0" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "lockbox-seeds-strain-count": {
+    config: { metric: "count", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://www.lockboxseeds.com/api/strains",
+        { headers: { "user-agent": "VolatiAI/1.0" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.meta?.count);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
+  "geonet-nz-volcanic-alerts": {
+    config: { metric: "count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://api.geonet.org.nz/volcano/val");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const f = j?.features;
+      if (!Array.isArray(f)) throw new Error("no_features");
+      // Count volcanoes at alert level >= 2 (minor activity or higher)
+      const active = f.filter(x => Number(x?.properties?.level) >= 2);
+      return active.length;
+    }) } }),
+  },
+  "dexpaprika-total-dex-volume": {
+    config: { metric: "usd", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
+      const r = await fetch("https://api.dexpaprika.com/networks");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j) || j.length === 0) throw new Error("no_networks");
+      const total = j.reduce((s, n) => s + (Number(n?.volume_usd_24h) || 0), 0);
+      if (total <= 0) throw new Error("no_volume");
+      return total;
+    }) } }),
+  },
+  "shipwreckatlas-total-wrecks": {
+    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://shipwreckatlas.com/api/v1/wrecks?per_page=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.meta?.total ?? j?.total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
 };
 
 
