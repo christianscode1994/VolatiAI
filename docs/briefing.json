@@ -1,38 +1,31 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-26T17:58:57Z",
+  "ts": "2026-10-26T22:19:44Z",
   "run_number": 24,
   "briefing": {
-    "headline": "24 signals across 331 sectors evaluated",
+    "headline": "20 signals across 330 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 19,
+        "count": 18,
         "sectors": [
-          "anime",
           "coinbase-btc-volume24h",
           "dc-crime",
           "dex-ethereum-volume",
           "dex-total-volume-24h",
           "dex-uniswap-volume",
           "environment",
-          "free-games",
-          "github-recent-commits",
           "hackernews-top-scores",
-          "jobs",
+          "home-assistant",
           "npm-downloads-react",
           "nvd-new-cves-count",
+          "open-meteo-berlin-temp",
           "phishunt-domains",
           "pypi-downloads-requests",
           "robonix",
-          "treasuries",
+          "steam-csgo-players",
+          "steam-dota2-players",
           "treasuries-gov",
           "usgs-earthquake-count"
-        ]
-      },
-      "energy": {
-        "count": 1,
-        "sectors": [
-          "carbon-intensity"
         ]
       },
       "security": {
@@ -42,366 +35,326 @@
         ]
       },
       "information": {
-        "count": 2,
-        "sectors": [
-          "events",
-          "npm-packages"
-        ]
-      },
-      "space": {
         "count": 1,
         "sectors": [
-          "spaceweather"
+          "npm-packages"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "anime",
-      "severity": "notice",
-      "summary": "New: Kuang Wang 2",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 5
-    },
-    {
-      "sector": "carbon-intensity",
-      "severity": "notice",
-      "summary": "New: UK grid: 103 gCO2/kWh (moderate)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 8
-    },
-    {
       "sector": "coinbase-btc-volume24h",
-      "severity": "notice",
-      "summary": "btc_quote_volume_usd 494626637.3540985 (+49.4% vs 1.9d ago)",
+      "severity": "alert",
+      "summary": "btc_quote_volume_usd 545798539.5368649 (+64.9% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 49.412256037779,
-      "fires_24": 5
+      "pct_change": 64.86979263906434,
+      "fires_24": 6
     },
     {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-116543: Open5GS 1.3.0 through 2.8.0 contains a heap out-of-bounds write vulnerability in parse_multipart() t",
+      "summary": "New: CVE-2026-116748: Transmission 4.0.0 before 4.1.3 contains a permissive CORS vulnerability in handle_request() in rpc-",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 15
+      "fires_24": 16
     },
     {
       "sector": "dc-crime",
       "severity": "notice",
-      "summary": "crime_incidents 18017 (+1.1% vs 3.3d ago)",
+      "summary": "crime_incidents 18017 (+1.1% vs 3.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 1.0601301323760377,
-      "fires_24": 2
+      "fires_24": 3
     },
     {
       "sector": "dex-ethereum-volume",
       "severity": "notice",
-      "summary": "eth_24h 725905406.9599999 (-30.5% vs 2.2d ago)",
+      "summary": "eth_24h 725905406.9599999 (-30.5% vs 2.3d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -30.51136690846978,
-      "fires_24": 3
+      "fires_24": 4
     },
     {
       "sector": "dex-total-volume-24h",
       "severity": "notice",
-      "summary": "total24h 5793026711.230002 (-25.6% vs 2.2d ago)",
+      "summary": "total24h 5991111333.230002 (-23.1% vs 2.3d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -25.60812264890915,
-      "fires_24": 3
+      "pct_change": -23.064394190624103,
+      "fires_24": 4
     },
     {
       "sector": "dex-uniswap-volume",
       "severity": "notice",
-      "summary": "uniswap_24h 1359482941 (-27.0% vs 2.2d ago)",
+      "summary": "uniswap_24h 1359482941 (-27.0% vs 2.3d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -26.984481232996586,
-      "fires_24": 3
+      "fires_24": 4
     },
     {
       "sector": "environment",
       "severity": "notice",
-      "summary": "co2_ppm 428.1 (+0.6% vs 27.7d ago)",
+      "summary": "co2_ppm 428.1 (+0.6% vs 27.9d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 0.5519671168526183,
-      "fires_24": 9
-    },
-    {
-      "sector": "events",
-      "severity": "notice",
-      "summary": "New: [1059] Anthropic S-1",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 8
-    },
-    {
-      "sector": "free-games",
-      "severity": "notice",
-      "summary": "New: V Rising - Haunted Nights Castle Pack (Steam) Giveaway",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
-    },
-    {
-      "sector": "github-recent-commits",
-      "severity": "notice",
-      "summary": "commit_count 26885736 (-6.5% vs 0.9d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": -6.4944430840109035,
-      "fires_24": 4
+      "fires_24": 10
     },
     {
       "sector": "hackernews-top-scores",
       "severity": "alert",
-      "summary": "top10_score_sum 2490 (+232.9% vs 1.9d ago)",
+      "summary": "top10_score_sum 3219 (+330.3% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 232.88770053475938,
-      "fires_24": 8
+      "pct_change": 330.3475935828877,
+      "fires_24": 9
     },
     {
-      "sector": "jobs",
+      "sector": "home-assistant",
       "severity": "notice",
-      "summary": "New: Senior Software Engineer @ Klardaten",
+      "summary": "installations 712354 (+0.5% vs 3.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": null,
-      "fires_24": 10
+      "pct_change": 0.5311957549499711,
+      "fires_24": 1
     },
     {
       "sector": "npm-downloads-react",
       "severity": "alert",
-      "summary": "downloads 11742947 (-72.3% vs 2d ago)",
+      "summary": "downloads 24059662 (-43.3% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -72.33354403882133,
-      "fires_24": 1
+      "pct_change": -43.315287111161794,
+      "fires_24": 2
     },
     {
       "sector": "npm-packages",
       "severity": "notice",
-      "summary": "New: @ai-sdk/provider-utils v5.0.68",
+      "summary": "New: @ai-sdk/provider-utils v5.0.69",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 4
+      "fires_24": 5
     },
     {
       "sector": "nvd-new-cves-count",
       "severity": "alert",
-      "summary": "new_cves 299 (+126.5% vs 0.9d ago)",
+      "summary": "new_cves 755 (+472.0% vs 1.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 126.51515151515152,
-      "fires_24": 4
+      "pct_change": 471.969696969697,
+      "fires_24": 5
+    },
+    {
+      "sector": "open-meteo-berlin-temp",
+      "severity": "notice",
+      "summary": "temp_c 7.5 (-28.6% vs 1.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -28.57142857142857,
+      "fires_24": 2
     },
     {
       "sector": "phishunt-domains",
       "severity": "notice",
-      "summary": "active_phishings 1198 (-6.2% vs 1.9d ago)",
+      "summary": "active_phishings 1183 (-7.4% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -6.186374314800313,
-      "fires_24": 5
+      "pct_change": -7.3610023492560686,
+      "fires_24": 6
     },
     {
       "sector": "pypi-downloads-requests",
       "severity": "alert",
-      "summary": "last_day 34618482 (-32.7% vs 2d ago)",
+      "summary": "last_day 34618482 (-32.7% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -32.71951221645288,
-      "fires_24": 7
+      "fires_24": 8
     },
     {
       "sector": "robonix",
       "severity": "alert",
-      "summary": "packages 67 (+13.6% vs 3.6d ago)",
+      "summary": "packages 67 (+13.6% vs 3.8d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 13.559322033898304,
-      "fires_24": 10
-    },
-    {
-      "sector": "spaceweather",
-      "severity": "notice",
-      "summary": "New: Space Weather Message Code: WARK04\r",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 5
-    },
-    {
-      "sector": "treasuries",
-      "severity": "notice",
-      "summary": "yield_10y 4.96 (-5.3% vs 28.7d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": -5.343511450381684,
       "fires_24": 11
+    },
+    {
+      "sector": "steam-csgo-players",
+      "severity": "alert",
+      "summary": "player_count 675558 (-33.8% vs 1.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -33.784079158233155,
+      "fires_24": 3
+    },
+    {
+      "sector": "steam-dota2-players",
+      "severity": "notice",
+      "summary": "player_count 741629 (-18.9% vs 1.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -18.939588527383595,
+      "fires_24": 2
     },
     {
       "sector": "treasuries-gov",
       "severity": "notice",
-      "summary": "yield_10y 5 (+7.5% vs 91.7d ago)",
+      "summary": "yield_10y 5 (+7.5% vs 91.9d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 7.526881720430099,
-      "fires_24": 2
+      "fires_24": 3
     },
     {
       "sector": "usgs-earthquake-count",
       "severity": "alert",
-      "summary": "m45_count 16 (-68.0% vs 1.9d ago)",
+      "summary": "m45_count 17 (-66.0% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -68,
-      "fires_24": 6
+      "pct_change": -66,
+      "fires_24": 7
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-26 11:55",
-    "signals_before": 25,
-    "signals_after": 24,
+    "previous_ts": "2026-10-26 17:58",
+    "signals_before": 24,
+    "signals_after": 20,
     "new": [
-      "anime",
-      "carbon-intensity",
-      "cve-feed",
-      "events",
-      "free-games",
-      "jobs",
-      "npm-downloads-react",
-      "npm-packages",
-      "nvd-new-cves-count",
-      "spaceweather"
+      "home-assistant",
+      "open-meteo-berlin-temp",
+      "steam-csgo-players",
+      "steam-dota2-players"
     ],
     "dropped": [
-      "arbetsformedlingen",
-      "crypto-regulatory-feed",
-      "depin-network",
-      "e-commerce",
-      "electricity",
-      "miso-grid",
-      "privacy-monero",
-      "privacy-zcash",
-      "steam-csgo-players",
-      "uk-carbon-intensity",
-      "wikipedia-activity"
+      "anime",
+      "carbon-intensity",
+      "events",
+      "free-games",
+      "github-recent-commits",
+      "jobs",
+      "spaceweather",
+      "treasuries"
     ],
     "persistent": [
       "coinbase-btc-volume24h",
+      "cve-feed",
       "dc-crime",
       "dex-ethereum-volume",
       "dex-total-volume-24h",
       "dex-uniswap-volume",
       "environment",
-      "github-recent-commits",
       "hackernews-top-scores",
+      "npm-downloads-react",
+      "npm-packages",
+      "nvd-new-cves-count",
       "phishunt-domains",
       "pypi-downloads-requests",
       "robonix",
-      "treasuries",
       "treasuries-gov",
       "usgs-earthquake-count"
     ],
     "movements": [
       {
         "sector": "coinbase-btc-volume24h",
-        "previous": "btc_quote_volume_usd 224727921.05370054 (-32.1% vs 1.7d ago)",
-        "current": "btc_quote_volume_usd 494626637.3540985 (+49.4% vs 1.9d ago)"
+        "previous": "btc_quote_volume_usd 494626637.3540985 (+49.4% vs 1.9d ago)",
+        "current": "btc_quote_volume_usd 545798539.5368649 (+64.9% vs 2.1d ago)"
+      },
+      {
+        "sector": "cve-feed",
+        "previous": "New: CVE-2026-116543: Open5GS 1.3.0 through 2.8.0 contains a heap out-of-bounds ",
+        "current": "New: CVE-2026-116748: Transmission 4.0.0 before 4.1.3 contains a permissive CORS"
       },
       {
         "sector": "dc-crime",
-        "previous": "crime_incidents 18017 (+1.1% vs 3d ago)",
-        "current": "crime_incidents 18017 (+1.1% vs 3.3d ago)"
+        "previous": "crime_incidents 18017 (+1.1% vs 3.3d ago)",
+        "current": "crime_incidents 18017 (+1.1% vs 3.5d ago)"
       },
       {
         "sector": "dex-ethereum-volume",
-        "previous": "eth_24h 725905406.9599999 (-30.5% vs 1.9d ago)",
-        "current": "eth_24h 725905406.9599999 (-30.5% vs 2.2d ago)"
+        "previous": "eth_24h 725905406.9599999 (-30.5% vs 2.2d ago)",
+        "current": "eth_24h 725905406.9599999 (-30.5% vs 2.3d ago)"
       },
       {
         "sector": "dex-total-volume-24h",
-        "previous": "total24h 5792352946.230002 (-25.6% vs 1.9d ago)",
-        "current": "total24h 5793026711.230002 (-25.6% vs 2.2d ago)"
+        "previous": "total24h 5793026711.230002 (-25.6% vs 2.2d ago)",
+        "current": "total24h 5991111333.230002 (-23.1% vs 2.3d ago)"
       },
       {
         "sector": "dex-uniswap-volume",
-        "previous": "uniswap_24h 1359482941 (-27.0% vs 1.9d ago)",
-        "current": "uniswap_24h 1359482941 (-27.0% vs 2.2d ago)"
+        "previous": "uniswap_24h 1359482941 (-27.0% vs 2.2d ago)",
+        "current": "uniswap_24h 1359482941 (-27.0% vs 2.3d ago)"
       },
       {
         "sector": "environment",
-        "previous": "co2_ppm 428.09 (+0.5% vs 27.5d ago)",
-        "current": "co2_ppm 428.1 (+0.6% vs 27.7d ago)"
-      },
-      {
-        "sector": "github-recent-commits",
-        "previous": "commit_count 24054134 (-16.3% vs 0.7d ago)",
-        "current": "commit_count 26885736 (-6.5% vs 0.9d ago)"
+        "previous": "co2_ppm 428.1 (+0.6% vs 27.7d ago)",
+        "current": "co2_ppm 428.1 (+0.6% vs 27.9d ago)"
       },
       {
         "sector": "hackernews-top-scores",
-        "previous": "top10_score_sum 2057 (+175.0% vs 1.7d ago)",
-        "current": "top10_score_sum 2490 (+232.9% vs 1.9d ago)"
+        "previous": "top10_score_sum 2490 (+232.9% vs 1.9d ago)",
+        "current": "top10_score_sum 3219 (+330.3% vs 2.1d ago)"
+      },
+      {
+        "sector": "npm-downloads-react",
+        "previous": "downloads 11742947 (-72.3% vs 2d ago)",
+        "current": "downloads 24059662 (-43.3% vs 2.1d ago)"
+      },
+      {
+        "sector": "npm-packages",
+        "previous": "New: @ai-sdk/provider-utils v5.0.68",
+        "current": "New: @ai-sdk/provider-utils v5.0.69"
+      },
+      {
+        "sector": "nvd-new-cves-count",
+        "previous": "new_cves 299 (+126.5% vs 0.9d ago)",
+        "current": "new_cves 755 (+472.0% vs 1.1d ago)"
       },
       {
         "sector": "phishunt-domains",
-        "previous": "active_phishings 1198 (-6.2% vs 1.7d ago)",
-        "current": "active_phishings 1198 (-6.2% vs 1.9d ago)"
+        "previous": "active_phishings 1198 (-6.2% vs 1.9d ago)",
+        "current": "active_phishings 1183 (-7.4% vs 2.1d ago)"
       },
       {
         "sector": "pypi-downloads-requests",
-        "previous": "last_day 34618482 (-32.7% vs 1.7d ago)",
-        "current": "last_day 34618482 (-32.7% vs 2d ago)"
+        "previous": "last_day 34618482 (-32.7% vs 2d ago)",
+        "current": "last_day 34618482 (-32.7% vs 2.1d ago)"
       },
       {
         "sector": "robonix",
-        "previous": "packages 67 (+13.6% vs 3.4d ago)",
-        "current": "packages 67 (+13.6% vs 3.6d ago)"
-      },
-      {
-        "sector": "treasuries",
-        "previous": "yield_10y 4.96 (-5.3% vs 28.5d ago)",
-        "current": "yield_10y 4.96 (-5.3% vs 28.7d ago)"
+        "previous": "packages 67 (+13.6% vs 3.6d ago)",
+        "current": "packages 67 (+13.6% vs 3.8d ago)"
       },
       {
         "sector": "treasuries-gov",
-        "previous": "yield_10y 5 (+7.5% vs 91.5d ago)",
-        "current": "yield_10y 5 (+7.5% vs 91.7d ago)"
+        "previous": "yield_10y 5 (+7.5% vs 91.7d ago)",
+        "current": "yield_10y 5 (+7.5% vs 91.9d ago)"
       },
       {
         "sector": "usgs-earthquake-count",
-        "previous": "m45_count 17 (-66.0% vs 1.7d ago)",
-        "current": "m45_count 16 (-68.0% vs 1.9d ago)"
+        "previous": "m45_count 16 (-68.0% vs 1.9d ago)",
+        "current": "m45_count 17 (-66.0% vs 2.1d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 830.44,
+      "avg_volatility": 765.81,
       "max_volatility": 6965.54,
       "fires_in_window": 1
     },
     {
       "sector": "eth-exchange-spread",
-      "avg_volatility": 794.11,
+      "avg_volatility": 724.92,
       "max_volatility": 4591.73,
       "fires_in_window": 2
     },
@@ -436,12 +389,6 @@
       "fires_in_window": 0
     },
     {
-      "sector": "steam-csgo-players",
-      "avg_volatility": 20.0,
-      "max_volatility": 53.43,
-      "fires_in_window": 2
-    },
-    {
       "sector": "wikipedia-activity",
       "avg_volatility": 18.19,
       "max_volatility": 18.19,
@@ -452,12 +399,18 @@
       "avg_volatility": 14.29,
       "max_volatility": 14.29,
       "fires_in_window": 0
+    },
+    {
+      "sector": "form-d-filings",
+      "avg_volatility": 12.5,
+      "max_volatility": 12.5,
+      "fires_in_window": 0
     }
   ],
   "stats": {
-    "total_sectors": 331,
-    "firing_sectors": 24,
-    "fire_rate_pct": 7.25,
+    "total_sectors": 330,
+    "firing_sectors": 20,
+    "fire_rate_pct": 6.06,
     "runs_in_history": 24
   }
 }
