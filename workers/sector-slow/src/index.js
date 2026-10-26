@@ -2662,6 +2662,17 @@ const COLLECTORS = {
       return j.length;
     }) } }),
   },
+  "avoindata-fi-dataset-count": {
+    config: { metric: "count", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://avoindata.fi/data/api/3/action/package_search?rows=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.result?.count);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
 };
 
 

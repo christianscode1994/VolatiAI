@@ -191,6 +191,7 @@ PRIORITY=(
   prh-finland-total-companies
   noaa-swpc-kp-index
   bfs-swiss-dataset-count
+  avoindata-fi-dataset-count
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
