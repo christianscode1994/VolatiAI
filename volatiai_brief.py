@@ -174,6 +174,25 @@ COMPOSITE_RULES = [
     ("crew-change", "Astronaut count changed",
      lambda b: (b.get("open-notify-astronauts") or {}).get("pct_change", 0) != 0),
 
+
+    # ─── Cross-domain rules (2026-10-26) ───
+    ("funding-cost-spike",
+     "SOFR > 4.5% (funding stress)",
+     lambda b: (b.get("nyfed-sofr-rate") or {}).get("current", 0) > 4.5),
+    ("agentic-payments-milestone",
+     "x402 ecosystem crossed 3,000 resources",
+     lambda b: (b.get("circle-x402-resources") or {}).get("current", 0) > 3000),
+    ("research-attention-shift",
+     "PubMed covid/meditation ratio < 40 (meditation rising)",
+     lambda b: (
+         (b.get("pubmed-meditation-papers") or {}).get("current", 0) > 0
+         and (b.get("pubmed-covid-papers") or {}).get("current", 0) > 0
+         and ((b.get("pubmed-covid-papers") or {}).get("current", 0)
+              / max(1, (b.get("pubmed-meditation-papers") or {}).get("current", 1))) < 40
+     )),
+    ("disease-watch-uptick",
+     "VirusWatch tracks >10 active diseases",
+     lambda b: (b.get("viruswatch-disease-count") or {}).get("current", 0) > 10),
 ]
 
 def fetch_json(url):
