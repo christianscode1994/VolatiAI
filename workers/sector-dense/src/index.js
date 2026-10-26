@@ -4300,15 +4300,27 @@ export default {
 
     if (sectorName === "_sectors") {
       const sectors = {};
-      for (const [name, c] of Object.entries(COLLECTORS)) {
+      const coll =
+        (typeof COLLECTORS !== "undefined" && COLLECTORS) ||
+        (typeof collectors !== "undefined" && collectors) ||
+        (typeof SECTORS !== "undefined" && SECTORS) ||
+        {};
+      for (const [name, c] of Object.entries(coll)) {
+        const cfg = (c && (c.config || c)) || {};
         sectors[name] = {
-          metric: c.config.metric,
-          threshold_pct: c.config.threshold_pct,
-          window: c.config.window,
-          window_days: c.config.window_days || WINDOW_DAYS_DEFAULT,
+          metric: cfg.metric ?? null,
+          threshold_pct: cfg.threshold_pct ?? null,
+          window: cfg.window ?? null,
+          window_days:
+            cfg.window_days ??
+            (typeof WINDOW_DAYS_DEFAULT !== "undefined" ? WINDOW_DAYS_DEFAULT : 7),
         };
       }
-      return json({ count: Object.keys(sectors).length, density: env.DENSITY, sectors });
+      return json({
+        count: Object.keys(sectors).length,
+        density: (typeof env !== "undefined" && env && env.DENSITY) || "unknown",
+        sectors,
+      });
     }
 
     if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
