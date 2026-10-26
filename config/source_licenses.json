@@ -1023,10 +1023,12 @@
     "attribution": "Open-Meteo"
   },
   "openfoodfacts-product": {
-    "license": "ODbL",
-    "redistribution": "Free, keyless, attribution required",
-    "category": "SAFE_OPEN",
-    "attribution": "Open Food Facts"
+    "license": "ODbL 1.0",
+    "redistribution": "Attribution + share-alike on derived databases",
+    "category": "SAFE_ODBL",
+    "attribution": "Open Food Facts contributors",
+    "commercial_use": "yes",
+    "derivation_policy": "individual facts OK; derived database must be ODbL"
   },
   "espn-nba-scoreboard": {
     "license": "ESPN public API",
@@ -1035,10 +1037,12 @@
     "attribution": "ESPN"
   },
   "musicbrainz-artist-count": {
-    "license": "CC BY-NC-SA / CC0 API",
-    "redistribution": "1 req/sec, User-Agent required",
-    "category": "SAFE_CC_BY",
-    "attribution": "MusicBrainz"
+    "license": "CC BY-NC-SA 3.0",
+    "redistribution": "Non-commercial, share-alike",
+    "category": "SAFE_CC_BY_NC",
+    "attribution": "MusicBrainz",
+    "commercial_use": "no",
+    "derivation_policy": "aggregate-only; no raw data in output"
   },
   "hafas-berlin-departures": {
     "license": "VBB open data",
@@ -1059,10 +1063,12 @@
     "attribution": "MedlinePlus (NLM)"
   },
   "who-life-expectancy": {
-    "license": "WHO open data",
-    "redistribution": "Free, keyless",
-    "category": "SAFE_OPEN",
-    "attribution": "WHO GHO"
+    "license": "CC BY-NC-SA 3.0 IGO",
+    "redistribution": "Non-commercial, share-alike",
+    "category": "SAFE_CC_BY_NC",
+    "attribution": "WHO Global Health Observatory",
+    "commercial_use": "no",
+    "derivation_policy": "aggregate-only; no raw data in output"
   },
   "thesportsdb-team-count": {
     "license": "Free tier (test key)",
