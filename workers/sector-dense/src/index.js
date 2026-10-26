@@ -174,35 +174,11 @@ const COLLECTORS = {
       return { value: Array.isArray(j.stationboard) ? j.stationboard.length : null, sources: { "opendata-ch": { ok: true } }, context: { station: "Zurich HB" } };
     },
   },
-  "caiso-grid-load": {
-    config: { metric: "load_mw", threshold_pct: 5, window: "1h", window_days: 0 },
-    async collectAll(env) {
-      const r = await fetch("https://www.caiso.com/outlook/current/systemstatus/");
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "caiso": { ok: false } } };
-      const text = await r.text();
-      const m = text.match(/([0-9,]+)\s*MW/i);
-      return { value: m ? Number(m[1].replace(/,/g, "")) : null, sources: { "caiso": { ok: true } }, context: { note: "HTML parse" } };
-    },
+
   },
-  "ercot-grid-load": {
-    config: { metric: "load_mw", threshold_pct: 5, window: "1h", window_days: 0 },
-    async collectAll(env) {
-      const r = await fetch("https://www.ercot.com/api/1/services/read/dashboards/todays-outlook.json");
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "ercot": { ok: false } } };
-      const j = await r.json();
-      const load = j && j.data && j.data[0] ? j.data[0].currentLoad : (j ? j.currentLoad : null);
-      return { value: load != null ? Number(load) : null, sources: { "ercot": { ok: true } } };
-    },
+
   },
-  "pjm-grid-load": {
-    config: { metric: "load_mw", threshold_pct: 5, window: "1h", window_days: 0 },
-    async collectAll(env) {
-      const r = await fetch("https://api.pjm.com/api/v1/inst_load?rowCount=1&sort=datetime_beginning_ept%20desc", { headers: { "User-Agent": "VolatiAI/1.0" } });
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "pjm": { ok: false } } };
-      const j = await r.json();
-      const v = j && j.items && j.items[0] ? j.items[0].mw : null;
-      return { value: v != null ? Number(v) : null, sources: { "pjm": { ok: true } } };
-    },
+
   },
 
   blockchain: {

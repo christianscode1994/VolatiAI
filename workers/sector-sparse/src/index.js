@@ -41,20 +41,7 @@ const COLLECTORS = {
       };
     },
   },
-  "faostat-crop-production": {
-    config: { metric: "crop_production_index", threshold_pct: 1, window: "1y", window_days: 365 },
-    async collectAll(env) {
-      const url = "https://fenixservices.fao.org/faostat/api/v1/en/data/QCL?area=5000&item=1717&element=5510&year=2024&show_codes=false";
-      const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "faostat": { ok: false } } };
-      const j = await r.json();
-      const row = j && j.data ? j.data[0] : null;
-      return {
-        value: row ? Number(row.Value) : null,
-        sources: { "faostat": { ok: true } },
-        context: { item: "Wheat", unit: row ? row.Unit : null },
-      };
-    },
+
   },
   "pangaea-earth-datasets": {
     config: { metric: "dataset_count", threshold_pct: 2, window: "30d", window_days: 30 },
