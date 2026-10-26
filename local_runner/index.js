@@ -25,107 +25,55 @@ import { postToNostr } from "./bots/nostr.js";
 
 // 1. Add ALL your Cloudflare Workers here (FULL LIST PRESERVED)
 const sectorUrls = [
-  "https://sector-books.fourieranalys.workers.dev",
-  "https://sector-art-design.fourieranalys.workers.dev",
-  "https://sector-anti-malware.fourieranalys.workers.dev",
-  "https://sector-anime.fourieranalys.workers.dev",
-  "https://sector-animals.fourieranalys.workers.dev",
-  "https://sector-health.fourieranalys.workers.dev",
-  "https://sector-government.fourieranalys.workers.dev",
-  "https://sector-geocoding.fourieranalys.workers.dev",
-  "https://sector-games-comics.fourieranalys.workers.dev",
-  "https://sector-food-drink.fourieranalys.workers.dev",
-  "https://sector-finance.fourieranalys.workers.dev",
-  "https://sector-events.fourieranalys.workers.dev",
-  "https://sector-environment.fourieranalys.workers.dev",
-  "https://sector-education.fourieranalys.workers.dev",
-  "https://sector-documents-productivty.fourieranalys.workers.dev",
-  "https://sector-science-math.fourieranalys.workers.dev",
-  "https://sector-photography.fourieranalys.workers.dev",
-  "https://sector-personality.fourieranalys.workers.dev",
-  "https://sector-patent.fourieranalys.workers.dev",
-  "https://sector-open-source-projects.fourieranalys.workers.dev",
-  "https://sector-open-data.fourieranalys.workers.dev",
-  "https://sector-news.fourieranalys.workers.dev",
-  "https://sector-music.fourieranalys.workers.dev",
-  "https://sector-machine-learning.fourieranalys.workers.dev",
-  "https://sector-jobs.fourieranalys.workers.dev",
-  "https://sector-vehicles.fourieranalys.workers.dev",
-  "https://sector-url-shorteners.fourieranalys.workers.dev",
-  "https://sector-transport.fourieranalys.workers.dev",
-  "https://sector-tracking.fourieranalys.workers.dev",
-  "https://sector-text-analysis.fourieranalys.workers.dev",
-  "https://sector-test-data.fourieranalys.workers.dev",
-  "https://sector-sports-fitness.fourieranalys.workers.dev",
-  "https://sector-social.fourieranalys.workers.dev",
-  "https://sector-shopping.fourieranalys.workers.dev",
-  "https://sector-security.fourieranalys.workers.dev",
-  "https://sector-kalender.fourieranalys.workers.dev",
-  "https://sector-bisnis.fourieranalys.workers.dev",
-  "https://sector-bok.fourieranalys.workers.dev",
-  "https://sector-animerad.fourieranalys.workers.dev",
-  "https://sector-djur.fourieranalys.workers.dev",
-  "https://sector-diction.fourieranalys.workers.dev",
-  "https://sector-develop.fourieranalys.workers.dev",
-  "https://sector-blockchain.fourieranalys.workers.dev",
-  "https://sector-weather.fourieranalys.workers.dev",
-  "https://sector-video.fourieranalys.workers.dev",
-  "https://sector-mat-dryck.fourieranalys.workers.dev",
-  "https://sector-rahoitus.fourieranalys.workers.dev",
-  "https://sector-environments.fourieranalys.workers.dev",
-  "https://sector-entertainment.fourieranalys.workers.dev",
-  "https://sector-epost.fourieranalys.workers.dev",
-  "https://sector-productivity.fourieranalys.workers.dev",
-  "https://sector-data-valid.fourieranalys.workers.dev",
-  "https://sector-currency-ex.fourieranalys.workers.dev",
-  "https://sector-kryptovaluta.fourieranalys.workers.dev",
-  "https://sector-moln.fourieranalys.workers.dev",
-  "https://sector-opensoruce.fourieranalys.workers.dev",
-  "https://sector-opendata.fourieranalys.workers.dev",
-  "https://sector-nyhet.fourieranalys.workers.dev",
-  "https://sector-musik.fourieranalys.workers.dev",
-  "https://sector-maskin.fourieranalys.workers.dev",
-  "https://sector-jobb.fourieranalys.workers.dev",
-  "https://sector-healthy.fourieranalys.workers.dev",
-  "https://sector-govern.fourieranalys.workers.dev",
-  "https://sector-geocode.fourieranalys.workers.dev",
-  "https://sector-spel.fourieranalys.workers.dev"
+  "https://sector-slow.fourieranalys.workers.dev",
+  "https://sector-dense.fourieranalys.workers.dev",
+  "https://sector-sparse.fourieranalys.workers.dev"
 ];
 ``
 
 // 2. Fetch all sector Workers in parallel
 async function fetchAllSectors() {
-  return Promise.all(
-    sectorUrls.map(async (url) => {
-      try {
-        const res = await fetch(url, {
-          headers: {
-            "User-Agent": "VolatiAI/1.0"
-          }
-        });
+  const results = [];
+  const BATCH = 20;
 
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-
-        const json = await res.json();
-
-        return {
-          url,
-          success: true,
-          data: json
-        };
-      } catch (err) {
-        console.error(`Worker failed: ${url}`, err);
-
-        return {
-          url,
-          success: false,
-          error: String(err)
-        };
+  // Step 1: enumerate sectors per worker via /_sectors
+  const index = [];
+  for (const base of sectorUrls) {
+    try {
+      const res = await fetch(`${base}/_sectors`);
+      if (!res.ok) {
+        console.error(`[warn] /_sectors ${base} → HTTP ${res.status}`);
+        continue;
       }
-    })
-  );
+      const map = await res.json();
+      for (const sector of Object.keys(map)) index.push({ sector, base });
+    } catch (e) {
+      console.error(`[warn] /_sectors ${base} failed: ${e.message}`);
+    }
+  }
+  console.log(`[info] enumerated ${index.length} sectors across ${sectorUrls.length} workers`);
+
+  // Step 2: fetch signals in batches of 20
+  for (let i = 0; i < index.length; i += BATCH) {
+    const batch = index.slice(i, i + BATCH);
+    const fetched = await Promise.all(batch.map(async ({ sector, base }) => {
+      try {
+        const r = await fetch(`${base}/${sector}/signal`);
+        if (!r.ok) return { sector, base, success: false, error: `HTTP ${r.status}` };
+        const data = await r.json();
+        return { sector, base, success: true, data };
+      } catch (e) {
+        return { sector, base, success: false, error: String(e) };
+      }
+    }));
+    results.push(...fetched);
+    process.stdout.write(`[info] fetched ${results.length}/${index.length}\r`);
+  }
+  console.log();
+
+  const ok = results.filter(r => r.success).length;
+  console.log(`[info] fetched ${ok}/${results.length} sector signals successfully`);
+  return results;
 }
 
 // 5. Write snapshots to /public (GitHub Pages / static dashboard)
