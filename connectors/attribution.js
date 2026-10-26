@@ -61,6 +61,16 @@ export function isWhitelisted(info) {
     if (lic.includes(pat)) return true;
   }
 
+  // 2b. Word-boundary matches for short license tokens
+  if (/\bmit\b/.test(lic)) return true;
+  if (/\bapache\b/.test(lic)) return true;
+  if (/\bbsd\b/.test(lic)) return true;
+  if (/\bcc0\b/.test(lic)) return true;
+
+  // 2c. Prefix matches for "Open ..." / "Free ..."
+  if (/^open[\s(]/.test(lic)) return true;
+  if (/^free[,\s]/.test(lic)) return true;
+
   // 3. Default: block (fail closed)
   return false;
 }
