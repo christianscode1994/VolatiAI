@@ -197,6 +197,7 @@ PRIORITY=(
   dexpaprika-total-dex-volume
   shipwreckatlas-total-wrecks
   miso-grid-total-load
+  nws-active-severe-alerts
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

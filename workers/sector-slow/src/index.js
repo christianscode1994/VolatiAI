@@ -2727,6 +2727,18 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "nws-active-severe-alerts": {
+    config: { metric: "count", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://api.weather.gov/alerts/active?severity=Severe",
+        { headers: { "user-agent": "VolatiAI/1.0 (admin@fourieranalys.se)" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const f = j?.features;
+      if (!Array.isArray(f)) throw new Error("no_features");
+      return f.length;
+    }) } }),
+  },
 };
 
 
