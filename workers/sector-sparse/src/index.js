@@ -28,6 +28,15 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "imf-portwatch-chokepoints": { /* ... paste from above ... */ },
+  "faostat-crop-production": { /* ... */ },
+  "pangaea-earth-datasets": { /* ... */ },
+  "gbif-occurrences": { /* ... */ },
+  "japan-statistics-dashboard": { /* ... */ },
+  "wayback-availability": { /* ... */ },
+  "open-meteo-historical": { /* ... */ },
+  "open-meteo-climate": { /* ... */ },
+
   develop: {
     event_source: "ethereum_release",
     ttl: 3600,

@@ -156,6 +156,12 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "vbb-transport-berlin": { /* ... */ },
+  "swiss-transport-zurich": { /* ... */ },
+  "caiso-grid-load": { /* ... */ },
+  "ercot-grid-load": { /* ... */ },
+  "pjm-grid-load": { /* ... */ },
+
   blockchain: {
     config: { metric: "gas_price", threshold_pct: 20, threshold_abs: 0.05, window: "24h", ttl: 7200, context_keys: ["eth_block"] },
     collectAll: async (env) => ({
