@@ -28,6 +28,98 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "dbcve-vulnerabilities": {
+    config: { metric: "cve_count", threshold_pct: 5, window: "24h", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://dbcve.org/api/v1/cves?limit=1");
+      if (!r.ok) return { value: null, sources: { dbcve: { ok: false } } };
+      const j = await r.json();
+      return { value: j.total ?? j.count ?? null, sources: { dbcve: { ok: true } }, context: { source: "dbcve" } };
+    },
+  },
+  "nato-cyber-standards": {
+    config: { metric: "standards_count", threshold_pct: null, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.nato.int/cyber-standards/v1/standards");
+      if (!r.ok) return { value: null, sources: { nato: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j.standards) ? j.standards.length : (j.count ?? null), sources: { nato: { ok: true } }, context: { body: "NATO" } };
+    },
+  },
+  "uap-pulse-files": {
+    config: { metric: "file_count", threshold_pct: null, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://raw.githubusercontent.com/BigBodyCobain/uap-pulse/main/data/files.json");
+      if (!r.ok) return { value: null, sources: { uap: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : (j.total ?? null), sources: { uap: { ok: true } }, context: { corpus: "pentagon_uap" } };
+    },
+  },
+  "war-tracker-events": {
+    config: { metric: "event_count", threshold_pct: 20, window: "24h", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://war-tracker.com/api/v1/events?limit=1");
+      if (!r.ok) return { value: null, sources: { war_tracker: { ok: false } } };
+      const j = await r.json();
+      const c = Array.isArray(j.events) ? j.events.length : (j.count ?? null);
+      return { value: c, sources: { war_tracker: { ok: true } }, context: { scope: "global" } };
+    },
+  },
+  "nasa-cneos-approaches": {
+    config: { metric: "close_approaches_30d", threshold_pct: null, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://ssd-api.jpl.nasa.gov/cad.api?date-min=2026-01-01&date-max=2026-12-31&dist-max=0.05");
+      if (!r.ok) return { value: null, sources: { cneos: { ok: false } } };
+      const j = await r.json();
+      return { value: j.count ?? null, sources: { cneos: { ok: true } }, context: { window: "2026" } };
+    },
+  },
+  "nasa-ssd-asteroid": {
+    config: { metric: "neo_count", threshold_pct: null, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://ssd-api.jpl.nasa.gov/sbdb.api?sstr=433");
+      if (!r.ok) return { value: null, sources: { ssd: { ok: false } } };
+      const j = await r.json();
+      return { value: j.object?.neo ? 1 : 0, sources: { ssd: { ok: true } }, context: { object: j.object?.fullname } };
+    },
+  },
+  "nasa-exoplanet-count": {
+    config: { metric: "confirmed_exoplanets", threshold_pct: 1, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const q = encodeURIComponent("select count(*) from ps where default_flag=1");
+      const r = await fetch("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=" + q + "&format=json");
+      if (!r.ok) return { value: null, sources: { exoplanet: { ok: false } } };
+      const j = await r.json();
+      return { value: j[0]?.count ?? null, sources: { exoplanet: { ok: true } }, context: { table: "ps" } };
+    },
+  },
+  "nasa-techport-projects": {
+    config: { metric: "project_count", threshold_pct: null, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://techport.nasa.gov/api/projects?pageSize=1");
+      if (!r.ok) return { value: null, sources: { techport: { ok: false } } };
+      const j = await r.json();
+      return { value: j.totalCount ?? null, sources: { techport: { ok: true } }, context: { program: "techport" } };
+    },
+  },
+  "nasa-image-library": {
+    config: { metric: "result_count", threshold_pct: null, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://images-api.nasa.gov/search?q=earth&media_type=image&page_size=1");
+      if (!r.ok) return { value: null, sources: { images: { ok: false } } };
+      const j = await r.json();
+      return { value: j.collection?.metadata?.total_hits ?? null, sources: { images: { ok: true } }, context: { query: "earth" } };
+    },
+  },
+  "nasa-cmr-collections": {
+    config: { metric: "collection_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://cmr.earthdata.nasa.gov/search/collections.json?page_size=1");
+      if (!r.ok) return { value: null, sources: { cmr: { ok: false } } };
+      const j = await r.json();
+      return { value: j.feed?.entry?.length ?? null, sources: { cmr: { ok: true } }, context: { catalog: "earthdata" } };
+    },
+  },
   "thesportsdb-team-count": {
     config: { metric: "league_count", threshold_pct: null, window: "7d", window_days: 7 },
     async collectAll(env) {

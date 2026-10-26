@@ -156,6 +156,24 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "adsb-military-aircraft": {
+    config: { metric: "military_aircraft_count", threshold_pct: 20, window: "1h", window_days: 0 },
+    async collectAll(env) {
+      const r = await fetch("https://adsb.lol/v2/mil");
+      if (!r.ok) return { value: null, sources: { adsb_lol: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j.ac) ? j.ac.length : null, sources: { adsb_lol: { ok: true } }, context: { feed: "military" } };
+    },
+  },
+  "nasa-epic-earth": {
+    config: { metric: "image_count", threshold_pct: 10, window: "1h", window_days: 0 },
+    async collectAll(env) {
+      const r = await fetch("https://epic.gsfc.nasa.gov/api/natural");
+      if (!r.ok) return { value: null, sources: { epic: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { epic: { ok: true } }, context: { instrument: "EPIC" } };
+    },
+  },
   "transitous-route-count": {
     config: { metric: "routes_found", threshold_pct: null, window: "1d", window_days: 1 },
     async collectAll(env) {
