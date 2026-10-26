@@ -28,7 +28,19 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "imf-portwatch-chokepoints": { /* ... paste from above ... */ },
+  "imf-portwatch-chokepoints": {
+    config: { metric: "chokepoint_transits", threshold_pct: 0.2, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const raw = await env.SECTOR_KV.get("imf-portwatch:latest", "json");
+      if (!raw) return { value: null, error: "no KV snapshot", sources: { total: 1, healthy: 0, failed: [] } };
+      const suez = Array.isArray(raw) ? raw.find(r => r.chokepoint === "Suez Canal") : null;
+      return {
+        value: suez ? suez.vessel_transits : null,
+        sources: { total: 1, healthy: 1, failed: [] },
+        context: { as_of: Array.isArray(raw) && raw[0] ? raw[0].date : null },
+      };
+    },
+  },
   "faostat-crop-production": {
     config: { metric: "crop_production_index", threshold_pct: 1, window: "1y", window_days: 365 },
     async collectAll(env) {
