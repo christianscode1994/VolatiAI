@@ -4298,6 +4298,19 @@ export default {
       return json({ density: "dense", sectors: summary, timestamp: new Date().toISOString() });
     }
 
+    if (sectorName === "_sectors") {
+      const sectors = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        sectors[name] = {
+          metric: c.config.metric,
+          threshold_pct: c.config.threshold_pct,
+          window: c.config.window,
+          window_days: c.config.window_days || WINDOW_DAYS_DEFAULT,
+        };
+      }
+      return json({ count: Object.keys(sectors).length, density: env.DENSITY, sectors });
+    }
+
     if (!collector) return json({ error: "unknown sector", sector: sectorName }, 404);
 
     if (action === "health") {
