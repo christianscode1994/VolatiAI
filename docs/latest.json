@@ -1019,11 +1019,19 @@
       "schema_version": "2.0",
       "per_exchange": {
         "kraken": [],
-        "okx": []
+        "okx": [
+          {
+            "side": "bid",
+            "price": 79987.3,
+            "size": 9.100753,
+            "notional": 727944.66,
+            "severity": "medium"
+          }
+        ]
       },
-      "signal_count": 0,
-      "largest_notional": 0.0,
-      "spoofing_score": 0,
+      "signal_count": 1,
+      "largest_notional": 727944.66,
+      "spoofing_score": 17,
       "risk": "low"
     },
     "liquidity": {
@@ -1232,7 +1240,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.199,
+          "floor_sol": 7.2,
           "volume_24h_sol": 0.0,
           "listed": 207,
           "avg_sale_sol": 8.0527
@@ -1274,7 +1282,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.199,
+          "floor_sol": 7.2,
           "volume_24h_sol": 0.0,
           "listed": 207,
           "avg_sale_sol": 8.0527
@@ -1475,6 +1483,17 @@
           "from": "0xc51b5ca1d6e124ebed8b0a85ca93955a3b0caafb",
           "to": "0x58b704065b7aff3ed351052f8560019e05925023",
           "token": "USDC",
+          "value": 5213878.36,
+          "timestamp": 1793052611,
+          "block": 26279764,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x7eaf64558f2b5ef2f36615c6c5dd3c5e2e80c41e8291651cf6fe0df2e9b60dfe",
+          "from": "0x14681e4e26f1b5b5774ae3b7f694ff08bbbeb65c",
+          "to": "0x386f6b1719b62a27b6b79798390a612b36267f03",
+          "token": "USDT",
           "value": 5000000.0,
           "timestamp": 1793051927,
           "block": 26279707,
