@@ -2696,18 +2696,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "lockbox-seeds-strain-count": {
-    config: { metric: "count", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://www.lockboxseeds.com/api/strains",
-        { headers: { "user-agent": "VolatiAI/1.0" } });
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.meta?.count);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
-      return v;
-    }) } }),
-  },
   "geonet-nz-volcanic-alerts": {
     config: { metric: "count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({ sources: { count: await fetchSafe(async () => {

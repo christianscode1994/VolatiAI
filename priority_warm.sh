@@ -194,7 +194,6 @@ PRIORITY=(
   avoindata-fi-dataset-count
   datafirst-african-surveys
   first-org-csirt-teams
-  lockbox-seeds-strain-count
   geonet-nz-volcanic-alerts
   dexpaprika-total-dex-volume
   shipwreckatlas-total-wrecks
