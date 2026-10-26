@@ -1980,64 +1980,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "tvmaze-us-schedule-count": {
-    config: { metric: "episode_count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        episode_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.tvmaze.com/schedule?country=US");
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("no_schedule");
-          return j.length;
-        }),
-      },
-    }),
-  },
-  "dailymotion-video-views": {
-    config: { metric: "views", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        views: await fetchSafe(async () => {
-          const r = await fetch("https://api.dailymotion.com/videos?search=technology&fields=views_total&limit=1");
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.list?.[0]?.views_total;
-          if (typeof v !== "number") throw new Error("no_views");
-          return v;
-        }),
-      },
-    }),
-  },
-  "iptv-org-channel-count": {
-    config: { metric: "channel_count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        channel_count: await fetchSafe(async () => {
-          const r = await fetch("https://iptv-org.github.io/iptv/index.m3u");
-          if (!r.ok) throw new Error("http_" + r.status);
-          const text = await r.text();
-          return (text.match(/^#EXTINF/gm) || []).length;
-        }),
-      },
-    }),
-  },
-  "whitebit-btc-usdt": {
-    config: { metric: "usd", threshold_pct: 3.0, window: "1h", window_days: 1, ttl: 900 },
-    collectAll: async () => ({
-      sources: {
-        usd: await fetchSafe(async () => {
-          const r = await fetch("https://whitebit.com/api/v1/public/ticker?market=BTC_USDT");
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!j.success || !j.result) throw new Error("bad_shape");
-          const v = Number(j.result.last);
-          if (!Number.isFinite(v) || v <= 0) throw new Error("no_last");
-          return v;
-        }),
-      },
-    }),
-  },
   "usgs-significant-hour": {
     config: { metric: "quakes", threshold_pct: 100.0, window: "1h", window_days: 1, ttl: 900 },
     collectAll: async () => ({
@@ -2131,28 +2073,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "pypistats-fastapi-downloads": {
-    config: { metric: "last_day", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { last_day: await fetchSafe(async () => {
-      const r = await fetch("https://pypistats.org/api/packages/fastapi/recent");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.data?.last_day);
-      if (!Number.isFinite(v) || v < 0) throw new Error("no_last_day");
-      return v;
-    }) } }),
-  },
-  "openverse-cat-images": {
-    config: { metric: "result_count", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { result_count: await fetchSafe(async () => {
-      const r = await fetch("https://api.openverse.org/v1/images/?q=cat&page_size=1");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.result_count);
-      if (!Number.isFinite(v) || v < 0) throw new Error("no_result_count");
-      return v;
-    }) } }),
-  },
   "zippopotam-10001-places": {
     config: { metric: "places", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({ sources: { places: await fetchSafe(async () => {
@@ -2192,17 +2112,6 @@ const COLLECTORS = {
       const j = await r.json();
       if (!Array.isArray(j?.results)) throw new Error("no_results");
       return j.results.length;
-    }) } }),
-  },
-  "coinmarketcap-btc-usd": {
-    config: { metric: "usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 900 },
-    collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
-      const r = await fetch("https://pro-api.coinmarketcap.com/public-api/v1/simple/price?ids=1&convert=USD");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.data?.[0]?.price);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_price");
-      return v;
     }) } }),
   },
   "allratestoday-usd-eur": {
@@ -2262,28 +2171,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "mygene-brca1-hits": {
-    config: { metric: "hits", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { hits: await fetchSafe(async () => {
-      const r = await fetch("https://mygene.info/v3/query?q=symbol:BRCA1&species=human");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.total);
-      if (!Number.isFinite(v)) throw new Error("no_total");
-      return v;
-    }) } }),
-  },
-  "myvariant-rs113488022-hits": {
-    config: { metric: "hits", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { hits: await fetchSafe(async () => {
-      const r = await fetch("https://myvariant.info/v1/query?q=dbsnp.rsid:rs113488022");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.total);
-      if (!Number.isFinite(v)) throw new Error("no_total");
-      return v;
-    }) } }),
-  },
   "europepmc-crispr-therapy": {
     config: { metric: "hitCount", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({ sources: { hitCount: await fetchSafe(async () => {
@@ -2324,27 +2211,6 @@ const COLLECTORS = {
       const j = await r.json();
       const v = Number(j?.[0]?.total_deaths);
       if (!Number.isFinite(v) || v <= 0) throw new Error("no_total_deaths");
-      return v;
-    }) } }),
-  },
-  "who-gho-indicator-count": {
-    config: { metric: "indicator_count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { indicator_count: await fetchSafe(async () => {
-      const r = await fetch("https://ghoapi.azureedge.net/api/Indicator");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      if (!Array.isArray(j?.value)) throw new Error("no_value");
-      return j.value.length;
-    }) } }),
-  },
-  "viruswatch-disease-count": {
-    config: { metric: "disease_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { disease_count: await fetchSafe(async () => {
-      const r = await fetch("https://api.viruswatch.health/v1/diseases");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Object.keys(j?.diseases || {}).length;
-      if (v === 0) throw new Error("no_diseases");
       return v;
     }) } }),
   },
@@ -2439,17 +2305,6 @@ const COLLECTORS = {
       if (!r.ok) throw new Error("http_" + r.status);
       const j = await r.json();
       const v = Number(j?.totalCount);
-      if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
-      return v;
-    }) } }),
-  },
-  "south-tyrol-accommodations": {
-    config: { metric: "count", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://tourism.api.opendatahub.com/v1/Accommodation?pagesize=1");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.TotalResults);
       if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
       return v;
     }) } }),
@@ -2668,18 +2523,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "first-org-csirt-teams": {
-    config: { metric: "total", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
-    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
-      const r = await fetch("https://api.first.org/data/v1/teams?limit=1",
-        { headers: { "user-agent": "VolatiAI/1.0" } });
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.total);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
-      return v;
-    }) } }),
-  },
   "geonet-nz-volcanic-alerts": {
     config: { metric: "count", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
@@ -2691,29 +2534,6 @@ const COLLECTORS = {
       // Count volcanoes at alert level >= 2 (minor activity or higher)
       const active = f.filter(x => Number(x?.properties?.level) >= 2);
       return active.length;
-    }) } }),
-  },
-  "dexpaprika-total-dex-volume": {
-    config: { metric: "usd", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
-      const r = await fetch("https://api.dexpaprika.com/networks");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      if (!Array.isArray(j) || j.length === 0) throw new Error("no_networks");
-      const total = j.reduce((s, n) => s + (Number(n?.volume_usd_24h) || 0), 0);
-      if (total <= 0) throw new Error("no_volume");
-      return total;
-    }) } }),
-  },
-  "shipwreckatlas-total-wrecks": {
-    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
-    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
-      const r = await fetch("https://shipwreckatlas.com/api/v1/wrecks?per_page=1");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.meta?.total ?? j?.total);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
-      return v;
     }) } }),
   },
   "miso-grid-total-load": {

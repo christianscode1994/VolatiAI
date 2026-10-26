@@ -129,11 +129,7 @@ PRIORITY=(
   usgs-significant-quakes
   open-notify-astronauts
   # ─── Streaming/video (2026-10-25) ───
-  tvmaze-us-schedule-count
-  dailymotion-video-views
-  iptv-org-channel-count
   # ─── Dense/fast batch 2 (2026-10-25) ───
-  whitebit-btc-usdt
   usgs-significant-hour
   # ─── Group 1 verified (2026-10-25) ───
   frankfurter-eur-usd
@@ -142,27 +138,20 @@ PRIORITY=(
   sunrise-berlin-daylength
   crossref-deep-learning
   pubmed-covid-papers
-  pypistats-fastapi-downloads
-  openverse-cat-images
   zippopotam-10001-places
   7timer-berlin-temp
   pypi-requests-releases
   randomuser-heartbeat
-  coinmarketcap-btc-usd
   allratestoday-usd-eur
   shodan-google-dns-ports
   wikipedia-bitcoin-extract-len
   wttr-dhaka-temp
   # ─── Genomics/wellness (2026-10-25) ───
   ensembl-brca1-gene
-  mygene-brca1-hits
-  myvariant-rs113488022-hits
   europepmc-crispr-therapy
   open-mindfulness-resource-count
   affirmations-length
   cdc-covid-total-deaths
-  who-gho-indicator-count
-  viruswatch-disease-count
   pubmed-acupuncture-papers
   pubmed-meditation-papers
   # ─── Tech (2026-10-25) ───
@@ -173,7 +162,6 @@ PRIORITY=(
   corona-zahlen-germany-week-incidence
   gbif-homo-sapiens-key
   clinicaltrials-total-studies
-  south-tyrol-accommodations
   fdic-insured-banks
   circle-x402-resources
   nyfed-sofr-rate
@@ -192,10 +180,7 @@ PRIORITY=(
   bfs-swiss-dataset-count
   avoindata-fi-dataset-count
   datafirst-african-surveys
-  first-org-csirt-teams
   geonet-nz-volcanic-alerts
-  dexpaprika-total-dex-volume
-  shipwreckatlas-total-wrecks
   miso-grid-total-load
   nws-active-severe-alerts
   energinet-dk-carbon-intensity
