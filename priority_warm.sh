@@ -54,7 +54,6 @@ PRIORITY=(
   spaceflight-news-count
   usgs-earthquake-count
   eurostat-eu-unemployment
-  uk-carbon-intensity
   usgs-elevated-volcanoes
   pocketworld-space-weather
 

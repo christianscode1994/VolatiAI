@@ -1690,22 +1690,6 @@ const COLLECTORS = {
     }),
   },
 
-  "uk-carbon-intensity": {
-    config: { metric: "gco2_kwh", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        gco2_kwh: await fetchSafe(async () => {
-          const r = await fetch("https://api.carbonintensity.org.uk/intensity",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.data?.[0]?.intensity?.actual;
-          if (typeof v !== "number") throw new Error("no_intensity: keys=" + Object.keys(j || {}).slice(0,3).join(","));
-          return v;
-        }),
-      },
-    }),
-  },
   "usgs-elevated-volcanoes": {
     config: { metric: "elevated_count", threshold_pct: 20.0, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
