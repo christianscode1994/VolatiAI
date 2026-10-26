@@ -222,15 +222,15 @@ async function run() {
 
   console.log("Broadcasting to bots...");
 
-  // DISABLED — compliance gate pending. Only postToTelegram is gated (in bots/telegram.js).
-  // Uncomment bots as they receive the same checkAttribution gate.
+  // All bots now gated with checkAttribution. Sectors passed from intel.
+  const signalSectors = intel?.sectors || [];
   await Promise.allSettled([
-    // postToSlack(msg),
-    // postToTelegram(msg),
-    // postToBluesky(msg),
-    // postToMastodon(msg),
-    // postToDiscord(msg),
-    // postToNostr(msg)
+    postToSlack(msg, signalSectors),
+    postToTelegram(msg, signalSectors),
+    postToBluesky(msg, signalSectors),
+    postToMastodon(msg, signalSectors),
+    postToDiscord(msg, signalSectors),
+    postToNostr(msg, signalSectors)
   ]);
 
   console.log("Local Runner complete.");

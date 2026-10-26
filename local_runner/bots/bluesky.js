@@ -1,6 +1,7 @@
 // bluesky.js — VolatiAI Bluesky Bot
+import { checkAttribution } from '../../connectors/attribution.js';
 
-export async function postToBluesky(message) {
+export async function postToBluesky(message, sectors = []) {
   const handle = process.env.BLUESKY_HANDLE;
   const password = process.env.BLUESKY_PASSWORD;
 
@@ -9,30 +10,30 @@ export async function postToBluesky(message) {
     return;
   }
 
-  // Create session
+  if (!sectors || sectors.length === 0) {
+    console.log('SKIP bluesky: no sectors');
+    return;
+  }
+  const attr = await checkAttribution(sectors);
+  if (!attr.safe) {
+    console.log(`SKIP bluesky: unverified license in ${sectors.join(', ')}`);
+    return;
+  }
+  const text = attr.footer ? `${message}\n\n${attr.footer}` : message;
+
   const sessionResponse = await fetch(
     "https://bsky.social/xrpc/com.atproto.server.createSession",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        identifier: handle,
-        password,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: handle, password }),
     }
   );
-
   if (!sessionResponse.ok) {
-    throw new Error(
-      `Failed to create Bluesky session: ${sessionResponse.status}`
-    );
+    throw new Error(`Failed to create Bluesky session: ${sessionResponse.status}`);
   }
-
   const session = await sessionResponse.json();
 
-  // Create post
   const postResponse = await fetch(
     "https://bsky.social/xrpc/com.atproto.repo.createRecord",
     {
@@ -46,19 +47,15 @@ export async function postToBluesky(message) {
         collection: "app.bsky.feed.post",
         record: {
           $type: "app.bsky.feed.post",
-          text: message,
+          text,
           createdAt: new Date().toISOString(),
         },
       }),
     }
   );
-
   if (!postResponse.ok) {
     const errorText = await postResponse.text();
-    throw new Error(
-      `Failed to create Bluesky post: ${postResponse.status} ${errorText}`
-    );
+    throw new Error(`Failed to create Bluesky post: ${postResponse.status} ${errorText}`);
   }
-
   console.log("Posted to Bluesky successfully.");
 }
