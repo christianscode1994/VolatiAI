@@ -181,6 +181,7 @@ PRIORITY=(
   corona-zahlen-germany-week-incidence
   gbif-homo-sapiens-key
   clinicaltrials-total-studies
+  south-tyrol-accommodations
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
