@@ -198,7 +198,6 @@ PRIORITY=(
   shipwreckatlas-total-wrecks
   miso-grid-total-load
   nws-active-severe-alerts
-  musicbrainz-rock-groups
   energinet-dk-carbon-intensity
   baltic-wave-height
   gutendex-english-ebooks

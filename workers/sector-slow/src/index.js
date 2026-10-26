@@ -2739,18 +2739,6 @@ const COLLECTORS = {
       return f.length;
     }) } }),
   },
-  "musicbrainz-rock-groups": {
-    config: { metric: "count", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://musicbrainz.org/ws/2/artist/?query=tag:rock%20AND%20type:group&fmt=json&limit=1",
-        { headers: { "user-agent": "VolatiAI/1.0 (admin@fourieranalys.se)" } });
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.count);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
-      return v;
-    }) } }),
-  },
   "energinet-dk-carbon-intensity": {
     config: { metric: "gco2_per_kwh", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 1800 },
     collectAll: async () => ({ sources: { gco2_per_kwh: await fetchSafe(async () => {
