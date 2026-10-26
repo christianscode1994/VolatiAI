@@ -179,6 +179,9 @@ PRIORITY=(
   fdic-insured-banks
   circle-x402-resources
   nyfed-sofr-rate
+  bts-us-canada-truck-crossings
+  bts-containership-capacity
+  eurostat-inland-waterway-freight
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

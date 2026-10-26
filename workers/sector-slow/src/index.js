@@ -2545,6 +2545,48 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "bts-us-canada-truck-crossings": {
+    config: { metric: "trucks", threshold_pct: 10.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({ sources: { trucks: await fetchSafe(async () => {
+      const where = encodeURIComponent("border='US-Canada Border' AND measure='Trucks'");
+      const url = "https://data.bts.gov/resource/keg4-3bc2.json?$where=" + where + "&$select=date,sum(value)+as+total&$group=date&$order=date+DESC&$limit=1";
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j) || !j.length) throw new Error("no_data");
+      const total = String(j[0]?.total || "").replace(/,/g, "");
+      const v = Number(total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "bts-containership-capacity": {
+    config: { metric: "teus", threshold_pct: 10.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({ sources: { teus: await fetchSafe(async () => {
+      const where = encodeURIComponent("indicator='Capacity of Containerships Calling at U.S. Ports (in TEUs)'");
+      const url = "https://data.bts.gov/resource/y5ut-ibwt.json?$where=" + where + "&$select=date,value1&$order=date+DESC&$limit=1";
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      if (!Array.isArray(j) || !j.length) throw new Error("no_data");
+      const v = Number(String(j[0]?.value1 || "").replace(/,/g, ""));
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_value");
+      return v;
+    }) } }),
+  },
+  "eurostat-inland-waterway-freight": {
+    config: { metric: "tonnes", threshold_pct: 5.0, window: "90d", window_days: 90, ttl: 604800 },
+    collectAll: async () => ({ sources: { tonnes: await fetchSafe(async () => {
+      const r = await fetch("https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ttr00007?format=JSON&lang=EN");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const vals = Object.values(j?.value || {}).filter(v => typeof v === "number" && v > 0);
+      if (!vals.length) throw new Error("no_values");
+      const total = vals.reduce((s, v) => s + v, 0);
+      if (total <= 0) throw new Error("no_total");
+      return total;
+    }) } }),
+  },
 };
 
 
