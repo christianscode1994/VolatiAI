@@ -1,3 +1,4 @@
+import { safeDigest } from "../../scripts/safe_digest.mjs";
 // discord.js — VolatiAI Discord Bot
 import { checkAttribution } from '../../connectors/attribution.js';
 
@@ -14,7 +15,7 @@ export async function postToDiscord(message, sectors = []) {
     console.log(`SKIP discord: unverified license in ${sectors.join(', ')}`);
     return;
   }
-  const text = attr.footer ? `${message}\n\n${attr.footer}` : message;
+  const text = safeDigest(message, "discord");
 
   const response = await fetch(webhook, {
     method: "POST",

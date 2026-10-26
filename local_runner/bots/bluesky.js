@@ -1,3 +1,4 @@
+import { safeDigest } from "../../scripts/safe_digest.mjs";
 // bluesky.js — VolatiAI Bluesky Bot
 import { checkAttribution } from '../../connectors/attribution.js';
 
@@ -19,7 +20,7 @@ export async function postToBluesky(message, sectors = []) {
     console.log(`SKIP bluesky: unverified license in ${sectors.join(', ')}`);
     return;
   }
-  const text = attr.footer ? `${message}\n\n${attr.footer}` : message;
+  const text = safeDigest(message, "bluesky");
 
   const sessionResponse = await fetch(
     "https://bsky.social/xrpc/com.atproto.server.createSession",

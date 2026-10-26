@@ -6,6 +6,7 @@ Each platform is skipped if its env vars are absent.
 """
 import json, os, subprocess, sys, urllib.request
 from datetime import datetime, timezone
+from scripts.safe_digest import safe_digest
 
 def http_post(url, data, headers=None, method="POST"):
     headers = headers or {}

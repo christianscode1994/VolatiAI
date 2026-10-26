@@ -1,3 +1,4 @@
+import { safeDigest } from "../../scripts/safe_digest.mjs";
 // nostr.js — VolatiAI Nostr Bot
 import { finalizeEvent, Relay } from "nostr-tools";
 import { checkAttribution } from '../../connectors/attribution.js';
@@ -20,7 +21,7 @@ export async function postToNostr(message, sectors = []) {
     console.log(`SKIP nostr: unverified license in ${sectors.join(', ')}`);
     return;
   }
-  const text = attr.footer ? `${message}\n\n${attr.footer}` : message;
+  const text = safeDigest(message, "nostr");
 
   const privateKeyBytes = Uint8Array.from(
     privkey.match(/.{1,2}/g).map(byte => parseInt(byte, 16))

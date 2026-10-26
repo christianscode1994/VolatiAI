@@ -1,3 +1,4 @@
+import { safeDigest } from "../../scripts/safe_digest.mjs";
 // mastodon.js — VolatiAI Mastodon Bot
 import { checkAttribution } from '../../connectors/attribution.js';
 
@@ -16,7 +17,7 @@ export async function postToMastodon(message, sectors = []) {
     console.log(`SKIP mastodon: unverified license in ${sectors.join(', ')}`);
     return;
   }
-  const text = attr.footer ? `${message}\n\n${attr.footer}` : message;
+  const text = safeDigest(message, "mastodon");
 
   const response = await fetch(`${instance}/api/v1/statuses`, {
     method: "POST",

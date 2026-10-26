@@ -1,3 +1,4 @@
+import { safeDigest } from "../../scripts/safe_digest.mjs";
 // slack.js — VolatiAI Slack Bot
 import { checkAttribution } from '../../connectors/attribution.js';
 
@@ -14,7 +15,7 @@ export async function postToSlack(message, sectors = []) {
     console.log(`SKIP slack: unverified license in ${sectors.join(', ')}`);
     return;
   }
-  const text = attr.footer ? `${message}\n\n${attr.footer}` : message;
+  const text = safeDigest(message, "slack");
 
   await fetch(webhook, {
     method: "POST",
