@@ -189,6 +189,8 @@ PRIORITY=(
   gleif-total-leis
   sec-aapl-filings-30d
   prh-finland-total-companies
+  noaa-swpc-kp-index
+  bfs-swiss-dataset-count
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
