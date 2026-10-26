@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Privacy — VolatiAI</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
+  h1 { border-bottom: 2px solid #333; padding-bottom: 0.5rem; }
+  code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+  .updated { color: #666; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated: 2026-10-27</p>
+
+<h2>The short version</h2>
+<p><strong>VolatiAI is stateless.</strong> We don't have user accounts, don't set cookies, don't track you, and don't sell data. There is nothing to delete because nothing is stored about you.</p>
+
+<h2>What we do</h2>
+<ul>
+  <li>Publish aggregate signals about public data sources (government statistics, open APIs, etc.).</li>
+  <li>Run on Cloudflare Workers, which is stateless by design.</li>
+</ul>
+
+<h2>What we don't do</h2>
+<ul>
+  <li>No user accounts, no login, no email collection.</li>
+  <li>No cookies, no tracking pixels, no analytics SDKs.</li>
+  <li>No selling or sharing of visitor data — there is no visitor data to sell.</li>
+  <li>No ads.</li>
+</ul>
+
+<h2>What Cloudflare sees</h2>
+<p>Because the site is hosted on Cloudflare, Cloudflare's infrastructure processes every request. Per
+<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare's privacy policy</a>,
+they may log IP addresses and basic request metadata for security and abuse prevention. This logging
+is temporary (typically &lt; 30 days) and we do not have access to it.</p>
+
+<p>If you want to avoid even this minimal logging, use a VPN or a browser with a proxy. The content is public and identical regardless.</p>
+
+<h2>Third-party sources</h2>
+<p>VolatiAI fetches data from dozens of public APIs (NASA, USGS, WHO, World Bank, Open-Meteo,
+MusicBrainz, and others). Each retains its own privacy policy and terms. Our <a href="/attribution.json">attribution file</a>
+lists the licenses and sources. None of these APIs receive visitor data from VolatiAI — we call them server-side,
+not from your browser.</p>
+
+<h2>Children</h2>
+<p>Not directed at children under 13. No data collection of any kind, so no COPPA/GDPR-K concerns.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes, the "Last updated" date will change. The principles (stateless, no tracking, no accounts) are structural and unlikely to change.</p>
+
+<h2>Contact</h2>
+<p>For privacy questions, open an issue at the project repository.</p>
+
+<p style="margin-top: 3rem; color: #666; font-size: 0.9em;">
+  This policy is deliberately simple because the architecture is deliberately simple.
+  VolatiAI stores nothing about visitors, so there is nothing to protect.
+</p>
+
+</body>
+</html>

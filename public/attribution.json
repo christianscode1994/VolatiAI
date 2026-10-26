@@ -1,0 +1,533 @@
+{
+  "generated_at": "2026-10-26T22:06:32.162381Z",
+  "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
+  "sources": [
+    {
+      "attribution": "7Timer",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "7timer-berlin-temp"
+      ]
+    },
+    {
+      "attribution": "Avoindata.fi",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "avoindata-fi-dataset-count"
+      ]
+    },
+    {
+      "attribution": "BFS",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "bfs-swiss-dataset-count"
+      ]
+    },
+    {
+      "attribution": "ClearlyDefined",
+      "license": "Open (ClearlyDefined, Linux Foundation)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "clearlydefined-react-license"
+      ]
+    },
+    {
+      "attribution": "CoinPaprika",
+      "license": "Commercial API",
+      "category": "RISKY_COMMERCIAL",
+      "sectors": [
+        "coinpaprika-top100-marketcap"
+      ]
+    },
+    {
+      "attribution": "Dailymotion",
+      "license": "Commercial API",
+      "category": "RISKY_COMMERCIAL",
+      "sectors": [
+        "dailymotion-video-views"
+      ]
+    },
+    {
+      "attribution": "DataFirst",
+      "license": "Open repository",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "datafirst-african-surveys"
+      ]
+    },
+    {
+      "attribution": "ESPN",
+      "license": "ESPN public API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "espn-nba-scoreboard"
+      ]
+    },
+    {
+      "attribution": "Energinet",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "energinet-dk-carbon-intensity"
+      ]
+    },
+    {
+      "attribution": "Eurostat",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "eurostat-inland-waterway-freight"
+      ]
+    },
+    {
+      "attribution": "FDA",
+      "license": "Public domain (FDA)",
+      "category": "SAFE_PD_CC0",
+      "sectors": [
+        "drug-approvals-latest",
+        "drug-approvals-total"
+      ]
+    },
+    {
+      "attribution": "FIRST.org EPSS",
+      "license": "Open (FIRST.org EPSS)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "epss-log4shell"
+      ]
+    },
+    {
+      "attribution": "GBIF",
+      "license": "CC BY 4.0 (per dataset)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "gbif-occurrences"
+      ]
+    },
+    {
+      "attribution": "GDACS",
+      "license": "Open (EU/JRC)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "gdacs-active-disasters"
+      ]
+    },
+    {
+      "attribution": "GDELT",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "gdelt-news-volume"
+      ]
+    },
+    {
+      "attribution": "GNS Science",
+      "license": "CC BY 3.0 NZ",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "geonet-nz-felt-quakes",
+        "geonet-nz-volcanic-alerts"
+      ]
+    },
+    {
+      "attribution": "Gutendex",
+      "license": "MIT",
+      "category": "SAFE_MIT",
+      "sectors": [
+        "gutendex-english-ebooks"
+      ]
+    },
+    {
+      "attribution": "IETF",
+      "license": "IETF Trust",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "ietf-datatracker"
+      ]
+    },
+    {
+      "attribution": "IMF PortWatch",
+      "license": "IMF PortWatch open data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "imf-portwatch-chokepoints"
+      ]
+    },
+    {
+      "attribution": "IPTV-org",
+      "license": "Open",
+      "category": "REVIEW",
+      "sectors": [
+        "iptv-org-channel-count"
+      ]
+    },
+    {
+      "attribution": "Internet Archive",
+      "license": "Public domain / CC0",
+      "category": "SAFE_PD_CC0",
+      "sectors": [
+        "wayback-availability"
+      ]
+    },
+    {
+      "attribution": "MedlinePlus (NLM)",
+      "license": "U.S. Gov public domain",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "medlineplus-topic-count"
+      ]
+    },
+    {
+      "attribution": "MusicBrainz",
+      "license": "CC BY-NC-SA 3.0",
+      "category": "SAFE_CC_BY_NC",
+      "sectors": [
+        "musicbrainz-artist-count"
+      ]
+    },
+    {
+      "attribution": "NASA",
+      "license": "NASA Media Usage Guidelines",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-image-library"
+      ]
+    },
+    {
+      "attribution": "NASA CMR",
+      "license": "NASA Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-cmr-collections"
+      ]
+    },
+    {
+      "attribution": "NASA CNEOS",
+      "license": "NASA/JPL Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-cneos-approaches"
+      ]
+    },
+    {
+      "attribution": "NASA EPIC",
+      "license": "NASA Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-epic-earth"
+      ]
+    },
+    {
+      "attribution": "NASA Exoplanet Archive",
+      "license": "NASA Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-exoplanet-count"
+      ]
+    },
+    {
+      "attribution": "NASA JPL SSD",
+      "license": "NASA/JPL Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-ssd-asteroid"
+      ]
+    },
+    {
+      "attribution": "NASA TechPort",
+      "license": "NASA Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nasa-techport-projects"
+      ]
+    },
+    {
+      "attribution": "NATO",
+      "license": "NATO public API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nato-cyber-standards"
+      ]
+    },
+    {
+      "attribution": "NHM London",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "nhm-london-dataset-count"
+      ]
+    },
+    {
+      "attribution": "National Grid ESO",
+      "license": "Open (National Grid ESO, UK)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "uk-carbon-intensity"
+      ]
+    },
+    {
+      "attribution": "OBIS",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "obis-marine-occurrences"
+      ]
+    },
+    {
+      "attribution": "OSV.dev",
+      "license": "Open (OSV.dev, Google)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "osv-lodash-vuln-count"
+      ]
+    },
+    {
+      "attribution": "Open Food Facts contributors",
+      "license": "ODbL 1.0",
+      "category": "SAFE_ODBL",
+      "sectors": [
+        "openfoodfacts-product"
+      ]
+    },
+    {
+      "attribution": "Open-Meteo",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "baltic-wave-height",
+        "open-meteo-climate",
+        "open-meteo-historical",
+        "open-meteo-pm25"
+      ]
+    },
+    {
+      "attribution": "Open-Meteo",
+      "license": "CC BY 4.0 (Open-Meteo)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "open-meteo-berlin-temp"
+      ]
+    },
+    {
+      "attribution": "PANGAEA",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "pangaea-earth-datasets"
+      ]
+    },
+    {
+      "attribution": "PRH Finland",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "prh-finland-total-companies"
+      ]
+    },
+    {
+      "attribution": "RIPE NCC",
+      "license": "RIPE NCC ToS",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "ripestat"
+      ]
+    },
+    {
+      "attribution": "Spaceflight News API",
+      "license": "Open (Spaceflight News API)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "spaceflight-news-count"
+      ]
+    },
+    {
+      "attribution": "Statistics Bureau of Japan",
+      "license": "Japanese Government Open Data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "japan-statistics-dashboard"
+      ]
+    },
+    {
+      "attribution": "TVmaze",
+      "license": "CC BY-SA 4.0",
+      "category": "RISKY_SA",
+      "sectors": [
+        "tvmaze-us-schedule-count"
+      ]
+    },
+    {
+      "attribution": "Tech.eu Funding Explorer",
+      "license": "CC BY 4.0",
+      "category": "REMOVED",
+      "sectors": [
+        "ma-exits",
+        "vc-funding"
+      ]
+    },
+    {
+      "attribution": "TheSportsDB",
+      "license": "Free tier (test key)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "thesportsdb-team-count"
+      ]
+    },
+    {
+      "attribution": "Transitous / MOTIS",
+      "license": "Open GTFS data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "transitous-route-count"
+      ]
+    },
+    {
+      "attribution": "VBB",
+      "license": "VBB open data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "hafas-berlin-departures"
+      ]
+    },
+    {
+      "attribution": "VBB",
+      "license": "VBB open data (FPTF REST)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "vbb-transport-berlin"
+      ]
+    },
+    {
+      "attribution": "WHO Global Health Observatory",
+      "license": "CC BY-NC-SA 3.0 IGO",
+      "category": "SAFE_CC_BY_NC",
+      "sectors": [
+        "who-life-expectancy"
+      ]
+    },
+    {
+      "attribution": "War-Tracker",
+      "license": "War-Tracker public API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "war-tracker-events"
+      ]
+    },
+    {
+      "attribution": "Windsor Drake",
+      "license": "Attribution requested",
+      "category": "REMOVED",
+      "sectors": [
+        "ma-transactions"
+      ]
+    },
+    {
+      "attribution": "World Bank",
+      "license": "CC BY 4.0 (World Bank Open Data)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "worldbank-se-gdp",
+        "worldbank-us-gdp"
+      ]
+    },
+    {
+      "attribution": "World Bank",
+      "license": "CC BY 4.0 (World Bank Open Data, ILO modeled estimate)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "worldbank-us-unemployment"
+      ]
+    },
+    {
+      "attribution": "adsb.lol",
+      "license": "adsb.lol public feed",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "adsb-military-aircraft"
+      ]
+    },
+    {
+      "attribution": "dbcve.org",
+      "license": "Public CVE data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "dbcve-vulnerabilities"
+      ]
+    },
+    {
+      "attribution": "deps.dev",
+      "license": "Open (deps.dev, Google)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "deps-dev-react-versions"
+      ]
+    },
+    {
+      "attribution": "iDigBio",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "idigbio-total-specimens"
+      ]
+    },
+    {
+      "attribution": "opendata.ch",
+      "license": "opendata.ch Transport API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "swiss-transport-zurich"
+      ]
+    },
+    {
+      "attribution": "pypistats",
+      "license": "Public API",
+      "category": "REVIEW",
+      "sectors": [
+        "pypistats-fastapi-downloads"
+      ]
+    },
+    {
+      "attribution": "see /sources",
+      "license": "CC BY 4.0",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "mattercatalog"
+      ]
+    },
+    {
+      "attribution": "see /sources",
+      "license": "CC BY 4.0 (FAO open data)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "faostat"
+      ]
+    },
+    {
+      "attribution": "see /sources",
+      "license": "CC BY 4.0 (GeoCables)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "geocables-incidents"
+      ]
+    },
+    {
+      "attribution": "see /sources",
+      "license": "CC BY 4.0 (WRI)",
+      "category": "SAFE_CC_BY",
+      "sectors": [
+        "global-forest-watch"
+      ]
+    },
+    {
+      "attribution": "uap-pulse",
+      "license": "Public declassified data",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "uap-pulse-files"
+      ]
+    }
+  ]
+}
