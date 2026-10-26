@@ -195,6 +195,19 @@ async function run() {
   // Ensure timestamp exists
   intel.timestamp = intel.timestamp || Date.now();
 
+  // DEBUG: reveal sectorsRaw shape on first item (one-time)
+  if (sectorsRaw.length > 0 && !globalThis.__loggedSectorShape) {
+    globalThis.__loggedSectorShape = true;
+    console.log('[debug] sectorsRaw[0] keys:', Object.keys(sectorsRaw[0]));
+    console.log('[debug] sectorsRaw[0] sample:', JSON.stringify(sectorsRaw[0]).slice(0, 300));
+  }
+
+  // Extract sector names — defensive against multiple shape possibilities
+  intel.sectors = sectorsRaw
+    .map(s => s?.sector || s?.name || s?.id || s?.key || s?.sectorName || s?.slug)
+    .filter(x => typeof x === 'string' && x.length > 0 && x !== 'unknown');
+  console.log(`[info] signalSectors: ${intel.sectors.length} sectors extracted`);
+
   console.log("Writing snapshots...");
   writeSnapshots(intel, sectorsRaw);
 
