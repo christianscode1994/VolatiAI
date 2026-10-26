@@ -2565,10 +2565,9 @@ const COLLECTORS = {
       const r = await fetch("https://api.circle.com/v2/x402/discovery/resources?limit=100");
       if (!r.ok) throw new Error("http_" + r.status);
       const j = await r.json();
-      const items = j?.items;
-      if (!Array.isArray(items)) throw new Error("no_items");
-      if (items.length === 0) throw new Error("empty_items");
-      return items.length;
+      const total = Number(j?.pagination?.total);
+      if (!Number.isFinite(total) || total < 0) throw new Error("no_total");
+      return total;
     }) } }),
   },
 };
