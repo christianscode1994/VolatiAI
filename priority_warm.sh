@@ -196,6 +196,7 @@ PRIORITY=(
   geonet-nz-volcanic-alerts
   dexpaprika-total-dex-volume
   shipwreckatlas-total-wrecks
+  miso-grid-total-load
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

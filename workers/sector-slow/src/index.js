@@ -2716,6 +2716,17 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "miso-grid-total-load": {
+    config: { metric: "mw", threshold_pct: 15.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { mw: await fetchSafe(async () => {
+      const r = await fetch("https://public-api.misoenergy.org/api/FuelMix");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.TotalMW);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total_mw");
+      return v;
+    }) } }),
+  },
 };
 
 
