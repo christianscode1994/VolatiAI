@@ -2548,6 +2548,17 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "fdic-insured-banks": {
+    config: { metric: "count", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://api.fdic.gov/banks/institutions?limit=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.meta?.total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
 };
 
 

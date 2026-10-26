@@ -182,6 +182,7 @@ PRIORITY=(
   gbif-homo-sapiens-key
   clinicaltrials-total-studies
   south-tyrol-accommodations
+  fdic-insured-banks
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
