@@ -175,12 +175,6 @@ const COLLECTORS = {
     },
   },
 
-  },
-
-  },
-
-  },
-
   blockchain: {
     config: { metric: "gas_price", threshold_pct: 20, threshold_abs: 0.05, window: "24h", ttl: 7200, context_keys: ["eth_block"] },
     collectAll: async (env) => ({

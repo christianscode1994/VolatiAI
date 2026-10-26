@@ -41,8 +41,6 @@ const COLLECTORS = {
       };
     },
   },
-
-  },
   "pangaea-earth-datasets": {
     config: { metric: "dataset_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
