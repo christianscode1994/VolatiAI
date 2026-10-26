@@ -187,6 +187,9 @@ PRIORITY=(
   idigbio-total-specimens
   nhm-london-dataset-count
   obis-marine-occurrences
+  gleif-total-leis
+  sec-aapl-filings-30d
+  prh-finland-total-companies
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

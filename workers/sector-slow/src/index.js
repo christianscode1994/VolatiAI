@@ -2612,6 +2612,44 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "gleif-total-leis": {
+    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://api.gleif.org/api/v1/lei-records?page%5Bsize%5D=1",
+        { headers: { "user-agent": "VolatiAI/1.0 (admin@fourieranalys.se)" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.meta?.pagination?.total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
+  "sec-aapl-filings-30d": {
+    config: { metric: "count", threshold_pct: 50.0, window: "30d", window_days: 30, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://data.sec.gov/submissions/CIK0000320193.json",
+        { headers: { "user-agent": "VolatiAI/1.0 (admin@fourieranalys.se)" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const dates = j?.filings?.recent?.filingDate;
+      if (!Array.isArray(dates)) throw new Error("no_filingDates");
+      const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const recent = dates.filter(d => d >= cutoff);
+      if (recent.length === 0) throw new Error("no_recent");
+      return recent.length;
+    }) } }),
+  },
+  "prh-finland-total-companies": {
+    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://avoindata.prh.fi/opendata-ytj-api/v3/companies?totalResults=true&maxResults=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.totalResults);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_totalResults");
+      return v;
+    }) } }),
+  },
 };
 
 
