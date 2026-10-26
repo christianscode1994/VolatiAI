@@ -182,6 +182,11 @@ PRIORITY=(
   bts-us-canada-truck-crossings
   bts-containership-capacity
   eurostat-inland-waterway-freight
+  gdacs-active-disasters
+  geonet-nz-felt-quakes
+  idigbio-total-specimens
+  nhm-london-dataset-count
+  obis-marine-occurrences
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"

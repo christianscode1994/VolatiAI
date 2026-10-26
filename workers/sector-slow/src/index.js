@@ -2557,6 +2557,61 @@ const COLLECTORS = {
       return total;
     }) } }),
   },
+  "gdacs-active-disasters": {
+    config: { metric: "count", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?limit=100");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const features = j?.features;
+      if (!Array.isArray(features)) throw new Error("no_features");
+      return features.length;
+    }) } }),
+  },
+  "geonet-nz-felt-quakes": {
+    config: { metric: "count", threshold_pct: 30.0, window: "1d", window_days: 1, ttl: 3600 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://api.geonet.org.nz/quake?MMI=4");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const features = j?.features;
+      if (!Array.isArray(features)) throw new Error("no_features");
+      return features.length;
+    }) } }),
+  },
+  "idigbio-total-specimens": {
+    config: { metric: "count", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://search.idigbio.org/v2/search/records/?limit=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.itemCount);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_itemCount");
+      return v;
+    }) } }),
+  },
+  "nhm-london-dataset-count": {
+    config: { metric: "count", threshold_pct: 2.0, window: "7d", window_days: 7, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://data.nhm.ac.uk/api/3/action/package_search?rows=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.result?.count);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
+  "obis-marine-occurrences": {
+    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
+      const r = await fetch("https://api.obis.org/v3/occurrence?size=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.total);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
+      return v;
+    }) } }),
+  },
 };
 
 
