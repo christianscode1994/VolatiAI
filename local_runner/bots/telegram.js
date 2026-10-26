@@ -1,6 +1,7 @@
 // telegram.js — VolatiAI Telegram Bot
+import { checkAttribution } from '../../connectors/attribution.js';
 
-export async function postToTelegram(message) {
+export async function postToTelegram(message, sectors = []) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
@@ -8,17 +9,27 @@ export async function postToTelegram(message) {
     return;
   }
 
+  // ─── Compliance gate: fail closed ───
+  if (!sectors || sectors.length === 0) {
+    console.log('SKIP telegram: no sectors — cannot verify license');
+    return;
+  }
+  const attr = await checkAttribution(sectors);
+  if (!attr.safe) {
+    console.log(`SKIP telegram: unverified license in ${sectors.join(', ')}`);
+    return;
+  }
+
+  const text = attr.footer
+    ? `${message}\n\n${attr.footer}`
+    : message;
+
   await fetch(
     `https://api.telegram.org/bot${token}/sendMessage`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text })
     }
   );
 }
