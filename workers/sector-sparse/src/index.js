@@ -29,13 +29,92 @@ function parseRSSFirstItem(text) {
 
 const COLLECTORS = {
   "imf-portwatch-chokepoints": { /* ... paste from above ... */ },
-  "faostat-crop-production": { /* ... */ },
-  "pangaea-earth-datasets": { /* ... */ },
-  "gbif-occurrences": { /* ... */ },
-  "japan-statistics-dashboard": { /* ... */ },
-  "wayback-availability": { /* ... */ },
-  "open-meteo-historical": { /* ... */ },
-  "open-meteo-climate": { /* ... */ },
+  "faostat-crop-production": {
+    config: { metric: "crop_production_index", threshold_pct: 1, window: "1y", window_days: 365 },
+    async collectAll(env) {
+      const url = "https://fenixservices.fao.org/faostat/api/v1/en/data/QCL?area=5000&item=1717&element=5510&year=2024&show_codes=false";
+      const r = await fetch(url);
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const j = await r.json();
+      const row = j && j.data ? j.data[0] : null;
+      return {
+        value: row ? Number(row.Value) : null,
+        sources: { total: 1, healthy: 1, failed: [] },
+        context: { item: "Wheat", unit: row ? row.Unit : null },
+      };
+    },
+  },
+  "pangaea-earth-datasets": {
+    config: { metric: "dataset_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const q = encodeURIComponent("Arctic sea ice");
+      const url = "https://www.pangaea.de/advanced/search.php?q=" + q + "&count=1";
+      const r = await fetch(url);
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const html = await r.text();
+      const m = html.match(/([0-9,]+)\s+datasets?\s+found/i);
+      return {
+        value: m ? Number(m[1].replace(/,/g, "")) : null,
+        sources: { total: 1, healthy: 1, failed: [] },
+        context: { query: "Arctic sea ice" },
+      };
+    },
+  },
+  "gbif-occurrences": {
+    config: { metric: "occurrence_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.gbif.org/v1/occurrence/search?taxonKey=2436436&limit=0");
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const j = await r.json();
+      return { value: j.count || null, sources: { total: 1, healthy: 1, failed: [] }, context: { taxonKey: 2436436 } };
+    },
+  },
+  "japan-statistics-dashboard": {
+    config: { metric: "cpi_index", threshold_pct: 0.5, window: "1mo", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://dashboard.e-stat.go.jp/api/1.0/Json/getData?Lang=EN&IndicatorCode=00001";
+      const r = await fetch(url);
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const j = await r.json();
+      const v = j && j.GET_STATS && j.GET_STATS.STATISTICAL_DATA && j.GET_STATS.STATISTICAL_DATA.DATA_INF && j.GET_STATS.STATISTICAL_DATA.DATA_INF.VALUE && j.GET_STATS.STATISTICAL_DATA.DATA_INF.VALUE[0] ? j.GET_STATS.STATISTICAL_DATA.DATA_INF.VALUE[0]["$"] : null;
+      return { value: v ? Number(v) : null, sources: { total: 1, healthy: 1, failed: [] }, context: { indicator: "00001" } };
+    },
+  },
+  "wayback-availability": {
+    config: { metric: "archived", threshold_pct: null, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const target = "https://www.imf.org";
+      const r = await fetch("https://archive.org/wayback/available?url=" + encodeURIComponent(target));
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const j = await r.json();
+      const closest = j && j.archived_snapshots ? j.archived_snapshots.closest : null;
+      return { value: closest ? 1 : 0, sources: { total: 1, healthy: 1, failed: [] }, context: { url: target, snapshot: closest ? closest.timestamp : null } };
+    },
+  },
+  "open-meteo-historical": {
+    config: { metric: "temp_2m_mean", threshold_pct: 2, window: "1y", window_days: 365 },
+    async collectAll(env) {
+      const url = "https://archive-api.open-meteo.com/v1/archive?latitude=52.52&longitude=13.41&start_date=2025-01-01&end_date=2025-12-31&daily=temperature_2m_mean&timezone=Europe%2FBerlin";
+      const r = await fetch(url);
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const j = await r.json();
+      const vals = (j.daily && j.daily.temperature_2m_mean ? j.daily.temperature_2m_mean : []).filter(function (v) { return v != null; });
+      const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
+      return { value: mean, sources: { total: 1, healthy: 1, failed: [] }, context: { days: vals.length } };
+    },
+  },
+  "open-meteo-climate": {
+    config: { metric: "temp_2m_mean_2050", threshold_pct: 2, window: "1y", window_days: 365 },
+    async collectAll(env) {
+      const url = "https://climate-api.open-meteo.com/v1/climate?latitude=52.52&longitude=13.41&start_date=2050-01-01&end_date=2050-12-31&daily=temperature_2m_mean&models=MRI_AGCM3_2_S";
+      const r = await fetch(url);
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      const j = await r.json();
+      const vals = (j.daily && j.daily.temperature_2m_mean ? j.daily.temperature_2m_mean : []).filter(function (v) { return v != null; });
+      const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
+      return { value: mean, sources: { total: 1, healthy: 1, failed: [] }, context: { model: "MRI_AGCM3_2_S" } };
+    },
+  },
 
   develop: {
     event_source: "ethereum_release",
