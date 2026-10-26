@@ -76,15 +76,10 @@ PRIORITY=(
   unemployment
   rir-arin
   ripe-atlas-public
-  faostat
-  global-forest-watch
-  fcc-broadband
-  bakom
   ripestat
   ietf-datatracker
   arbetsformedlingen
   poligraph
-  satlas
   mattercatalog
   home-assistant
   robonix
@@ -139,7 +134,6 @@ PRIORITY=(
   dailymotion-video-views
   iptv-org-channel-count
   # ─── Dense/fast batch 2 (2026-10-25) ───
-  coinpaprika-top100-marketcap
   whitebit-btc-usdt
   usgs-significant-hour
   # ─── Group 1 verified (2026-10-25) ───

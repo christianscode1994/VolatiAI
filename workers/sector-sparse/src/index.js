@@ -148,7 +148,7 @@ const COLLECTORS = {
               return { id: "hn_" + s.id, title: "[" + s.score + "] " + s.title.slice(0, 90) };
             }
           }
-          throw new Error("no significant stories (>200 points) in top 5");
+          return 0;  // no significant stories right now — valid quiet state
         }),
       },
     }),
@@ -988,25 +988,6 @@ const COLLECTORS = {
           const art = j.articles?.[0];
           if (!art) throw new Error("no articles");
           return { id: art.url, title: (art.title || "Global event").slice(0, 100) };
-        }),
-      },
-    }),
-  },
-  "food-products": {
-    event_source: "openfoodfacts",
-    ttl: 86400,
-    collectAll: async (env) => ({
-      sources: {
-        openfoodfacts: await fetchSafe(async () => {
-          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-          const barcodes = ["3017620422003", "5449000000996", "7622210449283", "3179730010104"];
-          const code = barcodes[dayOfYear % barcodes.length];
-          const r = await fetch("https://world.openfoodfacts.org/api/v2/product/" + code + ".json");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const prod = j.product;
-          if (!prod) throw new Error("no product");
-          return { id: code + "_" + dayOfYear, title: (prod.product_name || "Product") + " (" + (prod.brands || "?") + ")" };
         }),
       },
     }),

@@ -269,26 +269,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "global-forest-watch": {
-    config: { metric: "tree_cover_loss_ha", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        tree_cover_loss_ha: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
-        }),
-      },
-    }),
-  },
-  "fcc-broadband": {
-    config: { metric: "providers_reporting", threshold_pct: 0.2, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        providers_reporting: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
-        }),
-      },
-    }),
-  },
   bakom: {
     config: { metric: "antenna_sites", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
     collectAll: async () => ({
@@ -763,12 +743,12 @@ const COLLECTORS = {
           const text = await r.text();
           const lines = text.trim().split(/\r?\n/);
           if (lines.length < 2) throw new Error("no_rows");
-          const header = lines[0].split(",").map(h => h.trim());
+          const header = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
           const tenYrIdx = header.findIndex(h => h === "10 Yr");
           if (tenYrIdx < 0) throw new Error("no_10Yr_col: " + header.join("|"));
           for (let i = 1; i < lines.length; i++) {
             const parts = lines[i].split(",");
-            const v = parseFloat(parts[tenYrIdx]);
+            const v = parseFloat(parts[tenYrIdx].replace(/"/g, ""));
             if (Number.isFinite(v) && v > 0) return v;
           }
           throw new Error("no_value");
@@ -2084,23 +2064,6 @@ const COLLECTORS = {
           if (!r.ok) throw new Error("http_" + r.status);
           const text = await r.text();
           return (text.match(/^#EXTINF/gm) || []).length;
-        }),
-      },
-    }),
-  },
-  "coinpaprika-top100-marketcap": {
-    config: { metric: "usd", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinpaprika.com/v1/tickers");
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array");
-          const top100 = j.slice(0, 100);
-          const total = top100.reduce((sum, c) => sum + (Number(c.quotes?.USD?.market_cap) || 0), 0);
-          if (total <= 0) throw new Error("no_market_cap");
-          return total;
         }),
       },
     }),
