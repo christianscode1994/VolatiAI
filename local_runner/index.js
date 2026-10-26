@@ -195,18 +195,21 @@ async function run() {
   // Ensure timestamp exists
   intel.timestamp = intel.timestamp || Date.now();
 
-  // DEBUG: reveal sectorsRaw shape on first item (one-time)
-  if (sectorsRaw.length > 0 && !globalThis.__loggedSectorShape) {
-    globalThis.__loggedSectorShape = true;
-    console.log('[debug] sectorsRaw[0] keys:', Object.keys(sectorsRaw[0]));
-    console.log('[debug] sectorsRaw[0] sample:', JSON.stringify(sectorsRaw[0]).slice(0, 300));
+  // Extract SAFE_* sectors from license map — signalSectors for bot attribution
+  // (sectorsRaw has no per-sector names; worker URLs are worker-level, not sector-level)
+  try {
+    const licenseMap = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), 'config/source_licenses.json'), 'utf8')
+    );
+    const SAFE_CATS = ['SAFE_PD_CC0', 'SAFE_CC_BY', 'SAFE_MIT', 'SAFE_OPEN'];
+    intel.sectors = Object.entries(licenseMap)
+      .filter(([_, info]) => SAFE_CATS.includes((info.category || '').toUpperCase()))
+      .map(([sector]) => sector);
+    console.log(`[info] signalSectors: ${intel.sectors.length} SAFE sectors from license map`);
+  } catch (e) {
+    console.error('[error] Could not load license map:', e.message);
+    intel.sectors = [];
   }
-
-  // Extract sector names — defensive against multiple shape possibilities
-  intel.sectors = sectorsRaw
-    .map(s => s?.sector || s?.name || s?.id || s?.key || s?.sectorName || s?.slug)
-    .filter(x => typeof x === 'string' && x.length > 0 && x !== 'unknown');
-  console.log(`[info] signalSectors: ${intel.sectors.length} sectors extracted`);
 
   console.log("Writing snapshots...");
   writeSnapshots(intel, sectorsRaw);
