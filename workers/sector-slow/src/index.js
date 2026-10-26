@@ -2739,6 +2739,51 @@ const COLLECTORS = {
       return f.length;
     }) } }),
   },
+  "musicbrainz-rock-groups": {
+    config: { metric: "count", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://musicbrainz.org/ws/2/artist/?query=tag:rock%20AND%20type:group&fmt=json&limit=1",
+        { headers: { "user-agent": "VolatiAI/1.0 (admin@fourieranalys.se)" } });
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.count);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
+  "energinet-dk-carbon-intensity": {
+    config: { metric: "gco2_per_kwh", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({ sources: { gco2_per_kwh: await fetchSafe(async () => {
+      const r = await fetch("https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.records?.[0]?.CO2Emission);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_co2");
+      return v;
+    }) } }),
+  },
+  "baltic-wave-height": {
+    config: { metric: "m", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 1800 },
+    collectAll: async () => ({ sources: { m: await fetchSafe(async () => {
+      const r = await fetch("https://marine-api.open-meteo.com/v1/marine?latitude=54.3&longitude=10.1&current=wave_height");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.current?.wave_height);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_wave_height");
+      return v;
+    }) } }),
+  },
+  "gutendex-english-ebooks": {
+    config: { metric: "count", threshold_pct: 2.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://gutendex.com/books?languages=en&page=1");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.count);
+      if (!Number.isFinite(v) || v <= 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
 };
 
 
