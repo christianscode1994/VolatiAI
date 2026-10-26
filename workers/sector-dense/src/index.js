@@ -159,7 +159,7 @@ const COLLECTORS = {
   "transitous-route-count": {
     config: { metric: "routes_found", threshold_pct: null, window: "1d", window_days: 1 },
     async collectAll(env) {
-      const r = await fetch("https://api.transitous.org/api/v1/plan?from=52.5200,13.4050&to=48.1351,11.5820&time=2026-10-27T08:00:00Z", { headers: { "User-Agent": "VolatiAI/1.0" } });
+      const r = await fetch("https://api.transitous.org/api/v1/plan?fromPlace=52.5200,13.4050&toPlace=48.1351,11.5820", { headers: { "User-Agent": "VolatiAI/1.0" } });
       if (!r.ok) return { value: null, sources: { transitous: { ok: false } } };
       const j = await r.json();
       const its = j.plan?.itineraries ?? j.itineraries; return { value: Array.isArray(its) ? its.length : null, sources: { transitous: { ok: true } }, context: { from: "Berlin", to: "Munich" } };
