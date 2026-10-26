@@ -279,11 +279,6 @@
     "url": "https://api.github.com/search/commits?q=created:>...",
     "license": "Free public API"
   },
-  "drug-approvals": {
-    "provider": "openFDA",
-    "url": "https://api.fda.gov/drug/drugsfda.json",
-    "license": "Public domain"
-  },
   "geocables-incidents": {
     "provider": "GeoCables",
     "url": "https://geocables.com/api/v1/incidents",
@@ -328,5 +323,15 @@
     "provider": "Valve/Steam",
     "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=570",
     "license": "Public API"
+  },
+  "drug-approvals-latest": {
+    "provider": "openFDA",
+    "url": "https://api.fda.gov/drug/drugsfda.json",
+    "license": "Public domain"
+  },
+  "drug-approvals-total": {
+    "provider": "openFDA",
+    "url": "https://api.fda.gov/drug/drugsfda.json",
+    "license": "Public domain"
   }
 }

@@ -3502,7 +3502,7 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "drug-approvals": {
+  "drug-approvals-total": {
     config: { metric: "total_approvals", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {

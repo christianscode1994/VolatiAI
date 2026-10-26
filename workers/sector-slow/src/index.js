@@ -1739,7 +1739,7 @@ const COLLECTORS = {
     }),
   },
 
-  "drug-approvals": {
+  "drug-approvals-latest": {
     config: { metric: "latest_approval_id", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({
       sources: {
