@@ -156,6 +156,33 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "transitous-route-count": {
+    config: { metric: "routes_found", threshold_pct: null, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.transitous.org/api/v1/plan?from=52.5200,13.4050&to=48.1351,11.5820&time=2026-10-27T08:00:00Z", { headers: { "User-Agent": "VolatiAI/1.0" } });
+      if (!r.ok) return { value: null, sources: { transitous: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j.itineraries) ? j.itineraries.length : null, sources: { transitous: { ok: true } }, context: { from: "Berlin", to: "Munich" } };
+    },
+  },
+  "hafas-berlin-departures": {
+    config: { metric: "departures_15min", threshold_pct: 20, window: "1h", window_days: 0 },
+    async collectAll(env) {
+      const r = await fetch("https://v6.vbb.transport.rest/stops/900100003/departures?duration=15&results=10");
+      if (!r.ok) return { value: null, sources: { hafas: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j.departures) ? j.departures.length : null, sources: { hafas: { ok: true } }, context: { stop: "Alexanderplatz" } };
+    },
+  },
+  "espn-nba-scoreboard": {
+    config: { metric: "games_today", threshold_pct: 50, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard");
+      if (!r.ok) return { value: null, sources: { espn: { ok: false } } };
+      const j = await r.json();
+      return { value: j.events?.length ?? 0, sources: { espn: { ok: true } }, context: { league: "nba" } };
+    },
+  },
   "vbb-transport-berlin": {
     config: { metric: "departures_15min", threshold_pct: 20, window: "1h", window_days: 0 },
     async collectAll(env) {

@@ -28,6 +28,54 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "thesportsdb-team-count": {
+    config: { metric: "league_count", threshold_pct: null, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://www.thesportsdb.com/api/v1/json/3/all_leagues.php");
+      if (!r.ok) return { value: null, sources: { thesportsdb: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j.leagues) ? j.leagues.length : null, sources: { thesportsdb: { ok: true } }, context: { endpoint: "all_leagues" } };
+    },
+  },
+  "who-life-expectancy": {
+    config: { metric: "life_expectancy", threshold_pct: 1, window: "1y", window_days: 365 },
+    async collectAll(env) {
+      const r = await fetch("https://ghoapi.azureedge.net/api/WHOSIS_000001");
+      if (!r.ok) return { value: null, sources: { who_gho: { ok: false } } };
+      const j = await r.json();
+      const rows = j.value ?? [];
+      const latest = rows.sort((a, b) => b.Year - a.Year)[0];
+      return { value: latest ? Number(latest.NumericValue) : null, sources: { who_gho: { ok: true } }, context: { indicator: "WHOSIS_000001", year: latest?.Year } };
+    },
+  },
+  "medlineplus-topic-count": {
+    config: { metric: "topic_count", threshold_pct: null, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://wsearch.nlm.nih.gov/ws/query?db=healthTopics&term=diabetes&retmax=1");
+      if (!r.ok) return { value: null, sources: { medlineplus: { ok: false } } };
+      const xml = await r.text();
+      const m = xml.match(/<count>(\d+)<\/count>/i);
+      return { value: m ? Number(m[1]) : null, sources: { medlineplus: { ok: true } }, context: { query: "diabetes" } };
+    },
+  },
+  "musicbrainz-artist-count": {
+    config: { metric: "artist_count", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://musicbrainz.org/ws/2/artist?query=beatles&fmt=json&limit=1", { headers: { "User-Agent": "VolatiAI/1.0 (contact@example.com)" } });
+      if (!r.ok) return { value: null, sources: { musicbrainz: { ok: false } } };
+      const j = await r.json();
+      return { value: j.count ?? null, sources: { musicbrainz: { ok: true } }, context: { query: "beatles" } };
+    },
+  },
+  "openfoodfacts-product": {
+    config: { metric: "nutriscore_grade", threshold_pct: null, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://world.openfoodfacts.org/api/v2/product/3017620422003.json", { headers: { "User-Agent": "VolatiAI/1.0" } });
+      if (!r.ok) return { value: null, sources: { openfoodfacts: { ok: false } } };
+      const j = await r.json();
+      return { value: j.product?.nutriscore_grade ?? null, sources: { openfoodfacts: { ok: true } }, context: { product: j.product?.product_name } };
+    },
+  },
   "imf-portwatch-chokepoints": {
     config: { metric: "chokepoint_transits", threshold_pct: 0.2, window: "7d", window_days: 7 },
     async collectAll(env) {
