@@ -32,11 +32,11 @@ const COLLECTORS = {
     config: { metric: "chokepoint_transits", threshold_pct: 0.2, window: "7d", window_days: 7 },
     async collectAll(env) {
       const raw = await env.SECTOR_KV.get("imf-portwatch:latest", "json");
-      if (!raw) return { value: null, error: "no KV snapshot", sources: { total: 1, healthy: 0, failed: [] } };
+      if (!raw) return { value: null, error: "no KV snapshot", sources: { "imf-portwatch": { ok: false } } };
       const suez = Array.isArray(raw) ? raw.find(r => r.chokepoint === "Suez Canal") : null;
       return {
         value: suez ? suez.vessel_transits : null,
-        sources: { total: 1, healthy: 1, failed: [] },
+        sources: { "imf-portwatch": { ok: true } },
         context: { as_of: Array.isArray(raw) && raw[0] ? raw[0].date : null },
       };
     },
@@ -46,12 +46,12 @@ const COLLECTORS = {
     async collectAll(env) {
       const url = "https://fenixservices.fao.org/faostat/api/v1/en/data/QCL?area=5000&item=1717&element=5510&year=2024&show_codes=false";
       const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "faostat": { ok: false } } };
       const j = await r.json();
       const row = j && j.data ? j.data[0] : null;
       return {
         value: row ? Number(row.Value) : null,
-        sources: { total: 1, healthy: 1, failed: [] },
+        sources: { "faostat": { ok: true } },
         context: { item: "Wheat", unit: row ? row.Unit : null },
       };
     },
@@ -62,12 +62,12 @@ const COLLECTORS = {
       const q = encodeURIComponent("Arctic sea ice");
       const url = "https://www.pangaea.de/advanced/search.php?q=" + q + "&count=1";
       const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "pangaea": { ok: false } } };
       const html = await r.text();
       const m = html.match(/([0-9,]+)\s+datasets?\s+found/i);
       return {
         value: m ? Number(m[1].replace(/,/g, "")) : null,
-        sources: { total: 1, healthy: 1, failed: [] },
+        sources: { "pangaea": { ok: true } },
         context: { query: "Arctic sea ice" },
       };
     },
@@ -76,9 +76,9 @@ const COLLECTORS = {
     config: { metric: "occurrence_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
       const r = await fetch("https://api.gbif.org/v1/occurrence/search?taxonKey=2436436&limit=0");
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "gbif": { ok: false } } };
       const j = await r.json();
-      return { value: j.count || null, sources: { total: 1, healthy: 1, failed: [] }, context: { taxonKey: 2436436 } };
+      return { value: j.count || null, sources: { "gbif": { ok: true } }, context: { taxonKey: 2436436 } };
     },
   },
   "japan-statistics-dashboard": {
@@ -86,10 +86,10 @@ const COLLECTORS = {
     async collectAll(env) {
       const url = "https://dashboard.e-stat.go.jp/api/1.0/Json/getData?Lang=EN&IndicatorCode=00001";
       const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "e-stat": { ok: false } } };
       const j = await r.json();
       const v = j && j.GET_STATS && j.GET_STATS.STATISTICAL_DATA && j.GET_STATS.STATISTICAL_DATA.DATA_INF && j.GET_STATS.STATISTICAL_DATA.DATA_INF.VALUE && j.GET_STATS.STATISTICAL_DATA.DATA_INF.VALUE[0] ? j.GET_STATS.STATISTICAL_DATA.DATA_INF.VALUE[0]["$"] : null;
-      return { value: v ? Number(v) : null, sources: { total: 1, healthy: 1, failed: [] }, context: { indicator: "00001" } };
+      return { value: v ? Number(v) : null, sources: { "e-stat": { ok: true } }, context: { indicator: "00001" } };
     },
   },
   "wayback-availability": {
@@ -97,10 +97,10 @@ const COLLECTORS = {
     async collectAll(env) {
       const target = "https://www.imf.org";
       const r = await fetch("https://archive.org/wayback/available?url=" + encodeURIComponent(target));
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "wayback": { ok: false } } };
       const j = await r.json();
       const closest = j && j.archived_snapshots ? j.archived_snapshots.closest : null;
-      return { value: closest ? 1 : 0, sources: { total: 1, healthy: 1, failed: [] }, context: { url: target, snapshot: closest ? closest.timestamp : null } };
+      return { value: closest ? 1 : 0, sources: { "wayback": { ok: true } }, context: { url: target, snapshot: closest ? closest.timestamp : null } };
     },
   },
   "open-meteo-historical": {
@@ -108,11 +108,11 @@ const COLLECTORS = {
     async collectAll(env) {
       const url = "https://archive-api.open-meteo.com/v1/archive?latitude=52.52&longitude=13.41&start_date=2025-01-01&end_date=2025-12-31&daily=temperature_2m_mean&timezone=Europe%2FBerlin";
       const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "open-meteo-archive": { ok: false } } };
       const j = await r.json();
       const vals = (j.daily && j.daily.temperature_2m_mean ? j.daily.temperature_2m_mean : []).filter(function (v) { return v != null; });
       const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
-      return { value: mean, sources: { total: 1, healthy: 1, failed: [] }, context: { days: vals.length } };
+      return { value: mean, sources: { "open-meteo-archive": { ok: true } }, context: { days: vals.length } };
     },
   },
   "open-meteo-climate": {
@@ -120,11 +120,11 @@ const COLLECTORS = {
     async collectAll(env) {
       const url = "https://climate-api.open-meteo.com/v1/climate?latitude=52.52&longitude=13.41&start_date=2050-01-01&end_date=2050-12-31&daily=temperature_2m_mean&models=MRI_AGCM3_2_S";
       const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { total: 1, healthy: 0, failed: [] } };
+      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "open-meteo-climate": { ok: false } } };
       const j = await r.json();
       const vals = (j.daily && j.daily.temperature_2m_mean ? j.daily.temperature_2m_mean : []).filter(function (v) { return v != null; });
       const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
-      return { value: mean, sources: { total: 1, healthy: 1, failed: [] }, context: { model: "MRI_AGCM3_2_S" } };
+      return { value: mean, sources: { "open-meteo-climate": { ok: true } }, context: { model: "MRI_AGCM3_2_S" } };
     },
   },
 
