@@ -259,26 +259,6 @@ const COLLECTORS = {
     }),
   },
 
-  faostat: {
-    config: { metric: "food_price_index", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        food_price_index: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified: see scripts/verify_endpoints.sh");
-        }),
-      },
-    }),
-  },
-  bakom: {
-    config: { metric: "antenna_sites", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        antenna_sites: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
-        }),
-      },
-    }),
-  },
   ripestat: {
     config: { metric: "asn_count", threshold_pct: 0.1, window: "30d", window_days: 30, ttl: 86400 },
     collectAll: async () => ({
@@ -365,16 +345,6 @@ const COLLECTORS = {
           const arr = Array.isArray(j) ? j : (Array.isArray(j.data) ? j.data : null);
           if (!arr) throw new Error("no_array");
           return arr.length;
-        }),
-      },
-    }),
-  },
-  satlas: {
-    config: { metric: "tracked_objects", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        tracked_objects: await fetchSafe(async () => {
-          throw new Error("endpoint_unverified");
         }),
       },
     }),
