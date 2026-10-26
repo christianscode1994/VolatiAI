@@ -184,6 +184,8 @@ PRIORITY=(
   south-tyrol-accommodations
   fdic-insured-banks
   circle-x402-resources
+  nyfed-sofr-rate
+  treasury-us-debt
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
