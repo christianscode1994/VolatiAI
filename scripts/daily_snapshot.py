@@ -54,8 +54,8 @@ def fetch_signal(sector, worker="sector-slow"):
             data = json.loads(body)
         except json.JSONDecodeError:
             return {"ok": False, "current": None, "failed": ["bad_json"]}
-        cur = data.get("delta", {}).get("current")
-        failed = data.get("sources", {}).get("failed", [])
+        cur = (data.get("delta") or {}).get("current")
+        failed = (data.get("sources") or {}).get("failed", [])
         return {"ok": cur is not None and len(failed) == 0,
                 "current": cur, "failed": failed}
     except subprocess.TimeoutExpired:
