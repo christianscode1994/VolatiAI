@@ -1,580 +1,29 @@
 {
-  "ts": "2026-10-26T09:26:06.874241Z",
+  "ts": "2026-10-26T09:59:31.181607Z",
   "total": 386,
-  "ok": 148,
-  "failed": 238,
+  "ok": 318,
+  "failed": 68,
   "sectors": {
-    "arbetsformedlingen": {
+    "npm-packages": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "entertainment": {
       "ok": true,
-      "current": 41773,
+      "current": 117,
       "failed": []
     },
-    "alcohol-health": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "affirmations-length": {
+    "fred-dgs10": {
       "ok": true,
-      "current": 57,
+      "current": 4.96,
       "failed": []
     },
-    "13f-holdings": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "apis-guru-directory": {
+    "energy-carbon": {
       "ok": true,
-      "current": 2529,
-      "failed": []
-    },
-    "agent-census": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "airports": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "arxiv-ai": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "aave": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "api-directory": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "ai-governance-records": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "air-quality": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "arweave-network": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "abuse-ch-feodo": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "anime": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "ai-implementation-milestones": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "ai-news": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "art-design": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "ai-enforcement-events": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "allratestoday-usd-eur": {
-      "ok": true,
-      "current": 0.89341553,
-      "failed": []
-    },
-    "7timer-berlin-temp": {
-      "ok": true,
-      "current": 7,
-      "failed": []
-    },
-    "ai-models": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "arxiv-cs": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "audius": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "autonomous-tech": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "bakom": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "antenna_sites"
-      ]
-    },
-    "ballotwatch-bills": {
-      "ok": true,
-      "current": 183582,
-      "failed": []
-    },
-    "aviation-weather": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "bank-data": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "beauty": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "bgp-prefixes": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "bike-share": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "biology": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "biotech": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "bluesky-posts": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "books": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "bot-activity": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "btc-exchange-spread": {
-      "ok": true,
-      "current": 0.0028733257047128843,
-      "failed": []
-    },
-    "botnet-c2": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "box-status": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "calendars": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cdc-covid-total-deaths": {
-      "ok": true,
-      "current": 12303399,
-      "failed": []
-    },
-    "cern-opendata": {
-      "ok": true,
-      "current": 82414,
-      "failed": []
-    },
-    "cannabis-news": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cheapshark-deal-count": {
-      "ok": true,
-      "current": 60,
-      "failed": []
-    },
-    "carbon-intensity": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "chainsights-daos": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "circle-x402-resources": {
-      "ok": true,
-      "current": 2842,
-      "failed": []
-    },
-    "china": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "chemistry": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cisa-kev-count": {
-      "ok": true,
-      "current": 1756,
-      "failed": []
-    },
-    "cisa-kev-total": {
-      "ok": true,
-      "current": 1756,
-      "failed": []
-    },
-    "clearlydefined-react-license": {
-      "ok": true,
-      "current": 93,
-      "failed": []
-    },
-    "cleveland-artworks": {
-      "ok": true,
-      "current": 68810,
-      "failed": []
-    },
-    "clinicaltrials-total-studies": {
-      "ok": true,
-      "current": 608415,
-      "failed": []
-    },
-    "cisa-kev": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "climate-datasets": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cloud-components": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cloud-outages": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "coinbase-btc-usd": {
-      "ok": true,
-      "current": 80373.57,
-      "failed": []
-    },
-    "coinbase-btc-volume24h": {
-      "ok": true,
-      "current": 221440679.30993998,
-      "failed": []
-    },
-    "coinbase-eth-usd": {
-      "ok": true,
-      "current": 2329.32,
-      "failed": []
-    },
-    "coinmarketcap-btc-usd": {
-      "ok": true,
-      "current": 80404.27072613638,
-      "failed": []
-    },
-    "coinpaprika-top100-marketcap": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "usd"
-      ]
-    },
-    "cloud-status": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cloudflare-status": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "coinrithm-overview": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "commodities": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "compute": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "corona-zahlen-germany-week-incidence": {
-      "ok": true,
-      "current": 1.1083603622121665,
-      "failed": []
-    },
-    "computer-networks": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "construction": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crossref-deep-learning": {
-      "ok": true,
-      "current": 3200860,
-      "failed": []
-    },
-    "crates-io": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crossref-works": {
-      "ok": true,
-      "current": 188025235,
-      "failed": []
-    },
-    "crossref": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crypto-defi": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crypto-liquidations": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crypto-market": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crypto-oi": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crypto-regulatory-feed": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "crypto-regulatory-news": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cryptocurrency": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "ct-certificates": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "currency-ex": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "dailymotion-video-views": {
-      "ok": true,
-      "current": 128,
-      "failed": []
-    },
-    "cve-feed": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "cyber-threats": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "datacite-dois": {
-      "ok": true,
-      "current": 139939412,
+      "current": 85,
       "failed": []
     },
     "dbnomics-us-debt": {
@@ -582,300 +31,100 @@
       "current": 131.728,
       "failed": []
     },
+    "korean-culture": {
+      "ok": true,
+      "current": 1009,
+      "failed": []
+    },
+    "frankfurter-fx": {
+      "ok": true,
+      "current": 0.89342,
+      "failed": []
+    },
+    "noaa-spaceweather-alerts": {
+      "ok": true,
+      "current": 91,
+      "failed": []
+    },
+    "jobs": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "frankfurter-eurusd": {
+      "ok": true,
+      "current": 1.1193,
+      "failed": []
+    },
+    "npm-downloads-react": {
+      "ok": true,
+      "current": 42444710,
+      "failed": []
+    },
+    "noaa-ndbc": {
+      "ok": true,
+      "current": 1352,
+      "failed": []
+    },
+    "energy": {
+      "ok": true,
+      "current": 100.99,
+      "failed": []
+    },
+    "kraken-ada-usd": {
+      "ok": true,
+      "current": 0.203978,
+      "failed": []
+    },
+    "kaspa-blockdag": {
+      "ok": true,
+      "current": 575887301,
+      "failed": []
+    },
     "dc-crime": {
       "ok": true,
       "current": 17957,
       "failed": []
     },
-    "dcentral-miner-count": {
+    "iptv-org-channel-count": {
       "ok": true,
-      "current": 487,
+      "current": 11340,
+      "failed": []
+    },
+    "frankfurter-eursek": {
+      "ok": true,
+      "current": 11.131,
       "failed": []
     },
     "data-validity": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "defi-fees-aave": {
       "ok": true,
-      "current": 1156062,
+      "current": 635,
       "failed": []
-    },
-    "defi-open-interest-total": {
-      "ok": true,
-      "current": 22220060119,
-      "failed": []
-    },
-    "defi-dex-volume": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "defi-total-tvl": {
-      "ok": true,
-      "current": 88361090312,
-      "failed": []
-    },
-    "defi-fees": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "defillama-protocol-count": {
-      "ok": true,
-      "current": 8823,
-      "failed": []
-    },
-    "defi-stablecoins": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "defi-yields": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "demographics": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "depin-market": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "deps-dev-react-versions": {
-      "ok": true,
-      "current": 2989,
-      "failed": []
-    },
-    "depin-network": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "depin-networks": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "dev-metaverse": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "dev-vr-ar": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "dex-ethereum-volume": {
-      "ok": true,
-      "current": 726381927.9599999,
-      "failed": []
-    },
-    "develop": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "dex-uniswap-volume": {
-      "ok": true,
-      "current": 1359482941,
-      "failed": []
-    },
-    "dex-total-volume-24h": {
-      "ok": true,
-      "current": 5594503209.230002,
-      "failed": []
-    },
-    "devto-articles": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "doaj-articles": {
-      "ok": true,
-      "current": 13854971,
-      "failed": []
-    },
-    "disease-outbreaks": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "diseases": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "dropbox-status": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "drug-approvals": {
-      "ok": true,
-      "current": "NDA202231:FRESENIUS KABI USA",
-      "failed": []
-    },
-    "drug-recall": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "ecosyste-ms-react": {
-      "ok": true,
-      "current": 275174,
-      "failed": []
-    },
-    "e-commerce": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "earthquakes": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "education": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "electricity": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
     },
     "emsc-earthquakes": {
+      "ok": true,
+      "current": 50,
+      "failed": []
+    },
+    "biology": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "energy": {
+    "datacite-dois": {
+      "ok": true,
+      "current": 139940083,
+      "failed": []
+    },
+    "nft": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
-      ]
-    },
-    "energy-carbon": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "environment": {
-      "ok": true,
-      "current": 428.09,
-      "failed": []
-    },
-    "entertainment": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "epss-log4shell": {
-      "ok": true,
-      "current": 0.99999,
-      "failed": []
-    },
-    "espn-nba-score-count": {
-      "ok": true,
-      "current": 7,
-      "failed": []
-    },
-    "espn-nfl-score-count": {
-      "ok": true,
-      "current": 14,
-      "failed": []
-    },
-    "eth-exchange-spread": {
-      "ok": true,
-      "current": 0.011151427811670325,
-      "failed": []
-    },
-    "epa-envirofacts": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "eu-legal-acts": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "europepmc-crispr-therapy": {
-      "ok": true,
-      "current": 80437,
-      "failed": []
-    },
-    "eurostat-eu-unemployment": {
-      "ok": true,
-      "current": 6.1,
-      "failed": []
-    },
-    "eu-open-data": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
     "ensembl-brca1-gene": {
@@ -883,26 +132,465 @@
       "current": -1,
       "failed": []
     },
-    "eurostat-hicp": {
+    "bgp-prefixes": {
+      "ok": true,
+      "current": 1502124,
+      "failed": []
+    },
+    "institutional-finance": {
+      "ok": true,
+      "current": 7,
+      "failed": []
+    },
+    "networking": {
+      "ok": true,
+      "current": 61508,
+      "failed": []
+    },
+    "education": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "ev": {
+    "frankfurter-eur-usd": {
+      "ok": true,
+      "current": 0.89342,
+      "failed": []
+    },
+    "cyber-threats": {
+      "ok": true,
+      "current": 1756,
+      "failed": []
+    },
+    "nbp-gold-spot": {
+      "ok": true,
+      "current": 507.54,
+      "failed": []
+    },
+    "interop-messaging": {
+      "ok": true,
+      "current": 150,
+      "failed": []
+    },
+    "nature-observations": {
+      "ok": true,
+      "current": 396389601,
+      "failed": []
+    },
+    "infrastructure": {
       "ok": false,
-      "current": null,
+      "current": 0,
       "failed": [
-        "curl_56"
+        "electricity_access_pct"
       ]
     },
-    "faostat": {
+    "food-products": {
       "ok": false,
       "current": null,
       "failed": [
-        "food_price_index"
+        "err_AttributeError"
       ]
+    },
+    "ecosyste-ms-react": {
+      "ok": true,
+      "current": 275174,
+      "failed": []
+    },
+    "natural-disasters": {
+      "ok": true,
+      "current": 100,
+      "failed": []
+    },
+    "botnet-c2": {
+      "ok": true,
+      "current": {
+        "total": 5,
+        "online": 1
+      },
+      "failed": []
+    },
+    "forums": {
+      "ok": true,
+      "current": 30,
+      "failed": []
+    },
+    "books": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "electricity": {
+      "ok": true,
+      "current": 49.997,
+      "failed": []
+    },
+    "food-security": {
+      "ok": false,
+      "current": 0,
+      "failed": [
+        "products"
+      ]
+    },
+    "huggingface-models": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "ct-certificates": {
+      "ok": true,
+      "current": 15128589,
+      "failed": []
+    },
+    "humanitarian-aid": {
+      "ok": true,
+      "current": 28233,
+      "failed": []
+    },
+    "ngo": {
+      "ok": true,
+      "current": 805,
+      "failed": []
+    },
+    "earthquakes": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "food-drink": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "ietf-datatracker": {
+      "ok": true,
+      "current": 9848,
+      "failed": []
+    },
+    "form-d-filings": {
+      "ok": true,
+      "current": 24,
+      "failed": []
+    },
+    "drug-approvals": {
+      "ok": true,
+      "current": 29416,
+      "failed": []
+    },
+    "crypto-regulatory-feed": {
+      "ok": true,
+      "current": 9,
+      "failed": []
+    },
+    "nasa-neo": {
+      "ok": true,
+      "current": 62776,
+      "failed": []
+    },
+    "fintech": {
+      "ok": true,
+      "current": 2188,
+      "failed": []
+    },
+    "research": {
+      "ok": true,
+      "current": 62974,
+      "failed": []
+    },
+    "dailymotion-video-views": {
+      "ok": true,
+      "current": 128,
+      "failed": []
+    },
+    "hn-tech-sentiment": {
+      "ok": true,
+      "current": 3669.82,
+      "failed": []
+    },
+    "e-commerce": {
+      "ok": true,
+      "current": 1000,
+      "failed": []
+    },
+    "cve-feed": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "nasa-eonet": {
+      "ok": true,
+      "current": 7226,
+      "failed": []
+    },
+    "finance": {
+      "ok": true,
+      "current": 4.96,
+      "failed": []
+    },
+    "doaj-articles": {
+      "ok": true,
+      "current": 13855057,
+      "failed": []
+    },
+    "filecoin-network": {
+      "ok": true,
+      "current": 6490084,
+      "failed": []
+    },
+    "crypto-regulatory-news": {
+      "ok": true,
+      "current": 30,
+      "failed": []
+    },
+    "flux-nodes": {
+      "ok": true,
+      "current": 6763,
+      "failed": []
+    },
+    "radio-stations": {
+      "ok": true,
+      "current": 63190,
+      "failed": []
+    },
+    "drug-recall": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "helium-hotspots": {
+      "ok": true,
+      "current": 1035743,
+      "failed": []
+    },
+    "crypto-liquidations": {
+      "ok": true,
+      "current": 339,
+      "failed": []
+    },
+    "filecoin-miners": {
+      "ok": true,
+      "current": 461,
+      "failed": []
+    },
+    "myvariant-rs113488022-hits": {
+      "ok": true,
+      "current": 3,
+      "failed": []
+    },
+    "hedge-fund-monitor": {
+      "ok": true,
+      "current": 5511000000000,
+      "failed": []
+    },
+    "music": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "home-assistant": {
+      "ok": true,
+      "current": 711555,
+      "failed": []
+    },
+    "museums": {
+      "ok": false,
+      "current": 503012,
+      "failed": [
+        "artic"
+      ]
+    },
+    "dropbox-status": {
+      "ok": true,
+      "current": 0,
+      "failed": []
+    },
+    "crypto-defi": {
+      "ok": true,
+      "current": 88687163136,
+      "failed": []
+    },
+    "crypto-oi": {
+      "ok": true,
+      "current": 3118153,
+      "failed": []
+    },
+    "dex-uniswap-volume": {
+      "ok": true,
+      "current": 1359482941,
+      "failed": []
+    },
+    "crypto-market": {
+      "ok": true,
+      "current": 2645626454725,
+      "failed": []
+    },
+    "renewable-energy": {
+      "ok": false,
+      "current": 0,
+      "failed": [
+        "renewable_share_pct"
+      ]
+    },
+    "currency-ex": {
+      "ok": true,
+      "current": 1.1193,
+      "failed": []
+    },
+    "bot-activity": {
+      "ok": true,
+      "current": 8961,
+      "failed": []
+    },
+    "more-cryptos": {
+      "ok": true,
+      "current": 100,
+      "failed": []
+    },
+    "religions": {
+      "ok": true,
+      "current": 171541,
+      "failed": []
+    },
+    "mygene-brca1-hits": {
+      "ok": true,
+      "current": 1,
+      "failed": []
+    },
+    "feodo-c2-count": {
+      "ok": true,
+      "current": 5,
+      "failed": []
+    },
+    "monero-network": {
+      "ok": true,
+      "current": 6781667597.5,
+      "failed": []
+    },
+    "fertilizer": {
+      "ok": false,
+      "current": 0,
+      "failed": [
+        "kg_per_hectare"
+      ]
+    },
+    "disease-outbreaks": {
+      "ok": true,
+      "current": 50,
+      "failed": []
+    },
+    "health": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "diseases": {
+      "ok": true,
+      "current": 3102,
+      "failed": []
+    },
+    "crossref-deep-learning": {
+      "ok": true,
+      "current": 3200916,
+      "failed": []
+    },
+    "hedera-blocks": {
+      "ok": true,
+      "current": 101581971,
+      "failed": []
+    },
+    "refugees": {
+      "ok": true,
+      "current": 31637408,
+      "failed": []
+    },
+    "dex-total-volume-24h": {
+      "ok": true,
+      "current": 5792783893.230002,
+      "failed": []
+    },
+    "miso-grid": {
+      "ok": true,
+      "current": 62786,
+      "failed": []
+    },
+    "fed-rate": {
+      "ok": true,
+      "current": 3.88,
+      "failed": []
+    },
+    "dex-ethereum-volume": {
+      "ok": true,
+      "current": 726335726.9599999,
+      "failed": []
+    },
+    "biotech": {
+      "ok": true,
+      "current": 954,
+      "failed": []
+    },
+    "hazards": {
+      "ok": true,
+      "current": 193,
+      "failed": []
+    },
+    "devto-articles": {
+      "ok": true,
+      "current": 100,
+      "failed": []
+    },
+    "grid-mix": {
+      "ok": true,
+      "current": 59.4,
+      "failed": []
+    },
+    "micar-casps": {
+      "ok": true,
+      "current": 436,
+      "failed": []
+    },
+    "crates-io": {
+      "ok": true,
+      "current": 362081,
+      "failed": []
+    },
+    "develop": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "randomuser-heartbeat": {
+      "ok": true,
+      "current": 3,
+      "failed": []
+    },
+    "hackernews-top-scores": {
+      "ok": true,
+      "current": 1783,
+      "failed": []
+    },
+    "metals": {
+      "ok": true,
+      "current": 4031.2,
+      "failed": []
     },
     "fcc-broadband": {
       "ok": false,
@@ -911,195 +599,155 @@
         "providers_reporting"
       ]
     },
+    "pqc-migration": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "grid-demand": {
+      "ok": true,
+      "current": 33804,
+      "failed": []
+    },
+    "bike-share": {
+      "ok": true,
+      "current": 815,
+      "failed": []
+    },
+    "dev-vr-ar": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "corona-zahlen-germany-week-incidence": {
+      "ok": true,
+      "current": 1.1083603622121665,
+      "failed": []
+    },
+    "bluesky-posts": {
+      "ok": true,
+      "current": 100,
+      "failed": []
+    },
     "fdic-insured-banks": {
       "ok": true,
       "current": 27835,
+      "failed": []
+    },
+    "met-artworks": {
+      "ok": true,
+      "current": 503012,
+      "failed": []
+    },
+    "fema-disasters": {
+      "ok": true,
+      "current": 70572,
+      "failed": []
+    },
+    "faostat": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "food_price_index"
+      ]
+    },
+    "construction": {
+      "ok": true,
+      "current": 28403795045949.5,
+      "failed": []
+    },
+    "pypistats-fastapi-downloads": {
+      "ok": true,
+      "current": 12130492,
+      "failed": []
+    },
+    "mental-health": {
+      "ok": true,
+      "current": 23,
+      "failed": []
+    },
+    "deps-dev-react-versions": {
+      "ok": true,
+      "current": 2989,
+      "failed": []
+    },
+    "government-data": {
+      "ok": true,
+      "current": 59601,
+      "failed": []
+    },
+    "computer-networks": {
+      "ok": false,
+      "current": 0,
+      "failed": [
+        "internet_exchanges"
+      ]
+    },
+    "pypi-requests-releases": {
+      "ok": true,
+      "current": 163,
       "failed": []
     },
     "events": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
+    },
+    "mattercatalog": {
+      "ok": true,
+      "current": 2875,
+      "failed": []
+    },
+    "dev-metaverse": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "carbon-intensity": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "pypi-packages": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "global-trade-regulations": {
+      "ok": true,
+      "current": 2081,
+      "failed": []
+    },
+    "coinrithm-overview": {
+      "ok": true,
+      "current": 72352,
+      "failed": []
+    },
+    "maritime": {
+      "ok": true,
+      "current": 815,
+      "failed": []
+    },
+    "eurostat-hicp": {
+      "ok": true,
+      "current": 2.3,
+      "failed": []
     },
     "exchange-rate": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "feodo-c2-count": {
       "ok": true,
-      "current": 5,
-      "failed": []
-    },
-    "fed-rate": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "fema-disasters": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "fertilizer": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "filecoin-miners": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "filecoin-network": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "finance": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "fintech": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "flux-nodes": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "food-drink": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "food-products": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "food-security": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "form-d-filings": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "forums": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "frankfurter-eursek": {
-      "ok": true,
-      "current": 11.131,
-      "failed": []
-    },
-    "frankfurter-eurusd": {
-      "ok": true,
-      "current": 1.1193,
-      "failed": []
-    },
-    "frankfurter-eur-usd": {
-      "ok": true,
-      "current": 0.89342,
-      "failed": []
-    },
-    "fred-dgs10": {
-      "ok": true,
-      "current": 4.96,
-      "failed": []
-    },
-    "fred-fedfunds": {
-      "ok": true,
-      "current": 3.75,
-      "failed": []
-    },
-    "frankfurter-fx": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "gbif-homo-sapiens-key": {
-      "ok": true,
-      "current": 2436436,
-      "failed": []
-    },
-    "gdp": {
-      "ok": true,
-      "current": 604.8,
-      "failed": []
-    },
-    "free-games": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "free-to-play": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "geocables-incidents": {
-      "ok": true,
-      "current": 25,
-      "failed": []
-    },
-    "github-torvalds-followers": {
-      "ok": true,
-      "current": 329474,
-      "failed": []
-    },
-    "github-recent-commits": {
-      "ok": true,
-      "current": 22465570,
-      "failed": []
-    },
-    "gleif-leis": {
-      "ok": true,
-      "current": 3472837,
+      "current": 0.89213,
       "failed": []
     },
     "global-forest-watch": {
@@ -1109,677 +757,21 @@
         "tree_cover_loss_ha"
       ]
     },
-    "generative-ai": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "github-trending": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "global-trade-regulations": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "government-data": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "grid-balance": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "hackernews-top-scores": {
+    "gleif-leis": {
       "ok": true,
-      "current": 1646,
+      "current": 3472837,
       "failed": []
     },
-    "grid-demand": {
+    "depin-network": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "grid-mix": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "hazards": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "health": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "hedera-blocks": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "hn-tech-sentiment": {
+    "depin-networks": {
       "ok": true,
-      "current": 3669.82,
-      "failed": []
-    },
-    "hedge-fund-monitor": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "helium-hotspots": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "home-assistant": {
-      "ok": true,
-      "current": 711555,
-      "failed": []
-    },
-    "ietf-datatracker": {
-      "ok": true,
-      "current": 9848,
-      "failed": []
-    },
-    "humanitarian-aid": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "huggingface-models": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "infrastructure": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "iptv-org-channel-count": {
-      "ok": true,
-      "current": 11340,
-      "failed": []
-    },
-    "institutional-finance": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "interop-messaging": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "jobs": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "kraken-ada-usd": {
-      "ok": true,
-      "current": 0.204842,
-      "failed": []
-    },
-    "kraken-btc-usd": {
-      "ok": true,
-      "current": 80387.4,
-      "failed": []
-    },
-    "kraken-doge-usd": {
-      "ok": true,
-      "current": 0.0771667,
-      "failed": []
-    },
-    "kraken-dot-usd": {
-      "ok": true,
-      "current": 1.0232,
-      "failed": []
-    },
-    "kraken-eth-usd": {
-      "ok": true,
-      "current": 2330.19,
-      "failed": []
-    },
-    "kraken-link-usd": {
-      "ok": true,
-      "current": 11.45315,
-      "failed": []
-    },
-    "kraken-sol-usd": {
-      "ok": true,
-      "current": 101.33,
-      "failed": []
-    },
-    "kraken-xrp-usd": {
-      "ok": true,
-      "current": 1.28906,
-      "failed": []
-    },
-    "langpop-python-composite-score": {
-      "ok": true,
-      "current": 46.168,
-      "failed": []
-    },
-    "korean-culture": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "kaspa-blockdag": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "librariesio-sourcerank-react": {
-      "ok": true,
-      "current": 35,
-      "failed": []
-    },
-    "languages": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "laws": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "mattercatalog": {
-      "ok": true,
-      "current": 2875,
-      "failed": []
-    },
-    "maker": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "maritime": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "met-artworks": {
-      "ok": true,
-      "current": 503012,
-      "failed": []
-    },
-    "mental-health": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "metals": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "micar-casps": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "miso-grid": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "monero-network": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "more-cryptos": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "museums": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "mygene-brca1-hits": {
-      "ok": true,
-      "current": 1,
-      "failed": []
-    },
-    "myvariant-rs113488022-hits": {
-      "ok": true,
-      "current": 3,
-      "failed": []
-    },
-    "music": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nasa-eonet": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nasa-neo": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nbp-gold-spot": {
-      "ok": true,
-      "current": 507.54,
-      "failed": []
-    },
-    "natural-disasters": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nature-observations": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "networking": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nft": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "noaa-spaceweather-alerts": {
-      "ok": true,
-      "current": 91,
-      "failed": []
-    },
-    "npm-downloads-react": {
-      "ok": true,
-      "current": 42444710,
-      "failed": []
-    },
-    "ngo": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "npm-scraper-packages": {
-      "ok": true,
-      "current": 6300,
-      "failed": []
-    },
-    "noaa-ndbc": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "npm-packages": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "npm-search": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nvd-cve-count": {
-      "ok": true,
-      "current": 414122,
-      "failed": []
-    },
-    "nport-filings": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nutrition-foods": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "nyfed-sofr-rate": {
-      "ok": true,
-      "current": 3.9,
-      "failed": []
-    },
-    "nvd-new-cves-count": {
-      "ok": true,
-      "current": 176,
-      "failed": []
-    },
-    "nvd-new-cves": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "open-meteo-berlin-temp": {
-      "ok": true,
-      "current": 10.9,
-      "failed": []
-    },
-    "open-meteo-pm25": {
-      "ok": true,
-      "current": 6.3,
-      "failed": []
-    },
-    "open-mindfulness-resource-count": {
-      "ok": true,
-      "current": 20,
-      "failed": []
-    },
-    "open-digger-openrank-vscode": {
-      "ok": true,
-      "current": 424.99,
-      "failed": []
-    },
-    "open-notify-astronauts": {
-      "ok": true,
-      "current": 12,
-      "failed": []
-    },
-    "ocean-waves": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "open-source-packages": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "open-source": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "openfda-device-recalls": {
-      "ok": true,
-      "current": 40300,
-      "failed": []
-    },
-    "openfda-food-recalls": {
-      "ok": true,
-      "current": 29505,
-      "failed": []
-    },
-    "openlibrary-ml-books": {
-      "ok": true,
-      "current": 7379,
-      "failed": []
-    },
-    "openverse-cat-images": {
-      "ok": true,
-      "current": 240,
-      "failed": []
-    },
-    "openfda-drug-recalls": {
-      "ok": true,
-      "current": 18043,
-      "failed": []
-    },
-    "ossf-scorecard-linux": {
-      "ok": true,
-      "current": 3,
-      "failed": []
-    },
-    "osv-lodash-vuln-count": {
-      "ok": true,
-      "current": 10,
-      "failed": []
-    },
-    "openfda-recalls": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "optoelectronics": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "osv-vulnerabilities": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "phishunt-domains": {
-      "ok": true,
-      "current": 1198,
-      "failed": []
-    },
-    "particle-physics": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "pocketworld-space-weather": {
-      "ok": true,
-      "current": 1,
-      "failed": []
-    },
-    "philosophy": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "poligraph": {
-      "ok": true,
-      "current": 20,
-      "failed": []
-    },
-    "podcasts": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "policy-rates": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "polymarket-open": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "population": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "pqc-migration": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "privacy-monero": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "privacy-zcash": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "programming": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "protocols-tvl": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "pubmed-acupuncture-papers": {
-      "ok": true,
-      "current": 55695,
-      "failed": []
-    },
-    "psychedelics": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "pubmed-covid-papers": {
-      "ok": true,
-      "current": 514104,
-      "failed": []
-    },
-    "pubmed": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "pypi-daily-requests": {
-      "ok": true,
-      "current": 34618482,
-      "failed": []
-    },
-    "pubmed-meditation-papers": {
-      "ok": true,
-      "current": 12265,
+      "current": 146,
       "failed": []
     },
     "pypi-downloads-requests": {
@@ -1787,59 +779,235 @@
       "current": 34618482,
       "failed": []
     },
-    "pypi-requests-releases": {
+    "eurostat-eu-unemployment": {
       "ok": true,
-      "current": 163,
+      "current": 6.1,
       "failed": []
     },
-    "pypistats-fastapi-downloads": {
+    "maker": {
       "ok": true,
-      "current": 12130492,
+      "current": 6105293843,
+      "failed": []
+    },
+    "coinpaprika-top100-marketcap": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "usd"
+      ]
+    },
+    "ev": {
+      "ok": true,
+      "current": 17990000,
+      "failed": []
+    },
+    "cern-opendata": {
+      "ok": true,
+      "current": 82414,
+      "failed": []
+    },
+    "pypi-daily-requests": {
+      "ok": true,
+      "current": 34618482,
+      "failed": []
+    },
+    "github-trending": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "librariesio-sourcerank-react": {
+      "ok": true,
+      "current": 35,
+      "failed": []
+    },
+    "grid-balance": {
+      "ok": false,
+      "current": 0,
+      "failed": [
+        "system_balance_mw"
+      ]
+    },
+    "depin-market": {
+      "ok": true,
+      "current": 632098240,
+      "failed": []
+    },
+    "coinmarketcap-btc-usd": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "usd"
+      ]
+    },
+    "crossref-works": {
+      "ok": true,
+      "current": 188027221,
+      "failed": []
+    },
+    "commodities": {
+      "ok": true,
+      "current": 6.556,
       "failed": []
     },
     "pypi-activity": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "randomuser-heartbeat": {
       "ok": true,
-      "current": 3,
+      "current": 763726555,
       "failed": []
     },
-    "pypi-packages": {
+    "laws": {
+      "ok": true,
+      "current": 10000,
+      "failed": []
+    },
+    "demographics": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "radio-stations": {
+    "cannabis-news": {
+      "ok": true,
+      "current": 50,
+      "failed": []
+    },
+    "eu-open-data": {
+      "ok": true,
+      "current": 2042202,
+      "failed": []
+    },
+    "pubmed-meditation-papers": {
+      "ok": true,
+      "current": 12265,
+      "failed": []
+    },
+    "github-torvalds-followers": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "count"
       ]
     },
-    "refugees": {
+    "coinbase-btc-volume24h": {
+      "ok": true,
+      "current": 224999467.83009806,
+      "failed": []
+    },
+    "languages": {
+      "ok": true,
+      "current": 1073,
+      "failed": []
+    },
+    "defillama-protocol-count": {
+      "ok": true,
+      "current": 8823,
+      "failed": []
+    },
+    "crossref": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "religions": {
+    "pubmed-covid-papers": {
+      "ok": true,
+      "current": 514104,
+      "failed": []
+    },
+    "cdc-covid-total-deaths": {
+      "ok": true,
+      "current": 12303399,
+      "failed": []
+    },
+    "github-recent-commits": {
+      "ok": true,
+      "current": 22954762,
+      "failed": []
+    },
+    "eu-legal-acts": {
+      "ok": true,
+      "current": 76367,
+      "failed": []
+    },
+    "langpop-python-composite-score": {
+      "ok": true,
+      "current": 46.168,
+      "failed": []
+    },
+    "europepmc-crispr-therapy": {
+      "ok": true,
+      "current": 80437,
+      "failed": []
+    },
+    "defi-stablecoins": {
+      "ok": true,
+      "current": 425,
+      "failed": []
+    },
+    "geocables-incidents": {
+      "ok": true,
+      "current": 25,
+      "failed": []
+    },
+    "pubmed": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
+    },
+    "box-status": {
+      "ok": true,
+      "current": 0,
+      "failed": []
     },
     "ripe-atlas-public": {
       "ok": true,
-      "current": 41528,
+      "current": 42685,
+      "failed": []
+    },
+    "kraken-sol-usd": {
+      "ok": true,
+      "current": 101.45,
+      "failed": []
+    },
+    "defi-total-tvl": {
+      "ok": true,
+      "current": 88369692501,
+      "failed": []
+    },
+    "defi-yields": {
+      "ok": true,
+      "current": 283836409,
+      "failed": []
+    },
+    "generative-ai": {
+      "ok": true,
+      "current": 108218321,
+      "failed": []
+    },
+    "eth-exchange-spread": {
+      "ok": true,
+      "current": 0.018461313887409014,
+      "failed": []
+    },
+    "espn-nba-score-count": {
+      "ok": true,
+      "current": 7,
+      "failed": []
+    },
+    "gdp": {
+      "ok": true,
+      "current": 604.8,
+      "failed": []
+    },
+    "defi-open-interest-total": {
+      "ok": true,
+      "current": 22276071393,
       "failed": []
     },
     "ripestat": {
@@ -1847,21 +1015,583 @@
       "current": 1,
       "failed": []
     },
-    "renewable-energy": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "protocols-tvl": {
+      "ok": true,
+      "current": 88687163136,
+      "failed": []
     },
     "rir-arin": {
       "ok": true,
       "current": 81307,
       "failed": []
     },
+    "psychedelics": {
+      "ok": true,
+      "current": 551,
+      "failed": []
+    },
+    "kraken-xrp-usd": {
+      "ok": true,
+      "current": 1.28842,
+      "failed": []
+    },
+    "science": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "epss-log4shell": {
+      "ok": true,
+      "current": 0.99999,
+      "failed": []
+    },
+    "kraken-eth-usd": {
+      "ok": true,
+      "current": 2329.84,
+      "failed": []
+    },
+    "gbif-homo-sapiens-key": {
+      "ok": true,
+      "current": 2436436,
+      "failed": []
+    },
+    "defi-fees-aave": {
+      "ok": true,
+      "current": 1156062,
+      "failed": []
+    },
+    "espn-nfl-score-count": {
+      "ok": true,
+      "current": 14,
+      "failed": []
+    },
+    "compute": {
+      "ok": true,
+      "current": 1869,
+      "failed": []
+    },
+    "privacy-zcash": {
+      "ok": true,
+      "current": 289574638.81773275,
+      "failed": []
+    },
+    "kraken-dot-usd": {
+      "ok": true,
+      "current": 1.0172,
+      "failed": []
+    },
+    "free-to-play": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "defi-fees": {
+      "ok": true,
+      "current": 60657984,
+      "failed": []
+    },
+    "privacy-monero": {
+      "ok": true,
+      "current": 814205348654,
+      "failed": []
+    },
+    "environment": {
+      "ok": true,
+      "current": 428.09,
+      "failed": []
+    },
+    "saos": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "judgments"
+      ]
+    },
     "robonix": {
       "ok": true,
       "current": 67,
+      "failed": []
+    },
+    "kraken-btc-usd": {
+      "ok": true,
+      "current": 80365.2,
+      "failed": []
+    },
+    "pubmed-acupuncture-papers": {
+      "ok": true,
+      "current": 55695,
+      "failed": []
+    },
+    "kraken-link-usd": {
+      "ok": true,
+      "current": 11.45244,
+      "failed": []
+    },
+    "free-games": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "defi-dex-volume": {
+      "ok": true,
+      "current": 5594503209,
+      "failed": []
+    },
+    "scaling-l2": {
+      "ok": true,
+      "current": 8089048405,
+      "failed": []
+    },
+    "kraken-doge-usd": {
+      "ok": true,
+      "current": 0.0770592,
+      "failed": []
+    },
+    "epa-envirofacts": {
+      "ok": true,
+      "current": 1000,
+      "failed": []
+    },
+    "fred-fedfunds": {
+      "ok": true,
+      "current": 3.75,
+      "failed": []
+    },
+    "programming": {
+      "ok": true,
+      "current": 46.168,
+      "failed": []
+    },
+    "clinicaltrials-total-studies": {
+      "ok": true,
+      "current": 608415,
+      "failed": []
+    },
+    "dcentral-miner-count": {
+      "ok": true,
+      "current": 487,
+      "failed": []
+    },
+    "clearlydefined-react-license": {
+      "ok": true,
+      "current": 93,
+      "failed": []
+    },
+    "cloud-status": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "affirmations-length": {
+      "ok": true,
+      "current": 55,
+      "failed": []
+    },
+    "cisa-kev-total": {
+      "ok": true,
+      "current": 1756,
+      "failed": []
+    },
+    "cleveland-artworks": {
+      "ok": true,
+      "current": 68810,
+      "failed": []
+    },
+    "science-news": {
+      "ok": true,
+      "current": 19499,
+      "failed": []
+    },
+    "population": {
+      "ok": true,
+      "current": 8140897523,
+      "failed": []
+    },
+    "cisa-kev-count": {
+      "ok": true,
+      "current": 1756,
+      "failed": []
+    },
+    "ai-enforcement-events": {
+      "ok": true,
+      "current": 37,
+      "failed": []
+    },
+    "abuse-ch-feodo": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "agent-census": {
+      "ok": true,
+      "current": 60,
+      "failed": []
+    },
+    "cisa-kev": {
+      "ok": true,
+      "current": 8,
+      "failed": []
+    },
+    "poligraph": {
+      "ok": true,
+      "current": 20,
+      "failed": []
+    },
+    "aave": {
+      "ok": true,
+      "current": 42519706280,
+      "failed": []
+    },
+    "circle-x402-resources": {
+      "ok": true,
+      "current": 2842,
+      "failed": []
+    },
+    "btc-exchange-spread": {
+      "ok": true,
+      "current": 0.01965919217382316,
+      "failed": []
+    },
+    "policy-rates": {
+      "ok": true,
+      "current": 3.875,
+      "failed": []
+    },
+    "china": {
+      "ok": true,
+      "current": 18729668435848,
+      "failed": []
+    },
+    "13f-holdings": {
+      "ok": true,
+      "current": 0,
+      "failed": []
+    },
+    "security": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "chemistry": {
+      "ok": true,
+      "current": 28632,
+      "failed": []
+    },
+    "shodan-google-dns-ports": {
+      "ok": true,
+      "current": 2,
+      "failed": []
+    },
+    "podcasts": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "pocketworld-space-weather": {
+      "ok": true,
+      "current": 1,
+      "failed": []
+    },
+    "cheapshark-deal-count": {
+      "ok": true,
+      "current": 60,
+      "failed": []
+    },
+    "beauty": {
+      "ok": true,
+      "current": 78923,
+      "failed": []
+    },
+    "chainsights-daos": {
+      "ok": true,
+      "current": 52,
+      "failed": []
+    },
+    "phishunt-domains": {
+      "ok": true,
+      "current": 1198,
+      "failed": []
+    },
+    "shopify-allbirds-product-count": {
+      "ok": true,
+      "current": 250,
+      "failed": []
+    },
+    "shopping": {
+      "ok": true,
+      "current": 101.16,
+      "failed": []
+    },
+    "osv-vulnerabilities": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "cloudflare-status": {
+      "ok": true,
+      "current": 68,
+      "failed": []
+    },
+    "polymarket-open": {
+      "ok": true,
+      "current": 100,
+      "failed": []
+    },
+    "particle-physics": {
+      "ok": true,
+      "current": 0,
+      "failed": []
+    },
+    "coinbase-eth-usd": {
+      "ok": true,
+      "current": 2331.1,
+      "failed": []
+    },
+    "smr": {
+      "ok": true,
+      "current": 95,
+      "failed": []
+    },
+    "philosophy": {
+      "ok": true,
+      "current": 204901,
+      "failed": []
+    },
+    "climate-datasets": {
+      "ok": true,
+      "current": 100,
+      "failed": []
+    },
+    "bank-data": {
+      "ok": true,
+      "current": 27835,
+      "failed": []
+    },
+    "simulations": {
+      "ok": true,
+      "current": 0.3,
+      "failed": []
+    },
+    "cloud-components": {
+      "ok": true,
+      "current": 11,
+      "failed": []
+    },
+    "optoelectronics": {
+      "ok": true,
+      "current": 58841,
+      "failed": []
+    },
+    "snapshot-proposals": {
+      "ok": true,
+      "current": 386,
+      "failed": []
+    },
+    "osv-lodash-vuln-count": {
+      "ok": true,
+      "current": 10,
+      "failed": []
+    },
+    "south-tyrol-accommodations": {
+      "ok": true,
+      "current": 16181,
+      "failed": []
+    },
+    "ossf-scorecard-linux": {
+      "ok": true,
+      "current": 3,
+      "failed": []
+    },
+    "aviation-weather": {
+      "ok": true,
+      "current": 248,
+      "failed": []
+    },
+    "ballotwatch-bills": {
+      "ok": true,
+      "current": 183582,
+      "failed": []
+    },
+    "coinbase-btc-usd": {
+      "ok": true,
+      "current": 80396.08,
+      "failed": []
+    },
+    "openverse-cat-images": {
+      "ok": true,
+      "current": 240,
+      "failed": []
+    },
+    "openlibrary-ml-books": {
+      "ok": true,
+      "current": 7379,
+      "failed": []
+    },
+    "openfda-recalls": {
+      "ok": true,
+      "current": 18043,
+      "failed": []
+    },
+    "autonomous-tech": {
+      "ok": true,
+      "current": 6332,
+      "failed": []
+    },
+    "arxiv-ai": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "cloud-outages": {
+      "ok": true,
+      "current": 58,
+      "failed": []
+    },
+    "openfda-drug-recalls": {
+      "ok": true,
+      "current": 18043,
+      "failed": []
+    },
+    "bakom": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "antenna_sites"
+      ]
+    },
+    "openfda-device-recalls": {
+      "ok": true,
+      "current": 40300,
+      "failed": []
+    },
+    "open-source-packages": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "art-design": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "arbetsformedlingen": {
+      "ok": true,
+      "current": 41876,
+      "failed": []
+    },
+    "openfda-food-recalls": {
+      "ok": true,
+      "current": 29505,
+      "failed": []
+    },
+    "arweave-network": {
+      "ok": true,
+      "current": 2029248,
+      "failed": []
+    },
+    "open-source": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "audius": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "apis-guru-directory": {
+      "ok": true,
+      "current": 2529,
+      "failed": []
+    },
+    "open-notify-astronauts": {
+      "ok": true,
+      "current": 12,
+      "failed": []
+    },
+    "open-mindfulness-resource-count": {
+      "ok": true,
+      "current": 20,
+      "failed": []
+    },
+    "arxiv-cs": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "anime": {
+      "ok": false,
+      "current": null,
+      "failed": [
+        "err_AttributeError"
+      ]
+    },
+    "open-meteo-pm25": {
+      "ok": true,
+      "current": 6.4,
+      "failed": []
+    },
+    "allratestoday-usd-eur": {
+      "ok": true,
+      "current": 0.89341553,
+      "failed": []
+    },
+    "cryptocurrency": {
+      "ok": true,
+      "current": 60.8,
+      "failed": []
+    },
+    "open-digger-openrank-vscode": {
+      "ok": true,
+      "current": 424.99,
+      "failed": []
+    },
+    "calendars": {
+      "ok": true,
+      "current": 89,
+      "failed": []
+    },
+    "alcohol-health": {
+      "ok": true,
+      "current": 279,
+      "failed": []
+    },
+    "open-meteo-berlin-temp": {
+      "ok": true,
+      "current": 11.4,
+      "failed": []
+    },
+    "airports": {
+      "ok": true,
+      "current": 8803,
       "failed": []
     },
     "satlas": {
@@ -1871,144 +1601,145 @@
         "tracked_objects"
       ]
     },
-    "research": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "scaling-l2": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "science": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "science-math": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "science-news": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "saos": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "judgments"
-      ]
-    },
-    "shodan-google-dns-ports": {
+    "air-quality": {
       "ok": true,
-      "current": 2,
+      "current": 49,
       "failed": []
     },
-    "shopify-allbirds-product-count": {
+    "ocean-waves": {
       "ok": true,
-      "current": 250,
+      "current": 3.34,
+      "failed": []
+    },
+    "7timer-berlin-temp": {
+      "ok": true,
+      "current": 7,
+      "failed": []
+    },
+    "ai-news": {
+      "ok": true,
+      "current": 125,
+      "failed": []
+    },
+    "nyfed-sofr-rate": {
+      "ok": true,
+      "current": 3.9,
+      "failed": []
+    },
+    "nvd-new-cves": {
+      "ok": true,
+      "current": 4204,
+      "failed": []
+    },
+    "nvd-cve-count": {
+      "ok": true,
+      "current": 414122,
+      "failed": []
+    },
+    "ai-governance-records": {
+      "ok": true,
+      "current": 91,
+      "failed": []
+    },
+    "api-directory": {
+      "ok": true,
+      "current": 2529,
       "failed": []
     },
     "sec-filings": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "security": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "shopping": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "simulations": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "south-tyrol-accommodations": {
+    "ai-implementation-milestones": {
       "ok": true,
-      "current": 16168,
+      "current": 24,
       "failed": []
     },
-    "smr": {
+    "science-math": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
-    "snapshot-proposals": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "nutrition-foods": {
+      "ok": true,
+      "current": 25775,
+      "failed": []
+    },
+    "npm-search": {
+      "ok": true,
+      "current": 194060,
+      "failed": []
+    },
+    "nvd-new-cves-count": {
+      "ok": true,
+      "current": 176,
+      "failed": []
+    },
+    "nport-filings": {
+      "ok": true,
+      "current": 0,
+      "failed": []
+    },
+    "ai-models": {
+      "ok": true,
+      "current": 1,
+      "failed": []
+    },
+    "npm-scraper-packages": {
+      "ok": true,
+      "current": 6299,
+      "failed": []
     },
     "space": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
+    },
+    "space-launches": {
+      "ok": false,
+      "current": 0,
+      "failed": [
+        "upcoming"
+      ]
+    },
+    "space-news": {
+      "ok": true,
+      "current": 100,
+      "failed": []
     },
     "spaceflight-news-count": {
       "ok": true,
       "current": 36625,
       "failed": []
     },
-    "space-launches": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "space-news": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
     "spaceweather": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
     "species-observations": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 3983316190,
+      "failed": []
+    },
+    "sports-scores": {
+      "ok": true,
+      "current": 7,
+      "failed": []
+    },
+    "stablecoin-supply": {
+      "ok": true,
+      "current": 305660103048,
+      "failed": []
     },
     "stablecoin-total-supply": {
       "ok": true,
@@ -2025,104 +1756,82 @@
       "current": 182327166702.8831,
       "failed": []
     },
-    "sports-scores": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "statistics": {
+      "ok": true,
+      "current": 1725255854,
+      "failed": []
     },
     "steam-csgo-players": {
       "ok": true,
-      "current": 645257,
+      "current": 657711,
       "failed": []
     },
     "steam-dota2-players": {
       "ok": true,
-      "current": 705210,
+      "current": 720588,
       "failed": []
     },
-    "stablecoin-supply": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "stocks": {
+      "ok": true,
+      "current": 100,
+      "failed": []
     },
     "sunrise-berlin-daylength": {
       "ok": true,
       "current": 35830,
       "failed": []
     },
-    "statistics": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "stocks": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
     "swiss-federal-laws": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 369986,
+      "failed": []
     },
     "ted-tenders": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 22474,
+      "failed": []
     },
     "theoretical-cs": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 30712,
+      "failed": []
     },
     "tobacco-health": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 225,
+      "failed": []
     },
     "tobacco-reports": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 1383,
+      "failed": []
     },
     "tokenization": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 100,
+      "failed": []
     },
     "tracking": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 19.19,
+      "failed": []
     },
     "transportation": {
+      "ok": true,
+      "current": 4,
+      "failed": []
+    },
+    "travel": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
+    },
+    "travel-events": {
+      "ok": true,
+      "current": 204,
+      "failed": []
     },
     "treasuries": {
       "ok": true,
@@ -2136,11 +1845,11 @@
         "yield_10y"
       ]
     },
-    "travel": {
+    "tv": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
     "tvmaze-us-schedule-count": {
@@ -2150,84 +1859,62 @@
     },
     "tweetfeed-c2": {
       "ok": true,
-      "current": 1489,
+      "current": 1491,
       "failed": []
     },
     "uk-carbon-intensity": {
       "ok": true,
-      "current": 90,
+      "current": 85,
       "failed": []
     },
     "uk-carbon-intensity-now": {
       "ok": true,
-      "current": 90,
+      "current": 85,
       "failed": []
     },
-    "travel-events": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "uk-flood-warnings": {
+      "ok": true,
+      "current": 109,
+      "failed": []
     },
-    "tv": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "un-governance": {
+      "ok": true,
+      "current": 205,
+      "failed": []
     },
     "unemployment": {
       "ok": true,
       "current": 8.4,
       "failed": []
     },
-    "uk-flood-warnings": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "un-governance": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "usgs-earthquake-count": {
-      "ok": true,
-      "current": 16,
-      "failed": []
-    },
     "unesco-sites": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "usgs-earthquakes-emsc": {
       "ok": true,
-      "current": 131907,
+      "current": 3542,
       "failed": []
     },
     "universities": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "usgs-elevated-volcanoes": {
       "ok": true,
-      "current": 4,
+      "current": 2349,
+      "failed": []
+    },
+    "usgs-earthquake-count": {
+      "ok": true,
+      "current": 17,
       "failed": []
     },
     "usgs-earthquakes": {
       "ok": true,
-      "current": 115451,
+      "current": 115455,
+      "failed": []
+    },
+    "usgs-earthquakes-emsc": {
+      "ok": true,
+      "current": 131915,
+      "failed": []
+    },
+    "usgs-elevated-volcanoes": {
+      "ok": true,
+      "current": 4,
       "failed": []
     },
     "usgs-significant-hour": {
@@ -2240,30 +1927,31 @@
       "current": 0,
       "failed": []
     },
+    "usgs-streamflow": {
+      "ok": true,
+      "current": 158000,
+      "failed": []
+    },
     "usgs-streamflow-mississippi": {
       "ok": true,
       "current": 156000,
       "failed": []
     },
-    "usgs-streamflow": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
     "usgs-water": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 3060,
+      "failed": []
     },
     "utilities": {
+      "ok": true,
+      "current": 116.57,
+      "failed": []
+    },
+    "vehicles": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
     "viruswatch-disease-count": {
@@ -2271,56 +1959,36 @@
       "current": 6,
       "failed": []
     },
-    "vehicles": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "volcano-alerts": {
+      "ok": true,
+      "current": 69,
+      "failed": []
     },
     "vpn-mullvad": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "volcano-alerts": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 533,
+      "failed": []
     },
     "vpn-nordvpn": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 7237,
+      "failed": []
     },
     "water": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
     "weather": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "whitebit-btc-usdt": {
       "ok": true,
-      "current": 80476.66,
+      "current": 11.4,
       "failed": []
     },
-    "who-gho-indicator-count": {
+    "web-apps": {
       "ok": true,
-      "current": 3102,
+      "current": 187409994,
       "failed": []
     },
     "whiskyhunter-lot-count": {
@@ -2328,36 +1996,42 @@
       "current": 64476,
       "failed": []
     },
-    "wikidata-triples": {
+    "whitebit-btc-usdt": {
       "ok": true,
-      "current": 9016750947,
+      "current": 80469.26,
       "failed": []
     },
-    "web-apps": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
-    },
-    "wikipedia-bitcoin-extract-len": {
+    "who-gho-indicator-count": {
       "ok": true,
-      "current": 1298,
+      "current": 3102,
+      "failed": []
+    },
+    "wikidata-triples": {
+      "ok": true,
+      "current": 9016762084,
       "failed": []
     },
     "wikipedia": {
       "ok": false,
       "current": null,
       "failed": [
-        "curl_56"
+        "err_AttributeError"
       ]
     },
     "wikipedia-activity": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+      "ok": true,
+      "current": 38705351,
+      "failed": []
+    },
+    "wikipedia-bitcoin-extract-len": {
+      "ok": true,
+      "current": 1298,
+      "failed": []
+    },
+    "worldbank-indicators": {
+      "ok": true,
+      "current": 29544,
+      "failed": []
     },
     "worldbank-se-gdp": {
       "ok": true,
@@ -2379,36 +2053,25 @@
       "current": 34,
       "failed": []
     },
-    "worldbank-indicators": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
+    "xbrl-frames": {
+      "ok": true,
+      "current": 262,
+      "failed": []
+    },
+    "yc-companies": {
+      "ok": true,
+      "current": 6337,
+      "failed": []
     },
     "zenodo-records": {
       "ok": true,
-      "current": 7565655,
+      "current": 7565856,
       "failed": []
-    },
-    "xbrl-frames": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
     },
     "zippopotam-10001-places": {
       "ok": true,
       "current": 1,
       "failed": []
-    },
-    "yc-companies": {
-      "ok": false,
-      "current": null,
-      "failed": [
-        "curl_56"
-      ]
     }
   }
 }

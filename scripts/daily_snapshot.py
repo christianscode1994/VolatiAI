@@ -9,25 +9,49 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-WORKER = "https://sector-slow.fourieranalys.workers.dev"
+WORKERS = {
+    "sector-slow": "https://sector-slow.fourieranalys.workers.dev",
+    "sector-dense": "https://sector-dense.fourieranalys.workers.dev",
+    "sector-sparse": "https://sector-sparse.fourieranalys.workers.dev",
+}
 TIMEOUT = 30
-CONCURRENCY = 3
+CONCURRENCY = 1
 SNAPSHOT_DIR = Path("docs/snapshots")
+import re
 
 
-def fetch_signal(sector):
-    url = f"{WORKER}/{sector}/signal"
+def build_sector_map():
+    """Map every sector to its hosting worker by scanning source files."""
+    m = {}
+    for wname in WORKERS:
+        p = Path(f"workers/{wname}/src/index.js")
+        if p.exists():
+            for b in re.findall(r'^  "?([a-z0-9-]+)"?: \{', p.read_text(), re.MULTILINE):
+                m[b] = wname
+    return m
+
+
+SECTOR_MAP = build_sector_map()
+
+
+def fetch_signal(sector, worker="sector-slow"):
+    url = f"{WORKERS[worker]}/{sector}/signal"
     try:
         r = subprocess.run(
-            ["curl", "-sfL", "--max-time", str(TIMEOUT),
-             "--retry", "3", "--retry-delay", "2", "--retry-all-errors",
+            ["curl", "-sL", "-w", "\n%{http_code}", "--max-time", str(TIMEOUT),
              "-A", "VolatiAI-snapshot/1.0", url],
-            capture_output=True, text=True, timeout=TIMEOUT * 3 + 5,
+            capture_output=True, text=True, timeout=TIMEOUT + 5,
         )
         if r.returncode != 0:
             return {"ok": False, "current": None, "failed": [f"curl_{r.returncode}"]}
+        lines = r.stdout.rsplit("\n", 1)
+        if len(lines) != 2:
+            return {"ok": False, "current": None, "failed": ["bad_output"]}
+        body, status = lines
+        if status.strip() != "200":
+            return {"ok": False, "current": None, "failed": [f"http_{status.strip()}"]}
         try:
-            data = json.loads(r.stdout)
+            data = json.loads(body)
         except json.JSONDecodeError:
             return {"ok": False, "current": None, "failed": ["bad_json"]}
         cur = data.get("delta", {}).get("current")
@@ -61,14 +85,15 @@ def main():
     with open("config/active_sectors.json") as f:
         sectors = json.load(f)
 
-    print(f"Fetching {len(sectors)} sectors from {WORKER}")
+    print(f"Fetching {len(sectors)} sectors across {len(WORKERS)} workers")
     results = {}
     with ThreadPoolExecutor(max_workers=CONCURRENCY) as ex:
         futures = {}
         for i, s in enumerate(sectors):
-            futures[ex.submit(fetch_signal, s)] = s
+            worker = SECTOR_MAP.get(s, "sector-slow")
+            futures[ex.submit(fetch_signal, s, worker)] = s
             if (i + 1) % CONCURRENCY == 0:
-                time.sleep(0.3)
+                time.sleep(1.0)
         for i, fut in enumerate(as_completed(futures), 1):
             sector = futures[fut]
             try:
