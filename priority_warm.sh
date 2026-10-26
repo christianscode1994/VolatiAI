@@ -197,6 +197,7 @@ PRIORITY=(
   lockbox-seeds-strain-count
   geonet-nz-volcanic-alerts
   dexpaprika-total-dex-volume
+  shipwreckatlas-total-wrecks
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
