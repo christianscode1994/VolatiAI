@@ -23,6 +23,7 @@ def http_post(url, data, headers=None, method="POST"):
         return out.stdout if out.returncode == 0 else None
 
 def telegram(text):
+    text = safe_digest(text, "telegram")
     token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
     if not (token and chat): return "skipped"
     payload = json.dumps({"chat_id": chat, "text": text, "parse_mode": "Markdown",
@@ -32,6 +33,7 @@ def telegram(text):
     return "ok" if r and b'"ok":true' in r else f"fail: {r[:100] if r else 'no response'}"
 
 def discord(text):
+    text = safe_digest(text, "discord")
     url = os.environ.get("DISCORD_WEBHOOK_URL")
     if not url: return "skipped"
     payload = json.dumps({"content": text[:1900]}).encode()
@@ -39,6 +41,7 @@ def discord(text):
     return "ok" if r is not None else "fail"
 
 def slack(text):
+    text = safe_digest(text, "slack")
     url = os.environ.get("SLACK_WEBHOOK_URL")
     if not url: return "skipped"
     payload = json.dumps({"text": text}).encode()
@@ -46,6 +49,7 @@ def slack(text):
     return "ok" if r is not None else "fail"
 
 def mastodon(text):
+    text = safe_digest(text, "mastodon")
     instance = os.environ.get("MASTODON_INSTANCE") or os.environ.get("MASTODON_SERVER")
     token = os.environ.get("MASTODON_ACCESS_TOKEN")
     if not (instance and token): return "skipped"
@@ -55,6 +59,7 @@ def mastodon(text):
     return "ok" if r and b'"id"' in r else "fail"
 
 def bluesky(text):
+    text = safe_digest(text, "bluesky")
     handle, password = os.environ.get("BLUESKY_HANDLE"), os.environ.get("BLUESKY_PASSWORD")
     if not (handle and password): return "skipped"
     # Session
@@ -78,6 +83,7 @@ def bluesky(text):
     return "ok" if r and b'"uri"' in r else "fail"
 
 def nostr(text):
+    text = safe_digest(text, "nostr")
     priv = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
     relay = os.environ.get("NOSTR_RELAY", "wss://relay.damus.io").strip()
     if not priv or priv in ("PASTE_NEW_NSEC", "PASTE_NSEC_HERE", "nsec1REPLACE_WITH_YOUR_REAL_KEY"):

@@ -1,3 +1,4 @@
+import { safeDigest } from "../../scripts/safe_digest.mjs";
 // telegram.js — VolatiAI Telegram Bot
 import { checkAttribution } from '../../connectors/attribution.js';
 
@@ -20,9 +21,7 @@ export async function postToTelegram(message, sectors = []) {
     return;
   }
 
-  const text = attr.footer
-    ? `${message}\n\n${attr.footer}`
-    : message;
+  const text = safeDigest(message, "telegram");
 
   await fetch(
     `https://api.telegram.org/bot${token}/sendMessage`,
