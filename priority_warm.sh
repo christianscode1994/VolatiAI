@@ -151,7 +151,6 @@ PRIORITY=(
   randomuser-heartbeat
   coinmarketcap-btc-usd
   allratestoday-usd-eur
-  github-torvalds-followers
   shodan-google-dns-ports
   wikipedia-bitcoin-extract-len
   wttr-dhaka-temp

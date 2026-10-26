@@ -2232,17 +2232,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "github-torvalds-followers": {
-    config: { metric: "count", threshold_pct: 1.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://api.github.com/users/torvalds", { headers: { "user-agent": "VolatiAI/1.0" } });
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.followers);
-      if (!Number.isFinite(v) || v < 0) throw new Error("no_followers");
-      return v;
-    }) } }),
-  },
   "shodan-google-dns-ports": {
     config: { metric: "count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
