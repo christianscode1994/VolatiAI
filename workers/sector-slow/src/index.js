@@ -2559,6 +2559,29 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "kartapay-uk-acquirers": {
+    config: { metric: "count", threshold_pct: 5.0, window: "30d", window_days: 30, ttl: 604800 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://kartapay.co.uk/api/acquirers-snapshot");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const v = Number(j?.acquirers_count);
+      if (!Number.isFinite(v) || v < 0) throw new Error("no_count");
+      return v;
+    }) } }),
+  },
+  "circle-x402-resources": {
+    config: { metric: "count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
+    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
+      const r = await fetch("https://api.circle.com/v2/x402/discovery/resources?limit=100");
+      if (!r.ok) throw new Error("http_" + r.status);
+      const j = await r.json();
+      const items = j?.items;
+      if (!Array.isArray(items)) throw new Error("no_items");
+      if (items.length === 0) throw new Error("empty_items");
+      return items.length;
+    }) } }),
+  },
 };
 
 

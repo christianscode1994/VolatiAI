@@ -183,6 +183,8 @@ PRIORITY=(
   clinicaltrials-total-studies
   south-tyrol-accommodations
   fdic-insured-banks
+  kartapay-uk-acquirers
+  circle-x402-resources
 )
 
 BASE="https://sector-slow.fourieranalys.workers.dev"
