@@ -88,7 +88,7 @@
         "volatility": 0.1754,
         "price_change_1h": 0.8186,
         "price_change_24h": null,
-        "price_change_7d": 1.1694
+        "price_change_7d": 1.1139
       },
       {
         "id": "tether",
@@ -1065,6 +1065,11 @@
       ],
       "okx": [
         {
+          "side": "bid",
+          "bucket_price": 80300.0,
+          "notional": 120282.53824280802
+        },
+        {
           "side": "ask",
           "bucket_price": 80200.0,
           "notional": 71106.329861622
@@ -1224,7 +1229,7 @@
       "collections_tracked": 5,
       "collections_active": 5,
       "volume_24h_total_sol": 0.0,
-      "avg_floor_sol": 2.5016,
+      "avg_floor_sol": 2.502,
       "chain_split": {
         "solana": 5
       },
@@ -1232,7 +1237,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.497,
+          "floor_sol": 7.499,
           "volume_24h_sol": 0.0,
           "listed": 206,
           "avg_sale_sol": 7.9426
@@ -1242,7 +1247,7 @@
           "chain": "solana",
           "floor_sol": 3.112,
           "volume_24h_sol": 0.0,
-          "listed": 496,
+          "listed": 497,
           "avg_sale_sol": 3.902
         },
         {
@@ -1274,7 +1279,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.497,
+          "floor_sol": 7.499,
           "volume_24h_sol": 0.0,
           "listed": 206,
           "avg_sale_sol": 7.9426
@@ -1284,7 +1289,7 @@
           "chain": "solana",
           "floor_sol": 3.112,
           "volume_24h_sol": 0.0,
-          "listed": 496,
+          "listed": 497,
           "avg_sale_sol": 3.902
         },
         {
@@ -1312,7 +1317,7 @@
           "avg_sale_sol": 0.0
         }
       ],
-      "signal": "quiet"
+      "signal": "active"
     }
   },
   "metrics": {
@@ -1365,7 +1370,7 @@
     "polkadot": {
       "latest_block": 33602740,
       "finalized": true,
-      "peers": 31,
+      "peers": 32,
       "is_syncing": false,
       "block_time_sec": 6.0,
       "health_score": 100
@@ -1391,7 +1396,7 @@
       }
     },
     "whale_activity": {
-      "count": 50,
+      "count": 48,
       "transfers": [
         {
           "hash": "0x70846cced02efa0c1132e44e3821853882d63eff56a43ae21be80b6dbac33b5d",
@@ -1510,9 +1515,9 @@
           "from": "0xd1c6aca7ea7ed44e1873dafa054c28ceb690c7eb",
           "to": "0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb",
           "token": "USDT",
-          "value": 18265134.62,
-          "timestamp": 1793032871,
-          "block": 26278121,
+          "value": 22414602.16,
+          "timestamp": 1793033579,
+          "block": 26278180,
           "legs": 2,
           "type": "round_trip",
           "net_flow": 0
@@ -1566,9 +1571,9 @@
           "from": "0xa5b0f0d70227912c29db1312a4267865d19d8952",
           "to": "0x3888cdbe5eeb7f595a92b1c38cf64dbadf83054c",
           "token": "USDT",
-          "value": 7100000.0,
-          "timestamp": 1793032847,
-          "block": 26278119,
+          "value": 7999997.85,
+          "timestamp": 1793033603,
+          "block": 26278182,
           "legs": 1,
           "type": "transfer"
         },
