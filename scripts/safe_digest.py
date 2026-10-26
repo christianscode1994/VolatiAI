@@ -10,7 +10,7 @@ Usage:
 import os
 import re
 
-SITE = os.environ.get("VOLATIAI_SITE", "https://your-site.example.com")
+SITE = os.environ.get("VOLATIAI_SITE", "https://christianscode1994.github.io/VolatiAI")
 
 FOOTER = f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  Informational only. Not financial, medical, or legal advice.

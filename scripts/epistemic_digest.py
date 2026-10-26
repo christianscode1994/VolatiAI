@@ -549,6 +549,8 @@ def render(arbitrations, envelopes_by_sector, contradictions=None, anomalies=Non
 
 
 def send(token, chat_id, text):
+    from safe_digest import safe_digest
+    text = safe_digest(text, "telegram")
     # Telegram caps messages at 4096 chars; leave buffer for HTML tags
     MAX_LEN = 4000
     if len(text) > MAX_LEN:
