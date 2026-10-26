@@ -27,3 +27,14 @@ See `config/source_licenses.json` for per-sector license terms. `commercial_use:
 
 All derived signals cite their sources. See `public/attribution.json` (generated from
 `config/source_licenses.json`). Attributions are displayed in the site footer.
+
+## Compliance posture
+
+**Non-commercial.** Stateless, serverless, no user data.
+
+If this changes to commercial use:
+- Must drop: `musicbrainz-artist-count`, `who-life-expectancy` (CC BY-NC-SA)
+- Must comply with: Open Food Facts ODbL share-alike
+- Must assess: ESPN, TheSportsDB, adsb.lol, Transitous, War-Tracker (unclear ToS)
+
+See `config/source_licenses.json` for per-sector `commercial_use` flags.
