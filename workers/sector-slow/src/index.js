@@ -2582,17 +2582,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "treasury-us-debt": {
-    config: { metric: "usd", threshold_pct: 0.5, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { usd: await fetchSafe(async () => {
-      const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&limit=1");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.data?.[0]?.tot_pub_debt_out_amt);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_debt");
-      return v;
-    }) } }),
-  },
 };
 
 
