@@ -20,56 +20,55 @@ export async function loadSources() {
 
 export function isWhitelisted(info) {
   if (!info) return false;
-  if (info.status === 'REVIEW' || info.status === 'REMOVED') return false;
 
+  // 1. Category is authoritative when present
+  const cat = (info.category || '').toUpperCase();
+  const SAFE_CATS = ['SAFE_PD_CC0', 'SAFE_CC_BY', 'SAFE_MIT', 'SAFE_OPEN'];
+
+  if (SAFE_CATS.includes(cat)) return true;
+
+  // If category is explicitly REVIEW/RISKY/REMOVED, block
+  if (cat === 'REVIEW' || cat === 'REMOVED') return false;
+  if (cat.startsWith('RISKY_')) return false;
+
+  // 2. If category is missing or legacy "OPEN", verify via license string
   const lic = (info.license || '').toLowerCase();
 
-  // 1. Explicit risky patterns → block (fail closed)
+  // Explicit risky patterns → block
   const RISKY = [
     'unverified', 'unknown',
-    'non-commercial', 'noncommercial', 'nc-', 'cc by-nc',
-    'share-alike', 'cc by-sa',
+    'non-commercial', 'noncommercial', 'cc by-nc', 'nc-',
+    'share-alike', 'cc by-sa', 'sa-',
     'kraken', 'coinbase', 'binance', 'bitstamp', 'gemini',
-    'okx', 'bybit', 'kucoin', 'huobi',
+    'okx', 'bybit', 'kucoin',
     'exchange tos', 'exchange terms', 'public market data',
-    'commercial api', 'commercial use only',
-    'redistribution prohibited', 'no redistribution',
-    'all rights reserved',
+    'commercial api', 'redistribution prohibited', 'all rights reserved',
   ];
-  for (const pat of RISKY) {
-    if (lic.includes(pat)) return false;
-  }
+  for (const p of RISKY) if (lic.includes(p)) return false;
 
-  // 2. Explicit safe patterns → allow
+  // Explicit safe patterns → allow
   const SAFE = [
     'public domain',
     'cc0',
-    'cc by 4.0', 'cc by 3.0', 'cc by 2.5',   // NOT cc by-sa, NOT cc by-nc
-    'mit ', 'mit,', 'mit license', 'mit data',
-    'apache', 'bsd',
+    'cc by 4.0', 'cc by 3.0', 'cc by 2.5',
+    'mit license', 'mit data',
+    'apache 2', 'apache license',
     'free reuse, commercial ok',
     'free, keyless public api',
     'open public api',
     'open data',
+    'open access',
+    'open preprint',
     'open repository',
     'open (eu',
-    'open preprint',
-    'open access',
-    'public api (open)',        // explicit "open" in parens
   ];
-  for (const pat of SAFE) {
-    if (lic.includes(pat)) return true;
-  }
+  for (const p of SAFE) if (lic.includes(p)) return true;
 
-  // 2b. Word-boundary matches for short license tokens
+  // Exact "MIT" / "Apache" / "BSD" / "CC0" (word boundary)
   if (/\bmit\b/.test(lic)) return true;
   if (/\bapache\b/.test(lic)) return true;
-  if (/\bbsd\b/.test(lic)) return true;
+  if (/\bbds\b/.test(lic)) return true;
   if (/\bcc0\b/.test(lic)) return true;
-
-  // 2c. Prefix matches for "Open ..." / "Free ..."
-  if (/^open[\s(]/.test(lic)) return true;
-  if (/^free[,\s]/.test(lic)) return true;
 
   // 3. Default: block (fail closed)
   return false;
