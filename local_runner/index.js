@@ -46,7 +46,8 @@ async function fetchAllSectors() {
         continue;
       }
       const map = await res.json();
-      for (const sector of Object.keys(map)) index.push({ sector, base });
+      const sectorMap = map.sectors || map;  // {count,density,sectors} or raw map
+      for (const sector of Object.keys(sectorMap)) index.push({ sector, base });
     } catch (e) {
       console.error(`[warn] /_sectors ${base} failed: ${e.message}`);
     }
