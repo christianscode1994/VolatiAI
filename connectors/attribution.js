@@ -5,7 +5,7 @@ let _cache = null;
 let _cacheTime = 0;
 const CACHE_TTL_MS = 60 * 60 * 1000;  // 1 hour
 
-async function loadSources() {
+export async function loadSources() {
   if (_cache && Date.now() - _cacheTime < CACHE_TTL_MS) return _cache;
   try {
     const r = await fetch(SOURCES_URL);
@@ -18,7 +18,7 @@ async function loadSources() {
   }
 }
 
-function isWhitelisted(info) {
+export function isWhitelisted(info) {
   if (!info) return false;
   const lic = (info.license || '').toLowerCase();
   if (lic.includes('unverified')) return false;
@@ -32,7 +32,7 @@ function isWhitelisted(info) {
  * - safe=true → all sectors used are whitelisted → bot may post
  * - safe=false → at least one sector has unknown/unverified license → bot should suppress
  */
-async function checkAttribution(sectorsUsed) {
+export async function checkAttribution(sectorsUsed) {
   if (!sectorsUsed || sectorsUsed.length === 0) {
     return { safe: true, footer: '' };
   }
@@ -66,12 +66,12 @@ async function checkAttribution(sectorsUsed) {
  * Legacy signature — returns footer or empty string, no safety signal.
  * Only use if you're sure sectors are whitelisted. Prefer checkAttribution().
  */
-async function attributionForPost(sectorsUsed) {
+export async function attributionForPost(sectorsUsed) {
   const r = await checkAttribution(sectorsUsed);
   return r.footer;
 }
 
-async function sourcesCommandText() {
+export async function sourcesCommandText() {
   const data = await loadSources();
   const counts = { pd: 0, ccBy: 0, cc0: 0, other: 0, unknown: 0 };
 
@@ -100,8 +100,7 @@ async function sourcesCommandText() {
   ].join('\n');
 }
 
-function sourcesCommandShort() {
+export function sourcesCommandShort() {
   return 'Data: US Gov PD, CC BY 4.0, CC0. Full attribution: /sources or github.com/christianscode1994/VolatiAI/blob/main/docs/attribution.md';
 }
 
-module.exports = { checkAttribution, attributionForPost, sourcesCommandText, sourcesCommandShort, loadSources, isWhitelisted };
