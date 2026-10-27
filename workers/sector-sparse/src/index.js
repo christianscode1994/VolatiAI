@@ -28,6 +28,16 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "issued-live-certs-24h": {
+    config: { metric: "certs_24h", threshold_pct: 15, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://issued.live/api/stats", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { "issued.live": { ok: false } } };
+      const j = await r.json();
+      const certs = j?.totals?.certs_24h;
+      return { value: typeof certs === "number" ? certs : null, sources: { "issued.live": { ok: true } }, context: { as_of: j?.as_of, domains: j?.totals?.domains } };
+    },
+  },
   "fcc-broadband-providers": {
     config: { metric: "provider_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
