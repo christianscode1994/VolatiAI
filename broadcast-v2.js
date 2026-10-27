@@ -259,16 +259,24 @@ async function postMastodon() {
   }
   await pause("mastodon");
   try {
-    const M = new Mastodon({
-      access_token: process.env.MASTODON_ACCESS_TOKEN,
-      api_url: `${process.env.MASTODON_INSTANCE.replace(/\/$/, "")}/api/v1/`,
-    });
-    // Bot labeling where the instance supports it
-    const mstdnText = fitForPlatform(safeDigest(forMastodon, "mastodon"), 480);
-    await M.post("statuses", { status: mstdnText });
+    const instance = process.env.MASTODON_INSTANCE.replace(/\/$/, "");
+    const text = fitForPlatform(safeDigest(forMastodon, "mastodon"), 490);
+    const r = await axios.post(
+      `${instance}/api/v1/statuses`,
+      { status: text, visibility: "public" },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        timeout: 20000,
+      }
+    );
     console.log("mastodon: ok");
   } catch (e) {
-    console.log(`mastodon: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
+    const status = e.response?.status ?? "network";
+    const msg = String(e.response?.data?.error ?? e.message).slice(0, 100);
+    console.log(`mastodon: failed (${status}) — ${msg}`);
   }
 }
 
