@@ -258,7 +258,7 @@ async function postNostr() {
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
         tags: [["t", "volatiai"], ["t", "bot"]],
-        content: forNostr,
+        content: safeDigest(forNostr, "nostr"),
       },
       privkey
     );
