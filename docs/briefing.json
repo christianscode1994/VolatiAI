@@ -1,17 +1,10 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-27T21:37:54Z",
+  "ts": "2026-10-27T22:04:37Z",
   "run_number": 24,
   "briefing": {
-    "headline": "19 signals across 330 sectors evaluated",
+    "headline": "15 signals across 330 sectors evaluated",
     "by_domain": {
-      "security": {
-        "count": 2,
-        "sectors": [
-          "cve-feed",
-          "security"
-        ]
-      },
       "other": {
         "count": 15,
         "sectors": [
@@ -31,26 +24,10 @@
           "steam-dota2-players",
           "usgs-earthquake-count"
         ]
-      },
-      "information": {
-        "count": 2,
-        "sectors": [
-          "events",
-          "npm-packages"
-        ]
       }
     }
   },
   "signals": [
-    {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2026-85898: Access of resource using incompatible type ('type confusion') in Microsoft Edge (Chromium-based) all",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 20
-    },
     {
       "sector": "dc-crime",
       "severity": "notice",
@@ -58,7 +35,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 1.4135068431680502,
-      "fires_24": 7
+      "fires_24": 8
     },
     {
       "sector": "dex-ethereum-volume",
@@ -67,7 +44,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 33.92113302059451,
-      "fires_24": 8
+      "fires_24": 9
     },
     {
       "sector": "environment",
@@ -76,16 +53,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 0.5519671168526183,
-      "fires_24": 14
-    },
-    {
-      "sector": "events",
-      "severity": "notice",
-      "summary": "New: [568] Genie 4",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 10
+      "fires_24": 15
     },
     {
       "sector": "frankfurter-eursek",
@@ -94,7 +62,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": -0.4626718174467772,
-      "fires_24": 2
+      "fires_24": 3
     },
     {
       "sector": "frankfurter-eurusd",
@@ -103,43 +71,34 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": -0.38416867685160105,
-      "fires_24": 2
+      "fires_24": 3
     },
     {
       "sector": "github-recent-commits",
       "severity": "notice",
-      "summary": "commit_count 31036369 (+7.9% vs 2.1d ago)",
+      "summary": "commit_count 30977278 (+7.7% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 7.940990270645355,
-      "fires_24": 6
+      "pct_change": 7.735478438507946,
+      "fires_24": 7
     },
     {
       "sector": "hackernews-top-scores",
       "severity": "alert",
-      "summary": "top10_score_sum 2315 (+209.5% vs 3.1d ago)",
+      "summary": "top10_score_sum 2221 (+196.9% vs 3.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 209.49197860962565,
-      "fires_24": 13
+      "pct_change": 196.92513368983958,
+      "fires_24": 14
     },
     {
       "sector": "home-assistant",
       "severity": "notice",
-      "summary": "installations 713066 (+0.6% vs 4d ago)",
+      "summary": "installations 713066 (+0.6% vs 4.1d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 0.6316769923368943,
-      "fires_24": 5
-    },
-    {
-      "sector": "npm-packages",
-      "severity": "notice",
-      "summary": "New: @ai-sdk/openai v4.0.104",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 7
+      "fires_24": 6
     },
     {
       "sector": "nvd-new-cves-count",
@@ -148,16 +107,16 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 378.7878787878788,
-      "fires_24": 9
+      "fires_24": 10
     },
     {
       "sector": "phishunt-domains",
       "severity": "notice",
-      "summary": "active_phishings 1178 (-7.8% vs 3.1d ago)",
+      "summary": "active_phishings 1179 (-7.7% vs 3.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -7.752545027407988,
-      "fires_24": 9
+      "pct_change": -7.674236491777604,
+      "fires_24": 10
     },
     {
       "sector": "pypi-daily-requests",
@@ -166,7 +125,7 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 51.12455178519916,
-      "fires_24": 4
+      "fires_24": 5
     },
     {
       "sector": "robonix",
@@ -175,34 +134,25 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 16.94915254237288,
-      "fires_24": 15
-    },
-    {
-      "sector": "security",
-      "severity": "notice",
-      "summary": "New: CVE-2026-48356 \u2014 Adobe Commerce and Magento Unrestricted Upload of File with Dangerous Type Vulnerability",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 3
+      "fires_24": 16
     },
     {
       "sector": "steam-csgo-players",
       "severity": "alert",
-      "summary": "player_count 805396 (-21.1% vs 2.1d ago)",
+      "summary": "player_count 773518 (-24.2% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -21.05779550789769,
-      "fires_24": 6
+      "pct_change": -24.18236974814626,
+      "fires_24": 7
     },
     {
       "sector": "steam-dota2-players",
       "severity": "notice",
-      "summary": "player_count 787368 (-13.9% vs 2.1d ago)",
+      "summary": "player_count 741376 (-19.0% vs 2.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -13.940293515529959,
-      "fires_24": 6
+      "pct_change": -18.96724155079904,
+      "fires_24": 7
     },
     {
       "sector": "usgs-earthquake-count",
@@ -211,137 +161,80 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": -62,
-      "fires_24": 11
+      "fires_24": 12
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-27 17:04",
-    "signals_before": 26,
-    "signals_after": 19,
-    "new": [
-      "events",
-      "github-recent-commits",
-      "security",
-      "steam-csgo-players"
-    ],
+    "previous_ts": "2026-10-27 21:37",
+    "signals_before": 19,
+    "signals_after": 15,
+    "new": [],
     "dropped": [
-      "carbon-intensity",
-      "crypto-liquidations",
-      "depin-network",
-      "electricity",
-      "energy-carbon",
-      "generative-ai",
-      "grid-demand",
-      "grid-mix",
-      "open-meteo-berlin-temp",
-      "science-news",
-      "web-apps"
+      "cve-feed",
+      "events",
+      "npm-packages",
+      "security"
     ],
     "persistent": [
-      "cve-feed",
       "dc-crime",
       "dex-ethereum-volume",
       "environment",
       "frankfurter-eursek",
       "frankfurter-eurusd",
+      "github-recent-commits",
       "hackernews-top-scores",
       "home-assistant",
-      "npm-packages",
       "nvd-new-cves-count",
       "phishunt-domains",
       "pypi-daily-requests",
       "robonix",
+      "steam-csgo-players",
       "steam-dota2-players",
       "usgs-earthquake-count"
     ],
     "movements": [
       {
-        "sector": "cve-feed",
-        "previous": "New: CVE-2026-117511: A vulnerability has been found in desmondmorris node-tesse",
-        "current": "New: CVE-2026-85898: Access of resource using incompatible type ('type confusion"
-      },
-      {
-        "sector": "dc-crime",
-        "previous": "crime_incidents 18080 (+1.4% vs 4.3d ago)",
-        "current": "crime_incidents 18080 (+1.4% vs 4.5d ago)"
-      },
-      {
-        "sector": "dex-ethereum-volume",
-        "previous": "eth_24h 1398992471.73 (+33.9% vs 3.1d ago)",
-        "current": "eth_24h 1398992471.73 (+33.9% vs 3.3d ago)"
-      },
-      {
-        "sector": "environment",
-        "previous": "co2_ppm 428.1 (+0.6% vs 28.7d ago)",
-        "current": "co2_ppm 428.1 (+0.6% vs 28.9d ago)"
-      },
-      {
-        "sector": "frankfurter-eursek",
-        "previous": "eur_sek 11.0795 (-0.5% vs 2.3d ago)",
-        "current": "eur_sek 11.0795 (-0.5% vs 2.5d ago)"
-      },
-      {
-        "sector": "frankfurter-eurusd",
-        "previous": "eur_usd 1.115 (-0.4% vs 2.3d ago)",
-        "current": "eur_usd 1.115 (-0.4% vs 2.5d ago)"
+        "sector": "github-recent-commits",
+        "previous": "commit_count 31036369 (+7.9% vs 2.1d ago)",
+        "current": "commit_count 30977278 (+7.7% vs 2.1d ago)"
       },
       {
         "sector": "hackernews-top-scores",
-        "previous": "top10_score_sum 1593 (+113.0% vs 2.9d ago)",
-        "current": "top10_score_sum 2315 (+209.5% vs 3.1d ago)"
+        "previous": "top10_score_sum 2315 (+209.5% vs 3.1d ago)",
+        "current": "top10_score_sum 2221 (+196.9% vs 3.1d ago)"
       },
       {
         "sector": "home-assistant",
-        "previous": "installations 712667 (+0.6% vs 3.8d ago)",
-        "current": "installations 713066 (+0.6% vs 4d ago)"
-      },
-      {
-        "sector": "npm-packages",
-        "previous": "New: @ai-sdk/provider v4.0.34",
-        "current": "New: @ai-sdk/openai v4.0.104"
-      },
-      {
-        "sector": "nvd-new-cves-count",
-        "previous": "new_cves 936 (+609.1% vs 1.9d ago)",
-        "current": "new_cves 632 (+378.8% vs 2.1d ago)"
+        "previous": "installations 713066 (+0.6% vs 4d ago)",
+        "current": "installations 713066 (+0.6% vs 4.1d ago)"
       },
       {
         "sector": "phishunt-domains",
-        "previous": "active_phishings 1197 (-6.3% vs 2.9d ago)",
-        "current": "active_phishings 1178 (-7.8% vs 3.1d ago)"
+        "previous": "active_phishings 1178 (-7.8% vs 3.1d ago)",
+        "current": "active_phishings 1179 (-7.7% vs 3.1d ago)"
       },
       {
-        "sector": "pypi-daily-requests",
-        "previous": "downloads 51837769 (+51.1% vs 2.6d ago)",
-        "current": "downloads 51837769 (+51.1% vs 2.8d ago)"
-      },
-      {
-        "sector": "robonix",
-        "previous": "packages 69 (+16.9% vs 4.6d ago)",
-        "current": "packages 69 (+16.9% vs 4.8d ago)"
+        "sector": "steam-csgo-players",
+        "previous": "player_count 805396 (-21.1% vs 2.1d ago)",
+        "current": "player_count 773518 (-24.2% vs 2.1d ago)"
       },
       {
         "sector": "steam-dota2-players",
-        "previous": "player_count 1035746 (+13.2% vs 1.9d ago)",
-        "current": "player_count 787368 (-13.9% vs 2.1d ago)"
-      },
-      {
-        "sector": "usgs-earthquake-count",
-        "previous": "m45_count 21 (-58.0% vs 2.9d ago)",
-        "current": "m45_count 19 (-62.0% vs 3.1d ago)"
+        "previous": "player_count 787368 (-13.9% vs 2.1d ago)",
+        "current": "player_count 741376 (-19.0% vs 2.1d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 579.98,
+      "avg_volatility": 545.07,
       "max_volatility": 6965.54,
       "fires_in_window": 1
     },
     {
       "sector": "eth-exchange-spread",
-      "avg_volatility": 545.84,
+      "avg_volatility": 517.04,
       "max_volatility": 4591.73,
       "fires_in_window": 2
     },
@@ -364,14 +257,8 @@
       "fires_in_window": 2
     },
     {
-      "sector": "npm-downloads-react",
-      "avg_volatility": 35.89,
-      "max_volatility": 72.33,
-      "fires_in_window": 4
-    },
-    {
       "sector": "espn-nba-score-count",
-      "avg_volatility": 33.33,
+      "avg_volatility": 34.69,
       "max_volatility": 42.86,
       "fires_in_window": 0
     },
@@ -382,8 +269,14 @@
       "fires_in_window": 1
     },
     {
+      "sector": "npm-downloads-react",
+      "avg_volatility": 31.7,
+      "max_volatility": 72.33,
+      "fires_in_window": 4
+    },
+    {
       "sector": "coinbase-btc-volume24h",
-      "avg_volatility": 29.77,
+      "avg_volatility": 28.03,
       "max_volatility": 64.87,
       "fires_in_window": 8
     },
@@ -396,8 +289,8 @@
   ],
   "stats": {
     "total_sectors": 330,
-    "firing_sectors": 19,
-    "fire_rate_pct": 5.76,
+    "firing_sectors": 15,
+    "fire_rate_pct": 4.55,
     "runs_in_history": 24
   }
 }
