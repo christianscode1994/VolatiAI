@@ -15,6 +15,51 @@ import { pause } from "./pacing.js";
 
 const WORKER = "https://sector-slow.fourieranalys.workers.dev";
 
+function fitForPlatform(text, maxLen) {
+  if (text.length <= maxLen) return text;
+
+  const lines = text.split('\n');
+  const footerIdx = lines.findIndex(l => l.startsWith('━'));
+
+  if (footerIdx < 0) {
+    // No footer (unusual), truncate whole
+    let cut = text.slice(0, maxLen - 3);
+    const lastNl = cut.lastIndexOf('\n');
+    if (lastNl > maxLen * 0.6) cut = cut.slice(0, lastNl);
+    return cut + '...';
+  }
+
+  const footer = lines.slice(footerIdx).join('\n');
+  const content = lines.slice(0, footerIdx);
+  const header = content[0] || '';
+  const signals = content.slice(1);
+
+  const room = maxLen - footer.length - header.length - 5;
+
+  if (room < 100) {
+    // Footer alone nearly fills the platform — use compact footer
+    const compact = '\n⚠️ Not financial advice · AI-generated · Non-commercial\n📚 https://christianscode1994.github.io/VolatiAI/attribution.json';
+    const avail = maxLen - compact.length - header.length - 2;
+    let sig = signals.join('\n').slice(0, Math.max(0, avail));
+    const lastNl = sig.lastIndexOf('\n');
+    if (lastNl > avail * 0.6) sig = sig.slice(0, lastNl);
+    return header + '\n' + sig + compact;
+  }
+
+  const kept = [];
+  let used = 0;
+  for (const s of signals) {
+    if (used + s.length + 1 > room) break;
+    kept.push(s);
+    used += s.length + 1;
+  }
+  if (kept.length < signals.length) {
+    kept.push('[...' + (signals.length - kept.length) + ' lines truncated for platform length]');
+  }
+  return header + '\n' + kept.join('\n') + '\n' + footer;
+}
+
+
 const briefing = JSON.parse(fs.readFileSync("docs/briefing.json", "utf8"));
 const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals";
 
@@ -219,7 +264,8 @@ async function postMastodon() {
       api_url: `${process.env.MASTODON_INSTANCE.replace(/\/$/, "")}/api/v1/`,
     });
     // Bot labeling where the instance supports it
-    await M.post("statuses", { status: safeDigest(forMastodon, "mastodon") });
+    const mstdnText = fitForPlatform(safeDigest(forMastodon, "mastodon"), 480);
+    await M.post("statuses", { status: mstdnText });
     console.log("mastodon: ok");
   } catch (e) {
     console.log(`mastodon: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -238,7 +284,8 @@ async function postBluesky() {
       identifier: process.env.BLUESKY_HANDLE,
       password: process.env.BLUESKY_PASSWORD,
     });
-    await agent.post({ text: safeDigest(forBluesky, "bluesky"), createdAt: new Date().toISOString() });
+    const bskyText = fitForPlatform(safeDigest(forBluesky, "bluesky"), 290);
+    await agent.post({ text: bskyText, createdAt: new Date().toISOString() });
     console.log("bluesky: ok");
   } catch (e) {
     console.log(`bluesky: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
