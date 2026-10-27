@@ -44,7 +44,7 @@ function filterHighRisk(text) {
 
 export function safeDigest(text, platform = 'all') {
   let out = sanitize(text);
-  if (platform === 'telegram' || platform === 'mastodon') out = filterHighRisk(out);
+  if (platform === 'telegram' || platform === 'mastodon' || platform === 'nostr') out = filterHighRisk(out);
   out = out.trimEnd() + '\n\n' + FOOTER;
   if (platform === 'mastodon' || platform === 'bluesky') {
     out += '\n\n#NotFinancialAdvice #DataJournalism';
@@ -56,6 +56,6 @@ export function safeDigest(text, platform = 'all') {
 // if the bot is expected to add its own footer separately
 export function safeContent(text, platform = 'all') {
   let out = sanitize(text);
-  if (platform === 'telegram' || platform === 'mastodon') out = filterHighRisk(out);
+  if (platform === 'telegram' || platform === 'mastodon' || platform === 'nostr') out = filterHighRisk(out);
   return out;
 }

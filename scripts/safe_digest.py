@@ -77,7 +77,7 @@ def safe_digest(raw_text: str, platform: str = "all") -> str:
     """Return a platform-safe version of the digest."""
     out = _sanitize(raw_text)
 
-    if platform in ("telegram", "mastodon"):
+    if platform in ("telegram", "mastodon", "nostr"):
         out = _filter_high_risk(out)
 
     out = out.rstrip() + "\n\n" + FOOTER
