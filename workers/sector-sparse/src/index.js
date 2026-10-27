@@ -28,6 +28,53 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "eia-bulk-manifest": {
+    config: { metric: "dataset_count", threshold_pct: 0.5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const urls = ["https://api.eia.gov/bulk/manifest.txt", "http://api.eia.gov/bulk/manifest.txt"];
+      let text = null;
+      for (const u of urls) {
+        const r = await fetch(u, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+        if (r.ok) { text = await r.text(); break; }
+      }
+      if (!text) return { value: null, sources: { "eia-bulk": { ok: false } } };
+      let n = null;
+      try {
+        const j = JSON.parse(text);
+        if (Array.isArray(j)) n = j.length;
+        else if (j && Array.isArray(j.dataset)) n = j.dataset.length;
+      } catch (e) {}
+      if (n === null) {
+        const m = text.match(/"identifier"/g);
+        n = m ? m.length : null;
+      }
+      return { value: n, sources: { "eia-bulk": { ok: true } }, context: { source: "manifest" } };
+    },
+  },
+  "cheniere-lng-firm-capacity": {
+    config: { metric: "firm_contract_rows", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const end = new Date();
+      const start = new Date(Date.now() - 7 * 86400000);
+      const fmt = d => d.toISOString().slice(0, 10);
+      const url = "https://lngconnectionapi.cheniere.com/api/Transactional/GetFirm?tspNo=200&beginDate=" + fmt(start) + "&endDate=" + fmt(end);
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { cheniere: { ok: false } } };
+      const j = await r.json();
+      const rows = Array.isArray(j.report) ? j.report : [];
+      return { value: rows.length, sources: { cheniere: { ok: true } }, context: { tspNo: 200, window: "7d" } };
+    },
+  },
+  "texas-rrc-wells": {
+    config: { metric: "well_count", threshold_pct: 0.5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://services3.arcgis.com/8jYUORGmDUL39WkJ/arcgis/rest/services/WellSHL/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { "texas-rrc": { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j.count === "number" ? j.count : null, sources: { "texas-rrc": { ok: true } }, context: { layer: "WellSHL" } };
+    },
+  },
   "dbcve-vulnerabilities": {
     config: { metric: "cve_count", threshold_pct: 5, window: "24h", window_days: 1 },
     async collectAll(env) {
