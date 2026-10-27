@@ -28,6 +28,15 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "fcc-broadband-providers": {
+    config: { metric: "provider_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://opendata.fcc.gov/resource/v5vt-e7vw.json?$limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { fcc: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { fcc: { ok: true } }, context: { dataset: "form477" } };
+    },
+  },
   "sourceful-der-grid": {
     config: { metric: "der_site_count", threshold_pct: 5, window: "7d", window_days: 7 },
     async collectAll(env) {
