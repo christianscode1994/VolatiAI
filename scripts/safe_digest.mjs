@@ -1,5 +1,5 @@
 const SITE = process.env.VOLATIAI_SITE
-  || 'https://github.com/christianscode1994/VolatiAI/blob/main/public';
+  || 'https://christianscode1994.github.io/VolatiAI';
 
 const FOOTER = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  Informational only. Not financial, medical, or legal advice.
