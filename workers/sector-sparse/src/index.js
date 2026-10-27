@@ -28,15 +28,6 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "celestrak-active-satellites": {
-    config: { metric: "satellite_count", threshold_pct: 1, window: "1d", window_days: 1 },
-    async collectAll(env) {
-      const r = await fetch("https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { celestrak: { ok: false } } };
-      const j = await r.json();
-      return { value: Array.isArray(j) ? j.length : null, sources: { celestrak: { ok: true } }, context: { group: "active" } };
-    },
-  },
   "sourceful-der-grid": {
     config: { metric: "der_site_count", threshold_pct: 5, window: "7d", window_days: 7 },
     async collectAll(env) {
