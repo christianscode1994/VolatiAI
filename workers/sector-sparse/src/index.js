@@ -28,16 +28,6 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "hydro-quebec-flows": {
-    config: { metric: "flow_m3s", threshold_pct: 10, window: "1d", window_days: 1 },
-    async collectAll(env) {
-      const r = await fetch("https://donnees.hydroquebec.com/api/explore/v2.1/catalog/datasets/donnees-hydrometriques/records?limit=1&order_by=-date", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { hydro_quebec: { ok: false } } };
-      const j = await r.json();
-      const row = j?.results?.[0];
-      return { value: row ? Number(row.split_value) : null, sources: { hydro_quebec: { ok: true } }, context: { station: row?.nom || row?.identifiant, unit: row?.depil_json_nom_unite_mesure } };
-    },
-  },
   "sourceful-der-grid": {
     config: { metric: "der_site_count", threshold_pct: 5, window: "7d", window_days: 7 },
     async collectAll(env) {
