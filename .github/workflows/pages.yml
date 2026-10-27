@@ -44,7 +44,7 @@ jobs:
         run: node local_runner/index.js
 
       - name: Create docs folder
-        run: mkdir -p docs
+        run: mkdir -p docs && cp public/attribution.json docs/ 2>/dev/null || true && cp public/privacy.html docs/ 2>/dev/null || true && cp public/terms.html docs/ 2>/dev/null || true
 
       - name: Copy public outputs to docs
         run: |
