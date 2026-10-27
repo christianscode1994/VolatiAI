@@ -23,14 +23,14 @@ let coherence = null;
 let correlation = null;
 let cronStatus = null;
 try {
-  const [cohRes, corrRes, cronRes] = await Promise.all([
-    fetch(WORKER + "/_coherence", { signal: AbortSignal.timeout(8000) }),
-    fetch(WORKER + "/_correlation", { signal: AbortSignal.timeout(8000) }),
-    fetch(WORKER + "/_cron_status", { signal: AbortSignal.timeout(8000) }),
+  const [cohRes, corrRes, cronRes] = await Promise.allSettled([
+    fetch(WORKER + "/_coherence", { signal: AbortSignal.timeout(15000) }),
+    fetch(WORKER + "/_correlation", { signal: AbortSignal.timeout(15000) }),
+    fetch(WORKER + "/_cron_status", { signal: AbortSignal.timeout(15000) }),
   ]);
-  if (cohRes.ok) coherence = await cohRes.json();
-  if (corrRes.ok) correlation = await corrRes.json();
-  if (cronRes.ok) cronStatus = await cronRes.json();
+  if (cohRes.status === "fulfilled" && cohRes.value.ok) coherence = await cohRes.value.json();
+  if (corrRes.status === "fulfilled" && corrRes.value.ok) correlation = await corrRes.value.json();
+  if (cronRes.status === "fulfilled" && cronRes.value.ok) cronStatus = await cronRes.value.json();
 } catch (e) {
   console.log("enrichment fetch failed (non-fatal):", String(e).slice(0, 100));
 }
