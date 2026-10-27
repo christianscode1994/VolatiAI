@@ -28,6 +28,50 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "hydro-quebec-flows": {
+    config: { metric: "flow_m3s", threshold_pct: 10, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://donnees.hydroquebec.com/api/explore/v2.1/catalog/datasets/donnees-hydrometriques/records?limit=1&order_by=-date", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { hydro_quebec: { ok: false } } };
+      const j = await r.json();
+      const row = j?.results?.[0];
+      return { value: row ? Number(row.split_value) : null, sources: { hydro_quebec: { ok: true } }, context: { station: row?.nom || row?.identifiant, unit: row?.depil_json_nom_unite_mesure } };
+    },
+  },
+  "sourceful-der-grid": {
+    config: { metric: "der_site_count", threshold_pct: 5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://novacore-mainnet.sourceful.dev/public/cells", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { sourceful: { ok: false } } };
+      const j = await r.json();
+      const cells = Array.isArray(j.cells) ? j.cells : [];
+      const total = cells.reduce((s, c) => s + (c.site_count || 0), 0);
+      return { value: total, sources: { sourceful: { ok: true } }, context: { cells: cells.length } };
+    },
+  },
+  "forecast-solar-berlin": {
+    config: { metric: "pv_forecast_wh_day", threshold_pct: 10, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      // Berlin, south-facing, 35deg tilt, 5 kWp
+      const r = await fetch("https://api.forecast.solar/estimate/52.52/13.41/35/0/5", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { forecast_solar: { ok: false } } };
+      const j = await r.json();
+      const day = j?.result?.watt_hours_day;
+      const today = day ? Object.values(day)[0] : null;
+      return { value: today, sources: { forecast_solar: { ok: true } }, context: { location: "Berlin", kwp: 5 } };
+    },
+  },
+  "miso-wind-solar-generation": {
+    config: { metric: "actual_wind_mw", threshold_pct: 10, window: "1h", window_days: 0 },
+    async collectAll(env) {
+      const r = await fetch("https://public-api.misoenergy.org/api/WindSolar/GetCombined", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { miso: { ok: false } } };
+      const j = await r.json();
+      const rows = Array.isArray(j.instance) ? j.instance : [];
+      const latest = rows.filter(x => x.ActualWindValue && Number(x.ActualWindValue) > 0).pop();
+      return { value: latest ? Number(latest.ActualWindValue) : null, sources: { miso: { ok: true } }, context: { region: "MISO", solar_mw: latest ? Number(latest.ActualSolarValue) : null } };
+    },
+  },
   "sec-edgar-ma-8k": {
     config: { metric: "filing_count", threshold_pct: 20, window: "7d", window_days: 7 },
     async collectAll(env) {
