@@ -28,6 +28,58 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "simkl-calendar-anime": {
+    config: { metric: "anime_release_count", threshold_pct: 10, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://data.simkl.in/calendar/anime.json?client_id=volatiai&app-name=volatiai&app-version=1.0";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0", "simkl-api-key": "volatiai" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { simkl: { ok: false } } };
+      const j = await r.json();
+      const days = Array.isArray(j) ? j : (j.data || j.calendar || []);
+      let total = 0;
+      for (const day of days) {
+        const items = day?.items || day?.releases || day?.anime || [];
+        total += Array.isArray(items) ? items.length : 0;
+      }
+      return { value: total || (Array.isArray(j) ? j.length : null), sources: { simkl: { ok: true } }, context: { window: "33d", type: "anime" } };
+    },
+  },
+  "ip-geolocation": {
+    config: { metric: "egress_ip_octet", threshold_pct: 10, window: "1h", window_days: 0 },
+    async collectAll(env) {
+      const r = await fetch("http://ip-api.com/json/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { ipapi: { ok: false } } };
+      const j = await r.json();
+      const ip = j?.query || "";
+      const firstOctet = parseInt(ip.split(".")[0], 10);
+      return { value: Number.isFinite(firstOctet) ? firstOctet : null, sources: { ipapi: { ok: true } }, context: { ip, country: j?.country } };
+    },
+  },
+  "first-csirt-teams": {
+    config: { metric: "team_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.first.org/data/v1/teams?pretty=true", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { first: { ok: false } } };
+      const j = await r.json();
+      const total = j?.length || (Array.isArray(j?.data) ? j.data.length : null);
+      return { value: total, sources: { first: { ok: true } }, context: { status: j?.status } };
+    },
+  },
+  "hibp-breach-range": {
+    config: { metric: "breach_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.pwnedpasswords.com/range/42331", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { hibp: { ok: false } } };
+      const text = await r.text();
+      const lines = text.split("\n").filter(l => l.includes(":"));
+      let total = 0;
+      for (const line of lines) {
+        const parts = line.split(":");
+        if (parts.length === 2) total += parseInt(parts[1], 10) || 0;
+      }
+      return { value: total, sources: { hibp: { ok: true } }, context: { prefix: "42331", suffixes: lines.length } };
+    },
+  },
   "issued-live-certs-24h": {
     config: { metric: "certs_24h", threshold_pct: 15, window: "1d", window_days: 1 },
     async collectAll(env) {
