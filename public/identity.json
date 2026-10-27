@@ -1,0 +1,25 @@
+{
+  "identity": "VolatiAI",
+  "operator": "Solo developer, Finland",
+  "canonical_identity": {
+    "platform": "nostr",
+    "pubkey": "npub1_REPLACE_WITH_YOUR_BOT_NPUB",
+    "note": "The Nostr pubkey is the canonical identity anchor. Bots on other platforms are the same entity if their footer links to this document."
+  },
+  "content_integrity": {
+    "method": "SHA-256",
+    "files": [
+      { "path": "/intel.json", "checksum": "/intel.json.sha256" },
+      { "path": "/attribution.json", "checksum": "/attribution.json.sha256" }
+    ],
+    "verify": "curl -sS <url> | sha256sum  # compare with <url>.sha256"
+  },
+  "signing": {
+    "cryptographic_authorship": false,
+    "note": "VolatiAI does not use a per-post Ed25519 signing key at this stage. Content integrity is provided by checksums; authorship identity is anchored via the canonical Nostr pubkey above."
+  },
+  "compliance_statement": "This document provides content integrity and identity discoverability only. It is not a qualified electronic signature, not a trust service under eIDAS, and not a custody arrangement under MiCA. VolatiAI is non-commercial, automated, AI-generated, and informational only.",
+  "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+  "terms": "https://christianscode1994.github.io/VolatiAI/terms.html",
+  "privacy": "https://christianscode1994.github.io/VolatiAI/privacy.html"
+}

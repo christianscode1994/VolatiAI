@@ -42,3 +42,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Tier 1 — refresh SHA-256 checksums after writing data files
+if __name__ == "__main__":
+    import subprocess
+    subprocess.run(["python3", "scripts/generate_checksums.py"], check=False)

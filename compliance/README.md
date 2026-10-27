@@ -39,3 +39,21 @@ VolatiAI:
 ## Contact
 
 Issues or inquiries: github.com/christianscode1994/VolatiAI/issues
+
+## Content integrity (Tier 1)
+
+VolatiAI publishes SHA-256 checksums for its data files and a static
+`identity.json` documenting the canonical Nostr public key.
+
+**What this provides:** content integrity (files unaltered in transit)
+and identity discoverability (readers can cross-reference the Nostr npub).
+
+**What this is not:** a cryptographic authorship signature, a qualified
+electronic signature under eIDAS, a trust service, or a custody
+arrangement under MiCA. No signing key is held at this stage.
+
+**What would upgrade this to Tier 2:** an actual impersonation threat.
+At that point, Ed25519 per-post signing would be added alongside a
+revocation list in `identity.json`, a `verify.html` generated from the
+identity document (never hand-edited), and a written key-rotation
+runbook. None of those are warranted today.
