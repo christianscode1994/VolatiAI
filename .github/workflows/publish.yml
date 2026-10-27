@@ -70,6 +70,5 @@ jobs:
           if echo "$RESP" | grep -q '"ok":true'; then
             echo "✅ Hash stored"
           else
-            echo "❌ Hash storage failed"
-            exit 1
+            echo "⚠️  Hash storage failed (KV free-tier write limit) — content published, continuing"
           fi
