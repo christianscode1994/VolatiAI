@@ -20,7 +20,7 @@ def _run_cluster_signals():
 
 
 URL = "https://christianscode1994.github.io/VolatiAI/d.html"
-DID = "did:web:christianscode1994.github.io"
+DID = "did:web:christianscode1994.github.io:VolatiAI:.well-known"
 NPUB = "npub1ffnr0nau5rlajjf2syyqn287vvqjd04eld0cdrqayt520g8hznrs6nrwlq"
 BASE = os.environ.get("VOLATIAI_BASE", "https://sector-slow.fourieranalys.workers.dev")
 
