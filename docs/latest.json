@@ -1053,6 +1053,11 @@
     "depth_heatmaps": {
       "kraken": [
         {
+          "side": "bid",
+          "bucket_price": 79300.0,
+          "notional": 192381.95239999998
+        },
+        {
           "side": "ask",
           "bucket_price": 79400.0,
           "notional": 292415.56010000006
@@ -1113,7 +1118,7 @@
           "protocol": "reth",
           "repo": "paradigmxyz/reth",
           "category": "tooling",
-          "commits": 58,
+          "commits": 57,
           "releases": 2,
           "stars": 5843
         },
@@ -1185,8 +1190,8 @@
         "tooling": {
           "tracked": 3,
           "active": 3,
-          "commits": 207,
-          "avg": 69.0,
+          "commits": 206,
+          "avg": 68.67,
           "signal": "very_high"
         },
         "wallets": {
@@ -1610,6 +1615,17 @@
           "type": "transfer"
         },
         {
+          "hash": "0x6910a101d411e451183ddb8d69aa42b76c8bc784dbd4699c715aafed016a4cc7",
+          "from": "0xa271e19f87d04437e1af108d12b0c76a7dec537f",
+          "to": "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+          "token": "USDC",
+          "value": 2548131.41,
+          "timestamp": 1793095979,
+          "block": 26283370,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
           "hash": "0xd0d11d8a5012f8d24530a342be5c2087c824f98bd2faf2a08e398e049761d378",
           "from": "0x000000000004444c5dc75cb358380d2e3de08a90",
           "to": "0x140022b7000081000001094700609300d2187dab",
@@ -1665,13 +1681,57 @@
           "type": "transfer"
         },
         {
-          "hash": "0xa3565854c8fdf442666b3be61dda461e19688dcee9503d7ebd16603df42277a3",
-          "from": "0xe95a325dbce0a16385b5c4a781167b293b2a41a2",
-          "to": "0xcf79f9062371dc53fc0350535d15112476cccdc6",
+          "hash": "0x84289eebbf214d9f7ddd916f626c4f3ef28f4ff1f9023128e514f6b64d3bce9f",
+          "from": "0xcf009f798e66d82161ec4dcc5e975398cdd6357a",
+          "to": "0x79dab6d0a23bc3fd01a679b03b60ddb4fc105049",
+          "token": "USDC",
+          "value": 1816000.0,
+          "timestamp": 1793095943,
+          "block": 26283367,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xe05481cc4f4095b3fc45ddc0fe524f260614434f12013371c484bf843345c673",
+          "from": "0x0bb55d30111677448d272bada4e22afaf3143a8f",
+          "to": "0xcf009f798e66d82161ec4dcc5e975398cdd6357a",
+          "token": "USDC",
+          "value": 1816000.0,
+          "timestamp": 1793095871,
+          "block": 26283361,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x1ca8f38b76b753c6afa91aa36ea25f26f8c81763f4ba2389d3e1da1069fc858e",
+          "from": "0xfc20e96af25a5d8db8a97cf2b89df330efba2209",
+          "to": "0x0bb55d30111677448d272bada4e22afaf3143a8f",
+          "token": "USDC",
+          "value": 1816000.0,
+          "timestamp": 1793095763,
+          "block": 26283352,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xf653069c6128242fec4d6cd56af40ffda42096dcb5f935f9a64ff38bbc2be7b2",
+          "from": "0xb1a6177b1bbd3305f685ad80540dc43852bf6316",
+          "to": "0xfc20e96af25a5d8db8a97cf2b89df330efba2209",
+          "token": "USDC",
+          "value": 1816000.0,
+          "timestamp": 1793095619,
+          "block": 26283340,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xfee3b831707fd0400c9e4fec8b6299a88e748bf011e7ab676d35172802a1c273",
+          "from": "0x379d67fd8921be4e6f6196f7c7aef352469f1dbb",
+          "to": "0xb4d3796a4f9b4b4181661ae0372bd8c604f34c65",
           "token": "USDT",
-          "value": 1850000.0,
-          "timestamp": 1793094863,
-          "block": 26283277,
+          "value": 1800000.0,
+          "timestamp": 1793095871,
+          "block": 26283361,
           "legs": 1,
           "type": "transfer"
         },
