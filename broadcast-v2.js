@@ -1,3 +1,4 @@
+import { safeDigest } from './scripts/safe_digest.mjs';
 // broadcast-v2.js — honest broadcaster.
 // Reads docs/briefing.json, posts headline to each configured platform.
 // No anti-detection. No personas. No swarm. No evasion.
@@ -170,7 +171,7 @@ async function postTelegram() {
   try {
     await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      { chat_id: process.env.TELEGRAM_CHAT_ID, text: forTelegram, disable_web_page_preview: true }
+      { chat_id: process.env.TELEGRAM_CHAT_ID, text: safeDigest(forTelegram, "telegram"), disable_web_page_preview: true }
     );
     console.log("telegram: ok");
   } catch (e) {
@@ -185,7 +186,7 @@ async function postDiscord() {
   }
   await pause("discord");
   try {
-    await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: forDiscord });
+    await axios.post(process.env.DISCORD_WEBHOOK_URL, { content: safeDigest(forDiscord, "discord") });
     console.log("discord: ok");
   } catch (e) {
     console.log(`discord: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -199,7 +200,7 @@ async function postSlack() {
   }
   await pause("slack");
   try {
-    await axios.post(process.env.SLACK_WEBHOOK_URL, { text: forSlack });
+    await axios.post(process.env.SLACK_WEBHOOK_URL, { text: safeDigest(forSlack, "slack") });
     console.log("slack: ok");
   } catch (e) {
     console.log(`slack: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -218,7 +219,7 @@ async function postMastodon() {
       api_url: `${process.env.MASTODON_INSTANCE.replace(/\/$/, "")}/api/v1/`,
     });
     // Bot labeling where the instance supports it
-    await M.post("statuses", { status: forMastodon });
+    await M.post("statuses", { status: safeDigest(forMastodon, "mastodon") });
     console.log("mastodon: ok");
   } catch (e) {
     console.log(`mastodon: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
@@ -237,7 +238,7 @@ async function postBluesky() {
       identifier: process.env.BLUESKY_HANDLE,
       password: process.env.BLUESKY_PASSWORD,
     });
-    await agent.post({ text: forBluesky, createdAt: new Date().toISOString() });
+    await agent.post({ text: safeDigest(forBluesky, "bluesky"), createdAt: new Date().toISOString() });
     console.log("bluesky: ok");
   } catch (e) {
     console.log(`bluesky: failed (${e.response?.status ?? "network"}) — ${String(e.message).slice(0, 100)}`);
