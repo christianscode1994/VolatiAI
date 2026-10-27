@@ -28,7 +28,7 @@ HIGH_RISK = re.compile(
 
 TRANSFORMS = [
     # "signaling N runs in a row" → "above threshold N/N checks"
-    (re.compile(r"↗ (\S+): signaling (\d+) runs in a row"),
+    (re.compile(r"[↗↑] (\S+): signaling (\d+) runs(?: in a row)?"),
      r"\1: above threshold \2/\2 checks"),
     # down/up runs → checks
     (re.compile(r"↓ (\S+): down (\d+) runs"), r"\1: down \2 checks"),

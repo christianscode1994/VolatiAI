@@ -12,7 +12,7 @@ const HIGH_RISK = /coinbase-|kraken-|\bdex-|defi-|stablecoin-|exchange-spread|^t
 
 function sanitize(text) {
   return text
-    .replace(/↗ (\S+): signaling (\d+) runs in a row/g, '$1: above threshold $2/$2 checks')
+    .replace(/[↗↑] (\S+): signaling (\d+) runs(?: in a row)?/g, '$1: above threshold $2/$2 checks')
     .replace(/↓ (\S+): down (\d+) runs/g, '$1: down $2 checks')
     .replace(/↑ (\S+): up (\d+) runs/g, '$1: up $2 checks')
     .replace(/^↗ /gm, '').replace(/^↘ /gm, '')
