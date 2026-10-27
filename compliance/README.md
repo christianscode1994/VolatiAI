@@ -57,3 +57,23 @@ At that point, Ed25519 per-post signing would be added alongside a
 revocation list in `identity.json`, a `verify.html` generated from the
 identity document (never hand-edited), and a written key-rotation
 runbook. None of those are warranted today.
+
+## NIP-05 and DID:web on project pages
+
+VolatiAI is hosted at `christianscode1994.github.io/VolatiAI/` — a
+GitHub project page. Two identity mechanisms interact differently with
+this path structure:
+
+**DID:web (works):** The bot's DID is `did:web:christianscode1994.github.io:VolatiAI:.well-known`,
+which resolves to `https://christianscode1994.github.io/VolatiAI/.well-known/did.json`.
+This file is committed and served. The path segments encode the project-page
+prefix correctly.
+
+**NIP-05 (does not work):** NIP-05 requires `/.well-known/nostr.json` at the
+domain root, which GitHub project pages cannot serve. The file at
+`/VolatiAI/.well-known/nostr.json` is accessible by URL but will not be
+discovered by NIP-05 lookups on `volatiai@christianscode1994.github.io`.
+
+The canonical Nostr identity is the npub in `identity.json`. NIP-05 would
+become functional only if the repo were renamed to a user page
+(`christianscode1994.github.io`) or a custom domain were added.
