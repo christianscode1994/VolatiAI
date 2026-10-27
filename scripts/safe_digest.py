@@ -14,7 +14,7 @@ SITE = os.environ.get("VOLATIAI_SITE", "https://christianscode1994.github.io/Vol
 
 FOOTER = f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  Informational only. Not financial, medical, or legal advice.
-🤖  Automated bot · Non-commercial · Stateless
+🤖  Automated bot · AI-generated content · Non-commercial · Stateless
 📚  Attribution: {SITE}/attribution.json
 📄  Terms: {SITE}/terms.html
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""

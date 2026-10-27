@@ -3,7 +3,7 @@ const SITE = process.env.VOLATIAI_SITE
 
 const FOOTER = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  Informational only. Not financial, medical, or legal advice.
-🤖  Automated bot · Non-commercial · Stateless
+🤖  Automated bot · AI-generated content · Non-commercial · Stateless
 📚  Attribution: ${SITE}/attribution.json
 📄  Terms: ${SITE}/terms.html
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
