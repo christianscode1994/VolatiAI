@@ -5,8 +5,6 @@ from pathlib import Path
 # Known restricted sources — add as discovered
 RESTRICTED = {
     "opensky-network.org": "OpenSky (CC BY-NC 4.0)",
-    "funding.tech.eu": "Tech.eu (CC BY 4.0)",
-    "windsordrake.com": "Windsor Drake (attribution)",
     "econdb.com": "EconDB (commercial)",
 }
 

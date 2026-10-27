@@ -28,6 +28,40 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "sec-edgar-ma-8k": {
+    config: { metric: "filing_count", threshold_pct: 20, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const end = new Date().toISOString().slice(0, 10);
+      const start = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+      const q = encodeURIComponent('"merger"');
+      const url = "https://efts.sec.gov/LATEST/search-index?q=" + q + "&forms=8-K&dateRange=custom&startdt=" + start + "&enddt=" + end + "&from=0&size=1";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0 admin@example.com" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { "sec-edgar": { ok: false } } };
+      const j = await r.json();
+      const total = j?.hits?.total?.value ?? null;
+      return { value: total, sources: { "sec-edgar": { ok: true } }, context: { form: "8-K", query: "merger" } };
+    },
+  },
+  "tech-eu-exits": {
+    config: { metric: "exit_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://funding.tech.eu/api/v1/exits?limit=100", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { "tech-eu": { ok: false } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (j.data || j.exits || []);
+      return { value: Array.isArray(arr) ? arr.length : null, sources: { "tech-eu": { ok: true } }, context: { scope: "europe" } };
+    },
+  },
+  "windsor-drake-ma-transactions": {
+    config: { metric: "transaction_count", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://windsordrake.com/market-intelligence/api/transactions.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { "windsor-drake": { ok: false } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (j.transactions || []);
+      return { value: Array.isArray(arr) ? arr.length : null, sources: { "windsor-drake": { ok: true } }, context: { source: "transactions" } };
+    },
+  },
   "eia-bulk-manifest": {
     config: { metric: "dataset_count", threshold_pct: 0.5, window: "7d", window_days: 7 },
     async collectAll(env) {
