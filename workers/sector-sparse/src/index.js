@@ -28,6 +28,46 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "sans-isc-daily-attacks": {
+    config: { metric: "daily_attack_records", threshold_pct: 15, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://isc.sans.edu/api/dailysummary?json", {
+        headers: { "User-Agent": "VolatiAI/1.0 (contact@fourieranalys.workers.dev)" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { sans: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const row = Array.isArray(j) ? j[0] : j;
+      const n = typeof row?.records === "number" ? row.records : null;
+      return { value: n, sources: { sans: { ok: n !== null } }, context: { date: row?.date, sources: row?.sources, targets: row?.targets } };
+    },
+  },
+  "openphish-active-urls": {
+    config: { metric: "active_phishing_url_count", threshold_pct: 20, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://openphish.com/feed.txt", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { openphish: { ok: false, error: `HTTP ${r.status}` } } };
+      const text = await r.text();
+      const lines = text.split("\n").filter(l => l && !l.startsWith("#") && l.startsWith("http"));
+      return { value: lines.length, sources: { openphish: { ok: true } }, context: { type: "active_phishing_urls" } };
+    },
+  },
+  "feodo-c2-server-count": {
+    config: { metric: "active_c2_server_count", threshold_pct: 100, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { feodo: { ok: false, error: `HTTP ${r.status}` } } };
+      const text = await r.text();
+      const lines = text.split("\n").filter(l => l && !l.startsWith("#"));
+      return { value: lines.length, sources: { feodo: { ok: true } }, context: { type: "botnet_c2_servers" } };
+    },
+  },
   "bgpv6-routing-prefix-count": {
     config: { metric: "total_prefixes", threshold_pct: 5, window: "7d", window_days: 7 },
     async collectAll(env) {
