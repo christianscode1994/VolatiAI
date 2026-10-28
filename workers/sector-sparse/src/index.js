@@ -991,15 +991,6 @@ const COLLECTORS = {
       return { value: j.count ?? null, sources: { musicbrainz: { ok: true } }, context: { query: "beatles" } };
     },
   },
-  "openfoodfacts-product": {
-    config: { metric: "nutriscore_grade", threshold_pct: null, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const r = await fetch("https://world.openfoodfacts.org/api/v2/product/3017620422003.json", { headers: { "User-Agent": "VolatiAI/1.0" } });
-      if (!r.ok) return { value: null, sources: { openfoodfacts: { ok: false } } };
-      const j = await r.json();
-      return { value: j.product?.nutriscore_grade ?? null, sources: { openfoodfacts: { ok: true } }, context: { product: j.product?.product_name } };
-    },
-  },
   "imf-portwatch-chokepoints": {
     config: { metric: "chokepoint_transits", threshold_pct: 0.2, window: "7d", window_days: 7 },
     async collectAll(env) {
