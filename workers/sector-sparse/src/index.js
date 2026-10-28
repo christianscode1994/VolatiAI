@@ -28,6 +28,45 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "mlb-team-count": {
+    config: { metric: "mlb_team_count", threshold_pct: 1, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://statsapi.mlb.com/api/v1/teams?sportId=1", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { mlb: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.teams) ? j.teams.length : null;
+      return { value: n, sources: { mlb: { ok: n !== null } }, context: { sport: "baseball" } };
+    },
+  },
+  "espn-nfl-events-count": {
+    config: { metric: "nfl_events_count", threshold_pct: 5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { espn: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn: { ok: n !== null } }, context: { sport: "football", league: "nfl" } };
+    },
+  },
+  "unesco-uis-indicator-count": {
+    config: { metric: "indicator_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.uis.unesco.org/api/public/definitions/indicators", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { uis: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : (Array.isArray(j?.indicators) ? j.indicators.length : null);
+      return { value: n, sources: { uis: { ok: n !== null } }, context: { scope: "education_indicators" } };
+    },
+  },
   "relay-link-chain-count": {
     config: { metric: "supported_chain_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
