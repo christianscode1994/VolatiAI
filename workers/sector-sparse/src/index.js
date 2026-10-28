@@ -28,6 +28,26 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "unesco-marine-heritage-count": {
+    config: { metric: "site_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://services1.arcgis.com/B4MnusZHL3vmqU3t/arcgis/rest/services/UNESCO/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { unesco: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.count === "number" ? j.count : null, sources: { unesco: { ok: true } }, context: { layer: "UNESCO marine" } };
+    },
+  },
+  "usgs-tnm-elevation-products": {
+    config: { metric: "product_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://tnmaccess.nationalmap.gov/api/v1/products?datasets=National%20Elevation%20Dataset%20(NED)%201%20arc-second&bbox=-105,39,-104,40&max=1";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { tnm: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.total === "number" ? j.total : null, sources: { tnm: { ok: true } }, context: { dataset: "NED 1 arc-second, Denver bbox" } };
+    },
+  },
   "xaus-gold-spot": {
     config: { metric: "xau_usd", threshold_pct: 1, window: "1d", window_days: 1 },
     async collectAll(env) {
