@@ -1,8 +1,13 @@
 name: Deploy VolatiAI Dashboards to GitHub Pages
 
 on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'public/**'
   schedule:
-    - cron: "0 6 * * *"   # daily at 06:00 UTC — runner + Pages deploy
+    - cron: "0 6 * * *"   # daily at 06:00 UTC
   workflow_dispatch:
 
 concurrency:
