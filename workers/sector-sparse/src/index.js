@@ -28,6 +28,53 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "relay-link-chain-count": {
+    config: { metric: "supported_chain_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.relay.link/chains", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { relaylink: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (Array.isArray(j?.chains) ? j.chains : null);
+      const n = arr ? arr.length : null;
+      return { value: n, sources: { relaylink: { ok: n !== null } }, context: { type: "bridge_chains" } };
+    },
+  },
+  "sendrelay-city-count": {
+    config: { metric: "configured_city_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.sendrelay.com.ng/v1/public/network", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { sendrelay: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (Array.isArray(j?.cities) ? j.cities : null);
+      const n = arr ? arr.length : null;
+      return { value: n, sources: { sendrelay: { ok: n !== null } }, context: { type: "relay_network_cities" } };
+    },
+  },
+  "anp2-event-count": {
+    config: { metric: "network_event_total", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://anp2.com/api/events", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { anp2: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      let n = null;
+      if (Array.isArray(j)) {
+        for (const e of j) {
+          const m = typeof e?.content === "string" ? e.content.match(/events=(\d+)/) : null;
+          if (m) { n = parseInt(m[1], 10); break; }
+        }
+      }
+      return { value: Number.isFinite(n) ? n : null, sources: { anp2: { ok: Number.isFinite(n) } }, context: { type: "agent_relay_events" } };
+    },
+  },
   "ethereum-block-height-publicnode": {
     config: { metric: "block_height", threshold_pct: 1, window: "7d", window_days: 7 },
     async collectAll(env) {
