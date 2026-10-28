@@ -28,6 +28,19 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "open-meteo-berlin-pm25": {
+    config: { metric: "pm2_5_ugm3", threshold_pct: 50, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=52.52&longitude=13.41&current=pm2_5,pm10,european_aqi", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { openmeteo: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.current?.pm2_5 === "number" ? j.current.pm2_5 : null;
+      return { value: n, sources: { openmeteo: { ok: n !== null } }, context: { location: "Berlin", pm10: j?.current?.pm10, aqi: j?.current?.european_aqi } };
+    },
+  },
   "denmark-traffic-incidents": {
     config: { metric: "active_traffic_incidents", threshold_pct: 30, window: "1d", window_days: 1 },
     async collectAll(env) {
