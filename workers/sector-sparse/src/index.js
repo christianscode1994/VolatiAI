@@ -28,6 +28,20 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "datamuse-semantic-related": {
+    config: { metric: "related_word_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.datamuse.com/words?rel_trg=climate";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { datamuse: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      const n = Array.isArray(arr) ? arr.length : null;
+      return { value: n, sources: { datamuse: { ok: n !== null } }, context: { term: "climate" } };
+    },
+  },
   "shipwreckatlas-wreck-count": {
     config: { metric: "wreck_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
