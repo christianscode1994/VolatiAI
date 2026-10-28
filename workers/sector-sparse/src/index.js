@@ -1793,6 +1793,18 @@ export default {
     const sectorName = parts[0];
     const action = parts[1] || "signal";
     const collector = COLLECTORS[sectorName];
+    // Defense-in-depth: a throwing collector must return JSON, not 1101
+    const safeCollect = async (c, e, name) => {
+      try {
+        return await c.collectAll(e);
+      } catch (err) {
+        return {
+          value: null,
+          sources: { [name]: { ok: false, error: `collector threw: ${String(err).slice(0, 200)}` } },
+        };
+      }
+    };
+
 
     if (sectorName === "_health") {
       const summary = {};
@@ -1853,11 +1865,11 @@ export default {
     }
 
     if (action === "raw") {
-      return json(await collector.collectAll(env));
+      return json(await safeCollect(collector, env, sectorName));
     }
 
     if (action === "signal") {
-      const result = await collector.collectAll(env);
+      const result = await safeCollect(collector, env, sectorName);
       const kvKey = `${sectorName}_last_event`;
       const lastSeen = await env.SECTOR_KV.get(kvKey);
 
