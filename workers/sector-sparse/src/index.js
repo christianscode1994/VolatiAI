@@ -1907,6 +1907,11 @@ function json(obj, status = 200) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    // No REFRESHERS configured — this handler only silences stale cron triggers
+    console.log(`[cron] ${event.cron} — no-op (no refreshers configured)`);
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
