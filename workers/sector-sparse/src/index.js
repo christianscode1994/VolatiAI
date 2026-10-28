@@ -28,6 +28,52 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "nnn-reactor-projects": {
+    config: { metric: "project_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://www.nuclearnewsnetwork.com/api/v1/projects";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { nnn: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      const n = Array.isArray(arr) ? arr.length : (arr.projects ? arr.projects.length : null);
+      return { value: n, sources: { nnn: { ok: n !== null } }, context: { scope: "global" } };
+    },
+  },
+  "us-nuclear-plants-count": {
+    config: { metric: "plant_count", threshold_pct: 1, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://powerplantsnearme.com/api/plants?fuel=nuclear&limit=1000";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { ppnm: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j.count ?? (Array.isArray(j.plants) ? j.plants.length : null);
+      return { value: n, sources: { ppnm: { ok: n !== null } }, context: { fuel: "nuclear", country: "US" } };
+    },
+  },
+  "finland-ais-vessels": {
+    config: { metric: "vessel_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://meri.digitraffic.fi/api/ais/v1/locations?radius=10&latitude=60.16&longitude=24.94";
+      const r = await fetch(url, {
+        headers: {
+          "User-Agent": "VolatiAI/1.0",
+          "Digitraffic-User": "VolatiAI/1.0",
+          "Accept-Encoding": "gzip",
+        },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { digitraffic: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j.features) ? j.features.length : null;
+      return { value: n, sources: { digitraffic: { ok: n !== null } }, context: { region: "helsinki-10mi" } };
+    },
+  },
   "ebi-ols4-climate-terms": {
     config: { metric: "ontology_term_count", threshold_pct: 3, window: "30d", window_days: 30 },
     async collectAll(env) {
