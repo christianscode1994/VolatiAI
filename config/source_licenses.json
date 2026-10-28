@@ -640,12 +640,6 @@
     "redistribution": "Keyless, no auth",
     "category": "open"
   },
-  "open-meteo-berlin-temp": {
-    "license": "CC BY 4.0 (Open-Meteo)",
-    "redistribution": "Keyless, non-commercial free",
-    "category": "SAFE_CC_BY",
-    "attribution": "Open-Meteo"
-  },
   "steam-csgo-players": {
     "license": "Public API (Valve/Steam)",
     "redistribution": "Keyless, no auth",
@@ -830,12 +824,6 @@
     "attribution": null,
     "category": "SAFE_PD_CC0"
   },
-  "open-meteo-pm25": {
-    "source": "Open-Meteo",
-    "license": "CC BY 4.0",
-    "attribution": "Open-Meteo",
-    "category": "SAFE_CC_BY"
-  },
   "7timer-berlin-temp": {
     "source": "7Timer",
     "license": "CC BY 4.0",
@@ -997,18 +985,6 @@
     "redistribution": "No key required",
     "category": "SAFE_PD_CC0",
     "attribution": "Internet Archive"
-  },
-  "open-meteo-historical": {
-    "license": "CC BY 4.0",
-    "redistribution": "Free, 10k req/day non-commercial",
-    "category": "SAFE_CC_BY",
-    "attribution": "Open-Meteo"
-  },
-  "open-meteo-climate": {
-    "license": "CC BY 4.0",
-    "redistribution": "Free, 10k req/day non-commercial",
-    "category": "SAFE_CC_BY",
-    "attribution": "Open-Meteo"
   },
   "espn-nba-scoreboard": {
     "license": "ESPN public API",
@@ -1299,9 +1275,10 @@
   "shipwreckatlas-wreck-count": {
     "license": "ShipwreckAtlas public API",
     "redistribution": "No key, 60 req/min",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "ShipwreckAtlas",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "ebi-ols4-climate-terms": {
     "license": "EMBL-EBI OLS4 (fair use)",
@@ -1348,16 +1325,18 @@
   "cvetodo-cve-count": {
     "license": "CVETodo open aggregator (CVE Program, NIST NVD sources)",
     "redistribution": "No key, JSON API",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "CVETodo",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "phishdestroy-active-domains": {
     "license": "CC BY 4.0 — PhishDestroy",
     "redistribution": "No key, JSON stats endpoint",
-    "category": "SAFE_CC_BY",
+    "category": "REVIEW",
     "attribution": "PhishDestroy",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "fema-disaster-declarations": {
     "license": "U.S. federal public domain (FEMA)",
@@ -1390,44 +1369,50 @@
   "lium-gpu-node-count": {
     "license": "Lium public API (open data)",
     "redistribution": "No key, no signup, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Lium.io",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "asaptic-tender-ledger-rows": {
     "license": "Asaptic public data (tender ledger)",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Asaptic",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "darkbloom-active-providers": {
     "license": "Darkbloom public API (open data)",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Darkbloom",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "akash-provider-count": {
     "license": "Akash Network Console API (public)",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Akash Network",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "cantex-canton-dex-tvl": {
     "license": "Cantex public API (open data)",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Cantex",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "orca-solana-dex-tvl": {
     "license": "Orca public API (open data)",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Orca (Solana DEX)",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "defillama-dex-volume-24h": {
     "license": "DefiLlama public API (open data)",
@@ -1460,23 +1445,26 @@
   "relay-link-chain-count": {
     "license": "Relay.link public API (no key for basic calls)",
     "redistribution": "No key, optional key for higher limits",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Relay Protocol",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "sendrelay-city-count": {
     "license": "Relay (sendrelay.com.ng) public network API",
     "redistribution": "No key required, public endpoint",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "Relay Delivery (Nigeria)",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "anp2-event-count": {
     "license": "ANP2 public relay (permissionless)",
     "redistribution": "No key, signature-only, public REST+SSE",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "ANP2",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "mlb-team-count": {
     "license": "MLB Stats API (public, no key)",
@@ -1502,9 +1490,10 @@
   "bgpv6-routing-prefix-count": {
     "license": "BGPv6 public API (open data)",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "BGPv6.com",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "pch-active-ixp-count": {
     "license": "Packet Clearing House public IXP directory",
@@ -1516,16 +1505,18 @@
   "issued-live-ct-domains": {
     "license": "issued.live public CT-corpus stats",
     "redistribution": "No key, unauthenticated JSON",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "issued.live",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "sans-isc-daily-attacks": {
     "license": "SANS ISC DShield public API (no key)",
     "redistribution": "No key, descriptive UA required",
-    "category": "SAFE_OPEN",
+    "category": "REVIEW",
     "attribution": "SANS Internet Storm Center / DShield",
-    "commercial_use": "yes"
+    "commercial_use": "yes",
+    "note": "Commercial ToS not verified — pending review before launch"
   },
   "geocables-active-incidents": {
     "license": "GeoCables public API (open)",
