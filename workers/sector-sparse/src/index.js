@@ -28,6 +28,20 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "lium-gpu-node-count": {
+    config: { metric: "available_gpu_node_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://lium.io/api/public/v1/nodes";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { lium: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j.count === "number" ? j.count : null;
+      return { value: n, sources: { lium: { ok: n !== null } }, context: { type: "gpu_nodes" } };
+    },
+  },
   "openfda-drug-event-total": {
     config: { metric: "adverse_event_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
