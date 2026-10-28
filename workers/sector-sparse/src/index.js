@@ -28,18 +28,18 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "datamuse-semantic-related": {
-    config: { metric: "related_word_count", threshold_pct: 5, window: "30d", window_days: 30 },
+  "ebi-ols4-climate-terms": {
+    config: { metric: "ontology_term_count", threshold_pct: 3, window: "30d", window_days: 30 },
     async collectAll(env) {
-      const url = "https://api.datamuse.com/words?rel_trg=climate";
+      const url = "https://www.ebi.ac.uk/ols4/api/search?q=climate&size=1";
       const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(15000),
+        headers: { "User-Agent": "VolatiAI/1.0 (contact@fourieranalys.workers.dev)" },
+        signal: AbortSignal.timeout(20000),
       });
-      if (!r.ok) return { value: null, sources: { datamuse: { ok: false, error: `HTTP ${r.status}` } } };
-      const arr = await r.json();
-      const n = Array.isArray(arr) ? arr.length : null;
-      return { value: n, sources: { datamuse: { ok: n !== null } }, context: { term: "climate" } };
+      if (!r.ok) return { value: null, sources: { ols4: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.response?.numFound ?? null;
+      return { value: n, sources: { ols4: { ok: n !== null } }, context: { query: "climate" } };
     },
   },
   "shipwreckatlas-wreck-count": {
