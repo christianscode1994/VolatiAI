@@ -472,20 +472,6 @@ const COLLECTORS = {
       return { value: typeof n === "number" ? n : null, sources: { elexon: { ok: typeof n === "number" } }, context: { region: "UK", time: latest.measurementTime } };
     },
   },
-  "cvetodo-cve-count": {
-    config: { metric: "cve_count", threshold_pct: 2, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://cvetodo.com/api/v1/cves?limit=1";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" },
-        signal: AbortSignal.timeout(15000),
-      });
-      if (!r.ok) return { value: null, sources: { cvetodo: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = j?.pagination?.total ?? null;
-      return { value: typeof n === "number" ? n : null, sources: { cvetodo: { ok: typeof n === "number" } } };
-    },
-  },
   "phishdestroy-active-domains": {
     config: { metric: "active_domain_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
@@ -576,17 +562,6 @@ const COLLECTORS = {
       const j = await r.json();
       const n = j?.response?.numFound ?? null;
       return { value: n, sources: { ols4: { ok: n !== null } }, context: { query: "climate" } };
-    },
-  },
-  "shipwreckatlas-wreck-count": {
-    config: { metric: "wreck_count", threshold_pct: 2, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://shipwreckatlas.com/api/v1/wrecks?limit=1";
-      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { shipwreckatlas: { ok: false } } };
-      const j = await r.json();
-      const data = Array.isArray(j?.data) ? j.data : [];
-      return { value: data.length > 0 ? data.length : null, sources: { shipwreckatlas: { ok: true } }, context: { sample_wreck: data[0]?.name ?? null } };
     },
   },
   "usgs-geomag-boulder": {
@@ -1049,30 +1024,6 @@ const COLLECTORS = {
       const j = await r.json();
       const closest = j && j.archived_snapshots ? j.archived_snapshots.closest : null;
       return { value: closest ? 1 : 0, sources: { "wayback": { ok: true } }, context: { url: target, snapshot: closest ? closest.timestamp : null } };
-    },
-  },
-  "open-meteo-historical": {
-    config: { metric: "temp_2m_mean", threshold_pct: 2, window: "1y", window_days: 365 },
-    async collectAll(env) {
-      const url = "https://archive-api.open-meteo.com/v1/archive?latitude=52.52&longitude=13.41&start_date=2025-01-01&end_date=2025-12-31&daily=temperature_2m_mean&timezone=Europe%2FBerlin";
-      const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "open-meteo-archive": { ok: false } } };
-      const j = await r.json();
-      const vals = (j.daily && j.daily.temperature_2m_mean ? j.daily.temperature_2m_mean : []).filter(function (v) { return v != null; });
-      const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
-      return { value: mean, sources: { "open-meteo-archive": { ok: true } }, context: { days: vals.length } };
-    },
-  },
-  "open-meteo-climate": {
-    config: { metric: "temp_2m_mean_2050", threshold_pct: 2, window: "1y", window_days: 365 },
-    async collectAll(env) {
-      const url = "https://climate-api.open-meteo.com/v1/climate?latitude=52.52&longitude=13.41&start_date=2050-01-01&end_date=2050-12-31&daily=temperature_2m_mean&models=MRI_AGCM3_2_S";
-      const r = await fetch(url);
-      if (!r.ok) return { value: null, error: "HTTP " + r.status, sources: { "open-meteo-climate": { ok: false } } };
-      const j = await r.json();
-      const vals = (j.daily && j.daily.temperature_2m_mean ? j.daily.temperature_2m_mean : []).filter(function (v) { return v != null; });
-      const mean = vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null;
-      return { value: mean, sources: { "open-meteo-climate": { ok: true } }, context: { model: "MRI_AGCM3_2_S" } };
     },
   },
 
