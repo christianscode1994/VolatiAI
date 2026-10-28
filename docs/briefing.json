@@ -1,29 +1,36 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-10-28T17:41:23Z",
+  "ts": "2026-10-28T22:02:19Z",
   "run_number": 24,
   "briefing": {
-    "headline": "19 signals across 330 sectors evaluated",
+    "headline": "27 signals across 330 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 16,
+        "count": 23,
         "sectors": [
-          "anime",
+          "audius",
           "dc-crime",
           "environment",
           "espn-nba-score-count",
           "frankfurter-eursek",
           "frankfurter-eurusd",
+          "free-games",
+          "github-recent-commits",
           "hackernews-top-scores",
           "home-assistant",
           "nvd-new-cves-count",
+          "open-meteo-berlin-temp",
+          "open-source",
           "phishunt-domains",
           "pypi-daily-requests",
           "robonix",
+          "species-observations",
+          "steam-csgo-players",
           "steam-dota2-players",
-          "treasuries-gov",
+          "treasuries",
           "tweetfeed-c2",
-          "usgs-earthquake-count"
+          "usgs-earthquake-count",
+          "xbrl-frames"
         ]
       },
       "energy": {
@@ -33,33 +40,34 @@
         ]
       },
       "security": {
-        "count": 1,
+        "count": 2,
         "sectors": [
-          "cve-feed"
+          "cve-feed",
+          "security"
         ]
       },
       "information": {
         "count": 1,
         "sectors": [
-          "podcasts"
+          "events"
         ]
       }
     }
   },
   "signals": [
     {
-      "sector": "anime",
+      "sector": "audius",
       "severity": "notice",
-      "summary": "New: Koufukuron",
+      "summary": "New: iLLPeTiLL - Post HospitiLL Slapperzzz Mix (Audius Exclusive) \u2014 @iLLPeTiLL",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
-      "fires_24": 6
+      "fires_24": 3
     },
     {
       "sector": "carbon-intensity",
       "severity": "notice",
-      "summary": "New: UK grid: 182 gCO2/kWh (high)",
+      "summary": "New: UK grid: 201 gCO2/kWh (high)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -68,7 +76,7 @@
     {
       "sector": "cve-feed",
       "severity": "notice",
-      "summary": "New: CVE-2026-106079: An Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection') vulner",
+      "summary": "New: CVE-2026-76418: A vulnerability in the Remote Access SSL VPN service of Cisco Secure Firewall Adaptive Security Appl",
       "confidence": 1,
       "magnitude": null,
       "pct_change": null,
@@ -77,169 +85,248 @@
     {
       "sector": "dc-crime",
       "severity": "notice",
-      "summary": "crime_incidents 18122 (+1.6% vs 5.3d ago)",
+      "summary": "crime_incidents 18122 (+1.6% vs 5.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 1.6490913170293922,
-      "fires_24": 11
+      "fires_24": 12
     },
     {
       "sector": "environment",
       "severity": "notice",
-      "summary": "co2_ppm 428.1 (+0.6% vs 29.7d ago)",
+      "summary": "co2_ppm 428.13 (+0.6% vs 29.9d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 0.5519671168526183,
-      "fires_24": 18
+      "pct_change": 0.55901350557839,
+      "fires_24": 19
     },
     {
       "sector": "espn-nba-score-count",
       "severity": "notice",
-      "summary": "game_count 12 (+71.4% vs 3.1d ago)",
+      "summary": "game_count 12 (+71.4% vs 3.3d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 71.42857142857143,
-      "fires_24": 1
+      "fires_24": 2
+    },
+    {
+      "sector": "events",
+      "severity": "notice",
+      "summary": "New: [514] Why is this fingerprinting script creating bioweapons?",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 9
     },
     {
       "sector": "frankfurter-eursek",
       "severity": "alert",
-      "summary": "eur_sek 11.056 (-0.7% vs 3.3d ago)",
+      "summary": "eur_sek 11.056 (-0.7% vs 3.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -0.6737939089030731,
-      "fires_24": 6
+      "fires_24": 7
     },
     {
       "sector": "frankfurter-eurusd",
       "severity": "notice",
-      "summary": "eur_usd 1.1133 (-0.5% vs 3.3d ago)",
+      "summary": "eur_usd 1.1133 (-0.5% vs 3.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -0.536049316537122,
-      "fires_24": 6
+      "fires_24": 7
+    },
+    {
+      "sector": "free-games",
+      "severity": "notice",
+      "summary": "New: Free itch.io Games Bundle",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 3
+    },
+    {
+      "sector": "github-recent-commits",
+      "severity": "alert",
+      "summary": "commit_count 31719602 (+10.3% vs 3.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 10.31719757136355,
+      "fires_24": 10
     },
     {
       "sector": "hackernews-top-scores",
       "severity": "alert",
-      "summary": "top10_score_sum 2091 (+179.5% vs 3.9d ago)",
+      "summary": "top10_score_sum 2659 (+255.5% vs 4.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 179.54545454545453,
-      "fires_24": 17
+      "pct_change": 255.48128342245988,
+      "fires_24": 18
     },
     {
       "sector": "home-assistant",
       "severity": "notice",
-      "summary": "installations 713510 (+0.7% vs 4.9d ago)",
+      "summary": "installations 713696 (+0.7% vs 5.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 0.6943366403703128,
-      "fires_24": 9
+      "pct_change": 0.7205859523843126,
+      "fires_24": 10
     },
     {
       "sector": "nvd-new-cves-count",
       "severity": "alert",
-      "summary": "new_cves 800 (+506.1% vs 2.9d ago)",
+      "summary": "new_cves 830 (+528.8% vs 3.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 506.06060606060606,
-      "fires_24": 13
+      "pct_change": 528.7878787878788,
+      "fires_24": 14
+    },
+    {
+      "sector": "open-meteo-berlin-temp",
+      "severity": "notice",
+      "summary": "temp_c 7.7 (-26.7% vs 3.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -26.666666666666668,
+      "fires_24": 7
+    },
+    {
+      "sector": "open-source",
+      "severity": "notice",
+      "summary": "New: 1.144.0 (vscode)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 1
     },
     {
       "sector": "phishunt-domains",
       "severity": "notice",
-      "summary": "active_phishings 1171 (-8.3% vs 3.9d ago)",
+      "summary": "active_phishings 1152 (-9.8% vs 4.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -8.300704776820673,
-      "fires_24": 13
-    },
-    {
-      "sector": "podcasts",
-      "severity": "notice",
-      "summary": "New: Politicians are afraid to fix taxes. So 100 citizens tried.",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
-      "fires_24": 2
+      "pct_change": -9.788566953797964,
+      "fires_24": 14
     },
     {
       "sector": "pypi-daily-requests",
       "severity": "alert",
-      "summary": "downloads 55719098 (+62.4% vs 3.6d ago)",
+      "summary": "downloads 55719098 (+62.4% vs 3.8d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 62.43993276650441,
-      "fires_24": 8
+      "fires_24": 9
     },
     {
       "sector": "robonix",
       "severity": "alert",
-      "summary": "packages 69 (+16.9% vs 5.6d ago)",
+      "summary": "packages 69 (+16.9% vs 5.8d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 16.94915254237288,
-      "fires_24": 19
+      "fires_24": 20
+    },
+    {
+      "sector": "security",
+      "severity": "notice",
+      "summary": "New: CVE-2026-41709 \u2014 Broadcom VMWare ESX Insufficient Logging Vulnerability",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 4
+    },
+    {
+      "sector": "steam-csgo-players",
+      "severity": "alert",
+      "summary": "player_count 736506 (-27.8% vs 3.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -27.810161384386927,
+      "fires_24": 9
     },
     {
       "sector": "steam-dota2-players",
       "severity": "alert",
-      "summary": "player_count 681459 (-25.5% vs 2.9d ago)",
+      "summary": "player_count 470456 (-48.6% vs 3.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -25.5161988787956,
-      "fires_24": 10
+      "pct_change": -48.57892970776329,
+      "fires_24": 11
     },
     {
-      "sector": "treasuries-gov",
+      "sector": "treasuries",
       "severity": "notice",
-      "summary": "yield_10y 4.99 (-5.1% vs 29.7d ago)",
+      "summary": "yield_10y 4.99 (-5.1% vs 29.9d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -5.133079847908737,
-      "fires_24": 6
+      "fires_24": 12
     },
     {
       "sector": "tweetfeed-c2",
       "severity": "alert",
-      "summary": "weekly_c2_ips 147 (-90.4% vs 4.9d ago)",
+      "summary": "weekly_c2_ips 151 (-90.1% vs 5.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -90.36065573770492,
-      "fires_24": 3
+      "pct_change": -90.09836065573771,
+      "fires_24": 4
     },
     {
       "sector": "usgs-earthquake-count",
       "severity": "notice",
-      "summary": "m45_count 22 (-56.0% vs 3.9d ago)",
+      "summary": "m45_count 24 (-52.0% vs 4.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -56.00000000000001,
-      "fires_24": 15
+      "pct_change": -52,
+      "fires_24": 16
+    },
+    {
+      "sector": "xbrl-frames",
+      "severity": "warning",
+      "summary": "reporting_filers 522 (+38.1%)",
+      "confidence": 1,
+      "magnitude": 7.62,
+      "pct_change": 38.095238095238095,
+      "fires_24": 1
+    },
+    {
+      "sector": "species-observations",
+      "severity": "notice",
+      "summary": "occurrence_count 3886970815 (-2.6%)",
+      "confidence": 0.51,
+      "magnitude": 2.56,
+      "pct_change": -2.5564824184133834,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-28 11:52",
+    "previous_ts": "2026-10-28 17:41",
     "signals_before": 19,
-    "signals_after": 19,
+    "signals_after": 27,
     "new": [
-      "anime",
-      "carbon-intensity",
-      "cve-feed",
-      "espn-nba-score-count",
-      "podcasts"
+      "audius",
+      "events",
+      "free-games",
+      "github-recent-commits",
+      "open-meteo-berlin-temp",
+      "open-source",
+      "security",
+      "species-observations",
+      "steam-csgo-players",
+      "treasuries",
+      "xbrl-frames"
     ],
     "dropped": [
-      "crypto-oi",
-      "github-recent-commits",
-      "miso-grid",
-      "privacy-monero",
-      "privacy-zcash"
+      "anime",
+      "podcasts",
+      "treasuries-gov"
     ],
     "persistent": [
+      "carbon-intensity",
+      "cve-feed",
       "dc-crime",
       "environment",
+      "espn-nba-score-count",
       "frankfurter-eursek",
       "frankfurter-eurusd",
       "hackernews-top-scores",
@@ -249,93 +336,102 @@
       "pypi-daily-requests",
       "robonix",
       "steam-dota2-players",
-      "treasuries-gov",
       "tweetfeed-c2",
       "usgs-earthquake-count"
     ],
     "movements": [
       {
+        "sector": "carbon-intensity",
+        "previous": "New: UK grid: 182 gCO2/kWh (high)",
+        "current": "New: UK grid: 201 gCO2/kWh (high)"
+      },
+      {
+        "sector": "cve-feed",
+        "previous": "New: CVE-2026-106079: An Improper Neutralization of Special Elements used in an ",
+        "current": "New: CVE-2026-76418: A vulnerability in the Remote Access SSL VPN service of Cis"
+      },
+      {
         "sector": "dc-crime",
-        "previous": "crime_incidents 18122 (+1.6% vs 5d ago)",
-        "current": "crime_incidents 18122 (+1.6% vs 5.3d ago)"
+        "previous": "crime_incidents 18122 (+1.6% vs 5.3d ago)",
+        "current": "crime_incidents 18122 (+1.6% vs 5.5d ago)"
       },
       {
         "sector": "environment",
-        "previous": "co2_ppm 428.1 (+0.6% vs 29.5d ago)",
-        "current": "co2_ppm 428.1 (+0.6% vs 29.7d ago)"
+        "previous": "co2_ppm 428.1 (+0.6% vs 29.7d ago)",
+        "current": "co2_ppm 428.13 (+0.6% vs 29.9d ago)"
+      },
+      {
+        "sector": "espn-nba-score-count",
+        "previous": "game_count 12 (+71.4% vs 3.1d ago)",
+        "current": "game_count 12 (+71.4% vs 3.3d ago)"
       },
       {
         "sector": "frankfurter-eursek",
-        "previous": "eur_sek 11.0795 (-0.5% vs 3.1d ago)",
-        "current": "eur_sek 11.056 (-0.7% vs 3.3d ago)"
+        "previous": "eur_sek 11.056 (-0.7% vs 3.3d ago)",
+        "current": "eur_sek 11.056 (-0.7% vs 3.5d ago)"
       },
       {
         "sector": "frankfurter-eurusd",
-        "previous": "eur_usd 1.115 (-0.4% vs 3.1d ago)",
-        "current": "eur_usd 1.1133 (-0.5% vs 3.3d ago)"
+        "previous": "eur_usd 1.1133 (-0.5% vs 3.3d ago)",
+        "current": "eur_usd 1.1133 (-0.5% vs 3.5d ago)"
       },
       {
         "sector": "hackernews-top-scores",
-        "previous": "top10_score_sum 3526 (+371.4% vs 3.7d ago)",
-        "current": "top10_score_sum 2091 (+179.5% vs 3.9d ago)"
+        "previous": "top10_score_sum 2091 (+179.5% vs 3.9d ago)",
+        "current": "top10_score_sum 2659 (+255.5% vs 4.1d ago)"
       },
       {
         "sector": "home-assistant",
-        "previous": "installations 713328 (+0.7% vs 4.6d ago)",
-        "current": "installations 713510 (+0.7% vs 4.9d ago)"
+        "previous": "installations 713510 (+0.7% vs 4.9d ago)",
+        "current": "installations 713696 (+0.7% vs 5.1d ago)"
       },
       {
         "sector": "nvd-new-cves-count",
-        "previous": "new_cves 985 (+646.2% vs 2.7d ago)",
-        "current": "new_cves 800 (+506.1% vs 2.9d ago)"
+        "previous": "new_cves 800 (+506.1% vs 2.9d ago)",
+        "current": "new_cves 830 (+528.8% vs 3.1d ago)"
       },
       {
         "sector": "phishunt-domains",
-        "previous": "active_phishings 1164 (-8.8% vs 3.7d ago)",
-        "current": "active_phishings 1171 (-8.3% vs 3.9d ago)"
+        "previous": "active_phishings 1171 (-8.3% vs 3.9d ago)",
+        "current": "active_phishings 1152 (-9.8% vs 4.1d ago)"
       },
       {
         "sector": "pypi-daily-requests",
-        "previous": "downloads 55719098 (+62.4% vs 3.4d ago)",
-        "current": "downloads 55719098 (+62.4% vs 3.6d ago)"
+        "previous": "downloads 55719098 (+62.4% vs 3.6d ago)",
+        "current": "downloads 55719098 (+62.4% vs 3.8d ago)"
       },
       {
         "sector": "robonix",
-        "previous": "packages 69 (+16.9% vs 5.4d ago)",
-        "current": "packages 69 (+16.9% vs 5.6d ago)"
+        "previous": "packages 69 (+16.9% vs 5.6d ago)",
+        "current": "packages 69 (+16.9% vs 5.8d ago)"
       },
       {
         "sector": "steam-dota2-players",
-        "previous": "player_count 602153 (-34.2% vs 2.7d ago)",
-        "current": "player_count 681459 (-25.5% vs 2.9d ago)"
-      },
-      {
-        "sector": "treasuries-gov",
-        "previous": "yield_10y 4.99 (-5.1% vs 29.5d ago)",
-        "current": "yield_10y 4.99 (-5.1% vs 29.7d ago)"
+        "previous": "player_count 681459 (-25.5% vs 2.9d ago)",
+        "current": "player_count 470456 (-48.6% vs 3.1d ago)"
       },
       {
         "sector": "tweetfeed-c2",
-        "previous": "weekly_c2_ips 144 (-90.6% vs 4.6d ago)",
-        "current": "weekly_c2_ips 147 (-90.4% vs 4.9d ago)"
+        "previous": "weekly_c2_ips 147 (-90.4% vs 4.9d ago)",
+        "current": "weekly_c2_ips 151 (-90.1% vs 5.1d ago)"
       },
       {
         "sector": "usgs-earthquake-count",
-        "previous": "m45_count 20 (-60.0% vs 3.7d ago)",
-        "current": "m45_count 22 (-56.0% vs 3.9d ago)"
+        "previous": "m45_count 22 (-56.0% vs 3.9d ago)",
+        "current": "m45_count 24 (-52.0% vs 4.1d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 486.92,
+      "avg_volatility": 474.0,
       "max_volatility": 6965.54,
       "fires_in_window": 1
     },
     {
       "sector": "eth-exchange-spread",
-      "avg_volatility": 442.14,
+      "avg_volatility": 421.03,
       "max_volatility": 4591.73,
       "fires_in_window": 2
     },
@@ -358,12 +454,6 @@
       "fires_in_window": 1
     },
     {
-      "sector": "npm-downloads-react",
-      "avg_volatility": 26.11,
-      "max_volatility": 72.33,
-      "fires_in_window": 4
-    },
-    {
       "sector": "transportation",
       "avg_volatility": 25,
       "max_volatility": 25,
@@ -371,27 +461,33 @@
     },
     {
       "sector": "coinbase-btc-volume24h",
-      "avg_volatility": 24.5,
+      "avg_volatility": 24.49,
       "max_volatility": 64.87,
       "fires_in_window": 8
     },
     {
-      "sector": "steam-csgo-players",
-      "avg_volatility": 24.39,
-      "max_volatility": 57.17,
-      "fires_in_window": 8
+      "sector": "npm-downloads-react",
+      "avg_volatility": 24.16,
+      "max_volatility": 72.33,
+      "fires_in_window": 4
+    },
+    {
+      "sector": "energy-carbon",
+      "avg_volatility": 22.85,
+      "max_volatility": 49.28,
+      "fires_in_window": 1
     },
     {
       "sector": "dex-ethereum-volume",
-      "avg_volatility": 23.17,
+      "avg_volatility": 22.39,
       "max_volatility": 33.92,
       "fires_in_window": 9
     }
   ],
   "stats": {
     "total_sectors": 330,
-    "firing_sectors": 19,
-    "fire_rate_pct": 5.76,
+    "firing_sectors": 27,
+    "fire_rate_pct": 8.18,
     "runs_in_history": 24
   }
 }
