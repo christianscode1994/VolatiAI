@@ -28,18 +28,6 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "usgs-mrds-record-count": {
-    config: { metric: "record_count", threshold_pct: 1, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://mrdata.usgs.gov/services/wfs/mrds?service=WFS&version=2.0.0&request=GetFeature&typeNames=mrds&resultType=hits";
-      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { mrds: { ok: false } } };
-      const text = await r.text();
-      const m = text.match(/numberMatched="(\d+)"/);
-      const n = m ? parseInt(m[1], 10) : null;
-      return { value: n, sources: { mrds: { ok: n !== null } } };
-    },
-  },
   "shipwreckatlas-wreck-count": {
     config: { metric: "wreck_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
