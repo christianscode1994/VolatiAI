@@ -28,6 +28,34 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "sensor-community-berlin-sensors": {
+    config: { metric: "active_sensor_count", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://data.sensor.community/airrohr/v1/filter/box=52.1,13.0,53.5,13.5";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { sensorcommunity: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      const n = Array.isArray(arr) ? arr.length : null;
+      return { value: n, sources: { sensorcommunity: { ok: n !== null } }, context: { region: "berlin", type: "air_quality_sensors" } };
+    },
+  },
+  "thingspeak-public-channels": {
+    config: { metric: "public_channel_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.thingspeak.com/channels/public.json?results=1";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { thingspeak: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.pagination?.total_entries === "number" ? j.pagination.total_entries : null;
+      return { value: n, sources: { thingspeak: { ok: n !== null } }, context: { type: "iot_public_channels" } };
+    },
+  },
   "darkbloom-active-providers": {
     config: { metric: "active_provider_count", threshold_pct: 10, window: "30d", window_days: 30 },
     async collectAll(env) {
