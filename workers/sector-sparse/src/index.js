@@ -28,42 +28,6 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "bls-unemployment-rate": {
-    config: { metric: "unemployment_pct", threshold_pct: 5, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const year = new Date().getUTCFullYear();
-      const url = "https://api.bls.gov/publicAPI/v2/timeseries/data/";
-      const r = await fetch(url, {
-        method: "POST",
-        headers: { "User-Agent": "VolatiAI/1.0", "Content-Type": "application/json" },
-        body: JSON.stringify({
-          seriesid: ["LNS14000000"],
-          startyear: String(year),
-          endyear: String(year),
-        }),
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { bls: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const v = j?.Results?.series?.[0]?.data?.[0]?.value;
-      const n = typeof v === "string" ? parseFloat(v) : (typeof v === "number" ? v : null);
-      return { value: Number.isFinite(n) ? n : null, sources: { bls: { ok: Number.isFinite(n) } }, context: { series: "LNS14000000", metric: "unemployment_rate", source: "US BLS" } };
-    },
-  },
-  "sensor-community-berlin-sensors": {
-    config: { metric: "active_sensor_count", threshold_pct: 10, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const url = "https://data.sensor.community/airrohr/v1/filter/box=52.1,13.0,53.5,13.5";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { sensorcommunity: { ok: false, error: `HTTP ${r.status}` } } };
-      const arr = await r.json();
-      const n = Array.isArray(arr) ? arr.length : null;
-      return { value: n, sources: { sensorcommunity: { ok: n !== null } }, context: { region: "berlin", type: "air_quality_sensors" } };
-    },
-  },
   "thingspeak-public-channels": {
     config: { metric: "public_channel_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
