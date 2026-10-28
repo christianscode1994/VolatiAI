@@ -28,6 +28,34 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "worldbank-poverty-headcount": {
+    config: { metric: "poverty_pct", threshold_pct: 2, window: "365d", window_days: 365 },
+    async collectAll(env) {
+      const url = "https://api.worldbank.org/v2/country/WLD/indicator/SI.POV.DDAY?format=json&per_page=1&date=2022";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.[1]?.[0]?.value ?? null;
+      return { value: typeof n === "number" ? n : null, sources: { worldbank: { ok: typeof n === "number" } }, context: { indicator: "SI.POV.DDAY", country: "WLD", year: 2022 } };
+    },
+  },
+  "gdacs-disaster-alerts": {
+    config: { metric: "active_alert_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://www.gdacs.org/gdacsapi/api/Events/geteventlist/SEARCH?alertlevel=Green;Orange;Red";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { gdacs: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.features) ? j.features.length : null;
+      return { value: n, sources: { gdacs: { ok: n !== null } }, context: { scope: "global" } };
+    },
+  },
   "fema-disaster-declarations": {
     config: { metric: "declaration_count", threshold_pct: 1, window: "30d", window_days: 30 },
     async collectAll(env) {
