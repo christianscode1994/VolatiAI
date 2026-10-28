@@ -28,6 +28,15 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "xaus-gold-spot": {
+    config: { metric: "xau_usd", threshold_pct: 1, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://xaus.com/api/v1/spot?compact=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { xaus: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.xau === "number" ? j.xau : null, sources: { xaus: { ok: true } }, context: { state: j?.state, updated: j?.updated_at } };
+    },
+  },
   "worldbank-electricity-access": {
     config: { metric: "electricity_access_pct", threshold_pct: 1, window: "1y", window_days: 365 },
     async collectAll(env) {

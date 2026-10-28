@@ -156,6 +156,15 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "btc-mining-hashrate": {
+    config: { metric: "hashrate_hs", threshold_pct: 10, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://mempool.space/api/v1/mining/hashrate/3d", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { mempool: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.currentHashrate === "number" ? j.currentHashrate : null, sources: { mempool: { ok: true } }, context: { difficulty: j?.currentDifficulty } };
+    },
+  },
   "adsb-military-aircraft": {
     config: { metric: "military_aircraft_count", threshold_pct: 20, window: "1h", window_days: 0 },
     async collectAll(env) {
