@@ -28,17 +28,6 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "conceptnet-climate-edges": {
-    config: { metric: "edge_count", threshold_pct: 5, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://api.conceptnet.io/c/en/climate_change?limit=100";
-      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { conceptnet: { ok: false } } };
-      const j = await r.json();
-      const edges = Array.isArray(j?.edges) ? j.edges : [];
-      return { value: edges.length > 0 ? edges.length : null, sources: { conceptnet: { ok: true } }, context: { concept: "climate_change" } };
-    },
-  },
   "shipwreckatlas-wreck-count": {
     config: { metric: "wreck_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
