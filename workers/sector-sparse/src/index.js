@@ -56,24 +56,6 @@ const COLLECTORS = {
       return { value: n, sources: { akash: { ok: n !== null } }, context: { network: "decentralized_cloud" } };
     },
   },
-  "icp-node-count": {
-    config: { metric: "node_count", threshold_pct: 2, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://ic-api.internetcomputer.org/api/v3/metrics";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { icp: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      let n = null;
-      if (Array.isArray(j)) {
-        const match = j.find(m => m && m.name === "ic_node_count");
-        n = match ? parseFloat(match.value) : null;
-      }
-      return { value: Number.isFinite(n) ? n : null, sources: { icp: { ok: Number.isFinite(n) } }, context: { network: "internet_computer" } };
-    },
-  },
   "asaptic-tender-ledger-rows": {
     config: { metric: "ledger_row_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
