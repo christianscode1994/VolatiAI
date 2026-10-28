@@ -1,0 +1,93 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>VolatiAI Reliability Dashboard</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 20px; background: #0b0c10; color: #e5e5e5; }
+    h1, h2 { color: #ffffff; }
+    a { color: #4fd1c5; }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+    th, td { border: 1px solid #333; padding: 8px; font-size: 13px; }
+    th { background: #111827; }
+    .bad { background: #7f1d1d; }
+    .ok { background: #78350f; }
+    .good { background: #064e3b; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>VolatiAI Reliability Dashboard</h1>
+  <p>Updated: 2026-10-28T10:40:06.986Z</p>
+
+  <h2>Global Reliability Score: 1</h2>
+
+  <h2>Intelligence Snapshot</h2>
+  <pre>undefined</pre>
+
+  <h2>Sector Reliability Breakdown</h2>
+  <table>
+    <tr>
+      <th>Sector</th>
+      <th>Average Reliability</th>
+    </tr>
+    
+        <tr class="good">
+          <td>sector-slow</td>
+          <td>1</td>
+        </tr>
+        <tr class="good">
+          <td>sector-dense</td>
+          <td>1</td>
+        </tr>
+        <tr class="good">
+          <td>sector-sparse</td>
+          <td>1</td>
+        </tr>
+  </table>
+
+  <h2>Worker Reliability Table</h2>
+  <table>
+    <tr>
+      <th>Worker URL</th>
+      <th>Sector</th>
+      <th>Status</th>
+      <th>Latency (ms)</th>
+      <th>JSON Valid</th>
+      <th>Reliability</th>
+      <th>Error</th>
+    </tr>
+    
+        <tr class="good">
+          <td>https://sector-slow.fourieranalys.workers.dev</td>
+          <td>sector-slow</td>
+          <td>OK</td>
+          <td>43</td>
+          <td>true</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr class="good">
+          <td>https://sector-dense.fourieranalys.workers.dev</td>
+          <td>sector-dense</td>
+          <td>OK</td>
+          <td>35</td>
+          <td>true</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr class="good">
+          <td>https://sector-sparse.fourieranalys.workers.dev</td>
+          <td>sector-sparse</td>
+          <td>OK</td>
+          <td>12</td>
+          <td>true</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+  </table>
+
+  <h2>Sector Reliability Trend (24h / 7d)</h2>
+  <p>This page reads <code>reliability_history.json</code> for trend graphs. Add a client-side chart (e.g. lightweight canvas/SVG) to keep it fully static and serverless.</p>
+</body>
+</html>
