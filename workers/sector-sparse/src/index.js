@@ -127,19 +127,6 @@ const COLLECTORS = {
       return { value: n, sources: { sans: { ok: n !== null } }, context: { date: row?.date, sources: row?.sources, targets: row?.targets } };
     },
   },
-  "openphish-active-urls": {
-    config: { metric: "active_phishing_url_count", threshold_pct: 20, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const r = await fetch("https://openphish.com/feed.txt", {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { openphish: { ok: false, error: `HTTP ${r.status}` } } };
-      const text = await r.text();
-      const lines = text.split("\n").filter(l => l && !l.startsWith("#") && l.startsWith("http"));
-      return { value: lines.length, sources: { openphish: { ok: true } }, context: { type: "active_phishing_urls" } };
-    },
-  },
   "bgpv6-routing-prefix-count": {
     config: { metric: "total_prefixes", threshold_pct: 5, window: "7d", window_days: 7 },
     async collectAll(env) {
@@ -281,19 +268,6 @@ const COLLECTORS = {
       return { value: Number.isFinite(n) ? n : null, sources: { publicnode: { ok: Number.isFinite(n) } }, context: { chain: "ethereum" } };
     },
   },
-  "bitcoin-daily-transactions": {
-    config: { metric: "transactions_24h", threshold_pct: 15, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const r = await fetch("https://api.blockchair.com/bitcoin/stats", {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { blockchair: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = typeof j?.data?.transactions_24h === "number" ? j.data.transactions_24h : null;
-      return { value: n, sources: { blockchair: { ok: n !== null } }, context: { chain: "bitcoin", metric: "daily_throughput" } };
-    },
-  },
   "wax-block-height": {
     config: { metric: "head_block_num", threshold_pct: 1, window: "7d", window_days: 7 },
     async collectAll(env) {
@@ -337,20 +311,6 @@ const COLLECTORS = {
       return { value: n, sources: { mempool: { ok: n !== null } }, context: { chain: "bitcoin" } };
     },
   },
-  "dexpaprika-network-count": {
-    config: { metric: "tracked_network_count", threshold_pct: 5, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://api.dexpaprika.com/networks";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { dexpaprika: { ok: false, error: `HTTP ${r.status}` } } };
-      const arr = await r.json();
-      const n = Array.isArray(arr) ? arr.length : (Array.isArray(arr?.networks) ? arr.networks.length : null);
-      return { value: n, sources: { dexpaprika: { ok: n !== null } }, context: { type: "dex_networks_tracked" } };
-    },
-  },
   "cantex-canton-dex-tvl": {
     config: { metric: "tvl_cc_usd", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
@@ -379,20 +339,6 @@ const COLLECTORS = {
       const v = j?.tvl;
       const n = typeof v === "string" ? parseFloat(v) : (typeof v === "number" ? v : null);
       return { value: Number.isFinite(n) ? n : null, sources: { orca: { ok: Number.isFinite(n) } }, context: { dex: "solana" } };
-    },
-  },
-  "thingspeak-public-channels": {
-    config: { metric: "public_channel_count", threshold_pct: 5, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://api.thingspeak.com/channels/public.json?results=1";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { thingspeak: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = typeof j?.pagination?.total_entries === "number" ? j.pagination.total_entries : null;
-      return { value: n, sources: { thingspeak: { ok: n !== null } }, context: { type: "iot_public_channels" } };
     },
   },
   "darkbloom-active-providers": {
