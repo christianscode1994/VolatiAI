@@ -28,6 +28,45 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "bgpv6-routing-prefix-count": {
+    config: { metric: "total_prefixes", threshold_pct: 5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://bgpv6.com/api/v1/stats", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { bgpv6: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_prefixes === "number" ? j.total_prefixes : null;
+      return { value: n, sources: { bgpv6: { ok: n !== null } }, context: { total_asns: j?.total_asns, total_v4: j?.total_v4, total_v6: j?.total_v6, total_countries: j?.total_countries } };
+    },
+  },
+  "pch-active-ixp-count": {
+    config: { metric: "active_ixp_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.pch.net/api/ixp/directory/Active", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(25000),
+      });
+      if (!r.ok) return { value: null, sources: { pch: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      const n = Array.isArray(arr) ? arr.length : null;
+      return { value: n, sources: { pch: { ok: n !== null } }, context: { type: "internet_exchange_points" } };
+    },
+  },
+  "issued-live-ct-domains": {
+    config: { metric: "total_domains", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://issued.live/api/stats", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(25000),
+      });
+      if (!r.ok) return { value: null, sources: { issued: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.totals?.domains === "number" ? j.totals.domains : null;
+      return { value: n, sources: { issued: { ok: n !== null } }, context: { certs_24h: j?.totals?.certs_24h, names_24h: j?.totals?.names_24h } };
+    },
+  },
   "mlb-team-count": {
     config: { metric: "mlb_team_count", threshold_pct: 1, window: "30d", window_days: 30 },
     async collectAll(env) {
