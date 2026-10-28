@@ -28,6 +28,17 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "nyc-building-permits": {
+    config: { metric: "permit_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://data.cityofnewyork.us/resource/ipu4-2q9a.json?$limit=1&$select=count(*)";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { socrata_nyc: { ok: false } } };
+      const j = await r.json();
+      const count = Array.isArray(j) && j[0] ? Number(j[0].count) : null;
+      return { value: count, sources: { socrata_nyc: { ok: true } }, context: { dataset: "NYC DOB permits" } };
+    },
+  },
   "simkl-calendar-anime": {
     config: { metric: "anime_release_count", threshold_pct: 10, window: "1d", window_days: 1 },
     async collectAll(env) {
