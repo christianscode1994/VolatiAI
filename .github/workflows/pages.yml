@@ -137,7 +137,18 @@ jobs:
 
           git commit -m "[skip ci] Update VolatiAI public dashboards"
 
-          git push origin HEAD:main
+          # Retry push with rebase — the auto-committer may race us
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed (attempt $i), rebasing onto latest origin/main"
+            git pull --rebase origin main || true
+            sleep $((i * 5))
+          done
+          echo "Push failed after 5 attempts"
+          exit 1
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
