@@ -419,7 +419,55 @@
               "1"
             ],
             [
-              "81544.3",
+              "81498.8",
+              "0.00002733",
+              "0",
+              "2"
+            ],
+            [
+              "81499",
+              "0.04616403",
+              "0",
+              "1"
+            ],
+            [
+              "81499.1",
+              "0.15465336",
+              "0",
+              "1"
+            ],
+            [
+              "81500.1",
+              "0.02072812",
+              "0",
+              "1"
+            ],
+            [
+              "81500.2",
+              "0.024535",
+              "0",
+              "1"
+            ],
+            [
+              "81500.7",
+              "0.01840831",
+              "0",
+              "1"
+            ],
+            [
+              "81501.4",
+              "0.00001232",
+              "0",
+              "1"
+            ],
+            [
+              "81502.5",
+              "0.02647511",
+              "0",
+              "2"
+            ],
+            [
+              "81503.3",
               "0.0000102",
               "0",
               "1"
@@ -1071,6 +1119,11 @@
         },
         {
           "side": "bid",
+          "bucket_price": 81400.0,
+          "notional": 670462.0019415058
+        },
+        {
+          "side": "ask",
           "bucket_price": 81500.0,
           "notional": 183542.845874101
         }
@@ -1086,20 +1139,20 @@
       "releases_total": 38,
       "top_active": [
         {
-          "protocol": "foundry",
-          "repo": "foundry-rs/foundry",
-          "category": "tooling",
-          "commits": 100,
-          "releases": 7,
-          "stars": 10739
-        },
-        {
           "protocol": "metamask",
           "repo": "MetaMask/metamask-extension",
           "category": "wallets",
           "commits": 100,
           "releases": 1,
           "stars": 13247
+        },
+        {
+          "protocol": "foundry",
+          "repo": "foundry-rs/foundry",
+          "category": "tooling",
+          "commits": 99,
+          "releases": 7,
+          "stars": 10739
         },
         {
           "protocol": "optimism",
@@ -1186,8 +1239,8 @@
         "tooling": {
           "tracked": 3,
           "active": 3,
-          "commits": 191,
-          "avg": 63.67,
+          "commits": 190,
+          "avg": 63.33,
           "signal": "very_high"
         },
         "wallets": {
