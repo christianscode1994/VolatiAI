@@ -28,6 +28,52 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "azmth-active-satellite-count": {
+    config: { metric: "active_satellite_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://azmth.space/stats.json", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { azmth: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.active === "number" ? j.active : null;
+      const constellations = Array.isArray(j?.byConstellation) ? j.byConstellation.length : null;
+      return { value: n, sources: { azmth: { ok: n !== null } }, context: { constellation_count: constellations, data_as_of: j?.data_as_of } };
+    },
+  },
+  "geocables-active-incidents": {
+    config: { metric: "active_cable_incidents", threshold_pct: 50, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://geocables.com/api/v1/status", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { geocables: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const d = j?.data ?? j;
+      const n = typeof d?.active_alerts === "number" ? d.active_alerts : null;
+      return { value: n, sources: { geocables: { ok: n !== null } }, context: { incidents_total: d?.incidents_total, routes_measured_24h: d?.routes_measured_24h } };
+    },
+  },
+  "noaa-swpc-kp-index": {
+    config: { metric: "kp_index", threshold_pct: 50, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://services.swpc.noaa.gov/json/planetary_k_index_1m.json", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { swpc: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      let n = null;
+      if (Array.isArray(j) && j.length > 0) {
+        const last = j[j.length - 1];
+        const v = last?.kp_index ?? last?.estimated_kp ?? last?.kp;
+        n = typeof v === "number" ? v : (typeof v === "string" ? parseFloat(v) : null);
+      }
+      return { value: Number.isFinite(n) ? n : null, sources: { swpc: { ok: Number.isFinite(n) } }, context: { source: "NOAA SWPC 1m Kp" } };
+    },
+  },
   "sans-isc-daily-attacks": {
     config: { metric: "daily_attack_records", threshold_pct: 15, window: "7d", window_days: 7 },
     async collectAll(env) {
