@@ -28,6 +28,52 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "darkbloom-active-providers": {
+    config: { metric: "active_provider_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.darkbloom.dev/v1/stats";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { darkbloom: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j.active_providers === "number" ? j.active_providers : null;
+      return { value: n, sources: { darkbloom: { ok: n !== null } }, context: { network: "decentralized_inference" } };
+    },
+  },
+  "akash-provider-count": {
+    config: { metric: "provider_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://console-api.akash.network/v1/providers";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { akash: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: n, sources: { akash: { ok: n !== null } }, context: { network: "decentralized_cloud" } };
+    },
+  },
+  "icp-node-count": {
+    config: { metric: "node_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://ic-api.internetcomputer.org/api/v3/metrics";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { icp: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      let n = null;
+      if (Array.isArray(j)) {
+        const match = j.find(m => m && m.name === "ic_node_count");
+        n = match ? parseFloat(match.value) : null;
+      }
+      return { value: Number.isFinite(n) ? n : null, sources: { icp: { ok: Number.isFinite(n) } }, context: { network: "internet_computer" } };
+    },
+  },
   "asaptic-tender-ledger-rows": {
     config: { metric: "ledger_row_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
