@@ -28,6 +28,45 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "denmark-traffic-incidents": {
+    config: { metric: "active_traffic_incidents", threshold_pct: 30, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://storage.googleapis.com/trafikkort-data/geojson/big-screen-events.json", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { denmark: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : (Array.isArray(j?.features) ? j.features.length : null);
+      return { value: n, sources: { denmark: { ok: n !== null } }, context: { country: "DK", type: "live_traffic_events" } };
+    },
+  },
+  "webtris-uk-traffic-sites": {
+    config: { metric: "monitored_traffic_sites", threshold_pct: 1, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://webtris.highwaysengland.co.uk/api/v1.0/sites", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(25000),
+      });
+      if (!r.ok) return { value: null, sources: { webtris: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.sites) ? j.sites.length : null;
+      return { value: n, sources: { webtris: { ok: n !== null } }, context: { country: "UK", network: "strategic_road_network" } };
+    },
+  },
+  "ripe-atlas-connected-probes": {
+    config: { metric: "connected_probes", threshold_pct: 2, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://atlas.ripe.net/api/v2/probes/?format=json&status=1", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { ripeatlas: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : null;
+      return { value: n, sources: { ripeatlas: { ok: n !== null } }, context: { type: "global_connectivity_probes" } };
+    },
+  },
   "azmth-active-satellite-count": {
     config: { metric: "active_satellite_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
