@@ -27,7 +27,39 @@ function parseRSSFirstItem(text) {
 
 // ─── COLLECTORS ─────────────────────────────────────────────
 
+// ─── SCHEDULED REFRESHERS ───────────────────────────────────
+// Slow/unreliable upstreams polled hourly via cron; collector reads from KV.
+const REFRESHERS = {
+  "usgs-mrds-record-count": {
+    async refresh(env) {
+      const url = "https://mrdata.usgs.gov/services/wfs/mrds?service=WFS&version=2.0.0&request=GetFeature&typeNames=mrds&resultType=hits";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(60000),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const text = await r.text();
+      const m = text.match(/numberMatched="(\d+)"/);
+      if (!m) throw new Error("no numberMatched in response");
+      return { value: parseInt(m[1], 10), updated: new Date().toISOString() };
+    },
+  },
+};
+
 const COLLECTORS = {
+  "usgs-mrds-record-count": {
+    config: { metric: "record_count", threshold_pct: 1, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const raw = await env.SECTOR_KV.get("usgs-mrds-record-count");
+      if (!raw) return { value: null, sources: { mrds: { ok: false, error: "cache empty; awaiting cron refresh" } } };
+      try {
+        const j = JSON.parse(raw);
+        return { value: j.value, sources: { mrds: { ok: true } }, context: { cached: true, updated: j.updated } };
+      } catch (e) {
+        return { value: null, sources: { mrds: { ok: false, error: `cache parse: ${String(e).slice(0, 100)}` } } };
+      }
+    },
+  },
   "shipwreckatlas-wreck-count": {
     config: { metric: "wreck_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {
@@ -1782,6 +1814,20 @@ function json(obj, status = 200) {
 }
 
 export default {
+  async scheduled(event, env, ctx) {
+    const results = {};
+    for (const [slug, refresher] of Object.entries(REFRESHERS)) {
+      try {
+        const result = await refresher.refresh(env);
+        await env.SECTOR_KV.put(slug, JSON.stringify(result));
+        results[slug] = { ok: true, value: result.value };
+      } catch (e) {
+        results[slug] = { ok: false, error: String(e).slice(0, 200) };
+      }
+    }
+    console.log(`[cron] ${event.cron} refreshed: ${JSON.stringify(results)}`);
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
