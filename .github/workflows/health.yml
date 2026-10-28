@@ -2,7 +2,7 @@ name: VolatiAI Health Checker
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every 30 minutes
+    - cron: "0 * * * *"   # hourly
   workflow_dispatch:
 
 jobs:
