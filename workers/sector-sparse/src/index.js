@@ -28,6 +28,36 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "cantex-canton-dex-tvl": {
+    config: { metric: "tvl_cc_usd", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.cantex.io/v1/public/stats";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { cantex: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = j?.stats?.pool_tvl?.tvl_cc;
+      const n = typeof v === "string" ? parseFloat(v) : (typeof v === "number" ? v : null);
+      return { value: Number.isFinite(n) ? n : null, sources: { cantex: { ok: Number.isFinite(n) } }, context: { dex: "canton" } };
+    },
+  },
+  "orca-solana-dex-tvl": {
+    config: { metric: "tvl_usd", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.orca.so/v2/solana/protocol";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { orca: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = j?.tvl;
+      const n = typeof v === "string" ? parseFloat(v) : (typeof v === "number" ? v : null);
+      return { value: Number.isFinite(n) ? n : null, sources: { orca: { ok: Number.isFinite(n) } }, context: { dex: "solana" } };
+    },
+  },
   "thingspeak-public-channels": {
     config: { metric: "public_channel_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
