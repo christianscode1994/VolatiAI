@@ -113,20 +113,6 @@ const COLLECTORS = {
       return { value: Number.isFinite(n) ? n : null, sources: { swpc: { ok: Number.isFinite(n) } }, context: { source: "NOAA SWPC 1m Kp" } };
     },
   },
-  "sans-isc-daily-attacks": {
-    config: { metric: "daily_attack_records", threshold_pct: 15, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const r = await fetch("https://isc.sans.edu/api/dailysummary?json", {
-        headers: { "User-Agent": "VolatiAI/1.0 (contact@fourieranalys.workers.dev)" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { sans: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const row = Array.isArray(j) ? j[0] : j;
-      const n = typeof row?.records === "number" ? row.records : null;
-      return { value: n, sources: { sans: { ok: n !== null } }, context: { date: row?.date, sources: row?.sources, targets: row?.targets } };
-    },
-  },
   "bgpv6-routing-prefix-count": {
     config: { metric: "total_prefixes", threshold_pct: 5, window: "7d", window_days: 7 },
     async collectAll(env) {
@@ -339,20 +325,6 @@ const COLLECTORS = {
       const v = j?.tvl;
       const n = typeof v === "string" ? parseFloat(v) : (typeof v === "number" ? v : null);
       return { value: Number.isFinite(n) ? n : null, sources: { orca: { ok: Number.isFinite(n) } }, context: { dex: "solana" } };
-    },
-  },
-  "darkbloom-active-providers": {
-    config: { metric: "active_provider_count", threshold_pct: 10, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://api.darkbloom.dev/v1/stats";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(15000),
-      });
-      if (!r.ok) return { value: null, sources: { darkbloom: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = typeof j.active_providers === "number" ? j.active_providers : null;
-      return { value: n, sources: { darkbloom: { ok: n !== null } }, context: { network: "decentralized_inference" } };
     },
   },
   "akash-provider-count": {
