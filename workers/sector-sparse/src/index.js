@@ -28,17 +28,6 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
-  "worldbank-manufacturing-share": {
-    config: { metric: "manufacturing_share_gdp", threshold_pct: 1, window: "1y", window_days: 365 },
-    async collectAll(env) {
-      const url = "https://api.worldbank.org/v2/country/WLD/indicator/NV.IND.MANF.ZS?format=json&per_page=1&date=2023";
-      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { worldbank: { ok: false } } };
-      const j = await r.json();
-      const v = j?.[1]?.[0]?.value;
-      return { value: v ? Number(v) : null, sources: { worldbank: { ok: true } }, context: { indicator: "NV.IND.MANF.ZS", year: "2023" } };
-    },
-  },
   "worldbank-electricity-access": {
     config: { metric: "electricity_access_pct", threshold_pct: 1, window: "1y", window_days: 365 },
     async collectAll(env) {
