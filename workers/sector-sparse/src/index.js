@@ -1892,7 +1892,7 @@ export default {
       // Update KV only if new event
       if (envelope.context.current_event_id && String(envelope.context.current_event_id) !== lastSeen) {
         try {
-          await env.SECTOR_KV.put(kvKey, String(envelope.context.current_event_id), { expirationTtl: 86400 * 30 });
+          await env.SECTOR_KV.put(kvKey, String(envelope.context.current_event_id), { expirationTtl: 86400 * 90 });
         } catch (kvErr) {
           console.log("KV put failed:", String(kvErr));
         }
