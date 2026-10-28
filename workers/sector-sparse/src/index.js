@@ -28,6 +28,53 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "elexon-uk-grid-frequency": {
+    config: { metric: "grid_frequency_hz", threshold_pct: 0.5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://data.elexon.co.uk/bmrs/api/v1/system/frequency";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { elexon: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const rows = Array.isArray(j) ? j : (Array.isArray(j?.data) ? j.data : null);
+      if (!rows || rows.length === 0) {
+        return { value: null, sources: { elexon: { ok: false, error: "no rows" } } };
+      }
+      const latest = rows[rows.length - 1];
+      const n = latest?.frequency ?? null;
+      return { value: typeof n === "number" ? n : null, sources: { elexon: { ok: typeof n === "number" } }, context: { region: "UK", time: latest.measurementTime } };
+    },
+  },
+  "cvetodo-cve-count": {
+    config: { metric: "cve_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://cvetodo.com/api/v1/cves?limit=1";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { cvetodo: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.pagination?.total ?? null;
+      return { value: typeof n === "number" ? n : null, sources: { cvetodo: { ok: typeof n === "number" } } };
+    },
+  },
+  "phishdestroy-active-domains": {
+    config: { metric: "active_domain_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://phishdestroy.io/api/stats.php";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { phishdestroy: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.counts?.primary_active ?? j?.counts?.total_active ?? null;
+      return { value: typeof n === "number" ? n : null, sources: { phishdestroy: { ok: typeof n === "number" } }, context: { lastSync: j.lastSync } };
+    },
+  },
   "us-containerships-awaiting-berths": {
     config: { metric: "vessel_count", threshold_pct: 20, window: "30d", window_days: 30 },
     async collectAll(env) {
