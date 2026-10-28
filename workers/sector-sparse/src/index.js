@@ -42,20 +42,6 @@ const COLLECTORS = {
       return { value: typeof n === "number" ? n : null, sources: { fema: { ok: typeof n === "number" } } };
     },
   },
-  "nasa-osdr-datasets": {
-    config: { metric: "dataset_count", threshold_pct: 5, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const url = "https://visualization.osdr.nasa.gov/biodata/api/v2/datasets/";
-      const r = await fetch(url, {
-        headers: { "User-Agent": "VolatiAI/1.0" },
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { osdr: { ok: false, error: `HTTP ${r.status}` } } };
-      const arr = await r.json();
-      const n = Array.isArray(arr) ? arr.length : null;
-      return { value: n, sources: { osdr: { ok: n !== null } } };
-    },
-  },
   "elexon-uk-grid-frequency": {
     config: { metric: "grid_frequency_hz", threshold_pct: 0.5, window: "1d", window_days: 1 },
     async collectAll(env) {
