@@ -28,6 +28,48 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "defillama-dex-volume-24h": {
+    config: { metric: "dex_volume_usd_24h", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://api.llama.fi/overview/dexs";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { defillama: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total24h === "number" ? j.total24h : null;
+      return { value: n, sources: { defillama: { ok: n !== null } }, context: { scope: "all_chains", metric: "dex_volume_24h" } };
+    },
+  },
+  "bitcoin-mempool-tx-count": {
+    config: { metric: "unconfirmed_tx_count", threshold_pct: 20, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://mempool.space/api/mempool";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { mempool: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : null;
+      return { value: n, sources: { mempool: { ok: n !== null } }, context: { chain: "bitcoin" } };
+    },
+  },
+  "dexpaprika-network-count": {
+    config: { metric: "tracked_network_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.dexpaprika.com/networks";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { dexpaprika: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      const n = Array.isArray(arr) ? arr.length : (Array.isArray(arr?.networks) ? arr.networks.length : null);
+      return { value: n, sources: { dexpaprika: { ok: n !== null } }, context: { type: "dex_networks_tracked" } };
+    },
+  },
   "cantex-canton-dex-tvl": {
     config: { metric: "tvl_cc_usd", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {
