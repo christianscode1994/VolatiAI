@@ -28,6 +28,38 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "us-containerships-awaiting-berths": {
+    config: { metric: "vessel_count", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const indicator = "Number of Containerships Awaiting Berths at all U.S. Ports";
+      const url = `https://data.bts.gov/resource/y5ut-ibwt.json?$where=${encodeURIComponent(`indicator='${indicator}'`)}&$order=date DESC&$limit=1`;
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { bts: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      if (!Array.isArray(arr) || arr.length === 0) {
+        return { value: null, sources: { bts: { ok: false, error: "no rows" } } };
+      }
+      const n = parseFloat(arr[0].value1);
+      return { value: Number.isFinite(n) ? n : null, sources: { bts: { ok: Number.isFinite(n) } }, context: { indicator, date: arr[0].date } };
+    },
+  },
+  "hormuz-daily-transits": {
+    config: { metric: "avg_daily_transits", threshold_pct: 25, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://hormuz.now/api/status";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { hormuz: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.avg7d ?? j?.last7d?.total ?? null;
+      return { value: typeof n === "number" ? n : null, sources: { hormuz: { ok: typeof n === "number" } }, context: { strait: "hormuz", status: j?.status?.level } };
+    },
+  },
   "us-nuclear-plants-count": {
     config: { metric: "plant_count", threshold_pct: 1, window: "30d", window_days: 30 },
     async collectAll(env) {
