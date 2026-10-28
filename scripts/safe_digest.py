@@ -69,7 +69,8 @@ def _filter_high_risk(text: str) -> str:
             kept.append(line)
     if removed:
         kept.append("")
-        kept.append(f"[{removed} financial signals omitted on this platform — see {SITE}/intel.json]")
+        label = "signal" if removed == 1 else "signals"
+        kept.append(f"[{removed} financial {label} omitted on this platform — see {SITE}/intel.json]")
     return "\n".join(kept)
 
 

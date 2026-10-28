@@ -37,7 +37,8 @@ function filterHighRisk(text) {
   }
   if (removed > 0) {
     kept.push('');
-    kept.push(`[${removed} financial signals omitted on this platform — see ${SITE}/intel.json]`);
+    const label = removed === 1 ? "signal" : "signals";
+  kept.push(`[${removed} financial ${label} omitted on this platform — see ${SITE}/intel.json]`);
   }
   return kept.join('\n');
 }
