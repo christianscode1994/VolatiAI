@@ -28,6 +28,48 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "treasury-national-debt": {
+    config: { metric: "total_public_debt_usd", threshold_pct: 0.5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=1";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { treasury: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = parseFloat(j?.data?.[0]?.tot_pub_debt_out_amt);
+      return { value: Number.isFinite(n) ? n : null, sources: { treasury: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "openfda-drug-event-total": {
+    config: { metric: "adverse_event_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://api.fda.gov/drug/event.json?limit=1";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { openfda: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.meta?.results?.total ?? null;
+      return { value: typeof n === "number" ? n : null, sources: { openfda: { ok: typeof n === "number" } } };
+    },
+  },
+  "clinicaltrials-study-total": {
+    config: { metric: "study_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://clinicaltrials.gov/api/v2/studies?pageSize=1&countTotal=true";
+      const r = await fetch(url, {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { ctgov: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.totalCount === "number" ? j.totalCount : null;
+      return { value: n, sources: { ctgov: { ok: n !== null } } };
+    },
+  },
   "worldbank-poverty-headcount": {
     config: { metric: "poverty_pct", threshold_pct: 2, window: "365d", window_days: 365 },
     async collectAll(env) {
