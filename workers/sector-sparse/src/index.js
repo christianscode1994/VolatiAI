@@ -28,6 +28,50 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "ethereum-block-height-publicnode": {
+    config: { metric: "block_height", threshold_pct: 1, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://ethereum-rpc.publicnode.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "User-Agent": "VolatiAI/1.0" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }),
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { publicnode: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const hex = j?.result;
+      const n = typeof hex === "string" ? parseInt(hex, 16) : null;
+      return { value: Number.isFinite(n) ? n : null, sources: { publicnode: { ok: Number.isFinite(n) } }, context: { chain: "ethereum" } };
+    },
+  },
+  "bitcoin-daily-transactions": {
+    config: { metric: "transactions_24h", threshold_pct: 15, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://api.blockchair.com/bitcoin/stats", {
+        headers: { "User-Agent": "VolatiAI/1.0" },
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!r.ok) return { value: null, sources: { blockchair: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.data?.transactions_24h === "number" ? j.data.transactions_24h : null;
+      return { value: n, sources: { blockchair: { ok: n !== null } }, context: { chain: "bitcoin", metric: "daily_throughput" } };
+    },
+  },
+  "wax-block-height": {
+    config: { metric: "head_block_num", threshold_pct: 1, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://wax.greymass.com/v1/chain/get_info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "User-Agent": "VolatiAI/1.0" },
+        body: "{}",
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!r.ok) return { value: null, sources: { wax: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.head_block_num === "number" ? j.head_block_num : null;
+      return { value: n, sources: { wax: { ok: n !== null } }, context: { chain: "wax" } };
+    },
+  },
   "defillama-dex-volume-24h": {
     config: { metric: "dex_volume_usd_24h", threshold_pct: 10, window: "7d", window_days: 7 },
     async collectAll(env) {
