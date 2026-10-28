@@ -1890,7 +1890,7 @@ export default {
       const envelope = buildEventEnvelope(sectorName, collector, result, lastSeen);
 
       // Update KV only if new event
-      if (envelope.context.current_event_id) {
+      if (envelope.context.current_event_id && String(envelope.context.current_event_id) !== lastSeen) {
         try {
           await env.SECTOR_KV.put(kvKey, String(envelope.context.current_event_id), { expirationTtl: 86400 * 30 });
         } catch (kvErr) {
