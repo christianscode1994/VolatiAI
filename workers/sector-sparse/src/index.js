@@ -28,6 +28,18 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  "open-meteo-soil-temp": {
+    config: { metric: "soil_temp_c", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=soil_temperature_0cm&forecast_days=1";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { openmeteo_soil: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = j?.hourly?.soil_temperature_0cm;
+      const n = Array.isArray(arr) ? arr.filter(x => typeof x === "number").pop() : null;
+      return { value: typeof n === "number" ? n : null, sources: { openmeteo_soil: { ok: typeof n === "number" } }, context: { location: "Berlin" } };
+    },
+  },
   "denmark-traffic-incidents": {
     config: { metric: "active_traffic_incidents", threshold_pct: 30, window: "1d", window_days: 1 },
     async collectAll(env) {

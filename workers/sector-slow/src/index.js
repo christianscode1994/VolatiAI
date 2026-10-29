@@ -154,6 +154,40 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "sec-aapl-filings-90d": {
+    config: { metric: "filing_count", threshold_pct: 10, window: "90d", window_days: 90 },
+    async collectAll(env) {
+      const url = "https://data.sec.gov/submissions/CIK0000320193.json";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0 (contact@fourieranalys.workers.dev)" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { sec: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const forms = j?.filings?.recent?.form;
+      const n = Array.isArray(forms) ? forms.length : null;
+      return { value: n, sources: { sec: { ok: n !== null } }, context: { company: "Apple Inc", cik: "0000320193" } };
+    },
+  },
+  "eurostat-hicp-count": {
+    config: { metric: "datapoint_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?format=JSON";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { eurostat: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.value ? Object.keys(j.value).length : null;
+      return { value: n, sources: { eurostat: { ok: n !== null } }, context: { dataset: "HICP monthly annual rate" } };
+    },
+  },
+  "bts-port-throughput-teu": {
+    config: { metric: "container_teu", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://data.bts.gov/resource/y5ut-ibwt.json?$limit=1&$order=date DESC";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { bts: { ok: false, error: `HTTP ${r.status}` } } };
+      const arr = await r.json();
+      const v = Array.isArray(arr) && arr[0]?.value1 ? parseFloat(arr[0].value1) : null;
+      return { value: Number.isFinite(v) ? v : null, sources: { bts: { ok: Number.isFinite(v) } }, context: { metric: "US containership capacity TEU" } };
+    },
+  },
   "ripe-atlas-public": {
     config: { metric: "public_measurements", threshold_pct: 5.0, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({

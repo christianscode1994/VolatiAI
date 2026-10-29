@@ -156,6 +156,17 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+  "cdc-disease-record-count": {
+    config: { metric: "record_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://data.cdc.gov/resource/pwn4-m3yp.json?$select=count(*)";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { cdc: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) && j[0]?.count ? parseInt(j[0].count, 10) : null;
+      return { value: Number.isFinite(n) ? n : null, sources: { cdc: { ok: Number.isFinite(n) } } };
+    },
+  },
   "btc-mining-hashrate": {
     config: { metric: "hashrate_hs", threshold_pct: 10, window: "1d", window_days: 1 },
     async collectAll(env) {
