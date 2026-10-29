@@ -1326,21 +1326,23 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  diseases: {
-    config: { metric: "indicators", threshold_pct: 0.1, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
+  "energy-carbon": {
+    config: { metric: "gco2_per_kwh", threshold_pct: 3, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
       sources: {
-        indicators: await fetchSafe(async () => {
-          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+        gco2_per_kwh: await fetchSafe(async () => {
+          const r = await fetch("https://api.carbonintensity.org.uk/intensity",
+            { headers: { "accept": "application/json", "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (!Array.isArray(j.value)) throw new Error("no_value");
-          return j.value.length;
+          const v = j?.data?.[0]?.intensity?.actual;
+          if (typeof v !== "number") throw new Error("no_value");
+          return v;
         }),
       },
     }),
   },
+
   "natural-disasters": {
     config: { metric: "open_events", threshold_pct: 30, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
