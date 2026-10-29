@@ -2310,31 +2310,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "grid-balance": {
-    config: { metric: "system_balance_mw", threshold_pct: 50, threshold_abs: 100, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        system_balance_mw: await fetchSafe(async () => {
-          const end = new Date().toISOString().replace(/\.\d+Z$/, ".000Z");
-          const start = new Date(Date.now() - 3600e3).toISOString().replace(/\.\d+Z$/, ".000Z");
-          const url = "https://dashboard.elering.ee/api/system/with-plan?start="
-                    + encodeURIComponent(start) + "&end=" + encodeURIComponent(end);
-          const r = await fetch(url, { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (j?.success !== true) throw new Error("api_error: success=" + String(j?.success));
-          const real = j?.data?.real;
-          if (!Array.isArray(real) || real.length === 0) {
-            throw new Error("no_real_series: data_keys=" + Object.keys(j?.data || {}).join(","));
-          }
-          const last = real[real.length - 1];
-          const v = last?.system_balance;
-          if (typeof v !== "number") throw new Error("no_balance: row_keys=" + Object.keys(last || {}).join(","));
-          return v;
-        }),
-      },
-    }),
-  },
 });
 
 
