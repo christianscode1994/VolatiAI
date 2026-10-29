@@ -2805,7 +2805,7 @@ const COLLECTORS = {
   "noaa-shipwrecks-count": {
     config: { metric: "wreck_count", threshold_pct: 1, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
     async collectAll(env) {
-      const r = await fetch("https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/ENCOnline/MapServer/5/query?where=1%3D1&returnCountOnly=true&f=json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      const r = await fetch("https://services1.arcgis.com/B4MnusZHL3vmqU3t/ArcGIS/rest/services/Vulnerability_shipwrecks_WFL1/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
       if (!r.ok) return { value: null, sources: { noaa_awois: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.count === "number" ? j.count : null;
