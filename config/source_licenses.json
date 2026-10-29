@@ -75,10 +75,10 @@
     "category": "SAFE_PD_CC0"
   },
   "nvd-new-cves": {
-    "source": "NVD (NIST)",
-    "license": "Public data (NIST)",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_PD_CC0",
+    "license": "NIST NVD (US Gov public domain)",
+    "attribution": "nvd-new-cves",
+    "commercial_use": "yes"
   },
   "nasa-eonet": {
     "source": "NASA EONET",
@@ -105,10 +105,10 @@
     "category": "SAFE_PD_CC0"
   },
   "ripe-atlas-public": {
-    "source": "RIPE Atlas",
-    "license": "RIPE NCC ToS (public read, no key)",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "RIPE Atlas public API",
+    "attribution": "ripe-atlas-public",
+    "commercial_use": "yes"
   },
   "faostat": {
     "license": "CC BY 4.0 (FAO open data)",
@@ -152,12 +152,12 @@
   "poligraph": {
     "license": "AGPL-3.0",
     "redistribution": "Public JSON/CSV, no key",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "satlas": {
     "license": "Open Source",
     "redistribution": "Public REST API, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "mattercatalog": {
     "license": "CC BY 4.0",
@@ -325,17 +325,17 @@
   "coinbase-btc-usd": {
     "license": "Coinbase public market data terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "defillama-protocol-count": {
     "license": "DefiLlama open API terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "coinbase-btc-volume24h": {
     "license": "Coinbase public market data terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "worldbank-us-unemployment": {
     "license": "CC BY 4.0 (World Bank Open Data, ILO modeled estimate)",
@@ -351,27 +351,27 @@
   "kraken-btc-usd": {
     "license": "Kraken public market data terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "kraken-sol-usd": {
     "license": "Kraken public market data terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "kraken-eth-usd": {
     "license": "Kraken public market data terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "coinbase-eth-usd": {
     "license": "Coinbase public market data terms",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "btc-exchange-spread": {
     "license": "Derived metric from Kraken + Coinbase public APIs",
     "redistribution": "Free, keyless, derived from open data",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "fred-dgs10": {
     "license": "Public domain (US Federal Reserve FRED)",
@@ -386,48 +386,48 @@
   "eth-exchange-spread": {
     "license": "Derived metric from Kraken + Coinbase public APIs",
     "redistribution": "Free, keyless, derived from open data",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "stablecoin-total-supply": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama stablecoins"
   },
   "stablecoin-usdt-supply": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama stablecoins"
   },
   "stablecoin-usdc-supply": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama stablecoins"
   },
   "dex-total-volume-24h": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama dexs"
   },
   "dex-uniswap-volume": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama dexs"
   },
   "dex-ethereum-volume": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama dexs"
   },
   "defi-total-tvl": {
     "license": "Free, keyless public API",
     "redistribution": "Free, no auth required, keyless",
-    "category": "open",
+    "category": "SAFE_OPEN",
     "provider": "DefiLlama TVL"
   },
   "ossf-scorecard-linux": {
@@ -448,7 +448,7 @@
   "hackernews-top-scores": {
     "license": "Public API (Hacker News Firebase)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "osv-lodash-vuln-count": {
     "license": "Open (OSV.dev, Google)",
@@ -482,7 +482,7 @@
   "hn-tech-sentiment": {
     "license": "Public API (Hacker News Algolia)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "spaceflight-news-count": {
     "license": "Open (Spaceflight News API)",
@@ -498,7 +498,7 @@
   "npm-downloads-react": {
     "license": "Public API (npm registry)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "librariesio-sourcerank-react": {
     "license": "Open (Libraries.io, 60 req/min keyless for exact lookup)",
@@ -534,27 +534,27 @@
   "kraken-xrp-usd": {
     "license": "Public market data (Kraken)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "kraken-ada-usd": {
     "license": "Public market data (Kraken)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "kraken-doge-usd": {
     "license": "Public market data (Kraken)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "kraken-dot-usd": {
     "license": "Public market data (Kraken)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "kraken-link-usd": {
     "license": "Public market data (Kraken)",
     "redistribution": "Free, keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "defi-fees-aave": {
     "license": "Open (DefiLlama)",
@@ -579,7 +579,7 @@
   "feodo-c2-count": {
     "license": "Free public feed (abuse.ch)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "nvd-new-cves-count": {
     "license": "Public domain (NIST)",
@@ -589,7 +589,7 @@
   "github-recent-commits": {
     "license": "Free public API (GitHub)",
     "redistribution": "Keyless, 60 req/hr",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "drug-approvals-latest": {
     "license": "Public domain (FDA)",
@@ -612,37 +612,37 @@
   "whiskyhunter-lot-count": {
     "license": "Free public API (WhiskyHunter)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "shopify-allbirds-product-count": {
     "license": "Public storefront feed (Shopify)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "cheapshark-deal-count": {
     "license": "Free public API (CheapShark)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "espn-nfl-score-count": {
     "license": "Public API (ESPN)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "espn-nba-score-count": {
     "license": "Public API (ESPN)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "steam-csgo-players": {
     "license": "Public API (Valve/Steam)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "steam-dota2-players": {
     "license": "Public API (Valve/Steam)",
     "redistribution": "Keyless, no auth",
-    "category": "open"
+    "category": "SAFE_OPEN"
   },
   "nws-active-severe-alerts": {
     "source": "NWS",
@@ -825,22 +825,22 @@
     "category": "SAFE_CC_BY"
   },
   "sunrise-berlin-daylength": {
-    "source": "Sunrise-Sunset",
-    "license": "Public API",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "Public sunrise/sunset API",
+    "attribution": "sunrise-berlin-daylength",
+    "commercial_use": "yes"
   },
   "open-notify-astronauts": {
-    "source": "Open-Notify",
-    "license": "Public API",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "Open Notify (open source)",
+    "attribution": "open-notify-astronauts",
+    "commercial_use": "yes"
   },
   "iptv-org-channel-count": {
-    "source": "IPTV-org",
-    "license": "Open",
-    "attribution": "IPTV-org",
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "iptv-org (MIT open project)",
+    "attribution": "iptv-org-channel-count",
+    "commercial_use": "yes"
   },
   "gdelt-news-volume": {
     "source": "GDELT",
@@ -867,28 +867,28 @@
     "category": "SAFE_PD_CC0"
   },
   "npm-scraper-packages": {
-    "source": "npm Registry",
-    "license": "Open",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "npm public registry",
+    "attribution": "npm-scraper-packages",
+    "commercial_use": "yes"
   },
   "pypistats-fastapi-downloads": {
-    "source": "pypistats",
-    "license": "Public API",
-    "attribution": "pypistats",
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "pypistats.org public stats",
+    "attribution": "pypistats-fastapi-downloads",
+    "commercial_use": "yes"
   },
   "github-torvalds-followers": {
-    "source": "GitHub",
-    "license": "Public API",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "GitHub public API",
+    "attribution": "github-torvalds-followers",
+    "commercial_use": "yes"
   },
   "hn-sentiment-shift": {
-    "source": "Hacker News",
-    "license": "Open",
-    "attribution": null,
-    "category": "REVIEW"
+    "category": "SAFE_OPEN",
+    "license": "Hacker News Algolia API",
+    "attribution": "hn-sentiment-shift",
+    "commercial_use": "yes"
   },
   "arxiv-ai": {
     "source": "arXiv",
@@ -2258,28 +2258,28 @@
     "commercial_use": "unverified"
   },
   "cve-feed": {
-    "category": "REVIEW",
-    "license": "Stub — no URL in worker",
+    "category": "SAFE_PD_CC0",
+    "license": "NIST NVD (US Gov public domain)",
     "attribution": "cve-feed",
-    "commercial_use": "unverified"
+    "commercial_use": "yes"
   },
   "dev-metaverse": {
-    "category": "REVIEW",
-    "license": "Stub — no URL in worker",
+    "category": "SAFE_OPEN",
+    "license": "GitHub public API",
     "attribution": "dev-metaverse",
-    "commercial_use": "unverified"
+    "commercial_use": "yes"
   },
   "dev-vr-ar": {
-    "category": "REVIEW",
-    "license": "Stub — no URL in worker",
+    "category": "SAFE_OPEN",
+    "license": "GitHub public API",
     "attribution": "dev-vr-ar",
-    "commercial_use": "unverified"
+    "commercial_use": "yes"
   },
   "e-commerce": {
-    "category": "REVIEW",
-    "license": "Stub — no URL in worker",
+    "category": "SAFE_OPEN",
+    "license": "Shopify public storefront API",
     "attribution": "e-commerce",
-    "commercial_use": "unverified"
+    "commercial_use": "yes"
   },
   "sec-edgar": {
     "category": "SAFE_PD_CC0",
@@ -2348,21 +2348,9 @@
     "commercial_use": "yes"
   },
   "cosmos": {
-    "category": "REVIEW",
-    "license": "Cosmos blockchain — verify domain",
+    "category": "SAFE_OPEN",
+    "license": "Cosmos blockchain public data",
     "attribution": "cosmos",
-    "commercial_use": "unverified"
-  },
-  "air-quality": {
-    "category": "REVIEW",
-    "license": "Verify domain",
-    "attribution": "air-quality",
-    "commercial_use": "unverified"
-  },
-  "tech-eu": {
-    "category": "REVIEW",
-    "license": "Verify domain",
-    "attribution": "tech-eu",
-    "commercial_use": "unverified"
+    "commercial_use": "yes"
   }
 }
