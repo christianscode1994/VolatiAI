@@ -187,16 +187,6 @@ const COLLECTORS = {
       return { value: Number.isFinite(n) ? n : null, sources: { bitstamp: { ok: Number.isFinite(n) } }, context: { exchange: "Bitstamp" } };
     },
   },
-  "btc-usd-binance-spot": {
-    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
-    async collectAll(env) {
-      const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { binance: { ok: false } } };
-      const j = await r.json();
-      const n = parseFloat(j?.price);
-      return { value: Number.isFinite(n) ? n : null, sources: { binance: { ok: Number.isFinite(n) } }, context: { exchange: "Binance" } };
-    },
-  },
 
   "bart-train-count": {
     config: { metric: "active_train_count", threshold_pct: 20, window: "1d", window_days: 1 },
