@@ -2486,17 +2486,6 @@ const COLLECTORS = {
       return recent.length;
     }) } }),
   },
-  "prh-finland-total-companies": {
-    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
-    collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
-      const r = await fetch("https://avoindata.prh.fi/opendata-ytj-api/v3/companies?totalResults=true&maxResults=1");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.totalResults);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_totalResults");
-      return v;
-    }) } }),
-  },
   "noaa-swpc-kp-index": {
     config: { metric: "kp", threshold_pct: 50.0, window: "1d", window_days: 1, ttl: 3600 },
     collectAll: async () => ({ sources: { kp: await fetchSafe(async () => {
