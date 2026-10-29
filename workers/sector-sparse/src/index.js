@@ -2802,6 +2802,28 @@ const COLLECTORS = {
       return { value: arr.length, sources: { safecast: { ok: true } } };
     },
   },
+  "noaa-shipwrecks-count": {
+    config: { metric: "wreck_count", threshold_pct: 1, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/ENCOnline/MapServer/5/query?where=1%3D1&returnCountOnly=true&f=json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { noaa_awois: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : null;
+      return { value: n, sources: { noaa_awois: { ok: typeof n === "number" } } };
+    },
+  },
+  "disclosure-archives-events-count": {
+    config: { metric: "uap_events", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://disclosurearchives.com/api/v1/events?limit=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { disclosure_archives: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.paging?.total === "number" ? j.paging.total
+              : (typeof j?.total === "number" ? j.total
+              : (Array.isArray(j?.data) ? j.data.length : null));
+      return { value: n, sources: { disclosure_archives: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────

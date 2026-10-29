@@ -2650,6 +2650,19 @@ const COLLECTORS = {
       return { value: Math.round(total * 100) / 100, sources: { usdm: { ok: true } } };
     },
   },
+  "openvan-fuel-countries": {
+    config: { metric: "countries_with_lpg", threshold_pct: 10, window: "7d", window_days: 7, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://openvan.camp/api/fuel/prices", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { openvan: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const root = j?.data ?? j?.prices ?? j;
+      const countries = (root && typeof root === "object" && !Array.isArray(root)) ? Object.values(root) : null;
+      if (!countries) return { value: null, sources: { openvan: { ok: false, error: "unexpected_shape: keys=" + Object.keys(j || {}).slice(0, 8).join(",") } } };
+      const withLpg = countries.filter(c => c && typeof c === "object" && c.prices && typeof c.prices.lpg === "number" && c.prices.lpg > 0).length;
+      return { value: withLpg, sources: { openvan: { ok: true } } };
+    },
+  },
 };
 
 
