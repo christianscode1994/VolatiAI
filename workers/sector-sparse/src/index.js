@@ -2437,7 +2437,7 @@ const COLLECTORS = {
       const r = await fetch("https://ffxivcollect.com/api/mounts", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { ffxiv_mount_count: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
-      const n = Array.isArray(j) ? j.length : null;
+      const n = typeof j?.count === "number" ? j.count : Array.isArray(j?.results) ? j.results.length : Array.isArray(j) ? j.length : null;
       return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { ffxiv_mount_count: { ok: typeof n === "number" } } };
     },
   },
@@ -2507,7 +2507,7 @@ const COLLECTORS = {
       const r = await fetch("https://the-calendar.net/api/holidays/us-federal/2026.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { thecalendar_us_federal_count: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
-      const n = Array.isArray(j) ? j.length : null;
+      const n = Array.isArray(j?.holidays) ? j.holidays.length : Array.isArray(j) ? j.length : null;
       return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { thecalendar_us_federal_count: { ok: typeof n === "number" } } };
     },
   },
