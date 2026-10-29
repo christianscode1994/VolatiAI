@@ -1236,21 +1236,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "space-launches": {
-    config: { metric: "upcoming", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        upcoming: await fetchSafe(async () => {
-          const r = await fetch("https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.count !== "number") throw new Error("no_count");
-          return j.count;
-        }),
-      },
-    }),
-  },
   "wikipedia-activity": {
     config: { metric: "views_7d", threshold_pct: 10, threshold_abs: 500000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -1391,42 +1376,6 @@ Object.assign(COLLECTORS, {
           const j = await r.json();
           if (!Array.isArray(j)) throw new Error("not_array");
           return j.length;
-        }),
-      },
-    }),
-  },
-  "bank-data": {
-    config: { metric: "institutions", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        institutions: await fetchSafe(async () => {
-          const r = await fetch("https://banks.data.fdic.gov/api/institutions?limit=1&fields=NAME",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.meta?.total;
-          if (typeof n !== "number") throw new Error("no_count");
-          return n;
-        }),
-      },
-    }),
-  },
-  "e-commerce": {
-    config: { metric: "catalog_products", threshold_pct: 5, threshold_abs: 100, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        catalog_products: await fetchSafe(async () => {
-          const stores = ["allbirds.com","gymshark.com","fashionnova.com","colourpop.com"];
-          let total = 0;
-          for (const st of stores) {
-            try {
-              const r = await fetch("https://" + st + "/products.json?limit=250",
-                { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
-              if (r.ok) { const j = await r.json(); if (Array.isArray(j.products)) total += j.products.length; }
-            } catch {}
-          }
-          if (total === 0) throw new Error("all_stores_failed");
-          return total;
         }),
       },
     }),
@@ -1608,21 +1557,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "mental-health": {
-    config: { metric: "mh_indicators", threshold_pct: 0.5, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        mh_indicators: await fetchSafe(async () => {
-          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'mental%20health')",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j.value)) throw new Error("no_value");
-          return j.value.length;
-        }),
-      },
-    }),
-  },
   "renewable-energy": {
     config: { metric: "renewable_share_pct", threshold_pct: 1, threshold_abs: 0.5, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -1733,21 +1667,6 @@ Object.assign(COLLECTORS, {
             throw new Error("no_value: row_keys=" + Object.keys(last || {}).join(",") + " sample=" + JSON.stringify(last).slice(0, 200));
           }
           return v;
-        }),
-      },
-    }),
-  },
-  "computer-networks": {
-    config: { metric: "internet_exchanges", threshold_pct: 1, threshold_abs: 2, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        internet_exchanges: await fetchSafe(async () => {
-          const r = await fetch("https://www.peeringdb.com/api/ix",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j.data)) throw new Error("no_data");
-          return j.data.length;
         }),
       },
     }),
@@ -3596,38 +3515,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "tobacco-health": {
-    config: { metric: "tobacco_indicators", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        tobacco_indicators: await fetchSafe(async () => {
-          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'tobacco')",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.value;
-          if (!Array.isArray(arr)) throw new Error("no_value: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
-  "alcohol-health": {
-    config: { metric: "alcohol_indicators", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        alcohol_indicators: await fetchSafe(async () => {
-          const r = await fetch("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'alcohol')",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.value;
-          if (!Array.isArray(arr)) throw new Error("no_value: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
   "tobacco-reports": {
     config: { metric: "total_reports", threshold_pct: 10, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
