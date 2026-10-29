@@ -2431,16 +2431,6 @@ const COLLECTORS = {
       return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { swapi_people_count: { ok: typeof n === "number" } } };
     },
   },
-  "ffxiv-mount-count": {
-    config: { metric: "mount_count", threshold_pct: 10, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const r = await fetch("https://ffxivcollect.com/api/mounts", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { ffxiv_mount_count: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = typeof j?.count === "number" ? j.count : Array.isArray(j?.results) ? j.results.length : Array.isArray(j) ? j.length : null;
-      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { ffxiv_mount_count: { ok: typeof n === "number" } } };
-    },
-  },
   "cocktaildb-margarita-count": {
     config: { metric: "drink_count", threshold_pct: 50, window: "30d", window_days: 30 },
     async collectAll(env) {
