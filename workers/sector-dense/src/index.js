@@ -1296,21 +1296,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "generative-ai": {
-    config: { metric: "top100_downloads", threshold_pct: 0.5, threshold_abs: 1000000, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        top100_downloads: await fetchSafe(async () => {
-          const r = await fetch("https://huggingface.co/api/models?sort=trendingScore&direction=-1&limit=100&expand[]=downloads",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const models = await r.json();
-          if (!Array.isArray(models)) throw new Error("not_array");
-          return models.reduce((sum, m) => sum + (m.downloads || 0), 0);
-        }),
-      },
-    }),
-  },
   compute: {
     config: { metric: "active_providers", threshold_pct: 5, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -1323,24 +1308,6 @@ Object.assign(COLLECTORS, {
           const providers = Array.isArray(j) ? j : (j.providers || j.data || []);
           if (!Array.isArray(providers)) throw new Error("not_array");
           return providers.length;
-        }),
-      },
-    }),
-  },
-  "ai-benchmarks": {
-    config: { metric: "top_swebench_score", threshold_pct: 1, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        top_swebench_score: await fetchSafe(async () => {
-          const r = await fetch("https://api.genztech.dev/v1/ai-coding/leaderboard",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const rows = Array.isArray(j) ? j : (j.data || j.leaderboard || []);
-          if (!Array.isArray(rows) || rows.length === 0) throw new Error("empty");
-          const scores = rows.map(x => x.score ?? x.swebench ?? x.value).filter(v => typeof v === "number");
-          if (!scores.length) throw new Error("no_scores");
-          return Math.max(...scores);
         }),
       },
     }),
