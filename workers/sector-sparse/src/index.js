@@ -29,6 +29,138 @@ function parseRSSFirstItem(text) {
 
 const COLLECTORS = {
 
+  "btc-usd-bitfinex-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api-pub.bitfinex.com/v2/ticker/tBTCUSD", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { bitfinex: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? parseFloat(j[6]) : null;
+      return { value: Number.isFinite(n) ? n : null, sources: { bitfinex: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "btc-usd-whitebit-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://whitebit.com/api/v4/public/ticker", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { whitebit: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.BTC_USDT?.last_price);
+      return { value: Number.isFinite(n) ? n : null, sources: { whitebit: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "btc-usd-blockchain-info": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://blockchain.info/ticker", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { blockchaininfo: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.USD?.last);
+      return { value: Number.isFinite(n) ? n : null, sources: { blockchaininfo: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "eur-usd-spot": {
+    config: { metric: "eur_usd", threshold_pct: 2, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://open.er-api.com/v6/latest/USD", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { erapi: { ok: false } } };
+      const j = await r.json();
+      const n = j?.rates?.EUR;
+      return { value: typeof n === "number" ? n : null, sources: { erapi: { ok: typeof n === "number" } } };
+    },
+  },
+  "doaj-article-count": {
+    config: { metric: "article_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://doaj.org/api/search/articles/covid?pageSize=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { doaj: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.total === "number" ? j.total : null, sources: { doaj: { ok: typeof j?.total === "number" } } };
+    },
+  },
+  "europepmc-cancer-count": {
+    config: { metric: "paper_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=cancer&format=json&pageSize=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { europepmc: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.hitCount === "number" ? j.hitCount : null, sources: { europepmc: { ok: typeof j?.hitCount === "number" } } };
+    },
+  },
+  "inspirehep-higgs-count": {
+    config: { metric: "paper_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://inspirehep.net/api/literature?q=higgs&size=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { inspirehep: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.hits?.total === "number" ? j.hits.total : null, sources: { inspirehep: { ok: typeof j?.hits?.total === "number" } } };
+    },
+  },
+  "hibp-breach-catalog-size": {
+    config: { metric: "breach_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://haveibeenpwned.com/api/v3/breaches", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { hibp: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { hibp: { ok: Array.isArray(j) } } };
+    },
+  },
+  "openfda-drug-label-count": {
+    config: { metric: "label_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.fda.gov/drug/label.json?search=aspirin&limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { openfda_labels: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.meta?.results?.total === "number" ? j.meta.results.total : null, sources: { openfda_labels: { ok: typeof j?.meta?.results?.total === "number" } } };
+    },
+  },
+  "inaturalist-observation-count": {
+    config: { metric: "observation_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.inaturalist.org/v1/observations?per_page=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { inaturalist: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.total_results === "number" ? j.total_results : null, sources: { inaturalist: { ok: typeof j?.total_results === "number" } } };
+    },
+  },
+  "github-scraping-repo-count": {
+    config: { metric: "repo_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=web+scraping&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.total_count === "number" ? j.total_count : null, sources: { github: { ok: typeof j?.total_count === "number" } } };
+    },
+  },
+  "npm-scraper-package-count": {
+    config: { metric: "package_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://registry.npmjs.org/-/v1/search?text=scraper&size=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { npm: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.total === "number" ? j.total : null, sources: { npm: { ok: typeof j?.total === "number" } } };
+    },
+  },
+  "pypistats-requests-downloads": {
+    config: { metric: "downloads", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://pypistats.org/api/packages/requests/recent", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { pypistats: { ok: false } } };
+      const j = await r.json();
+      const n = j?.data?.last_day;
+      return { value: typeof n === "number" ? n : null, sources: { pypistats: { ok: typeof n === "number" } } };
+    },
+  },
+  "openligadb-bundesliga-matches": {
+    config: { metric: "match_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.openligadb.de/getmatchdata/bl1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { openligadb: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { openligadb: { ok: Array.isArray(j) } } };
+    },
+  },
+
   "espn-nhl-events-count": {
     config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
     async collectAll(env) {
