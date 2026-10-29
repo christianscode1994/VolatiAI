@@ -2122,28 +2122,6 @@ const COLLECTORS = {
   },
 
 
-  "cloud-status": {
-    event_source: "downstatus",
-    ttl: 1800,
-    collectAll: async (env) => ({
-      sources: {
-        downstatus: await fetchSafe(async () => {
-          const services = ["aws", "azure", "gcp", "cloudflare", "vercel"];
-          const results = await Promise.all(services.map(async (svc) => {
-            const r = await fetch("https://isitdownstatus.com/api/status/" + svc);
-            if (!r.ok) throw new Error(svc + " status " + r.status);
-            return await r.json();
-          }));
-          const issues = results.filter(s => s.status !== "operational");
-          if (issues.length === 0) {
-            return { id: "all_ok_" + new Date().toISOString().slice(0, 13), title: "All cloud services operational" };
-          }
-          const summary = issues.map(s => (s.service || s.name || "service") + ": " + s.status).join(", ");
-          return { id: "issues_" + issues.length + "_" + new Date().toISOString().slice(0, 13), title: summary };
-        }),
-      },
-    }),
-  },
 
   "open-source-packages": {
     event_source: "deps_dev",
