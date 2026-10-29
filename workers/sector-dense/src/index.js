@@ -2574,22 +2574,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "nutrition-foods": {
-    config: { metric: "total_foods", threshold_pct: 0.1, threshold_abs: 1000, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_foods: await fetchSafe(async () => {
-          const r = await fetch("https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=apple&pageSize=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.totalHits;
-          if (typeof n !== "number") throw new Error("no_totalHits: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
   "species-observations": {
     config: { metric: "occurrence_count", threshold_pct: 1, threshold_abs: 1000000, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
