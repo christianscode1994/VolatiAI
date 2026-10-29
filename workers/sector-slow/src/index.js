@@ -170,25 +170,6 @@ const COLLECTORS = {
     }),
   },
 
-  "rir-arin": {
-    config: { metric: "ipv4_allocations", threshold_pct: 0.1, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        ipv4_allocations: await fetchSafe(async () => {
-          const r = await fetch("https://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const text = await r.text();
-          let count = 0;
-          for (const line of text.split("\n")) {
-            if (line.includes("|ipv4|")) count++;
-          }
-          if (count === 0) throw new Error("no_records");
-          return count;
-        }),
-      },
-    }),
-  },
 
   environment: {
     config: { metric: "co2_ppm", threshold_pct: 0.3, window: "7d", window_days: 7, ttl: 86400 },

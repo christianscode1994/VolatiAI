@@ -834,17 +834,6 @@ const COLLECTORS = {
       return { value: Array.isArray(j.leagues) ? j.leagues.length : null, sources: { thesportsdb: { ok: true } }, context: { endpoint: "all_leagues" } };
     },
   },
-  "who-life-expectancy": {
-    config: { metric: "life_expectancy", threshold_pct: 1, window: "1y", window_days: 365 },
-    async collectAll(env) {
-      const r = await fetch("https://ghoapi.azureedge.net/api/WHOSIS_000001");
-      if (!r.ok) return { value: null, sources: { who_gho: { ok: false } } };
-      const j = await r.json();
-      const rows = j.value ?? [];
-      const latest = rows.sort((a, b) => b.Year - a.Year)[0];
-      return { value: latest ? Number(latest.NumericValue) : null, sources: { who_gho: { ok: true } }, context: { indicator: "WHOSIS_000001", year: latest?.Year } };
-    },
-  },
   "medlineplus-topic-count": {
     config: { metric: "topic_count", threshold_pct: null, window: "7d", window_days: 7 },
     async collectAll(env) {
@@ -853,15 +842,6 @@ const COLLECTORS = {
       const xml = await r.text();
       const m = xml.match(/<count>(\d+)<\/count>/i);
       return { value: m ? Number(m[1]) : null, sources: { medlineplus: { ok: true } }, context: { query: "diabetes" } };
-    },
-  },
-  "musicbrainz-artist-count": {
-    config: { metric: "artist_count", threshold_pct: 10, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const r = await fetch("https://musicbrainz.org/ws/2/artist?query=beatles&fmt=json&limit=1", { headers: { "User-Agent": "VolatiAI/1.0 (contact@example.com)" } });
-      if (!r.ok) return { value: null, sources: { musicbrainz: { ok: false } } };
-      const j = await r.json();
-      return { value: j.count ?? null, sources: { musicbrainz: { ok: true } }, context: { query: "beatles" } };
     },
   },
   "imf-portwatch-chokepoints": {
