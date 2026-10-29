@@ -2790,6 +2790,18 @@ const COLLECTORS = {
       return { value: n, sources: { pursue_uap: { ok: typeof n === "number" } } };
     },
   },
+  "safecast-radiation": {
+    config: { metric: "measurements_recent", threshold_pct: 30, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const since = new Date(Date.now() - 24 * 3600e3).toISOString().replace(/\.\d+Z$/, "Z");
+      const r = await fetch("https://api.safecast.org/measurements.json?since=" + encodeURIComponent(since), { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { safecast: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (Array.isArray(j?.measurements) ? j.measurements : null);
+      if (!arr) return { value: null, sources: { safecast: { ok: false, error: "unexpected_shape: keys=" + Object.keys(j || {}).slice(0, 8).join(",") } } };
+      return { value: arr.length, sources: { safecast: { ok: true } } };
+    },
+  },
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────

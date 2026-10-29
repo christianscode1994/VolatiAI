@@ -2620,6 +2620,36 @@ const COLLECTORS = {
       return { value: n, sources: { faa_uas: { ok: typeof n === "number" } } };
     },
   },
+  "cbp-border-wait-times": {
+    config: { metric: "ports_in_feed", threshold_pct: 10, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://bwt.cbp.gov/api/bwtnew", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { cbp_bwt: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (Array.isArray(j?.ports) ? j.ports : (Array.isArray(j?.data) ? j.data : null));
+      if (!arr) return { value: null, sources: { cbp_bwt: { ok: false, error: "unexpected_shape: keys=" + Object.keys(j || {}).slice(0, 8).join(",") } } };
+      return { value: arr.length, sources: { cbp_bwt: { ok: true } } };
+    },
+  },
+  "us-drought-monitor": {
+    config: { metric: "drought_area_pct", threshold_pct: 10, window: "7d", window_days: 7, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const fmt = d => `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${d.getUTCFullYear()}`;
+      const start = new Date(Date.now() - 14 * 86400e3);
+      const url = "https://usdmdataservices.unl.edu/api/USStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=us&startdate=" + fmt(start) + "&enddate=" + fmt(new Date()) + "&statisticsType=1";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { usdm: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = Array.isArray(j) ? j : (Array.isArray(j?.data) ? j.data : null);
+      if (!arr || arr.length === 0) return { value: null, sources: { usdm: { ok: false, error: "unexpected_shape: keys=" + Object.keys(j || {}).slice(0, 8).join(",") } } };
+      const last = arr[arr.length - 1];
+      const pick = k => typeof last?.[k] === "number" ? last[k] : (typeof last?.[k.toUpperCase()] === "number" ? last[k.toUpperCase()] : null);
+      const parts = ["d1", "d2", "d3", "d4"].map(pick);
+      if (parts.some(v => v === null)) return { value: null, sources: { usdm: { ok: false, error: "no_d_fields: keys=" + Object.keys(last || {}).join(",") } } };
+      const total = parts.reduce((a, b) => a + b, 0);
+      return { value: Math.round(total * 100) / 100, sources: { usdm: { ok: true } } };
+    },
+  },
 };
 
 

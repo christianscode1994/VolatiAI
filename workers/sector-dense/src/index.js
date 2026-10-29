@@ -915,6 +915,22 @@ const COLLECTORS = {
       return { value: n, sources: { adsb_lol: { ok: typeof n === "number" } } };
     },
   },
+  "faa-airport-delays": {
+    config: { metric: "active_airport_disruptions", threshold_pct: 20, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://external-api.faa.gov/asws/api/airport/delays", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { faa_asws: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      let n = null;
+      if (typeof j?.status?.count === "number") {
+        n = j.status.count;
+      } else {
+        const cats = ["GroundDelays", "GroundStops", "ArriveDepartDelays", "Closures"];
+        n = cats.reduce((a, k) => a + (typeof j?.[k]?.count === "number" ? j[k].count : 0), 0);
+      }
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { faa_asws: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
@@ -1077,7 +1093,7 @@ Object.assign(COLLECTORS, {
     collectAll: async () => ({
       sources: {
         delayed_airports: await fetchSafe(async () => {
-          const r = await fetch("https://external-api.faa.gov/asws/api/airport/delays", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          const r = await fetch("https://external-api.faa.gov/asws/api/api/airport/delays", { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
           if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
           if (typeof j?.status?.count === "number") return j.status.count;
