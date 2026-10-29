@@ -157,17 +157,6 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 
 const COLLECTORS = {
 
-  "treasury-national-debt-retry": {
-    config: { metric: "total_debt_usd", threshold_pct: 0.5, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=1";
-      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { treasury: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = parseFloat(j?.data?.[0]?.tot_pub_debt_out_amt);
-      return { value: Number.isFinite(n) ? n : null, sources: { treasury: { ok: Number.isFinite(n) } } };
-    },
-  },
   "bart-train-count": {
     config: { metric: "active_train_count", threshold_pct: 20, window: "1d", window_days: 1 },
     async collectAll(env) {
