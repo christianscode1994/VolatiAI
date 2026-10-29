@@ -154,6 +154,21 @@ Use lambda: pat.sub(lambda m: NEW + "\n", old, count=1)
 
 ---
 
+## Known issue: docs/intel.json gets corrupted by the snapshot job
+
+`ebeed79f Update intel snapshot` writes `error code: 1042` (17 bytes) to
+docs/intel.json when the wrangler KV fetch fails. This has happened at least
+twice (commits 201cec34 and ebeed79f).
+
+Symptom: safety gate fails with "INVALID JSON: docs/intel.json".
+Fix: git show <last-good-sha>:docs/intel.json > docs/intel.json
+Last-good-sha as of 2026-10-29: a0255ab1 (214 bytes, valid)
+
+Prevention (todo): the snapshot job should not overwrite docs/intel.json
+unless the fetch succeeded and content is valid JSON.
+
+---
+
 ## Never do these
 
 - git add -A when unsure what is staged - use explicit file paths

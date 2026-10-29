@@ -1198,22 +1198,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "energy-carbon": {
-    config: { metric: "gco2_per_kwh", threshold_pct: 3, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        gco2_per_kwh: await fetchSafe(async () => {
-          const r = await fetch("https://api.carbonintensity.org.uk/intensity",
-            { headers: { "accept": "application/json", "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.data?.[0]?.intensity?.actual;
-          if (typeof v !== "number") throw new Error("no_value");
-          return v;
-        }),
-      },
-    }),
-  },
   sports: {
     config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -1232,47 +1216,6 @@ Object.assign(COLLECTORS, {
             }
           }
           return total;
-        }),
-      },
-    }),
-  },
-  "wikipedia-activity": {
-    config: { metric: "views_7d", threshold_pct: 10, threshold_abs: 500000, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        views_7d: await fetchSafe(async () => {
-          const end = new Date();
-          const start = new Date(Date.now() - 7*864e5);
-          const fmt = d => d.toISOString().slice(0,10).replace(/-/g,"");
-          const articles = ["Main_Page","Artificial_intelligence","Bitcoin"];
-          const results = await Promise.all(articles.map(a =>
-            fetch("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/" + a + "/daily/" + fmt(start) + "/" + fmt(end),
-              { headers: { "user-agent": "VolatiAI/1.0 (contact: volatiai@example.com)" }, signal: AbortSignal.timeout(15000) })
-          ));
-          let total = 0;
-          for (const r of results) {
-            if (r.ok) {
-              const j = await r.json();
-              if (Array.isArray(j?.items)) for (const it of j.items) total += it.views || 0;
-            }
-          }
-          if (total === 0) throw new Error("all_articles_failed");
-          return total;
-        }),
-      },
-    }),
-  },
-  "cyber-threats": {
-    config: { metric: "known_exploited", threshold_pct: 1, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        known_exploited: await fetchSafe(async () => {
-          const r = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.count !== "number") throw new Error("no_count");
-          return j.count;
         }),
       },
     }),
