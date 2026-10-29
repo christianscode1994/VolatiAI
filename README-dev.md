@@ -203,6 +203,26 @@ dropped as "ghoapi" in 2026-10-29, then restored in commit `966ef6b6`.
 
 ---
 
+## Known issue: cleanup_kv.sh blocked by Cloudflare daily quota
+
+Cloudflare Free tier caps `kv:key:list` calls per day. Repeated dry-runs during
+cleanup work (e.g. 2026-10-29 ghoapi sweep) exhaust the quota. Symptom:
+
+    your account has reached the free usage limit for this operation for
+    today [code: 10048]
+
+Not an auth issue, not a script bug. Wait until UTC midnight (or 24h from
+first call) then retry. Reduce dry-runs during active cleanup to preserve
+quota.
+
+## BenchGecko — verified nonexistent (2026-10-29)
+
+All 5 API endpoints and root domain returned 000 (DNS fail). Domain does not
+resolve. Do not attempt `ai-model-benchmarks` from BenchGecko. If AI benchmark
+coverage becomes a goal, source must be found elsewhere.
+
+---
+
 ## Never do these
 
 - git add -A when unsure what is staged - use explicit file paths
