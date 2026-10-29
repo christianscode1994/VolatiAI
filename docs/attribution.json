@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T08:40:24.266450Z",
+  "generated_at": "2026-10-29T08:44:23.112347Z",
   "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
   "sources": [
     {
@@ -290,14 +290,6 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "imf-portwatch-chokepoints"
-      ]
-    },
-    {
-      "attribution": "IPTV-org",
-      "license": "Open",
-      "category": "REVIEW",
-      "sectors": [
-        "iptv-org-channel-count"
       ]
     },
     {
@@ -761,14 +753,6 @@
       ]
     },
     {
-      "attribution": "air-quality",
-      "license": "Verify domain",
-      "category": "REVIEW",
-      "sectors": [
-        "air-quality"
-      ]
-    },
-    {
       "attribution": "api.apis.guru",
       "license": "Public API (verified no restriction)",
       "category": "SAFE_OPEN",
@@ -1089,8 +1073,8 @@
     },
     {
       "attribution": "cosmos",
-      "license": "Cosmos blockchain — verify domain",
-      "category": "REVIEW",
+      "license": "Cosmos blockchain public data",
+      "category": "SAFE_OPEN",
       "sectors": [
         "cosmos"
       ]
@@ -1105,8 +1089,8 @@
     },
     {
       "attribution": "cve-feed",
-      "license": "Stub — no URL in worker",
-      "category": "REVIEW",
+      "license": "NIST NVD (US Gov public domain)",
+      "category": "SAFE_PD_CC0",
       "sectors": [
         "cve-feed"
       ]
@@ -1194,16 +1178,16 @@
     },
     {
       "attribution": "dev-metaverse",
-      "license": "Stub — no URL in worker",
-      "category": "REVIEW",
+      "license": "GitHub public API",
+      "category": "SAFE_OPEN",
       "sectors": [
         "dev-metaverse"
       ]
     },
     {
       "attribution": "dev-vr-ar",
-      "license": "Stub — no URL in worker",
-      "category": "REVIEW",
+      "license": "GitHub public API",
+      "category": "SAFE_OPEN",
       "sectors": [
         "dev-vr-ar"
       ]
@@ -1218,8 +1202,8 @@
     },
     {
       "attribution": "e-commerce",
-      "license": "Stub — no URL in worker",
-      "category": "REVIEW",
+      "license": "Shopify public storefront API",
+      "category": "SAFE_OPEN",
       "sectors": [
         "e-commerce"
       ]
@@ -1390,6 +1374,14 @@
       ]
     },
     {
+      "attribution": "github-torvalds-followers",
+      "license": "GitHub public API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-torvalds-followers"
+      ]
+    },
+    {
       "attribution": "global-ai-governance-map.vercel.app",
       "license": "Public API (verified no restriction)",
       "category": "SAFE_OPEN",
@@ -1397,6 +1389,14 @@
         "ai-enforcement-events",
         "ai-governance-records",
         "ai-implementation-milestones"
+      ]
+    },
+    {
+      "attribution": "hn-sentiment-shift",
+      "license": "Hacker News Algolia API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "hn-sentiment-shift"
       ]
     },
     {
@@ -1473,6 +1473,14 @@
       ]
     },
     {
+      "attribution": "iptv-org-channel-count",
+      "license": "iptv-org (MIT open project)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "iptv-org-channel-count"
+      ]
+    },
+    {
       "attribution": "issued.live",
       "license": "issued.live free tier",
       "category": "SAFE_OPEN",
@@ -1542,6 +1550,30 @@
       "category": "SAFE_PD_CC0",
       "sectors": [
         "climate-datasets"
+      ]
+    },
+    {
+      "attribution": "npm-scraper-packages",
+      "license": "npm public registry",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "npm-scraper-packages"
+      ]
+    },
+    {
+      "attribution": "nvd-new-cves",
+      "license": "NIST NVD (US Gov public domain)",
+      "category": "SAFE_PD_CC0",
+      "sectors": [
+        "nvd-new-cves"
+      ]
+    },
+    {
+      "attribution": "open-notify-astronauts",
+      "license": "Open Notify (open source)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "open-notify-astronauts"
       ]
     },
     {
@@ -1634,9 +1666,9 @@
       ]
     },
     {
-      "attribution": "pypistats",
-      "license": "Public API",
-      "category": "REVIEW",
+      "attribution": "pypistats-fastapi-downloads",
+      "license": "pypistats.org public stats",
+      "category": "SAFE_OPEN",
       "sectors": [
         "pypistats-fastapi-downloads"
       ]
@@ -1680,6 +1712,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "ensembl-brca1-gene"
+      ]
+    },
+    {
+      "attribution": "ripe-atlas-public",
+      "license": "RIPE Atlas public API",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "ripe-atlas-public"
       ]
     },
     {
@@ -1812,11 +1852,11 @@
       ]
     },
     {
-      "attribution": "tech-eu",
-      "license": "Verify domain",
-      "category": "REVIEW",
+      "attribution": "sunrise-berlin-daylength",
+      "license": "Public sunrise/sunset API",
+      "category": "SAFE_OPEN",
       "sectors": [
-        "tech-eu"
+        "sunrise-berlin-daylength"
       ]
     },
     {
