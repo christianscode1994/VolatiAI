@@ -173,15 +173,6 @@ const COLLECTORS = {
       return { value: typeof j?.downloads === "number" ? j.downloads : null, sources: { rubygems: { ok: typeof j?.downloads === "number" } } };
     },
   },
-  "dockerhub-nginx-pulls": {
-    config: { metric: "pull_count", threshold_pct: 5, window: "30d", window_days: 30 },
-    async collectAll(env) {
-      const r = await fetch("https://hub.docker.com/v2/repositories/library/nginx/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) return { value: null, sources: { dockerhub: { ok: false } } };
-      const j = await r.json();
-      return { value: typeof j?.pull_count === "number" ? j.pull_count : null, sources: { dockerhub: { ok: typeof j?.pull_count === "number" } } };
-    },
-  },
   "ensembl-species-count": {
     config: { metric: "species_count", threshold_pct: 2, window: "90d", window_days: 90 },
     async collectAll(env) {
