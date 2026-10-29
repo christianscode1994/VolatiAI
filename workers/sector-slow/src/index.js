@@ -154,6 +154,103 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+
+  "npm-react-weekly-downloads": {
+    config: { metric: "downloads", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://api.npmjs.org/downloads/point/last-week/react", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { npm_react: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.downloads === "number" ? j.downloads : null, sources: { npm_react: { ok: typeof j?.downloads === "number" } } };
+    },
+  },
+  "rubygems-rails-downloads": {
+    config: { metric: "downloads", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://rubygems.org/api/v1/gems/rails.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { rubygems: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.downloads === "number" ? j.downloads : null, sources: { rubygems: { ok: typeof j?.downloads === "number" } } };
+    },
+  },
+  "dockerhub-nginx-pulls": {
+    config: { metric: "pull_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://hub.docker.com/v2/repositories/library/nginx/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { dockerhub: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.pull_count === "number" ? j.pull_count : null, sources: { dockerhub: { ok: typeof j?.pull_count === "number" } } };
+    },
+  },
+  "ensembl-species-count": {
+    config: { metric: "species_count", threshold_pct: 2, window: "90d", window_days: 90 },
+    async collectAll(env) {
+      const r = await fetch("https://rest.ensembl.org/info/species?content-type=application/json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { ensembl: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j?.species) ? j.species.length : null, sources: { ensembl: { ok: Array.isArray(j?.species) } } };
+    },
+  },
+  "openfda-device-event-total": {
+    config: { metric: "event_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.fda.gov/device/event.json?limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { openfda_device: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.meta?.results?.total === "number" ? j.meta.results.total : null, sources: { openfda_device: { ok: typeof j?.meta?.results?.total === "number" } } };
+    },
+  },
+  "disease-sh-covid-cases": {
+    config: { metric: "total_cases", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://disease.sh/v3/covid-19/all", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { diseasesh: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.cases === "number" ? j.cases : null, sources: { diseasesh: { ok: typeof j?.cases === "number" } } };
+    },
+  },
+  "usgs-quake-m5-count": {
+    config: { metric: "quake_count", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://earthquake.usgs.gov/fdsnws/event/1/count?format=geojson&minmagnitude=5", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { usgs_quake: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.count === "number" ? j.count : null, sources: { usgs_quake: { ok: typeof j?.count === "number" } }, context: { min_magnitude: 5 } };
+    },
+  },
+  "github-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://www.githubstatus.com/api/v2/status.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { ghstatus: { ok: false } } };
+      const j = await r.json();
+      const map = { "none": 0, "minor": 1, "major": 2, "critical": 3 };
+      const n = map[j?.status?.indicator];
+      return { value: typeof n === "number" ? n : null, sources: { ghstatus: { ok: typeof n === "number" } }, context: { indicator: j?.status?.indicator } };
+    },
+  },
+  "cloudflare-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://www.cloudflarestatus.com/api/v2/status.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { cfstatus: { ok: false } } };
+      const j = await r.json();
+      const map = { "none": 0, "minor": 1, "major": 2, "critical": 3 };
+      const n = map[j?.status?.indicator];
+      return { value: typeof n === "number" ? n : null, sources: { cfstatus: { ok: typeof n === "number" } }, context: { indicator: j?.status?.indicator } };
+    },
+  },
+  "digitalocean-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://status.digitalocean.com/index.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { dostatus: { ok: false } } };
+      const j = await r.json();
+      const map = { "none": 0, "minor": 1, "major": 2, "critical": 3 };
+      const n = map[j?.status?.indicator];
+      return { value: typeof n === "number" ? n : null, sources: { dostatus: { ok: typeof n === "number" } }, context: { indicator: j?.status?.indicator } };
+    },
+  },
   "sec-aapl-filings-90d": {
     config: { metric: "filing_count", threshold_pct: 10, window: "90d", window_days: 90 },
     async collectAll(env) {

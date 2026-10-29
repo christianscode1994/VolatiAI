@@ -157,6 +157,57 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 
 const COLLECTORS = {
 
+  "gemini-btc-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.gemini.com/v1/pubticker/btcusd", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { gemini: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.last);
+      return { value: Number.isFinite(n) ? n : null, sources: { gemini: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "fear-greed-index": {
+    config: { metric: "index", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.alternative.me/fng/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { fng: { ok: false } } };
+      const j = await r.json();
+      const n = parseInt(j?.data?.[0]?.value, 10);
+      return { value: Number.isFinite(n) ? n : null, sources: { fng: { ok: Number.isFinite(n) } }, context: { classification: j?.data?.[0]?.value_classification } };
+    },
+  },
+  "nbp-gold-price-pln": {
+    config: { metric: "gold_pln", threshold_pct: 5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://api.nbp.pl/api/cenyzlota", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { nbp: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.[0]?.cena);
+      return { value: Number.isFinite(n) ? n : null, sources: { nbp: { ok: Number.isFinite(n) } }, context: { unit: "PLN per gram" } };
+    },
+  },
+  "nbp-usd-pln-rate": {
+    config: { metric: "usd_pln", threshold_pct: 2, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://api.nbp.pl/api/exchangerates/rates/a/usd/?format=json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { nbp_rate: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.rates?.[0]?.mid);
+      return { value: Number.isFinite(n) ? n : null, sources: { nbp_rate: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "currency-api-eur-usd": {
+    config: { metric: "eur_usd", threshold_pct: 2, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://latest.currency-api.pages.dev/v1/currencies/usd.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { currencyapi: { ok: false } } };
+      const j = await r.json();
+      const n = j?.usd?.eur;
+      return { value: typeof n === "number" ? n : null, sources: { currencyapi: { ok: typeof n === "number" } } };
+    },
+  },
+
   "btc-usd-coinbase-spot": {
     config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
     async collectAll(env) {

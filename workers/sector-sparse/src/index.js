@@ -29,6 +29,100 @@ function parseRSSFirstItem(text) {
 
 const COLLECTORS = {
 
+  "pokeapi-pokemon-count": {
+    config: { metric: "pokemon_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { pokeapi: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.count === "number" ? j.count : null, sources: { pokeapi: { ok: typeof j?.count === "number" } } };
+    },
+  },
+  "rickmorty-character-count": {
+    config: { metric: "character_count", threshold_pct: 5, window: "90d", window_days: 90 },
+    async collectAll(env) {
+      const r = await fetch("https://rickandmortyapi.com/api/character", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { rickmorty: { ok: false } } };
+      const j = await r.json();
+      const n = j?.info?.count;
+      return { value: typeof n === "number" ? n : null, sources: { rickmorty: { ok: typeof n === "number" } } };
+    },
+  },
+  "ghibli-film-count": {
+    config: { metric: "film_count", threshold_pct: 5, window: "90d", window_days: 90 },
+    async collectAll(env) {
+      const r = await fetch("https://ghibliapi.vercel.app/films", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { ghibli: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { ghibli: { ok: Array.isArray(j) } } };
+    },
+  },
+  "digimon-count": {
+    config: { metric: "digimon_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://digimon-api.vercel.app/api/digimon", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { digimon: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { digimon: { ok: Array.isArray(j) } } };
+    },
+  },
+  "zelda-game-count": {
+    config: { metric: "game_count", threshold_pct: 5, window: "90d", window_days: 90 },
+    async collectAll(env) {
+      const r = await fetch("https://zelda.fanapis.com/api/games", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { zelda: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.data) ? j.data.length : null;
+      return { value: n, sources: { zelda: { ok: n !== null } } };
+    },
+  },
+  "xkcd-comic-count": {
+    config: { metric: "comic_number", threshold_pct: 1, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://xkcd.com/info.0.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { xkcd: { ok: false } } };
+      const j = await r.json();
+      return { value: typeof j?.num === "number" ? j.num : null, sources: { xkcd: { ok: typeof j?.num === "number" } } };
+    },
+  },
+  "yugioh-card-count": {
+    config: { metric: "card_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://db.ygoprodeck.com/api/v7/cardinfo.php", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { yugioh: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.data) ? j.data.length : null;
+      return { value: n, sources: { yugioh: { ok: n !== null } } };
+    },
+  },
+  "freetogame-count": {
+    config: { metric: "game_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.freetogame.com/api/games", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { freetogame: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { freetogame: { ok: Array.isArray(j) } } };
+    },
+  },
+  "gamerpower-giveaway-count": {
+    config: { metric: "giveaway_count", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://www.gamerpower.com/api/giveaways", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { gamerpower: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { gamerpower: { ok: Array.isArray(j) } } };
+    },
+  },
+  "whiskyhunter-auction-count": {
+    config: { metric: "auction_count", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const r = await fetch("https://whiskyhunter.net/api/auctions_data/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { whiskyhunter: { ok: false } } };
+      const j = await r.json();
+      return { value: Array.isArray(j) ? j.length : null, sources: { whiskyhunter: { ok: Array.isArray(j) } } };
+    },
+  },
+
   "btc-usd-bitfinex-spot": {
     config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
     async collectAll(env) {
