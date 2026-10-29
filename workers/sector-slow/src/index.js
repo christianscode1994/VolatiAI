@@ -2610,6 +2610,16 @@ const COLLECTORS = {
       return { value: n, sources: { benchgecko: { ok: typeof n === "number" } } };
     },
   },
+  "faa-uas-facility-grid-count": {
+    config: { metric: "grid_cells", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://services6.arcgis.com/ssFJjBXIUyZDrSYZ/arcgis/rest/services/FAA_UAS_FacilityMap_Data_V5/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { faa_uas: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : null;
+      return { value: n, sources: { faa_uas: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 

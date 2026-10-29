@@ -905,6 +905,16 @@ const COLLECTORS = {
     }),
   },
 
+  "adsb-lol-aircraft-count": {
+    config: { metric: "aircraft_count", threshold_pct: 20, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.adsb.lol/v2/lat/51.47/lon/-0.45/dist/100", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { adsb_lol: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.ac) ? j.ac.length : null;
+      return { value: n, sources: { adsb_lol: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────
