@@ -169,6 +169,40 @@ unless the fetch succeeded and content is valid JSON.
 
 ---
 
+## Known issue: unquoted sector keys
+
+Single-word sector names in the worker file (e.g. `diseases:`, `research:`)
+appear WITHOUT quotes in the JS object literal. Two-word and hyphenated names
+(e.g. `"cyber-threats":`) appear WITH quotes.
+
+Any drop/rename regex must handle both forms:
+
+    r'\n  "?' + re.escape(name) + r'"?\: \{.*?\n  \},\n'
+
+Forgetting the `"?` on both sides means `re.sub` returns delta=0 and silently
+does nothing — the sector stays, `grep` still finds it, and you'll spend
+another round chasing "why didn't the drop work".
+
+## Known issue: diagnostic block-parser false positives
+
+An earlier session's ghoapi sector finder used:
+
+    end = ms[i+1].start() if i+1 < len(ms) else s.find("^};", m.end())
+
+`str.find("^};")` searches for the LITERAL string `^};` — the caret is not a
+metacharacter in `str.find`. It returns `-1` (not found), so the code falls
+back to `end = len(s)`, making the last block extend to EOF. Result: sectors
+AFTER the real ghoapi block are falsely attributed as the ghoapi sector.
+
+Fix: use `re.search(r'^\};', ...)` or `s.rfind("};")`, or the simpler:
+
+    end = ms[i+1].start() if i+1 < len(ms) else len(s)
+
+The bug caused `energy-carbon` (real carbonintensity.org.uk collector) to be
+dropped as "ghoapi" in 2026-10-29, then restored in commit `966ef6b6`.
+
+---
+
 ## Never do these
 
 - git add -A when unsure what is staged - use explicit file paths
