@@ -1,448 +1,1966 @@
 {
-  "trend_acceleration": 0,
-  "narrative_velocity": 0,
-  "whale_pressure": 0,
-  "spoofing_probability": 0,
-  "chain_truth": 0,
-  "sector_growth": 0,
-  "timestamp": 1793279541787,
-  "sectors": [
-    "ted-tenders",
-    "yc-companies",
-    "form-d-filings",
-    "nport-filings",
-    "13f-holdings",
-    "xbrl-frames",
-    "hedge-fund-monitor",
-    "cisa-kev",
-    "abuse-ch-feodo",
-    "nvd-new-cves",
-    "nasa-eonet",
-    "usgs-water",
-    "noaa-ndbc",
-    "epa-envirofacts",
-    "ripe-atlas-public",
-    "faostat",
-    "global-forest-watch",
-    "fcc-broadband",
-    "bakom",
-    "ripestat",
-    "ietf-datatracker",
-    "arbetsformedlingen",
-    "poligraph",
-    "satlas",
-    "mattercatalog",
-    "home-assistant",
-    "robonix",
-    "saos",
-    "dc-crime",
-    "met-artworks",
-    "cern-opendata",
-    "tweetfeed-c2",
-    "wikidata-triples",
-    "ballotwatch-bills",
-    "openfda-drug-recalls",
-    "openfda-food-recalls",
-    "openfda-device-recalls",
-    "cleveland-artworks",
-    "apis-guru-directory",
-    "usgs-earthquakes",
-    "noaa-spaceweather-alerts",
-    "crossref-works",
-    "doaj-articles",
-    "datacite-dois",
-    "zenodo-records",
-    "treasuries-gov",
-    "usgs-earthquakes-emsc",
-    "nvd-cve-count",
-    "cisa-kev-count",
-    "phishunt-domains",
-    "gleif-leis",
-    "frankfurter-eurusd",
-    "frankfurter-eursek",
-    "nbp-gold-spot",
-    "worldbank-us-gdp",
-    "worldbank-se-gdp",
-    "coinbase-btc-usd",
-    "defillama-protocol-count",
-    "coinbase-btc-volume24h",
-    "worldbank-us-unemployment",
-    "dbnomics-us-debt",
-    "kraken-btc-usd",
-    "kraken-sol-usd",
-    "kraken-eth-usd",
-    "coinbase-eth-usd",
-    "btc-exchange-spread",
-    "fred-dgs10",
-    "fred-fedfunds",
-    "eth-exchange-spread",
-    "stablecoin-total-supply",
-    "stablecoin-usdt-supply",
-    "stablecoin-usdc-supply",
-    "dex-total-volume-24h",
-    "dex-uniswap-volume",
-    "dex-ethereum-volume",
-    "defi-total-tvl",
-    "ossf-scorecard-linux",
-    "ecosyste-ms-react",
-    "open-digger-openrank-vscode",
-    "hackernews-top-scores",
-    "osv-lodash-vuln-count",
-    "cisa-kev-total",
-    "epss-log4shell",
-    "deps-dev-react-versions",
-    "clearlydefined-react-license",
-    "hn-tech-sentiment",
-    "spaceflight-news-count",
-    "pypi-downloads-requests",
-    "npm-downloads-react",
-    "librariesio-sourcerank-react",
-    "usgs-earthquake-count",
-    "eurostat-eu-unemployment",
-    "uk-carbon-intensity",
-    "usgs-elevated-volcanoes",
-    "pocketworld-space-weather",
-    "kraken-xrp-usd",
-    "kraken-ada-usd",
-    "kraken-doge-usd",
-    "kraken-dot-usd",
-    "kraken-link-usd",
-    "defi-fees-aave",
-    "defi-open-interest-total",
-    "pypi-daily-requests",
-    "usgs-streamflow-mississippi",
-    "feodo-c2-count",
-    "nvd-new-cves-count",
-    "github-recent-commits",
-    "drug-approvals-latest",
-    "drug-approvals-total",
-    "geocables-incidents",
-    "whiskyhunter-lot-count",
-    "shopify-allbirds-product-count",
-    "cheapshark-deal-count",
-    "espn-nfl-score-count",
-    "espn-nba-score-count",
-    "steam-csgo-players",
-    "steam-dota2-players",
-    "nws-active-severe-alerts",
-    "miso-grid-total-load",
-    "energinet-dk-carbon-intensity",
-    "baltic-wave-height",
-    "gutendex-english-ebooks",
-    "gdacs-active-disasters",
-    "geonet-nz-felt-quakes",
-    "geonet-nz-volcanic-alerts",
-    "idigbio-total-specimens",
-    "nhm-london-dataset-count",
-    "obis-marine-occurrences",
-    "gleif-total-leis",
-    "sec-aapl-filings-30d",
-    "prh-finland-total-companies",
-    "bfs-swiss-dataset-count",
-    "noaa-swpc-kp-index",
-    "avoindata-fi-dataset-count",
-    "bts-us-canada-truck-crossings",
-    "bts-containership-capacity",
-    "eurostat-inland-waterway-freight",
-    "datafirst-african-surveys",
-    "fdic-insured-banks",
-    "cfpb-complaints-count",
-    "nhtsa-recalls-count",
-    "fema-disaster-count",
-    "treasury-debt-to-penny",
-    "fed-fred-sp500",
-    "usgs-significant-quakes",
-    "usgs-significant-hour",
-    "7timer-berlin-temp",
-    "sunrise-berlin-daylength",
-    "open-notify-astronauts",
-    "iptv-org-channel-count",
-    "gdelt-news-volume",
-    "frankfurter-eur-usd",
-    "crossref-deep-learning",
-    "openlibrary-ml-books",
-    "npm-scraper-packages",
-    "pypistats-fastapi-downloads",
-    "github-torvalds-followers",
-    "hn-sentiment-shift",
-    "arxiv-ai",
-    "arxiv-cs",
-    "openalex-crispr-works",
-    "pubmed-covid-papers",
-    "europepmc-crispr-therapy",
-    "imf-portwatch-chokepoints",
-    "vbb-transport-berlin",
-    "swiss-transport-zurich",
-    "pangaea-earth-datasets",
-    "gbif-occurrences",
-    "japan-statistics-dashboard",
-    "wayback-availability",
-    "espn-nba-scoreboard",
-    "hafas-berlin-departures",
-    "transitous-route-count",
-    "medlineplus-topic-count",
-    "thesportsdb-team-count",
-    "nasa-cmr-collections",
-    "nasa-image-library",
-    "nasa-techport-projects",
-    "nasa-exoplanet-count",
-    "nasa-ssd-asteroid",
-    "nasa-cneos-approaches",
-    "nasa-epic-earth",
-    "war-tracker-events",
-    "uap-pulse-files",
-    "nato-cyber-standards",
-    "dbcve-vulnerabilities",
-    "adsb-military-aircraft",
-    "texas-rrc-wells",
-    "cheniere-lng-firm-capacity",
-    "eia-bulk-manifest",
-    "windsor-drake-ma-transactions",
-    "tech-eu-exits",
-    "sec-edgar-ma-8k",
-    "miso-wind-solar-generation",
-    "forecast-solar-berlin",
-    "sourceful-der-grid",
-    "fcc-broadband-providers",
-    "issued-live-certs-24h",
-    "hibp-breach-range",
-    "first-csirt-teams",
-    "ip-geolocation",
-    "simkl-calendar-anime",
-    "nyc-building-permits",
-    "chicago-building-permits",
-    "austin-building-permits",
-    "worldbank-electricity-access",
-    "xaus-gold-spot",
-    "btc-mining-hashrate",
-    "usgs-tnm-elevation-products",
-    "unesco-marine-heritage-count",
-    "usgs-geomag-boulder",
-    "ebi-ols4-climate-terms",
-    "us-nuclear-plants-count",
-    "finland-ais-vessels",
-    "us-containerships-awaiting-berths",
-    "hormuz-daily-transits",
-    "elexon-uk-grid-frequency",
-    "phishdestroy-active-domains",
-    "fema-disaster-declarations",
-    "worldbank-poverty-headcount",
-    "openfda-drug-event-total",
-    "clinicaltrials-study-total",
-    "lium-gpu-node-count",
-    "akash-provider-count",
-    "cantex-canton-dex-tvl",
-    "orca-solana-dex-tvl",
-    "defillama-dex-volume-24h",
-    "bitcoin-mempool-tx-count",
-    "ethereum-block-height-publicnode",
-    "wax-block-height",
-    "mlb-team-count",
-    "espn-nfl-events-count",
-    "unesco-uis-indicator-count",
-    "bgpv6-routing-prefix-count",
-    "pch-active-ixp-count",
-    "geocables-active-incidents",
-    "azmth-active-satellite-count",
-    "denmark-traffic-incidents",
-    "ripe-atlas-connected-probes",
-    "autonomous-tech",
-    "aviation-weather",
-    "cdc-covid-total-deaths",
-    "climate-datasets",
-    "clinicaltrials-total-studies",
-    "cyber-threats",
-    "drug-recall",
-    "fed-rate",
-    "fema-disasters",
-    "food-drink",
-    "institutional-finance",
-    "miso-grid",
-    "nasa-apod",
-    "nasa-neo",
-    "natural-disasters",
-    "nutrition-foods",
-    "nws-alerts",
-    "nyfed-sofr-rate",
-    "open-data",
-    "openfda-recalls",
-    "pubmed-acupuncture-papers",
-    "pubmed-meditation-papers",
-    "science-news",
-    "sec-filings",
-    "tobacco-reports",
-    "usgs-streamflow",
-    "volcano-alerts",
-    "data-validity",
-    "disease-outbreaks",
-    "emsc-earthquakes",
-    "eu-legal-acts",
-    "eu-open-data",
-    "eurostat-hicp",
-    "gbif-homo-sapiens-key",
-    "gdacs-disasters",
-    "government-data",
-    "humanitarian-aid",
-    "renewable-energy",
-    "science-math",
-    "species-observations",
-    "swiss-federal-laws",
-    "theoretical-cs",
-    "uk-flood-warnings",
-    "unesco-sites",
-    "wikipedia-activity",
-    "wikipedia-bitcoin-extract-len",
-    "worldbank-indicators",
-    "affirmations-length",
-    "ai-enforcement-events",
-    "ai-governance-records",
-    "ai-implementation-milestones",
-    "ai-news",
-    "api-directory",
-    "art-design",
-    "arweave-network",
-    "bgp-prefixes",
-    "bike-share",
-    "bluesky-posts",
-    "box-status",
-    "carbon-intensity",
-    "cloud-components",
-    "cloud-status",
-    "cloudflare-status",
-    "corona-zahlen-germany-week-incidence",
-    "crates-io",
-    "crypto-defi",
-    "currency-ex",
-    "defi-dex-volume",
-    "defi-fees",
-    "defi-stablecoins",
-    "defi-yields",
-    "depin-network",
-    "devto-articles",
-    "dropbox-status",
-    "energy-carbon",
-    "ensembl-brca1-gene",
-    "exchange-rate",
-    "filecoin-miners",
-    "filecoin-network",
-    "flux-nodes",
-    "frankfurter-fx",
-    "free-games",
-    "free-to-play",
-    "generative-ai",
-    "github-trending",
-    "global-events",
-    "grid-balance",
-    "grid-demand",
-    "grid-mix",
-    "hedera-blocks",
-    "helium-hotspots",
-    "huggingface-models",
-    "interop-messaging",
-    "kaspa-blockdag",
-    "korean-culture",
-    "monero-network",
-    "nature-observations",
-    "npm-packages",
-    "npm-search",
-    "open-source",
-    "open-source-packages",
-    "openlibrary-books",
-    "osv-vulnerabilities",
-    "particle-physics",
-    "protocols-tvl",
-    "pypi-activity",
-    "pypi-packages",
-    "pypi-requests-releases",
-    "radio-stations",
-    "randomuser-heartbeat",
-    "scaling-l2",
-    "snapshot-proposals",
-    "space-news",
-    "sports-scores",
-    "stablecoin-supply",
-    "travel-events",
-    "uk-carbon-intensity-now",
-    "web-apps",
-    "web3-blockscout",
-    "web3-multichain",
-    "wttr-dhaka-temp",
-    "zippopotam-10001-places",
-    "cve-feed",
-    "dev-metaverse",
-    "dev-vr-ar",
-    "sec-edgar",
-    "eia-bulk",
-    "texas-rrc",
-    "wayback",
-    "gbif",
-    "pangaea",
-    "imf-portwatch",
-    "opendata-ch",
-    "e-stat",
-    "vbb",
-    "windsor-drake",
-    "cosmos",
-    "open-meteo-soil-temp",
-    "cdc-disease-record-count",
-    "sec-aapl-filings-90d",
-    "eurostat-hicp-count",
-    "bts-port-throughput-teu",
-    "arbeitnow-job-count",
-    "greenhouse-stripe-jobs",
-    "usgs-streamflow-potomac",
-    "espn-mlb-events-count",
-    "espn-epl-events-count",
-    "bart-train-count",
-    "septa-train-count",
-    "swiss-transport-stations",
-    "fruityvice-fruit-count",
-    "espn-nhl-events-count",
-    "espn-laliga-events-count",
-    "espn-bundesliga-events-count",
-    "espn-seriea-events-count",
-    "espn-ucl-events-count",
-    "iss-current-latitude",
-    "btc-usd-coinbase-spot",
-    "btc-usd-kraken-spot",
-    "btc-usd-bitstamp-spot",
-    "btc-usd-bitfinex-spot",
-    "btc-usd-whitebit-spot",
-    "btc-usd-blockchain-info",
-    "eur-usd-spot",
-    "doaj-article-count",
-    "europepmc-cancer-count",
-    "inspirehep-higgs-count",
-    "hibp-breach-catalog-size",
-    "openfda-drug-label-count",
-    "inaturalist-observation-count",
-    "github-scraping-repo-count",
-    "npm-scraper-package-count",
-    "pypistats-requests-downloads",
-    "openligadb-bundesliga-matches",
-    "pokeapi-pokemon-count",
-    "rickmorty-character-count",
-    "ghibli-film-count",
-    "digimon-count",
-    "zelda-game-count",
-    "xkcd-comic-count",
-    "yugioh-card-count",
-    "freetogame-count",
-    "gamerpower-giveaway-count",
-    "whiskyhunter-auction-count",
-    "gemini-btc-spot",
-    "fear-greed-index",
-    "nbp-gold-price-pln",
-    "nbp-usd-pln-rate",
-    "currency-api-eur-usd",
-    "npm-react-weekly-downloads",
-    "rubygems-rails-downloads",
-    "ensembl-species-count",
-    "openfda-device-event-total",
-    "disease-sh-covid-cases",
-    "usgs-quake-m5-count",
-    "github-status-indicator",
-    "cloudflare-status-indicator",
-    "digitalocean-status-indicator"
-  ]
+  "payload": {
+    "timestamp": "2026-10-29T16:09:35.201464Z",
+    "top_by_volatility": [
+      {
+        "id": "zcash",
+        "name": "Zcash",
+        "symbol": "zec",
+        "current_price": 1353.28,
+        "market_cap": 23020072644,
+        "volatility": 1.9823220896772102,
+        "price_change_1h": 4.5349,
+        "price_change_24h": 6.54735,
+        "price_change_7d": 9.3681
+      },
+      {
+        "id": "solana",
+        "name": "Solana",
+        "symbol": "sol",
+        "current_price": 102.41,
+        "market_cap": 60418705509,
+        "volatility": 1.5369429404575248,
+        "price_change_1h": 0.9003,
+        "price_change_24h": 1.5867,
+        "price_change_7d": -1.9622
+      },
+      {
+        "id": "ethereum",
+        "name": "Ethereum",
+        "symbol": "eth",
+        "current_price": 2363.03,
+        "market_cap": 288698853240,
+        "volatility": 1.4739478647571704,
+        "price_change_1h": 1.0765,
+        "price_change_24h": 1.43809,
+        "price_change_7d": -1.8537
+      },
+      {
+        "id": "binancecoin",
+        "name": "BNB",
+        "symbol": "bnb",
+        "current_price": 749.18,
+        "market_cap": 98525244826,
+        "volatility": 0.9309775348644147,
+        "price_change_1h": 0.3078,
+        "price_change_24h": 0.04943,
+        "price_change_7d": 2.1408
+      },
+      {
+        "id": "bitcoin",
+        "name": "Bitcoin",
+        "symbol": "btc",
+        "current_price": 81608,
+        "market_cap": 1640754902640,
+        "volatility": 0.6922412552475233,
+        "price_change_1h": 0.8004,
+        "price_change_24h": 1.54414,
+        "price_change_7d": -0.1474
+      },
+      {
+        "id": "ripple",
+        "name": "XRP",
+        "symbol": "xrp",
+        "current_price": 1.31,
+        "market_cap": 82780422010,
+        "volatility": 0.6557538359950495,
+        "price_change_1h": 0.52,
+        "price_change_24h": -0.17608,
+        "price_change_7d": -1.0817
+      },
+      {
+        "id": "figure-heloc",
+        "name": "Figure Heloc",
+        "symbol": "figr_heloc",
+        "current_price": 1.035,
+        "market_cap": 26742800165,
+        "volatility": 0.2607058369546455,
+        "price_change_1h": 0.1758,
+        "price_change_24h": 0.51438,
+        "price_change_7d": 0.814
+      },
+      {
+        "id": "tron",
+        "name": "TRON",
+        "symbol": "trx",
+        "current_price": 0.331213,
+        "market_cap": 31471619998,
+        "volatility": 0.07909538545326142,
+        "price_change_1h": 0.0678,
+        "price_change_24h": 0.1254,
+        "price_change_7d": 0.2568
+      },
+      {
+        "id": "tether",
+        "name": "Tether",
+        "symbol": "usdt",
+        "current_price": 0.999166,
+        "market_cap": 180878931867,
+        "volatility": 0.019018987004219404,
+        "price_change_1h": 0.014,
+        "price_change_24h": 0.02962,
+        "price_change_7d": -0.0162
+      },
+      {
+        "id": "usd-coin",
+        "name": "USDC",
+        "symbol": "usdc",
+        "current_price": 0.999589,
+        "market_cap": 71155632160,
+        "volatility": 0.014426337026424967,
+        "price_change_1h": 0.006,
+        "price_change_24h": 0.02112,
+        "price_change_7d": -0.0141
+      }
+    ],
+    "sentiment": {
+      "hn": {
+        "score": 1.0,
+        "avg": 0.05,
+        "count": 20,
+        "label": "neutral"
+      },
+      "combined": {
+        "score": 0.05,
+        "avg": 0.05,
+        "count": 20,
+        "label": "neutral"
+      }
+    },
+    "exchanges": {
+      "kraken": {
+        "ticker": {
+          "a": [
+            "81796.20000",
+            "1",
+            "1.000"
+          ],
+          "b": [
+            "81796.10000",
+            "5",
+            "5.000"
+          ],
+          "c": [
+            "81803.30000",
+            "0.00315428"
+          ],
+          "v": [
+            "1429.40605832",
+            "2287.75970102"
+          ],
+          "p": [
+            "80523.75358",
+            "80710.61086"
+          ],
+          "t": [
+            89728,
+            135791
+          ],
+          "l": [
+            "79614.80000",
+            "79614.80000"
+          ],
+          "h": [
+            "81815.60000",
+            "81815.60000"
+          ],
+          "o": "81287.10000"
+        },
+        "depth": {
+          "asks": [
+            [
+              "81796.20000",
+              "0.001",
+              1793290121
+            ],
+            [
+              "81799.20000",
+              "0.001",
+              1793290122
+            ],
+            [
+              "81808.60000",
+              "0.003",
+              1793290123
+            ],
+            [
+              "81808.70000",
+              "0.159",
+              1793290123
+            ],
+            [
+              "81808.80000",
+              "0.226",
+              1793290123
+            ],
+            [
+              "81810.00000",
+              "0.184",
+              1793290123
+            ],
+            [
+              "81810.30000",
+              "0.020",
+              1793290123
+            ],
+            [
+              "81811.30000",
+              "0.104",
+              1793290123
+            ],
+            [
+              "81811.90000",
+              "1.842",
+              1793290122
+            ],
+            [
+              "81812.40000",
+              "3.056",
+              1793290123
+            ],
+            [
+              "81812.90000",
+              "1.643",
+              1793290122
+            ],
+            [
+              "81813.60000",
+              "1.467",
+              1793290122
+            ],
+            [
+              "81814.10000",
+              "3.056",
+              1793290123
+            ],
+            [
+              "81815.00000",
+              "0.001",
+              1793290123
+            ],
+            [
+              "81815.10000",
+              "0.005",
+              1793290122
+            ],
+            [
+              "81815.60000",
+              "0.086",
+              1793290120
+            ],
+            [
+              "81817.00000",
+              "0.025",
+              1793290123
+            ],
+            [
+              "81817.30000",
+              "0.922",
+              1793290123
+            ],
+            [
+              "81817.40000",
+              "3.056",
+              1793290123
+            ],
+            [
+              "81817.80000",
+              "0.062",
+              1793290123
+            ]
+          ],
+          "bids": [
+            [
+              "81796.10000",
+              "4.953",
+              1793290122
+            ],
+            [
+              "81795.40000",
+              "0.226",
+              1793290123
+            ],
+            [
+              "81795.30000",
+              "0.001",
+              1793290120
+            ],
+            [
+              "81794.80000",
+              "0.025",
+              1793290123
+            ],
+            [
+              "81794.70000",
+              "0.121",
+              1793290123
+            ],
+            [
+              "81794.60000",
+              "0.028",
+              1793290123
+            ],
+            [
+              "81794.50000",
+              "2.392",
+              1793290122
+            ],
+            [
+              "81794.40000",
+              "3.057",
+              1793290121
+            ],
+            [
+              "81794.10000",
+              "0.001",
+              1793290120
+            ],
+            [
+              "81794.00000",
+              "0.008",
+              1793290123
+            ],
+            [
+              "81793.70000",
+              "3.057",
+              1793290122
+            ],
+            [
+              "81793.50000",
+              "0.075",
+              1793290122
+            ],
+            [
+              "81793.20000",
+              "0.039",
+              1793290122
+            ],
+            [
+              "81792.40000",
+              "0.001",
+              1793290103
+            ],
+            [
+              "81792.20000",
+              "0.001",
+              1793290122
+            ],
+            [
+              "81791.20000",
+              "0.001",
+              1793290121
+            ],
+            [
+              "81791.10000",
+              "3.057",
+              1793290122
+            ],
+            [
+              "81790.90000",
+              "0.010",
+              1793290121
+            ],
+            [
+              "81788.70000",
+              "0.002",
+              1793290122
+            ],
+            [
+              "81788.60000",
+              "0.317",
+              1793290122
+            ]
+          ]
+        }
+      },
+      "okx": {
+        "ticker": {
+          "instType": "SPOT",
+          "instId": "BTC-USDT",
+          "last": "81888.9",
+          "lastSz": "0.00700202",
+          "askPx": "81889",
+          "askSz": "0.831989",
+          "bidPx": "81888.9",
+          "bidSz": "2.16529242",
+          "open24h": "80567.7",
+          "high24h": "81909.9",
+          "low24h": "79709.5",
+          "volCcy24h": "443747450.729093174",
+          "vol24h": "5496.0430404",
+          "ts": "1793290123668",
+          "sodUtc0": "81351.9",
+          "sodUtc8": "81778.9"
+        },
+        "depth": {
+          "asks": [
+            [
+              "81889",
+              "0.24627329",
+              "0",
+              "1"
+            ],
+            [
+              "81892.4",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81895.1",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81897",
+              "0.00001501",
+              "0",
+              "1"
+            ],
+            [
+              "81898.4",
+              "0.0000102",
+              "0",
+              "1"
+            ],
+            [
+              "81898.5",
+              "0.00305506",
+              "0",
+              "1"
+            ],
+            [
+              "81898.8",
+              "0.01327007",
+              "0",
+              "1"
+            ],
+            [
+              "81900.5",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81901.6",
+              "0.00365264",
+              "0",
+              "1"
+            ],
+            [
+              "81901.8",
+              "0.00013211",
+              "0",
+              "2"
+            ],
+            [
+              "81901.9",
+              "0.15189223",
+              "0",
+              "1"
+            ],
+            [
+              "81902.2",
+              "0.00001002",
+              "0",
+              "1"
+            ],
+            [
+              "81902.4",
+              "0.00014738",
+              "0",
+              "1"
+            ],
+            [
+              "81902.6",
+              "0.00448764",
+              "0",
+              "4"
+            ],
+            [
+              "81903",
+              "0.00006495",
+              "0",
+              "1"
+            ],
+            [
+              "81903.2",
+              "0.23890934",
+              "0",
+              "2"
+            ],
+            [
+              "81903.3",
+              "0.26639994",
+              "0",
+              "2"
+            ],
+            [
+              "81903.4",
+              "0.01319438",
+              "0",
+              "4"
+            ],
+            [
+              "81903.7",
+              "0.00611122",
+              "0",
+              "1"
+            ],
+            [
+              "81904",
+              "0.05012565",
+              "0",
+              "2"
+            ],
+            [
+              "81904.1",
+              "0.0673993",
+              "0",
+              "1"
+            ],
+            [
+              "81904.2",
+              "0.00007709",
+              "0",
+              "1"
+            ],
+            [
+              "81904.3",
+              "0.00001093",
+              "0",
+              "1"
+            ],
+            [
+              "81904.8",
+              "0.00131661",
+              "0",
+              "1"
+            ],
+            [
+              "81904.9",
+              "0.00001021",
+              "0",
+              "1"
+            ],
+            [
+              "81905.1",
+              "0.00001638",
+              "0",
+              "1"
+            ],
+            [
+              "81905.2",
+              "0.00001501",
+              "0",
+              "1"
+            ],
+            [
+              "81905.4",
+              "0.0673993",
+              "0",
+              "1"
+            ],
+            [
+              "81905.6",
+              "0.17627715",
+              "0",
+              "4"
+            ],
+            [
+              "81905.7",
+              "0.00008265",
+              "0",
+              "1"
+            ],
+            [
+              "81905.8",
+              "0.54458538",
+              "0",
+              "1"
+            ],
+            [
+              "81905.9",
+              "0.63240235",
+              "0",
+              "2"
+            ],
+            [
+              "81906",
+              "0.00001466",
+              "0",
+              "1"
+            ],
+            [
+              "81906.3",
+              "0.99054741",
+              "0",
+              "2"
+            ],
+            [
+              "81906.4",
+              "0.00001099",
+              "0",
+              "1"
+            ],
+            [
+              "81907",
+              "0.00066425",
+              "0",
+              "4"
+            ],
+            [
+              "81907.1",
+              "0.00004707",
+              "0",
+              "1"
+            ],
+            [
+              "81907.2",
+              "0.00026",
+              "0",
+              "2"
+            ],
+            [
+              "81907.4",
+              "0.02441",
+              "0",
+              "1"
+            ],
+            [
+              "81908.2",
+              "0.1756684",
+              "0",
+              "1"
+            ],
+            [
+              "81908.4",
+              "0.00001232",
+              "0",
+              "1"
+            ],
+            [
+              "81908.6",
+              "0.00001227",
+              "0",
+              "1"
+            ],
+            [
+              "81908.8",
+              "0.00014227",
+              "0",
+              "2"
+            ],
+            [
+              "81909",
+              "0.0002475",
+              "0",
+              "4"
+            ],
+            [
+              "81909.1",
+              "0.00001199",
+              "0",
+              "1"
+            ],
+            [
+              "81909.2",
+              "0.00039443",
+              "0",
+              "5"
+            ],
+            [
+              "81909.6",
+              "0.17524112",
+              "0",
+              "1"
+            ],
+            [
+              "81909.9",
+              "0.1867",
+              "0",
+              "1"
+            ],
+            [
+              "81910",
+              "0.0524417",
+              "0",
+              "2"
+            ],
+            [
+              "81910.2",
+              "0.00034592",
+              "0",
+              "1"
+            ]
+          ],
+          "bids": [
+            [
+              "81888.9",
+              "2.8692409",
+              "0",
+              "23"
+            ],
+            [
+              "81888.5",
+              "0.12731739",
+              "0",
+              "2"
+            ],
+            [
+              "81888.2",
+              "0.0748287",
+              "0",
+              "2"
+            ],
+            [
+              "81888",
+              "0.06",
+              "0",
+              "1"
+            ],
+            [
+              "81887.4",
+              "0.0000102",
+              "0",
+              "1"
+            ],
+            [
+              "81887.3",
+              "0.01558884",
+              "0",
+              "1"
+            ],
+            [
+              "81886.6",
+              "0.00305515",
+              "0",
+              "1"
+            ],
+            [
+              "81886.5",
+              "0.0000102",
+              "0",
+              "1"
+            ],
+            [
+              "81885.6",
+              "0.15068",
+              "0",
+              "2"
+            ],
+            [
+              "81885.2",
+              "0.50454397",
+              "0",
+              "1"
+            ],
+            [
+              "81885.1",
+              "0.78675824",
+              "0",
+              "2"
+            ],
+            [
+              "81884.9",
+              "0.2280636",
+              "0",
+              "3"
+            ],
+            [
+              "81884.8",
+              "0.0673993",
+              "0",
+              "1"
+            ],
+            [
+              "81884",
+              "0.00712486",
+              "0",
+              "1"
+            ],
+            [
+              "81883.3",
+              "0.08426959",
+              "0",
+              "1"
+            ],
+            [
+              "81882.8",
+              "0.18461618",
+              "0",
+              "1"
+            ],
+            [
+              "81882.7",
+              "0.1321457",
+              "0",
+              "1"
+            ],
+            [
+              "81882.2",
+              "0.15168527",
+              "0",
+              "1"
+            ],
+            [
+              "81882",
+              "0.01558884",
+              "0",
+              "1"
+            ],
+            [
+              "81881.9",
+              "0.1",
+              "0",
+              "1"
+            ],
+            [
+              "81881.7",
+              "0.01221274",
+              "0",
+              "1"
+            ],
+            [
+              "81881.6",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81880.5",
+              "0.59467286",
+              "0",
+              "1"
+            ],
+            [
+              "81880.2",
+              "0.0000102",
+              "0",
+              "1"
+            ],
+            [
+              "81880.1",
+              "0.00423069",
+              "0",
+              "1"
+            ],
+            [
+              "81880",
+              "0.00001501",
+              "0",
+              "1"
+            ],
+            [
+              "81879.5",
+              "0.44618537",
+              "0",
+              "2"
+            ],
+            [
+              "81878.9",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81878",
+              "0.5",
+              "0",
+              "1"
+            ],
+            [
+              "81877.6",
+              "0.17524112",
+              "0",
+              "1"
+            ],
+            [
+              "81877.5",
+              "1.31269462",
+              "0",
+              "2"
+            ],
+            [
+              "81876.9",
+              "0.19525159",
+              "0",
+              "1"
+            ],
+            [
+              "81876.8",
+              "0.00013",
+              "0",
+              "1"
+            ],
+            [
+              "81876.6",
+              "0.09556",
+              "0",
+              "1"
+            ],
+            [
+              "81876.2",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81876.1",
+              "0.00010581",
+              "0",
+              "1"
+            ],
+            [
+              "81875.4",
+              "0.34078422",
+              "0",
+              "1"
+            ],
+            [
+              "81875.3",
+              "0.12648777",
+              "0",
+              "1"
+            ],
+            [
+              "81875.2",
+              "0.00026",
+              "0",
+              "2"
+            ],
+            [
+              "81874.9",
+              "0.01221375",
+              "0",
+              "1"
+            ],
+            [
+              "81874.1",
+              "0.0000102",
+              "0",
+              "1"
+            ],
+            [
+              "81873.8",
+              "0.01594808",
+              "0",
+              "1"
+            ],
+            [
+              "81873.6",
+              "0.00013",
+              "0",
+              "1"
+            ],
+            [
+              "81873.5",
+              "0.00001226",
+              "0",
+              "1"
+            ],
+            [
+              "81873.4",
+              "0.02023106",
+              "0",
+              "2"
+            ],
+            [
+              "81872.9",
+              "0.37792868",
+              "0",
+              "4"
+            ],
+            [
+              "81872.8",
+              "0.20228884",
+              "0",
+              "2"
+            ],
+            [
+              "81872.5",
+              "0.13143084",
+              "0",
+              "1"
+            ],
+            [
+              "81872",
+              "0.00026",
+              "0",
+              "2"
+            ],
+            [
+              "81871.8",
+              "0.00001501",
+              "0",
+              "1"
+            ]
+          ],
+          "ts": "1793290123905",
+          "seqId": 83038553502
+        }
+      }
+    },
+    "whales": {
+      "schema_version": "2.0",
+      "per_exchange_imbalance": {
+        "kraken": 0.043524,
+        "okx": 0.69579
+      },
+      "aggregate_imbalance": 0.610712,
+      "whale_pressure_index": 81,
+      "signal": "bullish",
+      "exchange_count": 2,
+      "coverage": "medium",
+      "top_levels_used": 20
+    },
+    "spoofing": {
+      "schema_version": "2.0",
+      "per_exchange": {
+        "kraken": [],
+        "okx": []
+      },
+      "signal_count": 0,
+      "largest_notional": 0.0,
+      "spoofing_score": 0,
+      "risk": "low"
+    },
+    "liquidity": {
+      "status": "ok",
+      "exchange_count": 2,
+      "notional_totals": {
+        "kraken": 2723323.9666000004,
+        "okx": 1164610.4114004937
+      },
+      "liquidity_shares": {
+        "kraken": 0.700455,
+        "okx": 0.299545
+      }
+    },
+    "arbitrage": {
+      "prices": {
+        "kraken": 81803.3,
+        "okx": 81888.9
+      },
+      "base_exchange": "kraken",
+      "max_exchange": "okx",
+      "deltas_vs_base": {
+        "kraken": 0.0,
+        "okx": 0.001046412553038707
+      }
+    },
+    "depth_heatmaps": {
+      "kraken": [
+        {
+          "side": "ask",
+          "bucket_price": 81700.0,
+          "notional": 163.59539999999998
+        },
+        {
+          "side": "bid",
+          "bucket_price": 81700.0,
+          "notional": 1420927.0167
+        },
+        {
+          "side": "ask",
+          "bucket_price": 81800.0,
+          "notional": 1302233.3545
+        }
+      ],
+      "okx": [
+        {
+          "side": "ask",
+          "bucket_price": 81800.0,
+          "notional": 21508.153757535998
+        },
+        {
+          "side": "bid",
+          "bucket_price": 81800.0,
+          "notional": 829246.6079364219
+        },
+        {
+          "side": "ask",
+          "bucket_price": 81900.0,
+          "notional": 313855.6497065359
+        }
+      ]
+    },
+    "dev_activity": {
+      "protocols_tracked": 45,
+      "protocols_active": 19,
+      "protocols_dormant": 26,
+      "commits_total": 590,
+      "commits_avg": 13.11,
+      "active_developers": 166,
+      "releases_total": 39,
+      "top_active": [
+        {
+          "protocol": "foundry",
+          "repo": "foundry-rs/foundry",
+          "category": "tooling",
+          "commits": 100,
+          "releases": 7,
+          "stars": 10740
+        },
+        {
+          "protocol": "metamask",
+          "repo": "MetaMask/metamask-extension",
+          "category": "wallets",
+          "commits": 100,
+          "releases": 1,
+          "stars": 13247
+        },
+        {
+          "protocol": "optimism",
+          "repo": "ethereum-optimism/optimism",
+          "category": "l2_rollups",
+          "commits": 87,
+          "releases": 10,
+          "stars": 6484
+        },
+        {
+          "protocol": "bitcoin",
+          "repo": "bitcoin/bitcoin",
+          "category": "l1_chains",
+          "commits": 57,
+          "releases": 4,
+          "stars": 90533
+        },
+        {
+          "protocol": "reth",
+          "repo": "paradigmxyz/reth",
+          "category": "tooling",
+          "commits": 54,
+          "releases": 2,
+          "stars": 5848
+        }
+      ],
+      "dormant": [
+        "aave",
+        "curve",
+        "compound",
+        "maker",
+        "lido",
+        "rocketpool",
+        "balancer",
+        "yearn",
+        "convex",
+        "gmx",
+        "pendle",
+        "ethena",
+        "solana",
+        "arbitrum",
+        "zksync",
+        "thegraph",
+        "ipfs",
+        "axelar",
+        "opensea_seaport",
+        "opensea_seaport_sol",
+        "opensea_operator",
+        "zora_protocol",
+        "zora_1155",
+        "immutable_contracts",
+        "immutable_zkevm",
+        "erc721a"
+      ],
+      "by_category": {
+        "defi": {
+          "tracked": 15,
+          "active": 3,
+          "commits": 12,
+          "avg": 0.8,
+          "signal": "low"
+        },
+        "l1_chains": {
+          "tracked": 6,
+          "active": 5,
+          "commits": 135,
+          "avg": 22.5,
+          "signal": "high"
+        },
+        "l2_rollups": {
+          "tracked": 4,
+          "active": 2,
+          "commits": 88,
+          "avg": 22.0,
+          "signal": "high"
+        },
+        "infrastructure": {
+          "tracked": 3,
+          "active": 1,
+          "commits": 38,
+          "avg": 12.67,
+          "signal": "high"
+        },
+        "tooling": {
+          "tracked": 3,
+          "active": 3,
+          "commits": 186,
+          "avg": 62.0,
+          "signal": "very_high"
+        },
+        "wallets": {
+          "tracked": 2,
+          "active": 2,
+          "commits": 116,
+          "avg": 58.0,
+          "signal": "very_high"
+        },
+        "bridges": {
+          "tracked": 2,
+          "active": 1,
+          "commits": 4,
+          "avg": 2.0,
+          "signal": "low"
+        },
+        "nft_infra": {
+          "tracked": 10,
+          "active": 2,
+          "commits": 11,
+          "avg": 1.1,
+          "signal": "low"
+        }
+      },
+      "hot_layer": "tooling",
+      "signal": "high",
+      "window_days": 7
+    },
+    "nft_activity": {
+      "collections_tracked": 5,
+      "collections_active": 5,
+      "volume_24h_total_sol": 0.0,
+      "avg_floor_sol": 2.4539,
+      "chain_split": {
+        "solana": 5
+      },
+      "top_by_volume": [
+        {
+          "collection": "mad_lads",
+          "chain": "solana",
+          "floor_sol": 7.3552,
+          "volume_24h_sol": 0.0,
+          "listed": 202,
+          "avg_sale_sol": 10.7601
+        },
+        {
+          "collection": "degods",
+          "chain": "solana",
+          "floor_sol": 3.195,
+          "volume_24h_sol": 0.0,
+          "listed": 494,
+          "avg_sale_sol": 3.1149
+        },
+        {
+          "collection": "tensorians",
+          "chain": "solana",
+          "floor_sol": 0.5,
+          "volume_24h_sol": 0.0,
+          "listed": 172,
+          "avg_sale_sol": 0.0
+        },
+        {
+          "collection": "okay_bears",
+          "chain": "solana",
+          "floor_sol": 1.2191,
+          "volume_24h_sol": 0.0,
+          "listed": 628,
+          "avg_sale_sol": 1.3264
+        },
+        {
+          "collection": "smb_gen2",
+          "chain": "solana",
+          "floor_sol": 0.0,
+          "volume_24h_sol": 0.0,
+          "listed": 0,
+          "avg_sale_sol": 0.0
+        }
+      ],
+      "per_collection": [
+        {
+          "collection": "mad_lads",
+          "chain": "solana",
+          "floor_sol": 7.3552,
+          "volume_24h_sol": 0.0,
+          "listed": 202,
+          "avg_sale_sol": 10.7601
+        },
+        {
+          "collection": "degods",
+          "chain": "solana",
+          "floor_sol": 3.195,
+          "volume_24h_sol": 0.0,
+          "listed": 494,
+          "avg_sale_sol": 3.1149
+        },
+        {
+          "collection": "tensorians",
+          "chain": "solana",
+          "floor_sol": 0.5,
+          "volume_24h_sol": 0.0,
+          "listed": 172,
+          "avg_sale_sol": 0.0
+        },
+        {
+          "collection": "okay_bears",
+          "chain": "solana",
+          "floor_sol": 1.2191,
+          "volume_24h_sol": 0.0,
+          "listed": 628,
+          "avg_sale_sol": 1.3264
+        },
+        {
+          "collection": "smb_gen2",
+          "chain": "solana",
+          "floor_sol": 0.0,
+          "volume_24h_sol": 0.0,
+          "listed": 0,
+          "avg_sale_sol": 0.0
+        }
+      ],
+      "signal": "quiet"
+    }
+  },
+  "metrics": {
+    "whales": {
+      "metric": "whales",
+      "count": 0,
+      "mean": null,
+      "min": null,
+      "max": null
+    },
+    "spoofing": {
+      "metric": "spoofing",
+      "count": 0,
+      "mean": null,
+      "min": null,
+      "max": null
+    },
+    "liquidity": {
+      "metric": "liquidity",
+      "count": 0,
+      "mean": null,
+      "min": null,
+      "max": null
+    },
+    "sentiment": {
+      "metric": "sentiment",
+      "count": 0,
+      "mean": null,
+      "min": null,
+      "max": null
+    },
+    "volatility": {
+      "metric": "volatility",
+      "count": 0,
+      "mean": null,
+      "min": null,
+      "max": null
+    }
+  },
+  "score": null,
+  "alerts": [],
+  "onchain": {
+    "chain_health": {
+      "latest_block": 26299485,
+      "gas_price": 346266738,
+      "timestamp": 1793289983,
+      "tx_count": 425,
+      "health_score": 100
+    },
+    "polkadot": {
+      "latest_block": 33645341,
+      "finalized": true,
+      "peers": 32,
+      "is_syncing": false,
+      "block_time_sec": 6.0,
+      "health_score": 100
+    },
+    "stablecoin_flows": {
+      "USDT": {
+        "transfers": 2000,
+        "volume": 58299068.37,
+        "sampled": true,
+        "sample_window": "last 20 min, 2000 transfers"
+      },
+      "USDC": {
+        "transfers": 2000,
+        "volume": 49826467.78,
+        "sampled": true,
+        "sample_window": "last 20 min, 2000 transfers"
+      },
+      "DAI": {
+        "transfers": 378,
+        "volume": 564129849.29,
+        "sampled": false,
+        "sample_window": "last 20 min, 378 transfers"
+      }
+    },
+    "whale_activity": {
+      "count": 50,
+      "transfers": [
+        {
+          "hash": "0xccc94eec8002af09a0b0a2bbbc2a9459e13f0b9730942073b1fe4133b68dd93d",
+          "from": "0x491edfb0b8b608044e227225c715981a30f3a44e",
+          "to": "0x37305b1cd40574e4c5ce33f8e8306be057fd7341",
+          "token": "USDC",
+          "value": 135306716.85,
+          "timestamp": 1793289467,
+          "block": 26299442,
+          "legs": 2,
+          "type": "round_trip",
+          "net_flow": 0
+        },
+        {
+          "hash": "0xccc94eec8002af09a0b0a2bbbc2a9459e13f0b9730942073b1fe4133b68dd93d",
+          "from": "0x3225737a9bbb6473cb4a45b7244aca2befdb276a",
+          "to": "0x0000000000000000000000000000000000000000",
+          "token": "DAI",
+          "value": 135306716.85,
+          "timestamp": 1793289467,
+          "block": 26299442,
+          "legs": 3,
+          "type": "round_trip",
+          "net_flow": 0
+        },
+        {
+          "hash": "0xbe296ef0977b6e30a56b6cfff460a2058422c648685cfdd3b5ab5bb80793bf41",
+          "from": "0x0000000000000000000000000000000000000000",
+          "to": "0xf6e72db5454dd049d0788e411b06cfaf16853042",
+          "token": "DAI",
+          "value": 134356086.35,
+          "timestamp": 1793289491,
+          "block": 26299444,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x69653da76dabf293b66a86d5f5e6b88272e4d28ec2add75a4ce68849a73a9d85",
+          "from": "0x28c5b0445d0728bc25f143f8eba5c5539fae151a",
+          "to": "0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43",
+          "token": "USDC",
+          "value": 50000000.06,
+          "timestamp": 1793289011,
+          "block": 26299404,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xc2b14d8917d896dde8770b2220b36825354f07509f76cbabdeb71839a124756d",
+          "from": "0x55fe002aeff02f77364de339a1292923a15844b8",
+          "to": "0x28c5b0445d0728bc25f143f8eba5c5539fae151a",
+          "token": "USDC",
+          "value": 50000000.06,
+          "timestamp": 1793288759,
+          "block": 26299383,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x3cf9a1199325409351046949c30eba1f4c9de802c1d43f79060fb7ea00d47467",
+          "from": "0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43",
+          "to": "0xa21c1c71bdb218b3288df1f0494ce4c62b9f3ff6",
+          "token": "USDC",
+          "value": 26676196.33,
+          "timestamp": 1793289167,
+          "block": 26299417,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x3cf9a1199325409351046949c30eba1f4c9de802c1d43f79060fb7ea00d47467",
+          "from": "0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43",
+          "to": "0xb9277540d8cf63db984aabba91d2669fa67af823",
+          "token": "USDC",
+          "value": 20524624.31,
+          "timestamp": 1793289167,
+          "block": 26299417,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xe08ad5fc5d3dee5083ed659994d536bc0e81a4b312b6adff56bec7a68628aa4c",
+          "from": "0x3700749a3377ec1e73be540be012e013de5b5aca",
+          "to": "0x7fa9a18f72955a15f1e2d94ddf0a6d0485b1debb",
+          "token": "USDT",
+          "value": 12000000.0,
+          "timestamp": 1793289851,
+          "block": 26299474,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x6e9ebd82507870d95b3742933aa5387b0623bf3425a3cc82d9c16c41e7f96b13",
+          "from": "0x2d4d2a025b10c09bdbd794b4fce4f7ea8c7d7bb4",
+          "to": "0x3700749a3377ec1e73be540be012e013de5b5aca",
+          "token": "USDT",
+          "value": 12000000.0,
+          "timestamp": 1793289623,
+          "block": 26299455,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x7e9333974bf9d329d2bc9fde5e5ca5d2737b03a4a9bf3c04a161f975adc8f9cc",
+          "from": "0x2034608c149b00c37ef0f804551aa554df9f256e",
+          "to": "0xccc37a9e136c151311176d1e48dd9cafda3e681e",
+          "token": "USDC",
+          "value": 10000000.02,
+          "timestamp": 1793289143,
+          "block": 26299415,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x34d9944a1779ff44c238ff94cb7d784a919e8a17f029ab5ad5ba9c6c1f1dd7a9",
+          "from": "0x409f7e602044b368d3f1063cf8683b7f01e886ef",
+          "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+          "token": "USDC",
+          "value": 10000000.0,
+          "timestamp": 1793289875,
+          "block": 26299476,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x982985cc8af9cc44d0ced995dc5fe8a30137b2ef42f981b161686b59bb407d88",
+          "from": "0x2744dfd9898f0babbc570cc594bbbc84b487a22b",
+          "to": "0x409f7e602044b368d3f1063cf8683b7f01e886ef",
+          "token": "USDC",
+          "value": 10000000.0,
+          "timestamp": 1793289707,
+          "block": 26299462,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xf6df1c6b111bdb76881bfa64b24c5b9c871a4e26309ec56a052c607c1613c6d6",
+          "from": "0x16f6d15381bee4a25b25f0d1c4161b78f7f21fde",
+          "to": "0x2f341081134d62f24d4f3a7ca36632d44a208c88",
+          "token": "USDT",
+          "value": 7500000.0,
+          "timestamp": 1793289263,
+          "block": 26299425,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x479d9bb8dc13f26e8f8c6b48ed1a140691a6f09afad67dcb703bf204cce73f49",
+          "from": "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+          "to": "0x16f6d15381bee4a25b25f0d1c4161b78f7f21fde",
+          "token": "USDC",
+          "value": 7499999.4,
+          "timestamp": 1793289371,
+          "block": 26299434,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xb74136c52cf7ba560cba739c3880d15356ebb1552630842cff19462b3f5412eb",
+          "from": "0xdee623e2dd8127ae2f6e5e5cb0ac20d05270926b",
+          "to": "0x1a59b45b92ce73dc514979dff2aafaa5f09e0a90",
+          "token": "USDC",
+          "value": 7000000.0,
+          "timestamp": 1793289515,
+          "block": 26299446,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x310c0dc619d29697b6d8c59190601a0b172f65e50b61b4fdbe291880a8e58f03",
+          "from": "0x3005a4c0efe7e66f3f60ef8704983247a5c6ca61",
+          "to": "0xdee623e2dd8127ae2f6e5e5cb0ac20d05270926b",
+          "token": "USDC",
+          "value": 7000000.0,
+          "timestamp": 1793289047,
+          "block": 26299407,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x0774987e9b2183d2d3f7b9c7f7b4dfc5121a840fb262694a8260afb3df9c8815",
+          "from": "0x5abcd072ecf4e27d5bca053a346bdd541df30f11",
+          "to": "0x559432e18b281731c054cd703d4b49872be4ed53",
+          "token": "USDT",
+          "value": 6000000.0,
+          "timestamp": 1793289275,
+          "block": 26299426,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xa799a759d7b70841175f340c00132bbf48500405ab709845fa6b6c1f2383a769",
+          "from": "0x25e5674a2d1d9756960e9fdcd4e37f87eccac03a",
+          "to": "0x5abcd072ecf4e27d5bca053a346bdd541df30f11",
+          "token": "USDT",
+          "value": 6000000.0,
+          "timestamp": 1793289251,
+          "block": 26299424,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x6c745d9f11b0d9d9a302a0481515d1d3c8f56a96df93d04f5010678358113d01",
+          "from": "0xa268dc6bd923b9f5448be8c116397a34b52adaa1",
+          "to": "0x25e5674a2d1d9756960e9fdcd4e37f87eccac03a",
+          "token": "USDT",
+          "value": 5000003.0,
+          "timestamp": 1793289047,
+          "block": 26299407,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x01dea6ab64dc882386b52e23d13d99fae7c995d79e22686555cac22f69f5fa9a",
+          "from": "0xed7878bdad7b0d524e49d9455d7e7bdb5fee05ea",
+          "to": "0xccc37a9e136c151311176d1e48dd9cafda3e681e",
+          "token": "USDT",
+          "value": 5000000.02,
+          "timestamp": 1793289863,
+          "block": 26299475,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x16c5beb140a0613b2f9e403c3006601d38eb91f8382f84760ea0979619616409",
+          "from": "0x943cd0f50715a10b482585b8168cd50f9bd95081",
+          "to": "0xccc37a9e136c151311176d1e48dd9cafda3e681e",
+          "token": "USDT",
+          "value": 5000000.02,
+          "timestamp": 1793289551,
+          "block": 26299449,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x3b759723646da872f863fe39e0250e8d56daf56977593e300872ee258dd376f6",
+          "from": "0x590ae55874285373e88ac8d5973cf481de5dfb88",
+          "to": "0xccc37a9e136c151311176d1e48dd9cafda3e681e",
+          "token": "USDT",
+          "value": 5000000.01,
+          "timestamp": 1793289959,
+          "block": 26299483,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x5d121a6bf3302ad740b2669f65867e664b8b339e2db40cfdad8c69e3363421df",
+          "from": "0xeb1079b07af03d5324beec80fe6d4d016fcdfe38",
+          "to": "0xccc37a9e136c151311176d1e48dd9cafda3e681e",
+          "token": "USDT",
+          "value": 5000000.01,
+          "timestamp": 1793289323,
+          "block": 26299430,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xa2a0007432c38bdddfb93fbe0639ce9a93d1c38dbe1267706c97c5598ed21b2b",
+          "from": "0x559432e18b281731c054cd703d4b49872be4ed53",
+          "to": "0x14681e4e26f1b5b5774ae3b7f694ff08bbbeb65c",
+          "token": "USDT",
+          "value": 5000000.0,
+          "timestamp": 1793289887,
+          "block": 26299477,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x5d61a0ae83c986ab42002faf5a0af1de5dd65bd64108d3c95b7aaa3e5d5938d4",
+          "from": "0x091d1c972cb1648537a2ba78eaba371b1ce18336",
+          "to": "0x09671d2a9a43bf70cd282318f75c9c9f122a0440",
+          "token": "USDT",
+          "value": 5000000.0,
+          "timestamp": 1793289323,
+          "block": 26299430,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x05a31a9f48b4859a2331ec84ff8680c1b3d74165fa0192f03ecf117154cd155e",
+          "from": "0x040d6d590f4deb5013cdfdd7cd0df46ec9fe0f3f",
+          "to": "0x091d1c972cb1648537a2ba78eaba371b1ce18336",
+          "token": "USDT",
+          "value": 5000000.0,
+          "timestamp": 1793289035,
+          "block": 26299406,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x84c54cc3fab21e8434cdbc606ed39991cfe4c020a833b8075e1090434f86f6d7",
+          "from": "0x2034608c149b00c37ef0f804551aa554df9f256e",
+          "to": "0xccc37a9e136c151311176d1e48dd9cafda3e681e",
+          "token": "USDT",
+          "value": 5000000.0,
+          "timestamp": 1793288975,
+          "block": 26299401,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x8f1e6e492c135cf482b2a3a07259ae5f5263f6664a9dec6906dfe8136effdf93",
+          "from": "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+          "to": "0x56536ead76a027cd14069fb0033fa12ee8f94872",
+          "token": "USDC",
+          "value": 4999991.0,
+          "timestamp": 1793289347,
+          "block": 26299432,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x1442ffcceac8bdfc41e01391f8e1d35f5d567d4a16a3b507e53381f12099ecdb",
+          "from": "0xe1a000f216b53caa8392116482943ea8ea4b9de6",
+          "to": "0x05ff6964d21e5dae3b1010d5ae0465b3c450f381",
+          "token": "USDC",
+          "value": 4849229.05,
+          "timestamp": 1793289071,
+          "block": 26299409,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xc4ed7dd33359408684e2c4d4f6b82b7931f4e885a3a8d82336157a2fd80e80fc",
+          "from": "0x1d34c22a4ebe3ecf1e7feb3883554bc2fbbb971b",
+          "to": "0xe1a000f216b53caa8392116482943ea8ea4b9de6",
+          "token": "USDC",
+          "value": 4849229.05,
+          "timestamp": 1793288867,
+          "block": 26299392,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x068d3e42bc0ae0c088bab35e68f9bbe87fa39f4edd062156a078beccc603c1d2",
+          "from": "0x9696f59e4d72e237be84ffd425dcad154bf96976",
+          "to": "0x9d3084d0fdabce20f1bd3271d86b0e4f630c64c7",
+          "token": "USDT",
+          "value": 4264999.4,
+          "timestamp": 1793289863,
+          "block": 26299475,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x2c916ff2a35c18bf0c243418777ba10fec6653f63d0d0541d4c16d3003e08c94",
+          "from": "0x559432e18b281731c054cd703d4b49872be4ed53",
+          "to": "0x3b98b9e9cb75c1cb1729aab8f09ced2936505e4f",
+          "token": "USDT",
+          "value": 4038899.28,
+          "timestamp": 1793289299,
+          "block": 26299428,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x4b66b1dad1cff42340f453019de63adc2446907fbea8297beea81decb99d03b0",
+          "from": "0x559432e18b281731c054cd703d4b49872be4ed53",
+          "to": "0x14681e4e26f1b5b5774ae3b7f694ff08bbbeb65c",
+          "token": "USDT",
+          "value": 4000000.0,
+          "timestamp": 1793289887,
+          "block": 26299477,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xfdec439fd83e1f13f67587cf4d498f10d161d9a847b6f529327c9554838a90c0",
+          "from": "0x52cebb43f86ed3c732f8ca4cfb75d9d369d625ee",
+          "to": "0xcd531ae9efcce479654c4926dec5f6209531ca7b",
+          "token": "USDC",
+          "value": 3447431.12,
+          "timestamp": 1793289491,
+          "block": 26299444,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x33ee503b763985d326f88b9b53391e6f7549e9490a3ee63fb8604f4c9329b68a",
+          "from": "0x688cc76d3b009d805ab6b4d0a1cbd228131b5cbf",
+          "to": "0x31173ed183e5a9450c3671018ec4d770c8a8bf18",
+          "token": "USDC",
+          "value": 3129460.0,
+          "timestamp": 1793289203,
+          "block": 26299420,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xdb3ba80684674315aabc63e2693bff731fc63cfbc52d57909a9d784b06eff634",
+          "from": "0x37305b1cd40574e4c5ce33f8e8306be057fd7341",
+          "to": "0x688cc76d3b009d805ab6b4d0a1cbd228131b5cbf",
+          "token": "USDC",
+          "value": 3129460.0,
+          "timestamp": 1793289023,
+          "block": 26299405,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xdb3ba80684674315aabc63e2693bff731fc63cfbc52d57909a9d784b06eff634",
+          "from": "0xa188eec8f81263234da3622a406892f3d630f98c",
+          "to": "0xf6e72db5454dd049d0788e411b06cfaf16853042",
+          "token": "DAI",
+          "value": 3129460.0,
+          "timestamp": 1793289023,
+          "block": 26299405,
+          "legs": 2,
+          "type": "round_trip",
+          "net_flow": 0
+        },
+        {
+          "hash": "0x3e9180132c2b1558e22fb1413d1d75614fef36cbd2e1c729e92c665cffe62769",
+          "from": "0x559432e18b281731c054cd703d4b49872be4ed53",
+          "to": "0x55823001c8cd87a6e86716ca768bce51f2d89c9c",
+          "token": "USDT",
+          "value": 3089461.68,
+          "timestamp": 1793289299,
+          "block": 26299428,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xae1886cbdc39163eed98a876f71b0f0caa0a65d100b8a5541778808ef21e4a65",
+          "from": "0x100ae042ef0ea159ecc3513e9a378ff21f3829ba",
+          "to": "0x367c42a6f261ec54ffbecf5f41c226be12a3dca0",
+          "token": "USDT",
+          "value": 3011547.64,
+          "timestamp": 1793289935,
+          "block": 26299481,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x1aafe92bc9e9bdea3e1574f6d375321a17a14d7128a3bf2317a7f3874e72c06d",
+          "from": "0x61f1138f2d09924e6e12bfa6427b910ea13573b0",
+          "to": "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+          "token": "USDC",
+          "value": 3000000.0,
+          "timestamp": 1793289635,
+          "block": 26299456,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xe632bbafa379bedd4409e06186745a75b2f14c8af98c4510d65fefa888645b94",
+          "from": "0x549d835356d92983abb76e4cae639f7857963425",
+          "to": "0x61f1138f2d09924e6e12bfa6427b910ea13573b0",
+          "token": "USDC",
+          "value": 3000000.0,
+          "timestamp": 1793289407,
+          "block": 26299437,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x95438ea8f0d7a681b42d091060fcd09bf862287c624c8ef58b3e0a450f536a53",
+          "from": "0xcd531ae9efcce479654c4926dec5f6209531ca7b",
+          "to": "0x549d835356d92983abb76e4cae639f7857963425",
+          "token": "USDC",
+          "value": 3000000.0,
+          "timestamp": 1793288999,
+          "block": 26299403,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xc1d5cd664d7b216be2f653ca2503b3268285d8389e8f0df3a21d737dcbb6c183",
+          "from": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+          "to": "0x93d526aa8d672e171aa3eac2a7e303e9e132e72a",
+          "token": "USDC",
+          "value": 2948854.25,
+          "timestamp": 1793289635,
+          "block": 26299456,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x9a2da1b42f59be44d12cbe11ef9735f1068cd3a703ac42cc5b9d40c8c1b75810",
+          "from": "0x0000000000000000000000000000000000000000",
+          "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+          "token": "USDC",
+          "value": 2802550.0,
+          "timestamp": 1793288891,
+          "block": 26299394,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x0f39de334c6da2616c20c9c64080b367861864248ae37ad5f38f792d652c4a7d",
+          "from": "0x55823001c8cd87a6e86716ca768bce51f2d89c9c",
+          "to": "0x559432e18b281731c054cd703d4b49872be4ed53",
+          "token": "USDT",
+          "value": 2741885.74,
+          "timestamp": 1793289527,
+          "block": 26299447,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xb49686d152e831e68404af2a8a20c00bb5b29feffb6d4c12a4b26b3dff2a7889",
+          "from": "0x4f1b2661083dd960e3f110fbb4797b1c3f90debe",
+          "to": "0x76ac9bbc13b58bfbc6f77bba2eb38d6ab6e79a28",
+          "token": "USDT",
+          "value": 2450010.0,
+          "timestamp": 1793289599,
+          "block": 26299453,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x843aa96e59804a3ee2ce033d2c743a187be384409a7df84114570fbdda44eb3b",
+          "from": "0x9c182aeee0a4c23c876326e0a389212bb89bff59",
+          "to": "0x39173a42e49b80502afe32ad9d189d66566ed936",
+          "token": "USDT",
+          "value": 2329929.75,
+          "timestamp": 1793289287,
+          "block": 26299427,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xa56914070f76e2aa51a30e17c925bc289e0da0064223cc8aec9f12b700cd18f4",
+          "from": "0xa9d69f2f56df2cb8b66d0f2c6c867407a1296c5f",
+          "to": "0x8e712469e6cb10f6a9008fdcf2ab46c3ccc08232",
+          "token": "USDC",
+          "value": 2318490.05,
+          "timestamp": 1793289047,
+          "block": 26299407,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0xed366446363ff814e294c275d204cdd22f13ed341b39f6eea80e24c7a35f7cb2",
+          "from": "0x445f16314284b43dfa1fd3cd77b9dea4a1bebd97",
+          "to": "0x1dfc6bec8499fcb5e3151c7c6d27feb9d7eae1d4",
+          "token": "USDC",
+          "value": 2302819.25,
+          "timestamp": 1793289299,
+          "block": 26299428,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
+          "hash": "0x5b16aaf05c6eb0da8dd9b5a279e84ef7da1a087271bb9c1dacb4c1d5ecaf391b",
+          "from": "0xfed6944dbbcce77a883fc4cde97156566388ccd5",
+          "to": "0xb4d3796a4f9b4b4181661ae0372bd8c604f34c65",
+          "token": "USDC",
+          "value": 2298274.4,
+          "timestamp": 1793289635,
+          "block": 26299456,
+          "legs": 1,
+          "type": "transfer"
+        }
+      ],
+      "min_usd": 1000000
+    }
+  },
+  "meta": {
+    "latest_block": 26299483,
+    "range": [
+      26299383,
+      26299483
+    ]
+  }
 }
