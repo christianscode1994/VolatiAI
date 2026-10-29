@@ -157,6 +157,47 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 
 const COLLECTORS = {
 
+  "btc-usd-coinbase-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { coinbase: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.data?.amount);
+      return { value: Number.isFinite(n) ? n : null, sources: { coinbase: { ok: Number.isFinite(n) } }, context: { exchange: "Coinbase" } };
+    },
+  },
+  "btc-usd-kraken-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=XBTUSD", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { kraken: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.result?.XXBTZUSD?.c?.[0]);
+      return { value: Number.isFinite(n) ? n : null, sources: { kraken: { ok: Number.isFinite(n) } }, context: { exchange: "Kraken" } };
+    },
+  },
+  "btc-usd-bitstamp-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://www.bitstamp.net/api/v2/ticker/btcusd/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { bitstamp: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.last);
+      return { value: Number.isFinite(n) ? n : null, sources: { bitstamp: { ok: Number.isFinite(n) } }, context: { exchange: "Bitstamp" } };
+    },
+  },
+  "btc-usd-binance-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { binance: { ok: false } } };
+      const j = await r.json();
+      const n = parseFloat(j?.price);
+      return { value: Number.isFinite(n) ? n : null, sources: { binance: { ok: Number.isFinite(n) } }, context: { exchange: "Binance" } };
+    },
+  },
+
   "bart-train-count": {
     config: { metric: "active_train_count", threshold_pct: 20, window: "1d", window_days: 1 },
     async collectAll(env) {

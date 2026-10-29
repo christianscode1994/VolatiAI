@@ -29,6 +29,68 @@ function parseRSSFirstItem(text) {
 
 const COLLECTORS = {
 
+  "espn-nhl-events-count": {
+    config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_nhl: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_nhl: { ok: n !== null } }, context: { league: "NHL" } };
+    },
+  },
+  "espn-laliga-events-count": {
+    config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_laliga: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_laliga: { ok: n !== null } }, context: { league: "La Liga" } };
+    },
+  },
+  "espn-bundesliga-events-count": {
+    config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_bundesliga: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_bundesliga: { ok: n !== null } }, context: { league: "Bundesliga" } };
+    },
+  },
+  "espn-seriea-events-count": {
+    config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_seriea: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_seriea: { ok: n !== null } }, context: { league: "Serie A" } };
+    },
+  },
+  "espn-ucl-events-count": {
+    config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_ucl: { ok: false } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_ucl: { ok: n !== null } }, context: { league: "UEFA Champions League" } };
+    },
+  },
+  "iss-current-latitude": {
+    config: { metric: "latitude", threshold_pct: 5, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const r = await fetch("http://api.open-notify.org/iss-now.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { iss: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const lat = parseFloat(j?.iss_position?.latitude);
+      const lon = parseFloat(j?.iss_position?.longitude);
+      return { value: Number.isFinite(lat) ? lat : null, sources: { iss: { ok: Number.isFinite(lat) } }, context: { latitude: lat, longitude: lon } };
+    },
+  },
+
   "arbeitnow-job-count": {
     config: { metric: "job_count", threshold_pct: 10, window: "7d", window_days: 7 },
     async collectAll(env) {
