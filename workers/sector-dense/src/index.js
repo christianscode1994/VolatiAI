@@ -156,6 +156,62 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
 }
 
 const COLLECTORS = {
+
+  "treasury-national-debt-retry": {
+    config: { metric: "total_debt_usd", threshold_pct: 0.5, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=1";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { treasury: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = parseFloat(j?.data?.[0]?.tot_pub_debt_out_amt);
+      return { value: Number.isFinite(n) ? n : null, sources: { treasury: { ok: Number.isFinite(n) } } };
+    },
+  },
+  "bart-train-count": {
+    config: { metric: "active_train_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://api.bart.gov/api/etd.aspx?cmd=etd&orig=ALL&key=MW9S-E7SL-26DU-VV8V&json=y";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { bart: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.root?.station) ? j.root.station.length : null;
+      return { value: n, sources: { bart: { ok: n !== null } }, context: { region: "San Francisco Bay Area" } };
+    },
+  },
+  "septa-train-count": {
+    config: { metric: "active_train_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://www3.septa.org/api/TrainView/index.php";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { septa: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: n, sources: { septa: { ok: n !== null } }, context: { region: "Philadelphia" } };
+    },
+  },
+  "swiss-transport-stations": {
+    config: { metric: "station_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://transport.opendata.ch/v1/locations?query=Zurich&type=station";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { swisstransport: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.stations) ? j.stations.length : null;
+      return { value: n, sources: { swisstransport: { ok: n !== null } }, context: { region: "Zurich" } };
+    },
+  },
+  "fruityvice-fruit-count": {
+    config: { metric: "fruit_catalog_size", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const url = "https://www.fruityvice.com/api/fruit/all";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { fruityvice: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: n, sources: { fruityvice: { ok: n !== null } }, context: { type: "fruit_catalog" } };
+    },
+  },
   "cdc-disease-record-count": {
     config: { metric: "record_count", threshold_pct: 5, window: "30d", window_days: 30 },
     async collectAll(env) {

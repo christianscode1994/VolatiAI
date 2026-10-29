@@ -28,6 +28,64 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+
+  "arbeitnow-job-count": {
+    config: { metric: "job_count", threshold_pct: 10, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://www.arbeitnow.com/api/job-board-api";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { arbeitnow: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.data) ? j.data.length : null;
+      return { value: n, sources: { arbeitnow: { ok: n !== null } }, context: { type: "job_listing_count" } };
+    },
+  },
+  "greenhouse-stripe-jobs": {
+    config: { metric: "open_job_count", threshold_pct: 15, window: "7d", window_days: 7 },
+    async collectAll(env) {
+      const url = "https://boards-api.greenhouse.io/v1/boards/stripe/jobs";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { greenhouse: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.jobs) ? j.jobs.length : null;
+      return { value: n, sources: { greenhouse: { ok: n !== null } }, context: { company: "Stripe" } };
+    },
+  },
+  "usgs-streamflow-potomac": {
+    config: { metric: "streamflow_cfs", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=01646500&parameterCd=00060&period=P1D";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { usgs_water: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const series = j?.value?.timeSeries?.[0]?.values?.[0]?.value;
+      const last = Array.isArray(series) && series.length > 0 ? series[series.length - 1] : null;
+      const n = last?.value ? parseFloat(last.value) : null;
+      return { value: Number.isFinite(n) ? n : null, sources: { usgs_water: { ok: Number.isFinite(n) } }, context: { site: "01646500", river: "Potomac at Little Falls", unit: "cfs" } };
+    },
+  },
+  "espn-mlb-events-count": {
+    config: { metric: "game_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_mlb: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_mlb: { ok: n !== null } }, context: { sport: "baseball", league: "MLB" } };
+    },
+  },
+  "espn-epl-events-count": {
+    config: { metric: "match_count", threshold_pct: 20, window: "1d", window_days: 1 },
+    async collectAll(env) {
+      const url = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard";
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!r.ok) return { value: null, sources: { espn_epl: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.events) ? j.events.length : null;
+      return { value: n, sources: { espn_epl: { ok: n !== null } }, context: { sport: "soccer", league: "English Premier League" } };
+    },
+  },
   "open-meteo-soil-temp": {
     config: { metric: "soil_temp_c", threshold_pct: 20, window: "1d", window_days: 1 },
     async collectAll(env) {
