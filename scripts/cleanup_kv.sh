@@ -16,7 +16,7 @@ if [ -z "$existing" ]; then
 fi
 
 active=$(python3 -c "import json,sys;print('\n'.join(json.load(open(sys.argv[1]))))" "$ROOT/config/active_sectors.json" | sort)
-orphans=$(comm -23 <(echo "$existing") <(echo "$active"))
+orphans=$(comm -23 <(echo "$existing" | grep -v "^_" ) <(echo "$active"))
 
 if [ -z "$orphans" ]; then
   echo "✓ no orphaned KV keys"

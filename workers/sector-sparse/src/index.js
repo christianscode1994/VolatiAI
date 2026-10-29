@@ -2392,7 +2392,11 @@ const COLLECTORS = {
   "disney-character-count": {
     config: { metric: "character_count", threshold_pct: 10, window: "30d", window_days: 30 },
     async collectAll(env) {
-      // emptied for test
+      const r = await fetch("https://api.disneyapi.dev/character", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { disney_character_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.info?.count;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { disney_character_count: { ok: typeof n === "number" } } };
     },
   },
   "swapi-people-count": {

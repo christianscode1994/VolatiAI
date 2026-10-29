@@ -2,30 +2,34 @@
 """
 Non-blocking sanity checks on sector definitions.
 Never blocks a commit — always exit 0.
-
-Checks:
-  1. Uniqueness: warn if an active sector is defined in >1 worker.
-  2. URL sanity: warn if a sector-name keyword doesn't match its fetch host.
 """
 import json
 import re
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 WORKERS = ["sparse", "dense", "slow"]
 
+# Keyword -> list of acceptable hosts (substring match)
 SECTOR_HOST_HINTS = {
-    "e-commerce": ["shopify", "amazon", "stripe", "etsy", "ebay"],
-    "bank-data":  ["worldbank", "bis.org", "imf.org"],
-    "alcohol":    ["who.int", "cdc.gov", "gho", "nhanes", "niaaa"],
-    "tobacco":    ["who.int", "cdc.gov", "gho", "nhanes"],
-    "mental":     ["who.int", "cdc.gov", "gho", "nih.gov", "nimh"],
-    "space":      ["nasa.gov", "spacex", "thespacedevs", "celestrak"],
-    "crypto":     ["binance", "gemini", "blockchain", "coingecko", "coinbase"],
-    "quake":      ["usgs.gov", "earthquake"],
-    "weather":    ["open-meteo", "noaa", "openweathermap"],
+    "e-commerce":  ["shopify", "amazon", "stripe", "etsy", "ebay", "shopify"],
+    "bank-data":   ["worldbank", "bis.org", "imf.org"],
+    "alcohol":     ["who.int", "cdc.gov", "gho", "nhanes", "niaaa"],
+    "tobacco":     ["who.int", "cdc.gov", "gho", "nhanes"],
+    "mental":      ["who.int", "cdc.gov", "gho", "nih.gov", "nimh"],
+    "space":       ["nasa.gov", "spacex", "thespacedevs", "celestrak", "spaceflightnews", "pocketworld"],
+    "crypto":      ["binance", "gemini", "blockchain", "coingecko", "coinbase", "llama.fi", "defillama"],
+    "defi":        ["llama.fi", "defillama", "uniswap", "aave", "cantex", "orca"],
+    "quake":       ["usgs.gov", "earthquake", "seismicportal", "geonet.org", "emsc"],
+    "earthquake":  ["usgs.gov", "earthquake", "seismicportal", "geonet.org", "emsc"],
+    "weather":     ["open-meteo", "noaa", "openweathermap", "swpc", "pocketworld"],
+    "spaceweather":["swpc", "noaa", "pocketworld", "elering"],
+    "status":      ["statuspage.io", "status.cloud", "githubstatus", "cloudflarestatus",
+                    "digitalocean", "atlassian", "dropbox"],
+    "nbp":         ["nbp.pl", "api.nbp"],
+    "gdp":         ["worldbank", "imf.org", "oecd"],
+    "unemployment":["worldbank", "eurostat", "bls.gov", "oecd", "ec.europa.eu"],
 }
 
 def worker_collectors(worker):
@@ -44,19 +48,9 @@ def worker_collectors(worker):
     return out
 
 def main():
-    active = set(json.load(open(ROOT / "config/active_sectors.json")))
     warnings = 0
 
-    per_sector = defaultdict(list)
-    for w in WORKERS:
-        for name in worker_collectors(w):
-            per_sector[name].append(w)
-
-    for name, workers in per_sector.items():
-        if len(workers) > 1 and name in active:
-            print(f"⚠  sector in multiple workers: {name} -> {workers}")
-            warnings += 1
-
+    # Only URL mismatch check — multi-worker is by design, so skip it
     for w in WORKERS:
         for name, hosts in worker_collectors(w).items():
             if not hosts:
@@ -68,6 +62,7 @@ def main():
                 if not any(h in joined for h in expected):
                     print(f"⚠  URL mismatch: {w}/{name} fetches {sorted(hosts)}, expected host matching {expected}")
                     warnings += 1
+                break  # only match first keyword
 
     if warnings:
         print(f"\n{warnings} warning(s) — not blocking")

@@ -5,7 +5,7 @@
 # active_sectors entry, restricted source leak).
 
 set -e
-# ─── SAFETY GATE (syntax + JSON validity + duplicate collectors) ───
+# ─── SAFETY GATE (syntax + JSON validity + duplicate collectors + empty bodies) ───
 echo "→ Running safety gate..."
 set +e
 bad=0
@@ -13,6 +13,18 @@ for f in workers/*/src/index.js; do
   node --check "$f" >/dev/null 2>&1 || { echo "✗ SYNTAX: $f"; bad=1; }
   d=$(awk '/^const COLLECTORS = [{]/{a=1} a&&/^};/{exit} a' "$f" | grep -oE '^  "[a-z][a-z0-9-]+": [{]$' | sort | uniq -d)
   [ -z "$d" ] || { echo "✗ DUPLICATE COLLECTORS in $f:"; echo "$d"; bad=1; }
+  e=$(python3 -c '
+import re, sys
+src = open(sys.argv[1]).read()
+m = re.search(r"^const COLLECTORS = \{\s*\n(.*?)^\};", src, re.M | re.S)
+if not m: sys.exit(0)
+body = m.group(1)
+for bm in re.finditer(r"^  \"([a-z][a-z0-9-]+)\": \{\n(.*?)\n  \},", body, re.M | re.S):
+    name, block = bm.group(1), bm.group(2)
+    if "collectAll" in block and not any(k in block for k in ("fetch(", "value:", "await ")):
+        print(name)
+' "$f")
+  [ -z "$e" ] || { echo "✗ EMPTY COLLECTOR in $f:"; echo "$e"; bad=1; }
 done
 for f in config/*.json docs/*.json; do
   [ -f "$f" ] || continue
@@ -23,6 +35,7 @@ set -e
 [ "$bad" = "0" ] || { echo "✗ Safety gate failed — commit blocked"; exit 1; }
 echo "✓ Safety gate passed"
 # ─── END SAFETY GATE ───
+
 
 echo "→ Running pre-commit audits..."
 
