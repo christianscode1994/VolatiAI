@@ -3,6 +3,7 @@ name: Sync VolatiAI Intel
 on:
   schedule:
     - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   sync-intel:
@@ -11,20 +12,67 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fetch intel JSON
+      - name: Fetch intel JSON (validated)
         run: |
-          curl -s https://volatiai-runtime.fourieranalys.workers.dev/intel.json \
-            -o docs/intel.json
+          set -euo pipefail
+          curl -fsSL --retry 3 --retry-delay 5 --retry-all-errors \
+            https://volatiai-runtime.fourieranalys.workers.dev/intel.json \
+            -o /tmp/intel.json.new
 
-      - name: Fetch intel HTML
+          python3 <<'PYEOF'
+          import json, sys
+          with open("/tmp/intel.json.new") as f:
+              data = f.read()
+          if len(data) < 100:
+              print(f"::error::intel.json too small ({len(data)} bytes): {data[:200]!r}")
+              sys.exit(1)
+          if not data.strip().startswith("{"):
+              print(f"::error::intel.json does not start with '{{': {data[:200]!r}")
+              sys.exit(1)
+          try:
+              parsed = json.loads(data)
+          except json.JSONDecodeError as e:
+              print(f"::error::intel.json invalid JSON: {e}")
+              sys.exit(1)
+          if not isinstance(parsed, dict):
+              print(f"::error::intel.json top-level is {type(parsed).__name__}, expected dict")
+              sys.exit(1)
+          print(f"OK intel.json valid ({len(data)} bytes, {len(parsed)} keys)")
+          PYEOF
+
+          mv /tmp/intel.json.new docs/intel.json
+
+      - name: Fetch intel HTML (validated)
         run: |
-          curl -s https://volatiai-runtime.fourieranalys.workers.dev/intel.html \
-            -o docs/index.html
+          set -euo pipefail
+          curl -fsSL --retry 3 --retry-delay 5 --retry-all-errors \
+            https://volatiai-runtime.fourieranalys.workers.dev/intel.html \
+            -o /tmp/intel.html.new
+
+          python3 <<'PYEOF'
+          import sys
+          with open("/tmp/intel.html.new") as f:
+              data = f.read()
+          if len(data) < 200:
+              print(f"::error::intel.html too small ({len(data)} bytes)")
+              sys.exit(1)
+          low = data.lower()
+          if "<html" not in low and "<!doctype" not in low:
+              print(f"::error::intel.html does not look like HTML: {data[:100]!r}")
+              sys.exit(1)
+          print(f"OK intel.html valid ({len(data)} bytes)")
+          PYEOF
+
+          mv /tmp/intel.html.new docs/index.html
 
       - name: Commit and push
         run: |
           git config user.name "VolatiAI Bot"
           git config user.email "bot@volatiai.local"
           git add docs/intel.json docs/index.html
-          git commit -m "Update intel snapshot" || echo "No changes"
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update intel snapshot"
+            git push
+          fi
