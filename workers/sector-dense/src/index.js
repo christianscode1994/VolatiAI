@@ -1076,30 +1076,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "air-quality": {
-    config: { metric: "avg_european_aqi", threshold_pct: 15, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        avg_european_aqi: await fetchSafe(async () => {
-          const cities = [[51.5,-0.1],[40.7,-74.0],[35.7,139.7]];
-          const results = await Promise.all(cities.map(([lat,lon]) =>
-            fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat + "&longitude=" + lon + "&current=european_aqi",
-              { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(10000) })
-          ));
-          let sum = 0, n = 0;
-          for (const r of results) {
-            if (r.ok) {
-              const j = await r.json();
-              const v = j?.current?.european_aqi;
-              if (typeof v === "number") { sum += v; n++; }
-            }
-          }
-          if (n === 0) throw new Error("all_cities_failed");
-          return Math.round(sum / n);
-        }),
-      },
-    }),
-  },
   sports: {
     config: { metric: "games_today", threshold_pct: 50, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
