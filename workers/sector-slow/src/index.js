@@ -1821,22 +1821,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "open-meteo-berlin-temp": {
-    config: { metric: "temp_c", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        temp_c: await fetchSafe(async () => {
-          const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.current?.temperature_2m;
-          if (typeof v !== "number") throw new Error("no_temp");
-          return v;
-        }),
-      },
-    }),
-  },
   "steam-csgo-players": {
     config: { metric: "player_count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 1800 },
     collectAll: async () => ({
@@ -1914,21 +1898,6 @@ const COLLECTORS = {
           const j = await r.json();
           const v = j?.total_count;
           if (typeof v !== "number") throw new Error("no_total_count");
-          return v;
-        }),
-      },
-    }),
-  },
-  "open-meteo-pm25": {
-    config: { metric: "pm25", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        pm25: await fetchSafe(async () => {
-          const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=52.52&longitude=13.41&current=pm2_5");
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.current?.pm2_5;
-          if (typeof v !== "number") throw new Error("no_pm25");
           return v;
         }),
       },
@@ -2095,27 +2064,6 @@ const COLLECTORS = {
       return j.results.length;
     }) } }),
   },
-  "allratestoday-usd-eur": {
-    config: { metric: "rate", threshold_pct: 2.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({ sources: { rate: await fetchSafe(async () => {
-      const r = await fetch("https://allratestoday.com/api/open/latest/USD");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.rates?.EUR ?? j?.EUR);
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_rate");
-      return v;
-    }) } }),
-  },
-  "shodan-google-dns-ports": {
-    config: { metric: "count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://internetdb.shodan.io/8.8.8.8");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      if (!Array.isArray(j?.ports)) throw new Error("no_ports");
-      return j.ports.length;
-    }) } }),
-  },
   "wikipedia-bitcoin-extract-len": {
     config: { metric: "chars", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({ sources: { chars: await fetchSafe(async () => {
@@ -2161,16 +2109,6 @@ const COLLECTORS = {
       const v = Number(j?.hitCount);
       if (!Number.isFinite(v)) throw new Error("no_hitCount");
       return v;
-    }) } }),
-  },
-  "open-mindfulness-resource-count": {
-    config: { metric: "resource_count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { resource_count: await fetchSafe(async () => {
-      const r = await fetch("https://api.theholisticcare.com/v1/resources");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      if (!Array.isArray(j?.data)) throw new Error("no_data");
-      return j.data.length;
     }) } }),
   },
   "affirmations-length": {
@@ -2232,17 +2170,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "dcentral-miner-count": {
-    config: { metric: "count", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://d-central.tech/wp-json/dc/v1/miners");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = Number(j?.total);
-      if (!Number.isFinite(v) || v < 0) throw new Error("no_total");
-      return v;
-    }) } }),
-  },
   "uk-carbon-intensity-now": {
     config: { metric: "gco2_per_kwh", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 1800 },
     collectAll: async () => ({ sources: { gco2_per_kwh: await fetchSafe(async () => {
@@ -2299,17 +2226,6 @@ const COLLECTORS = {
       const v = Number(j?.meta?.total);
       if (!Number.isFinite(v) || v <= 0) throw new Error("no_total");
       return v;
-    }) } }),
-  },
-  "circle-x402-resources": {
-    config: { metric: "count", threshold_pct: 10.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { count: await fetchSafe(async () => {
-      const r = await fetch("https://api.circle.com/v2/x402/discovery/resources?limit=100");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const total = Number(j?.pagination?.total);
-      if (!Number.isFinite(total) || total < 0) throw new Error("no_total");
-      return total;
     }) } }),
   },
   "nyfed-sofr-rate": {

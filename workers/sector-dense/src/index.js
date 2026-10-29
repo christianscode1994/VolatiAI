@@ -504,119 +504,11 @@ const COLLECTORS = {
   },
 
 
-  "air-quality": {
-    config: { metric: "pm25", threshold_pct: 3, threshold_abs: 5.0, window: "24h", ttl: 7200, context_keys: ["no2"] },
-    collectAll: async (env) => ({
-      sources: {
-        pm25: await fetchSafe(async () => {
-          const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=59.33&longitude=18.07&current=pm2_5");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const val = j.current?.pm2_5;
-          if (val === undefined) throw new Error("no pm25");
-          return Math.round(val * 10) / 10;
-        }),
-        no2: await fetchSafe(async () => {
-          const r = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=59.33&longitude=18.07&current=nitrogen_dioxide");
-          const j = await r.json();
-          return j.current?.nitrogen_dioxide !== undefined ? Math.round(j.current.nitrogen_dioxide * 10) / 10 : null;
-        }),
-      },
-    }),
-  },
 
 
-  "depin-market": {
-    config: { metric: "depin_mcap", threshold_pct: 0.25, threshold_abs: 1e9, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        depin_mcap: await fetchSafe(async () => {
-          // CoinLore: same source as kryptovaluta sector, known working from CF
-          const r = await fetch("https://api.coinlore.net/api/tickers/?limit=200");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          if (!j.data || !Array.isArray(j.data)) throw new Error("no data");
-          const depinSymbols = new Set([
-            "FLUX", "FIL", "RNDR", "AKT", "HNT", "THETA", "IO",
-            "AR", "STORJ", "GRASS", "AETHIR", "NOS", "GEOD", "PEAQ"
-          ]);
-          let totalMcap = 0;
-          let count = 0;
-          for (const t of j.data) {
-            if (depinSymbols.has(t.symbol)) {
-              const mcap = parseFloat(t.market_cap_usd || "0");
-              if (!isNaN(mcap) && mcap > 0) {
-                totalMcap += mcap;
-                count++;
-              }
-            }
-          }
-          if (count === 0) throw new Error("no depin coins found");
-          return Math.round(totalMcap);
-        }),
-      },
-    }),
-  },
 
-  "crypto-funding": {
-    config: { metric: "btc_funding_rate", threshold_pct: 100, threshold_abs: 0.0003, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        btc_funding_rate: await fetchSafe(async () => {
-          const r = await fetch("https://www.okx.com/api/v5/public/funding-rate?instId=BTC-USDT-SWAP");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const d = j.data && j.data[0];
-          if (!d) throw new Error("no data");
-          return parseFloat(d.fundingRate);
-        }),
-      },
-    }),
-  },
 
-  "crypto-oi": {
-    config: { metric: "btc_open_interest", threshold_pct: 0.3, threshold_abs: 5000, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        btc_open_interest: await fetchSafe(async () => {
-          const r = await fetch("https://www.okx.com/api/v5/public/open-interest?instId=BTC-USDT-SWAP&ccy=BTC");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const d = j.data && j.data[0];
-          if (!d) throw new Error("no data");
-          return Math.round(parseFloat(d.oi));
-        }),
-      },
-    }),
-  },
 
-  "crypto-market": {
-    config: { metric: "total_market_cap", threshold_pct: 2.0, threshold_abs: 5e10, window: "24h", ttl: 7200, context_keys: ["btc_dominance", "eth_dominance"] },
-    collectAll: async (env) => ({
-      sources: {
-        total_market_cap: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinlore.net/api/global/");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const g = j[0];
-          if (!g) throw new Error("no data");
-          return Math.round(parseFloat(g.total_mcap));
-        }),
-        btc_dominance: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinlore.net/api/global/");
-          const j = await r.json();
-          const g = j[0];
-          return g && g.btc_d ? Math.round(parseFloat(g.btc_d) * 100) / 100 : null;
-        }),
-        eth_dominance: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinlore.net/api/global/");
-          const j = await r.json();
-          const g = j[0];
-          return g && g.eth_d ? Math.round(parseFloat(g.eth_d) * 100) / 100 : null;
-        }),
-      },
-    }),
-  },
 
   "defi-dex-volume": {
     config: { metric: "dex_volume_24h", threshold_pct: 0.25, threshold_abs: 1e9, window: "24h", ttl: 7200, context_keys: [] },
@@ -855,20 +747,6 @@ const COLLECTORS = {
     },
   },
 
-  "web3-eth-supply": {
-    config: { metric: "eth_supply", threshold_pct: 0.1, threshold_abs: 10000, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        eth_supply: await fetchSafe(async () => {
-          const r = await fetch("https://api.etherscan.io/v2/api?chainid=1&module=stats&action=ethsupply&apikey=" + env.ETHERSCAN_API_KEY);
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          if (j.status !== "1") throw new Error(j.result || "etherscan");
-          return Math.round(parseFloat(j.result) / 1e18);
-        }),
-      },
-    }),
-  },
 
   "web3-blockscout": {
     config: { metric: "bs_total_blocks", threshold_pct: 0.0, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
@@ -1182,21 +1060,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "food-security": {
-    config: { metric: "products", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        products: await fetchSafe(async () => {
-          const r = await fetch("https://world.openfoodfacts.org/api/v2/search?page_size=1",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j.count !== "number") throw new Error("no_count");
-          return j.count;
-        }),
-      },
-    }),
-  },
   "energy-carbon": {
     config: { metric: "gco2_per_kwh", threshold_pct: 3, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -1430,21 +1293,6 @@ Object.assign(COLLECTORS, {
           const n = j?.meta?.total;
           if (typeof n !== "number") throw new Error("no_count");
           return n;
-        }),
-      },
-    }),
-  },
-  "more-cryptos": {
-    config: { metric: "coin_count", threshold_pct: 0.5, threshold_abs: 50, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        coin_count: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinlore.net/api/tickers/?start=0&limit=100",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j?.data)) throw new Error("not_array");
-          return j.data.length;
         }),
       },
     }),
@@ -2458,39 +2306,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "botnet-c2": {
-    config: { metric: "tracked_c2", threshold_pct: 5, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        tracked_c2: await fetchSafe(async () => {
-          const r = await fetch("https://feodotracker.abuse.ch/downloads/ipblocklist.json",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          const online = j.filter(x => x && x.status === "online").length;
-          const total = j.length;
-          return { total, online };
-        }),
-      },
-    }),
-  },
-  "bot-activity": {
-    config: { metric: "agent_hits_24h", threshold_pct: 25, threshold_abs: 500, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        agent_hits_24h: await fetchSafe(async () => {
-          const r = await fetch("https://robauto.ai/agent-leaderboard.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.summary?.total_agent_hits_24h;
-          if (typeof n !== "number") throw new Error("no_count: summary_keys=" + Object.keys(j?.summary || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
   "agent-census": {
     config: { metric: "named_agents", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -2930,22 +2745,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "depin-networks": {
-    config: { metric: "networks_with_telemetry", threshold_pct: 1, threshold_abs: 2, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        networks_with_telemetry: await fetchSafe(async () => {
-          const r = await fetch("https://kairossignal.com/v1/supply",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.n_networks_available ?? j?.n_networks;
-          if (typeof n !== "number") throw new Error("no_networks: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -3228,21 +3027,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "ai-models": {
-    config: { metric: "available_models", threshold_pct: 2, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        available_models: await fetchSafe(async () => {
-          const r = await fetch("https://text.pollinations.ai/models",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          return j.length;
-        }),
-      },
-    }),
-  },
   "bluesky-posts": {
     config: { metric: "ai_posts_24h", threshold_pct: 30, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -3405,27 +3189,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "global-trade-regulations": {
-    config: { metric: "total_regulations", threshold_pct: 0.5, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_regulations: await fetchSafe(async () => {
-          const r = await fetch("https://tradecompliancerecords.com/api/v1/registry",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (typeof j?.total === "number") return j.total;
-          const arr = Array.isArray(j) ? j
-                    : Array.isArray(j?.nodes) ? j.nodes
-                    : Array.isArray(j?.data) ? j.data
-                    : Array.isArray(j?.registry) ? j.registry
-                    : null;
-          if (!arr) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
   "un-governance": {
     config: { metric: "total_entities", threshold_pct: 0.5, threshold_abs: 100, window: "24h", ttl: 86400, context_keys: [] },
     collectAll: async () => ({
@@ -3481,74 +3244,6 @@ Object.assign(COLLECTORS, {
           const lines = t.trim().split("\n").filter(l => l.trim().length > 0);
           if (lines.length < 2) throw new Error("no_rows: lines=" + lines.length);
           return lines.length - 1;  // subtract header
-        }),
-      },
-    }),
-  },
-  "crypto-regulatory-news": {
-    config: { metric: "regulation_articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        regulation_articles: await fetchSafe(async () => {
-          const r = await fetch("https://bytenews.io/api/v1/category/regulation.json",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.articles ?? j?.items ?? j?.data ?? []);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
-  "crypto-regulatory-feed": {
-    config: { metric: "regulatory_items", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        regulatory_items: await fetchSafe(async () => {
-          const r = await fetch("https://cryptocurrency.cv/api/regulatory",
-            { headers: {
-                "user-agent": "Mozilla/5.0 (compatible; VolatiAI/1.0)",
-                "accept": "application/json",
-                "referer": "https://cryptocurrency.cv/",
-              }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          // Response: {success, data: {events, pagination, stats, filters}}
-          const candidates = [
-            j, j?.articles, j?.results,
-            j?.data, j?.data?.articles, j?.data?.items, j?.data?.results,
-            j?.data?.events, j?.data?.events?.list, j?.data?.events?.items,
-          ];
-          let arr = null;
-          for (const c of candidates) {
-            if (Array.isArray(c)) { arr = c; break; }
-          }
-          if (arr) return arr.length;
-          const total = j?.total
-            ?? j?.data?.total
-            ?? j?.data?.pagination?.total
-            ?? j?.data?.pagination?.totalCount
-            ?? j?.data?.stats?.total
-            ?? j?.data?.stats?.totalItems;
-          if (typeof total === "number") return total;
-          throw new Error("no_array: keys=" + Object.keys(j || {}).join(",") + " data_keys=" + Object.keys(j?.data || {}).join(",") + " events_keys=" + Object.keys(j?.data?.events || {}).join(",") + " pag_keys=" + Object.keys(j?.data?.pagination || {}).join(","));
-        }),
-      },
-    }),
-  },
-  "cannabis-news": {
-    config: { metric: "articles", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        articles: await fetchSafe(async () => {
-          const r = await fetch("https://freenewsapi.ai/v1/feed.json?topic=cannabis&size=50",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = j?.items ?? j?.articles ?? j?.data;
-          if (!Array.isArray(arr)) throw new Error("no_items: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
         }),
       },
     }),
@@ -3705,22 +3400,6 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "crypto-liquidations": {
-    config: { metric: "total_count", threshold_pct: 20, threshold_abs: 5, window: "4h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_count: await fetchSafe(async () => {
-          const r = await fetch("https://three.ws/api/coin/liquidations",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.summary?.totalCount;
-          if (typeof n !== "number") throw new Error("no_totalCount: summary_keys=" + Object.keys(j?.summary || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
   "disease-outbreaks": {
     config: { metric: "outbreak_items", threshold_pct: 10, threshold_abs: 1, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -3793,62 +3472,11 @@ Object.assign(COLLECTORS, {
       },
     }),
   },
-  "ct-certificates": {
-    config: { metric: "certs_24h", threshold_pct: 5, threshold_abs: 1000000, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        certs_24h: await fetchSafe(async () => {
-          const r = await fetch("https://issued.live/api/stats",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.totals?.certs_24h
-                  ?? j?.certs_24h
-                  ?? j?.ingest?.certs_24h
-                  ?? j?.totals?.certificates_24h;
-          if (typeof n !== "number") throw new Error("no_count: keys=" + Object.keys(j || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
 });
 
 
 
 Object.assign(COLLECTORS, {
-  "coinrithm-overview": {
-    config: { metric: "total_open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_open_markets: await fetchSafe(async () => {
-          const r = await fetch("https://api.coinrithm.com/api/prediction-markets/overview",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.stats?.totalOpenMarkets;
-          if (typeof n !== "number") throw new Error("no_totalOpenMarkets: stats_keys=" + Object.keys(j?.stats || {}).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
-  "polymarket-open": {
-    config: { metric: "open_markets", threshold_pct: 5, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        open_markets: await fetchSafe(async () => {
-          const r = await fetch("https://gamma-api.polymarket.com/markets?closed=false&limit=500",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const arr = Array.isArray(j) ? j : (j?.data ?? j?.markets ?? null);
-          if (!Array.isArray(arr)) throw new Error("no_array: keys=" + Object.keys(j || {}).join(","));
-          return arr.length;
-        }),
-      },
-    }),
-  },
 });
 
 
@@ -3907,22 +3535,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "ocean-waves": {
-    config: { metric: "wave_height_m", threshold_pct: 20, threshold_abs: 0.3, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        wave_height_m: await fetchSafe(async () => {
-          const r = await fetch("https://marine-api.open-meteo.com/v1/marine?latitude=54.0&longitude=7.0&current=wave_height",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = j?.current?.wave_height;
-          if (typeof v !== "number") throw new Error("no_wave_height: current_keys=" + Object.keys(j?.current || {}).join(","));
-          return v;
-        }),
-      },
-    }),
-  },
   "bgp-prefixes": {
     config: { metric: "total_prefixes", threshold_pct: 0.5, threshold_abs: 1000, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -3945,38 +3557,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "privacy-monero": {
-    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        difficulty: await fetchSafe(async () => {
-          const r = await fetch("https://api.blockchair.com/monero/stats",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.data?.difficulty;
-          if (typeof n !== "number") throw new Error("no_difficulty: data_keys=" + Object.keys(j?.data || {}).slice(0,8).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
-  "privacy-zcash": {
-    config: { metric: "difficulty", threshold_pct: 2, threshold_abs: 1e7, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        difficulty: await fetchSafe(async () => {
-          const r = await fetch("https://api.blockchair.com/zcash/stats",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const n = j?.data?.difficulty;
-          if (typeof n !== "number") throw new Error("no_difficulty: data_keys=" + Object.keys(j?.data || {}).slice(0,8).join(","));
-          return n;
-        }),
-      },
-    }),
-  },
   "monero-network": {
     config: { metric: "hashrate", threshold_pct: 5, threshold_abs: 1e8, window: "24h", ttl: 7200, context_keys: [] },
     collectAll: async () => ({
@@ -3998,46 +3578,6 @@ Object.assign(COLLECTORS, {
 
 
 Object.assign(COLLECTORS, {
-  "vpn-nordvpn": {
-    config: { metric: "total_servers", threshold_pct: 2, threshold_abs: 10, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_servers: await fetchSafe(async () => {
-          const r = await fetch("https://api.nordvpn.com/v1/servers/countries",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
-          const total = j.reduce((s, c) => s + (c.serverCount || 0), 0);
-          if (total === 0) throw new Error("all_zero: countries=" + j.length);
-          return total;
-        }),
-      },
-    }),
-  },
-  "vpn-mullvad": {
-    config: { metric: "total_relays", threshold_pct: 2, threshold_abs: 5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async () => ({
-      sources: {
-        total_relays: await fetchSafe(async () => {
-          const r = await fetch("https://api.mullvad.net/public/relays/wireguard/v1/",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const countries = j?.countries;
-          if (!Array.isArray(countries)) throw new Error("no_countries: keys=" + Object.keys(j || {}).join(","));
-          let total = 0;
-          for (const country of countries) {
-            for (const city of (country.cities || [])) {
-              total += (city.relays || []).length;
-            }
-          }
-          if (total === 0) throw new Error("all_zero: countries=" + countries.length);
-          return total;
-        }),
-      },
-    }),
-  },
 });
 
 

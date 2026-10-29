@@ -2030,22 +2030,6 @@ const COLLECTORS = {
     }),
   },
 
-  "pqc-migration": {
-    event_source: "nsa_pqc_guidance",
-    ttl: 86400,
-    collectAll: async (env) => ({
-      sources: {
-        nsa_pqc_guidance: await fetchSafe(async () => {
-          const r = await fetch("https://api.theartofservice.com/api/agent/frameworks/NSA%20Guidance%20for%20Transition%20to%20Quantum-Resistant%20Cryptography/controls");
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-          const count = (j.controls && j.controls.length) || 0;
-          if (count === 0) throw new Error("no controls");
-          return { id: "pqc_controls_" + count, title: "NSA PQC controls: " + count };
-        }),
-      },
-    }),
-  },
 
 
 
@@ -2061,52 +2045,6 @@ const COLLECTORS = {
           if (!Array.isArray(j)) throw new Error("not_array: keys=" + Object.keys(j || {}).join(","));
           const cutoff = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
           return j.filter(e => (e.first_seen || "").slice(0, 10) >= cutoff).length;
-        }),
-      },
-    }),
-  },
-  "mining": {
-    event_source: "dcentral_hashprice",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        dcentral_hashprice: await fetchSafe(async () => {
-          const r = await fetch("https://d-central.tech/wp-json/dc/v1/hashprice", {
-            headers: { "user-agent": "VolatiAI/1.0" },
-          });
-          if (!r.ok) throw new Error("status " + r.status);
-          const j = await r.json();
-
-          // Defensive: find first numeric price field anywhere in the object
-          function findNumber(obj, depth) {
-            if (depth > 3 || obj === null || obj === undefined) return null;
-            if (typeof obj === "number" && !isNaN(obj) && obj > 0 && obj < 100) return obj;
-            if (typeof obj === "string") {
-              const n = parseFloat(obj);
-              if (!isNaN(n) && n > 0 && n < 100) return n;
-            }
-            if (typeof obj === "object") {
-              const priorityKeys = ["usd", "hashprice", "usd_per_th_day", "hashprice_usd_per_th_day", "value"];
-              for (const key of priorityKeys) {
-                if (obj[key] !== undefined) {
-                  const found = findNumber(obj[key], depth + 1);
-                  if (found !== null) return found;
-                }
-              }
-              for (const key of Object.keys(obj)) {
-                const found = findNumber(obj[key], depth + 1);
-                if (found !== null) return found;
-              }
-            }
-            return null;
-          }
-
-          const price = findNumber(j, 0);
-          if (price === null) throw new Error("no numeric price found: " + JSON.stringify(j).slice(0, 200));
-
-          const bucket = Math.round(price * 100);
-          const day = new Date().toISOString().slice(0, 10);
-          return { id: "hashprice_" + bucket + "_" + day, title: "BTC hashprice: $" + price.toFixed(4) + "/TH/day" };
         }),
       },
     }),
