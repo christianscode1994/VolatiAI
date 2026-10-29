@@ -28,6 +28,416 @@ function parseRSSFirstItem(text) {
 // ─── COLLECTORS ─────────────────────────────────────────────
 
 const COLLECTORS = {
+  },
+  },
+  },
+  },
+  },
+  },
+  },
+  },
+  },
+  },
+  "disney-character-count": {
+    config: { metric: "character_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.disneyapi.dev/character", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { disney_character_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.info?.count;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { disney_character_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "swapi-people-count": {
+    config: { metric: "people_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://swapi.dev/api/people/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { swapi_people_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.count;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { swapi_people_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "ffxiv-mount-count": {
+    config: { metric: "mount_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://ffxivcollect.com/api/mounts", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { ffxiv_mount_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { ffxiv_mount_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "cocktaildb-margarita-count": {
+    config: { metric: "drink_count", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { cocktaildb_margarita_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.drinks) ? j.drinks.length : 0;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { cocktaildb_margarita_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "mealdb-arrabiata-count": {
+    config: { metric: "meal_count", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=Arrabiata", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { mealdb_arrabiata_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.meals) ? j.meals.length : 0;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { mealdb_arrabiata_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "sampleapis-beers-count": {
+    config: { metric: "beer_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.sampleapis.com/beers/ale", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { sampleapis_beers_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { sampleapis_beers_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "sampleapis-coffee-count": {
+    config: { metric: "coffee_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.sampleapis.com/coffee/hot", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { sampleapis_coffee_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { sampleapis_coffee_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "nager-us-holiday-count": {
+    config: { metric: "holiday_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://date.nager.at/api/v3/PublicHolidays/2026/US", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { nager_us_holiday_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { nager_us_holiday_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "caldays-us-holiday-count": {
+    config: { metric: "holiday_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://caldays.com/api/holidays/us", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { caldays_us_holiday_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.holidays) ? j.holidays.length : (Array.isArray(j) ? j.length : null);
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { caldays_us_holiday_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "thecalendar-us-federal-count": {
+    config: { metric: "holiday_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://the-calendar.net/api/holidays/us-federal/2026.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { thecalendar_us_federal_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { thecalendar_us_federal_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "ipify-current-ip-len": {
+    config: { metric: "ip_string_length", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.ipify.org?format=json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { ipify_current_ip_len: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.ip === 'string' ? j.ip.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { ipify_current_ip_len: { ok: typeof n === "number" } } };
+    },
+  },
+  "zippopotam-places-count": {
+    config: { metric: "place_count", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.zippopotam.us/us/90210", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { zippopotam_places_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.places) ? j.places.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { zippopotam_places_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "opentopodata-elevation": {
+    config: { metric: "elevation_m", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.opentopodata.org/v1/test-dataset?locations=56,123", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { opentopodata_elevation: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.results?.[0]?.elevation;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { opentopodata_elevation: { ok: typeof n === "number" } } };
+    },
+  },
+  "ensembl-species-count": {
+    config: { metric: "species_count", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://rest.ensembl.org/info/species?content-type=application/json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { ensembl_species_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.species) ? j.species.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { ensembl_species_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "openfda-device-event-total": {
+    config: { metric: "event_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.fda.gov/device/event.json?limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { openfda_device_event_total: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.meta?.results?.total;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { openfda_device_event_total: { ok: typeof n === "number" } } };
+    },
+  },
+  "openfda-food-event-total": {
+    config: { metric: "event_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.fda.gov/food/event.json?limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { openfda_food_event_total: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.meta?.results?.total;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { openfda_food_event_total: { ok: typeof n === "number" } } };
+    },
+  },
+  "disease-sh-covid-cases": {
+    config: { metric: "total_cases", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://disease.sh/v3/covid-19/all", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { disease_sh_covid_cases: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.cases;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { disease_sh_covid_cases: { ok: typeof n === "number" } } };
+    },
+  },
+  "gbif-species-search-count": {
+    config: { metric: "species_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.gbif.org/v1/species/search?q=mammal&limit=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { gbif_species_search_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.count;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { gbif_species_search_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "dailymed-spl-count": {
+    config: { metric: "spl_count", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?drug_name=aspirin", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { dailymed_spl_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.data) ? j.data.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { dailymed_spl_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "rxnorm-aspirin-groups": {
+    config: { metric: "group_count", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://rxnav.nlm.nih.gov/REST/drugs.json?name=aspirin", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { rxnorm_aspirin_groups: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.drugGroup?.conceptGroup) ? j.drugGroup.conceptGroup.length : 0;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { rxnorm_aspirin_groups: { ok: typeof n === "number" } } };
+    },
+  },
+  "inaturalist-taxa-count": {
+    config: { metric: "taxa_count", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.inaturalist.org/v1/taxa?q=mammal&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { inaturalist_taxa_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.total_results;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { inaturalist_taxa_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "npm-react-weekly-downloads": {
+    config: { metric: "downloads", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.npmjs.org/downloads/point/last-week/react", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { npm_react_weekly_downloads: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.downloads;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { npm_react_weekly_downloads: { ok: typeof n === "number" } } };
+    },
+  },
+  "npm-vue-weekly-downloads": {
+    config: { metric: "downloads", threshold_pct: 10, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.npmjs.org/downloads/point/last-week/vue", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { npm_vue_weekly_downloads: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.downloads;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { npm_vue_weekly_downloads: { ok: typeof n === "number" } } };
+    },
+  },
+  "rubygems-rails-downloads": {
+    config: { metric: "downloads", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://rubygems.org/api/v1/gems/rails.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { rubygems_rails_downloads: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.downloads;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { rubygems_rails_downloads: { ok: typeof n === "number" } } };
+    },
+  },
+  "depsdev-react-versions": {
+    config: { metric: "version_count", threshold_pct: 3, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.deps.dev/v3/systems/npm/packages/react", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { depsdev_react_versions: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.versions) ? j.versions.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { depsdev_react_versions: { ok: typeof n === "number" } } };
+    },
+  },
+  "gemini-btc-spot": {
+    config: { metric: "btc_usd", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.gemini.com/v1/pubticker/btcusd", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { gemini_btc_spot: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = parseFloat(j?.last);
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { gemini_btc_spot: { ok: typeof n === "number" } } };
+    },
+  },
+  "fear-greed-index": {
+    config: { metric: "index_value", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.alternative.me/fng/", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { fear_greed_index: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = parseInt(j?.data?.[0]?.value, 10);
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { fear_greed_index: { ok: typeof n === "number" } } };
+    },
+  },
+  "nbp-gold-price-pln": {
+    config: { metric: "gold_pln", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.nbp.pl/api/cenyzlota", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { nbp_gold_price_pln: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = parseFloat(j?.[0]?.cena);
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { nbp_gold_price_pln: { ok: typeof n === "number" } } };
+    },
+  },
+  "nbp-usd-pln-rate": {
+    config: { metric: "usd_pln", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.nbp.pl/api/exchangerates/rates/a/usd/?format=json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { nbp_usd_pln_rate: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = parseFloat(j?.rates?.[0]?.mid);
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { nbp_usd_pln_rate: { ok: typeof n === "number" } } };
+    },
+  },
+  "currency-api-usd-eur": {
+    config: { metric: "usd_eur", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://latest.currency-api.pages.dev/v1/currencies/usd.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { currency_api_usd_eur: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.usd?.eur;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { currency_api_usd_eur: { ok: typeof n === "number" } } };
+    },
+  },
+  "exchangerate-usd-eur": {
+    config: { metric: "usd_eur", threshold_pct: 2, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.exchangerate-api.com/v4/latest/USD", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { exchangerate_usd_eur: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.rates?.EUR;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { exchangerate_usd_eur: { ok: typeof n === "number" } } };
+    },
+  },
+  "sunrise-sunset-daylen": {
+    config: { metric: "day_length_sec", threshold_pct: 5, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.sunrise-sunset.org/json?lat=36.72&lng=-4.42", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { sunrise_sunset_daylen: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.results?.day_length;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { sunrise_sunset_daylen: { ok: typeof n === "number" } } };
+    },
+  },
+  "usgs-quake-m5-count": {
+    config: { metric: "quake_count", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://earthquake.usgs.gov/fdsnws/event/1/count?format=geojson&minmagnitude=5", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { usgs_quake_m5_count: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = j?.count;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { usgs_quake_m5_count: { ok: typeof n === "number" } } };
+    },
+  },
+  "github-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.githubstatus.com/api/v2/status.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github_status_indicator: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = ({none:0,minor:1,major:2,critical:3})[j?.status?.indicator] ?? null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { github_status_indicator: { ok: typeof n === "number" } } };
+    },
+  },
+  "cloudflare-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://www.cloudflarestatus.com/api/v2/status.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { cloudflare_status_indicator: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = ({none:0,minor:1,major:2,critical:3})[j?.status?.indicator] ?? null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { cloudflare_status_indicator: { ok: typeof n === "number" } } };
+    },
+  },
+  "digitalocean-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://status.digitalocean.com/index.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { digitalocean_status_indicator: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = ({none:0,minor:1,major:2,critical:3})[j?.status?.indicator] ?? null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { digitalocean_status_indicator: { ok: typeof n === "number" } } };
+    },
+  },
+  "atlassian-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://status.atlassian.com/api/v2/status.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { atlassian_status_indicator: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = ({none:0,minor:1,major:2,critical:3})[j?.status?.indicator] ?? null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { atlassian_status_indicator: { ok: typeof n === "number" } } };
+    },
+  },
+  "dropbox-status-indicator": {
+    config: { metric: "status_code", threshold_pct: 50, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://status.dropbox.com/api/v2/status.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { dropbox_status_indicator: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = ({none:0,minor:1,major:2,critical:3})[j?.status?.indicator] ?? null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { dropbox_status_indicator: { ok: typeof n === "number" } } };
+    },
+  },
+  "datamuse-climate-words": {
+    config: { metric: "related_word_count", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.datamuse.com/words?rel_trg=climate", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { datamuse_climate_words: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { datamuse_climate_words: { ok: typeof n === "number" } } };
+    },
+  },
+  "datamuse-code-rhymes": {
+    config: { metric: "rhyme_count", threshold_pct: 20, window: "30d", window_days: 30 },
+    async collectAll(env) {
+      const r = await fetch("https://api.datamuse.com/words?rel_rhy=code", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { datamuse_code_rhymes: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { datamuse_code_rhymes: { ok: typeof n === "number" } } };
+    },
+  },
 
   "pokeapi-pokemon-count": {
     config: { metric: "pokemon_count", threshold_pct: 2, window: "30d", window_days: 30 },
