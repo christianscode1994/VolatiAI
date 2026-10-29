@@ -931,6 +931,26 @@ const COLLECTORS = {
       return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { faa_asws: { ok: typeof n === "number" } } };
     },
   },
+  "gdacs-disaster-alerts": {
+    config: { metric: "active_alerts", threshold_pct: 20, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://www.gdacs.org/gdacsapi/api/Events/geteventlist/SEARCH", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { gdacs: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.features) ? j.features.length : null;
+      return { value: n, sources: { gdacs: { ok: typeof n === "number" } } };
+    },
+  },
+  "faa-tfr": {
+    config: { metric: "active_tfrs", threshold_pct: 20, window: "24h", ttl: 1800, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://tfr.faa.gov/tfrapi/exportTfrList", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { faa_tfr: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: n, sources: { faa_tfr: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 // ─── ROUTER ─────────────────────────────────────────────────

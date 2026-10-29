@@ -1205,19 +1205,6 @@ const COLLECTORS = {
       return { value: m ? Number(m[1]) : null, sources: { medlineplus: { ok: true } }, context: { query: "diabetes" } };
     },
   },
-  "imf-portwatch-chokepoints": {
-    config: { metric: "chokepoint_transits", threshold_pct: 0.2, window: "7d", window_days: 7 },
-    async collectAll(env) {
-      const raw = await env.SECTOR_KV.get("imf-portwatch:latest", "json");
-      if (!raw) return { value: null, error: "no KV snapshot", sources: { "imf-portwatch": { ok: false } } };
-      const suez = Array.isArray(raw) ? raw.find(r => r.chokepoint === "Suez Canal") : null;
-      return {
-        value: suez ? suez.vessel_transits : null,
-        sources: { "imf-portwatch": { ok: true } },
-        context: { as_of: Array.isArray(raw) && raw[0] ? raw[0].date : null },
-      };
-    },
-  },
   "pangaea-earth-datasets": {
     config: { metric: "dataset_count", threshold_pct: 2, window: "30d", window_days: 30 },
     async collectAll(env) {

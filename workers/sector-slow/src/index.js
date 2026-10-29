@@ -2663,6 +2663,56 @@ const COLLECTORS = {
       return { value: withLpg, sources: { openvan: { ok: true } } };
     },
   },
+  "unhcr-displacement": {
+    config: { metric: "refugees", threshold_pct: 2, window: "90d", window_days: 90, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.unhcr.org/population/v1/population/?limit=1&year=2024", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { unhcr: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.items?.[0]?.refugees === "number" ? j.items[0].refugees : null;
+      return { value: n, sources: { unhcr: { ok: typeof n === "number" } } };
+    },
+  },
+  "cern-opendata-records": {
+    config: { metric: "record_count", threshold_pct: 1, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://opendata.cern.ch/api/records/?size=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { cern_opendata: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.aggregations?.availability?.doc_count === "number" ? j.aggregations.availability.doc_count : null;
+      return { value: n, sources: { cern_opendata: { ok: typeof n === "number" } } };
+    },
+  },
+  "digitraffic-port-calls": {
+    config: { metric: "port_call_records", threshold_pct: 15, window: "24h", ttl: 1800, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://meri.digitraffic.fi/api/port-call/v1/port-calls", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { digitraffic: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.portCalls) ? j.portCalls.length : null;
+      return { value: n, sources: { digitraffic: { ok: typeof n === "number" } } };
+    },
+  },
+  "nrc-reactor-availability": {
+    config: { metric: "fleet_availability_pct", threshold_pct: 5, window: "7d", window_days: 7, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://nuclearchain.net/api/status.json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { nrc_reactors: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.summary?.fleet_availability_pct === "number" ? j.summary.fleet_availability_pct : null;
+      return { value: n, sources: { nrc_reactors: { ok: typeof n === "number" } } };
+    },
+  },
+  "critical-materials-atlas": {
+    config: { metric: "materials_tracked", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://criticalmaterialsatlas.org/out/cube_summary.json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { cma: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.materials === "number" ? j.materials : null;
+      return { value: n, sources: { cma: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 
