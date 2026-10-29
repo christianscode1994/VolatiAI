@@ -465,7 +465,10 @@ const COLLECTORS = {
   "usgs-geomag-boulder": {
     config: { metric: "hz_nanotesla", threshold_pct: 5, window: "1h", window_days: 0 },
     async collectAll(env) {
-      const url = "https://geomag.usgs.gov/ws/data/?id=BOU&format=json";
+      const _now = new Date();
+      const _start = new Date(_now.getTime() - 6 * 3600000);
+      const _fmt = (d) => d.toISOString().slice(0, 19) + "Z";
+      const url = `https://geomag.usgs.gov/ws/data/?id=BOU&format=json&starttime=${_fmt(_start)}`;;
       const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
       if (!r.ok) return { value: null, sources: { geomag: { ok: false } } };
       const j = await r.json();
