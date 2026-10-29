@@ -2780,6 +2780,16 @@ const COLLECTORS = {
     },
   },
 
+  "pursue-uap-files-count": {
+    config: { metric: "files_count", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://pursueufotracker.com/generated/api/files.json", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { pursue_uap: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : null;
+      return { value: n, sources: { pursue_uap: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 // ─── ENVELOPE + ROUTER ──────────────────────────────────────

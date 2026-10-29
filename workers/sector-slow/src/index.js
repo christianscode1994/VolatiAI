@@ -2611,6 +2611,16 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
+  "benchgecko-model-count": {
+    config: { metric: "model_count", threshold_pct: 5, window: "7d", window_days: 7, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://benchgecko.ai/api/v1/models?limit=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { benchgecko: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.meta?.total === "number" ? j.meta.total : null;
+      return { value: n, sources: { benchgecko: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 
