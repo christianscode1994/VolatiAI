@@ -2819,6 +2819,32 @@ const COLLECTORS = {
       return { value: n, sources: { dribba: { ok: typeof n === "number" } } };
     },
   },
+  "wikimedia-chatgpt-pageviews": {
+    config: { metric: "weekly_views", threshold_pct: 20, window: "7d", window_days: 7, ttl: 86400, context_keys: ["article"] },
+    async collectAll(env) {
+      const end = new Date();
+      const start = new Date(Date.now() - 7 * 86400e3);
+      const fmt = d => d.toISOString().slice(0, 10).replace(/-/g, "");
+      const url = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/ChatGPT/daily/" + fmt(start) + "/" + fmt(end);
+      const r = await fetch(url, { headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { wikimedia: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const items = Array.isArray(j?.items) ? j.items : null;
+      if (!items) return { value: null, sources: { wikimedia: { ok: false, error: "no_items" } } };
+      const total = items.reduce((a, x) => a + (typeof x.views === "number" ? x.views : 0), 0);
+      return { value: total, sources: { wikimedia: { ok: true } }, context: { article: "ChatGPT", days: items.length } };
+    },
+  },
+  "github-google-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=org:google&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { org: "google" } };
+    },
+  },
 };
 
 
