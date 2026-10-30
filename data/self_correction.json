@@ -243,7 +243,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 21/24 runs (88%)",
+      "reason": "conf=0 in 20/24 runs (83%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -432,6 +432,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "networking",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -583,7 +588,7 @@
     },
     {
       "sector": "statistics",
-      "reason": "conf=0 in 22/24 runs (92%)",
+      "reason": "conf=0 in 21/24 runs (88%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -688,7 +693,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 19/24 runs (79%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -732,13 +737,8 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "shopify-allbirds-product-count",
-      "reason": "conf=0 in 20/20 runs (100%)",
+      "reason": "conf=0 in 21/21 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -756,12 +756,8 @@
       "reason": "spam (100%) but no config found in workers"
     },
     {
-      "sector": "treasuries",
-      "reason": "spam (50%) but no config found in workers"
-    },
-    {
       "sector": "home-assistant",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "robonix",
@@ -769,7 +765,7 @@
     },
     {
       "sector": "dc-crime",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -781,15 +777,15 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (54%) but no config found in workers"
-    },
-    {
-      "sector": "coinbase-btc-volume24h",
       "reason": "spam (58%) but no config found in workers"
     },
     {
-      "sector": "dex-ethereum-volume",
+      "sector": "coinbase-btc-volume24h",
       "reason": "spam (62%) but no config found in workers"
+    },
+    {
+      "sector": "dex-ethereum-volume",
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -797,39 +793,34 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
-      "reason": "spam (92%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (65%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
-      "reason": "spam (87%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (57%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (60%) but no config found in workers"
+      "reason": "spam (57%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
-      "reason": "spam (85%) but no config found in workers"
+      "reason": "spam (86%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
-    {
-      "sector": "biology",
-      "runs": 24,
-      "avg_conf": 0.92
-    },
     {
       "sector": "books",
       "runs": 24,
@@ -1076,6 +1067,11 @@
       "avg_conf": 1.0
     },
     {
+      "sector": "eth-exchange-spread",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "stablecoin-total-supply",
       "runs": 24,
       "avg_conf": 1.0
@@ -1177,42 +1173,47 @@
     },
     {
       "sector": "defi-fees-aave",
-      "runs": 23,
+      "runs": 24,
       "avg_conf": 1.0
     },
     {
       "sector": "defi-open-interest-total",
-      "runs": 23,
+      "runs": 24,
       "avg_conf": 1.0
     },
     {
       "sector": "usgs-streamflow-mississippi",
-      "runs": 23,
+      "runs": 24,
       "avg_conf": 0.96
     },
     {
       "sector": "feodo-c2-count",
-      "runs": 23,
+      "runs": 24,
       "avg_conf": 1.0
     },
     {
+      "sector": "biology",
+      "runs": 24,
+      "avg_conf": 0.92
+    },
+    {
       "sector": "cheapshark-deal-count",
-      "runs": 20,
+      "runs": 21,
       "avg_conf": 0.95
     },
     {
       "sector": "espn-nfl-score-count",
-      "runs": 20,
+      "runs": 21,
       "avg_conf": 1.0
     },
     {
       "sector": "geocables-incidents",
-      "runs": 20,
+      "runs": 21,
       "avg_conf": 1.0
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "runs": 20,
+      "runs": 21,
       "avg_conf": 1.0
     }
   ]
