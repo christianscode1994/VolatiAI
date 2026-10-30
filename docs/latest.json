@@ -140,6 +140,11 @@
             "1",
             "1.000"
           ],
+          "b": [
+            "78025.10000",
+            "2",
+            "2.000"
+          ],
           "c": [
             "77932.40000",
             "0.01218924"
@@ -398,7 +403,7 @@
               "78074.8",
               "1.6038111",
               "0",
-              "8"
+              "3"
             ],
             [
               "78074.9",
@@ -739,7 +744,7 @@
               "1"
             ],
             [
-              "78067.2",
+              "78214.4",
               "0.00013",
               "0",
               "1"
@@ -1018,12 +1023,20 @@
     "spoofing": {
       "schema_version": "2.0",
       "per_exchange": {
-        "kraken": [],
+        "kraken": [
+          {
+            "side": "bid",
+            "price": 78021.5,
+            "size": 6.409,
+            "notional": 500039.79,
+            "severity": "medium"
+          }
+        ],
         "okx": []
       },
-      "signal_count": 0,
-      "largest_notional": 0.0,
-      "spoofing_score": 0,
+      "signal_count": 1,
+      "largest_notional": 500039.79,
+      "spoofing_score": 15,
       "risk": "low"
     },
     "liquidity": {
@@ -1065,6 +1078,11 @@
       ],
       "okx": [
         {
+          "side": "bid",
+          "bucket_price": 78100.0,
+          "notional": 824419.3312383941
+        },
+        {
           "side": "ask",
           "bucket_price": 78000.0,
           "notional": 907914.4227286567
@@ -1085,9 +1103,9 @@
       "protocols_tracked": 45,
       "protocols_active": 19,
       "protocols_dormant": 26,
-      "commits_total": 618,
-      "commits_avg": 13.73,
-      "active_developers": 169,
+      "commits_total": 616,
+      "commits_avg": 13.69,
+      "active_developers": 168,
       "releases_total": 35,
       "top_active": [
         {
@@ -1170,8 +1188,8 @@
         "l1_chains": {
           "tracked": 6,
           "active": 5,
-          "commits": 136,
-          "avg": 22.67,
+          "commits": 135,
+          "avg": 22.5,
           "signal": "high"
         },
         "l2_rollups": {
@@ -1184,8 +1202,8 @@
         "infrastructure": {
           "tracked": 3,
           "active": 1,
-          "commits": 39,
-          "avg": 13.0,
+          "commits": 38,
+          "avg": 12.67,
           "signal": "high"
         },
         "tooling": {
@@ -1233,7 +1251,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.3404,
+          "floor_sol": 7.3436,
           "volume_24h_sol": 0.0,
           "listed": 204,
           "avg_sale_sol": 7.2
@@ -1275,7 +1293,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.3404,
+          "floor_sol": 7.3436,
           "volume_24h_sol": 0.0,
           "listed": 204,
           "avg_sale_sol": 7.2
@@ -1529,6 +1547,17 @@
           "type": "transfer"
         },
         {
+          "hash": "0x289139dd515ce71bb38b7b4843c18aaa4a9927a46c87fdf54f934a77f96d1b13",
+          "from": "0x3b98b9e9cb75c1cb1729aab8f09ced2936505e4f",
+          "to": "0xe92e65049b3c2ca12806e9567b08895118c5a03f",
+          "token": "USDT",
+          "value": 4999999.6,
+          "timestamp": 1793347943,
+          "block": 26304298,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
           "hash": "0x102addada64eb9ede01925c4f470b4f7551fc43866e635ae23454c48d1486936",
           "from": "0x2744dfd9898f0babbc570cc594bbbc84b487a22b",
           "to": "0x9b0be4ffa4db75832aade5d3ad2d33ffbc5c739d",
@@ -1573,6 +1602,17 @@
           "type": "transfer"
         },
         {
+          "hash": "0x4ef4b94e92c0c0a38f4b4aa90e6fd8fc1e754843684cee1286700033be522048",
+          "from": "0x50ab8968f8b29ea9c62a5a388e815d27153689d4",
+          "to": "0xe7a5e20ca7192c6f52d59391548be2bcaf612961",
+          "token": "USDC",
+          "value": 3479801.04,
+          "timestamp": 1793347955,
+          "block": 26304299,
+          "legs": 1,
+          "type": "transfer"
+        },
+        {
           "hash": "0x6c4de45859ab3086a92e2b48c0533a79def987f2eabc246dd08ba0f7c52f8a0e",
           "from": "0xc333e80ef2dec2805f239e3f1e810612d294f771",
           "to": "0xa29e963992597b21bcdcaa969d571984869c4ff5",
@@ -1584,13 +1624,13 @@
           "type": "transfer"
         },
         {
-          "hash": "0x3231ba45aad8d6b793d9acbb225f553c3f87e2fbcc560660a46e4624d7290fc8",
-          "from": "0x37305b1cd40574e4c5ce33f8e8306be057fd7341",
-          "to": "0x1601843c5e9bc251a3272907010afa41fa18347e",
+          "hash": "0x70a5394da8fb3c9752d73e93bb2f5d68ab11dedbc446866e20c34bfe75089485",
+          "from": "0x2744dfd9898f0babbc570cc594bbbc84b487a22b",
+          "to": "0x18e24850fdeceee577da1e08c63b260cff69b962",
           "token": "USDC",
-          "value": 2509608.65,
-          "timestamp": 1793346707,
-          "block": 26304195,
+          "value": 3199999.33,
+          "timestamp": 1793347931,
+          "block": 26304297,
           "legs": 1,
           "type": "transfer"
         },
