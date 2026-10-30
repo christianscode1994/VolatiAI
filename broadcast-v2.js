@@ -195,12 +195,40 @@ if (signals.length > 0) {
 }
 const compactText = compactLines.join("\n");
 
+function truncateGraphemes(text, maxG, maxB = Infinity) {
+  if (!text) return "";
+  const seg = new Intl.Segmenter('en', { granularity: 'grapheme' });
+  const enc = new TextEncoder();
+  const gs = [...seg.segment(text)];
+  let gCount = 0, bCount = 0, cut = gs.length;
+  for (let i = 0; i < gs.length; i++) {
+    const b = enc.encode(gs[i].segment).length;
+    if (gCount + 1 > maxG || bCount + b > maxB) { cut = i; break; }
+    gCount++; bCount += b;
+  }
+  if (cut >= gs.length) return text;
+  const truncatedAll = gs.slice(0, cut).map(g => g.segment).join('');
+  const lookback = gs.slice(Math.max(0, cut - 80), cut).map(g => g.segment).join('');
+  const sentMatches = [...lookback.matchAll(/[.!?](?=\s|$)/g)];
+  if (sentMatches.length > 0) {
+    const lastPos = sentMatches[sentMatches.length - 1].index;
+    const keepLen = truncatedAll.length - (lookback.length - lastPos - 1);
+    if (keepLen > 20) return truncatedAll.slice(0, keepLen).trimEnd() + '\u2026';
+  }
+  let backoff = cut;
+  for (let i = cut - 1; i >= Math.max(0, cut - 40); i--) {
+    if (/\s/.test(gs[i].segment)) { backoff = i; break; }
+  }
+  const finalCut = backoff > 0 ? backoff : cut;
+  return gs.slice(0, finalCut).map(g => g.segment).join('').trimEnd() + '\u2026';
+}
+
 // Per-platform truncation
-const forBluesky  = compactText.slice(0, 297) + (compactText.length > 297 ? "…" : "");
-const forMastodon = fullText.slice(0, 497) + (fullText.length > 497 ? "…" : "");
-const forDiscord  = fullText.slice(0, 1990);
-const forSlack    = fullText.slice(0, 2990);
-const forTelegram = fullText.slice(0, 4080);
+const forBluesky  = truncateGraphemes(compactText, 290, 2900);
+const forMastodon = truncateGraphemes(fullText, 490);
+const forDiscord  = truncateGraphemes(fullText, 1990);
+const forSlack    = truncateGraphemes(fullText, 2990);
+const forTelegram = truncateGraphemes(fullText, 4080);
 const forNostr    = fullText;
 
 const ts = new Date().toISOString();
