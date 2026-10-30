@@ -3514,6 +3514,36 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Vala" } };
     },
   },
+  "github-riscv-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["topic"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=topic:riscv&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { topic: "riscv" } };
+    },
+  },
+  "github-hdl-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Verilog%20OR%20language:VHDL&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Verilog+VHDL" } };
+    },
+  },
+  "github-open-silicon-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["topic"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/repos/openhwgroup/cva6", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.stargazers_count === "number" ? j.stargazers_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "openhwgroup/cva6" } };
+    },
+  },
 };
 
 
