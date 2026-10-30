@@ -3312,16 +3312,6 @@ const COLLECTORS = {
       return { value: n, sources: { nftx: { ok: typeof n === "number" } } };
     },
   },
-  "dash-block-height": {
-    config: { metric: "block_height", threshold_pct: 0.1, window: "24h", ttl: 1800, context_keys: ["chain"] },
-    async collectAll(env) {
-      const r = await fetch("https://insight.dash.org/insight-api/status", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { dash_insight: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = typeof j?.info?.blocks === "number" ? j.info.blocks : null;
-      return { value: n, sources: { dash_insight: { ok: typeof n === "number" } }, context: { chain: "dash" } };
-    },
-  },
   "bitcoin-mempool-count": {
     config: { metric: "mempool_tx_count", threshold_pct: 30, window: "24h", ttl: 1800, context_keys: ["chain"] },
     async collectAll(env) {
@@ -3330,21 +3320,6 @@ const COLLECTORS = {
       const j = await r.json();
       const n = typeof j?.count === "number" ? j.count : null;
       return { value: n, sources: { mempool: { ok: typeof n === "number" } }, context: { chain: "bitcoin" } };
-    },
-  },
-  "solana-slot-height": {
-    config: { metric: "slot_height", threshold_pct: 0.1, window: "24h", ttl: 1800, context_keys: ["chain"] },
-    async collectAll(env) {
-      const r = await fetch("https://api.mainnet-beta.solana.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "User-Agent": "VolatiAI/1.0" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getSlot" }),
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!r.ok) return { value: null, sources: { solana: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = typeof j?.result === "number" ? j.result : null;
-      return { value: n, sources: { solana: { ok: typeof n === "number" } }, context: { chain: "solana" } };
     },
   },
   "ethereum-block-height": {
