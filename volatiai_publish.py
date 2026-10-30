@@ -8,6 +8,34 @@ import json, os, subprocess, sys, urllib.request
 from datetime import datetime, timezone
 from scripts.safe_digest import safe_digest
 
+def _byte_count(text):
+    return len(text.encode('utf-8'))
+
+def _truncate_safely(text, max_graphemes, max_bytes=None):
+    """Truncate at word/sentence boundary within grapheme/byte limits."""
+    if max_bytes is None:
+        max_bytes = max_graphemes * 4
+    if len(text) <= max_graphemes and _byte_count(text) <= max_bytes:
+        return text
+    cut = min(len(text), max_graphemes)
+    while cut > 0 and _byte_count(text[:cut]) > max_bytes:
+        cut -= 1
+    if cut == 0:
+        return ""
+    truncated = text[:cut]
+    if cut < len(text):
+        lookback = truncated[-40:]
+        last_space = lookback.rfind(' ')
+        if last_space > 10:
+            truncated = truncated[:-(40 - last_space)].rstrip()
+    last_period = truncated.rfind('.')
+    if last_period > len(truncated) * 0.6:
+        truncated = truncated[:last_period + 1]
+    if not truncated.endswith('\u2026'):
+        truncated = truncated.rstrip() + '\u2026'
+    return truncated
+
+
 def http_post(url, data, headers=None, method="POST"):
     headers = headers or {}
     try:
@@ -59,9 +87,24 @@ def mastodon(text):
     return "ok" if r and b'"id"' in r else "fail"
 
 def bluesky(text):
-    text = safe_digest(text, "bluesky")
     handle, password = os.environ.get("BLUESKY_HANDLE"), os.environ.get("BLUESKY_PASSWORD")
     if not (handle and password): return "skipped"
+    # Sanitize content WITHOUT footer — footer is budgeted separately
+    from scripts.safe_digest import _sanitize
+    sanitized = _sanitize(text)
+    # Compact footer + hashtags (must fit Bluesky's 300-grapheme limit)
+    site = os.environ.get("VOLATIAI_SITE", "https://christianscode1994.github.io/VolatiAI")
+    footer = f"\n\n\u26a0\ufe0f Not financial advice \u00b7 AI-generated\n\U0001F4DA {site}/attribution.json"
+    tags = "\n\n#NotFinancialAdvice #DataJournalism"
+    # Reserve room for footer + tags + safety buffer
+    overhead = len(footer) + len(tags) + 5
+    content_budget = 300 - overhead
+    # Truncate CONTENT first, then append footer
+    content = _truncate_safely(sanitized, content_budget, max_bytes=2900)
+    final = content + footer + tags
+    # Hard cap: never exceed 300 graphemes or 2900 bytes
+    if len(final) > 300 or _byte_count(final) > 2900:
+        final = _truncate_safely(final, 295, max_bytes=2900)
     # Session
     sess_payload = json.dumps({"identifier": handle, "password": password}).encode()
     sess_r = http_post("https://bsky.social/xrpc/com.atproto.server.createSession",
@@ -74,7 +117,7 @@ def bluesky(text):
     post_payload = json.dumps({
         "repo": did,
         "collection": "app.bsky.feed.post",
-        "record": {"$type": "app.bsky.feed.post", "text": text[:300],
+        "record": {"$type": "app.bsky.feed.post", "text": final,
                    "createdAt": now}
     }).encode()
     r = http_post("https://bsky.social/xrpc/com.atproto.repo.createRecord",
