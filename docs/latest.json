@@ -428,7 +428,7 @@
               "77911.8",
               "0.136485",
               "0",
-              "1"
+              "3"
             ],
             [
               "77911.9",
@@ -1053,6 +1053,11 @@
     "depth_heatmaps": {
       "kraken": [
         {
+          "side": "bid",
+          "bucket_price": 77700.0,
+          "notional": 544134.1577999999
+        },
+        {
           "side": "ask",
           "bucket_price": 77700.0,
           "notional": 271723.0044
@@ -1233,7 +1238,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.3404,
+          "floor_sol": 7.3468,
           "volume_24h_sol": 0.0,
           "listed": 204,
           "avg_sale_sol": 7.2
@@ -1275,7 +1280,7 @@
         {
           "collection": "mad_lads",
           "chain": "solana",
-          "floor_sol": 7.3404,
+          "floor_sol": 7.3468,
           "volume_24h_sol": 0.0,
           "listed": 204,
           "avg_sale_sol": 7.2
@@ -1587,15 +1592,16 @@
           "type": "transfer"
         },
         {
-          "hash": "0xb5424cc1140d44393fdffb7518a5ec7ed40d6c12251033d5357031df024e9833",
-          "from": "0x2744dfd9898f0babbc570cc594bbbc84b487a22b",
-          "to": "0x9b0be4ffa4db75832aade5d3ad2d33ffbc5c739d",
+          "hash": "0xdb49aa24bf69b89677578dd5cbd484b670a69d526c9986591b89c8f09887067b",
+          "from": "0x02912516d49de997db75b9d7858faae59209650b",
+          "to": "0xaf177c57e369bbd30f47745dbaaf1d225f4b74d0",
           "token": "USDC",
-          "value": 4999999.37,
-          "timestamp": 1793349107,
-          "block": 26304395,
-          "legs": 1,
-          "type": "transfer"
+          "value": 1519263.29,
+          "timestamp": 1793350187,
+          "block": 26304484,
+          "legs": 4,
+          "type": "round_trip",
+          "net_flow": 0
         },
         {
           "hash": "0xd37049fff2a68bb06fcd47678efda4e56f266c227344363169b89346a6ef2319",
@@ -1880,66 +1886,21 @@
           "to": "0x0000000000000000000000000000000000000000",
           "token": "USDC",
           "value": 1000000.0,
-          "timestamp": 1793349383,
-          "block": 26304418,
+          "timestamp": 1793350223,
+          "block": 26304486,
           "legs": 1,
           "type": "transfer"
         },
         {
-          "hash": "0xa53826f5e0ae2596dbd8449acceea2ecca69c6b5bda8a60fff22edb0f18b70a8",
-          "from": "0x9906a13325e3566966fe94258fd01a97a490bd78",
+          "hash": "0x0093533478b94bfd023e4d19a11102527974b0422ecb4e2f0dfc318232a9ae0f",
+          "from": "0x4626d0ff0041e7f8a82e3cebcc5fc574cbe1dfc8",
           "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
           "token": "USDC",
           "value": 1000000.0,
-          "timestamp": 1793349323,
-          "block": 26304413,
+          "timestamp": 1793350175,
+          "block": 26304483,
           "legs": 1,
           "type": "transfer"
-        },
-        {
-          "hash": "0xad9558b000689d19609b72cca73c82f54fcfaa1296a1a1a0410ec1432db9d449",
-          "from": "0xd5417e96dd04363c675e41ee6f30bf788412c719",
-          "to": "0xa14156f11411d6a3808af490b895e8d3edeb428e",
-          "token": "USDC",
-          "value": 1000000.0,
-          "timestamp": 1793349311,
-          "block": 26304412,
-          "legs": 1,
-          "type": "transfer"
-        },
-        {
-          "hash": "0x3e500759500c6ea5fa9c9c83072e65706b07405cdd85c37db7708b789274cda0",
-          "from": "0x040f8d27e4dcb3a0543e2cae341adc823b229df4",
-          "to": "0x9906a13325e3566966fe94258fd01a97a490bd78",
-          "token": "USDC",
-          "value": 1000000.0,
-          "timestamp": 1793349167,
-          "block": 26304400,
-          "legs": 1,
-          "type": "transfer"
-        },
-        {
-          "hash": "0x0dc50c374369ded11b4e364c7782514f89c23ad24a3fcd594da3c5dfa43f4369",
-          "from": "0x9151f5c7a37968d8ca8176c0647073dfe77bd918",
-          "to": "0x040f8d27e4dcb3a0543e2cae341adc823b229df4",
-          "token": "USDC",
-          "value": 1000000.0,
-          "timestamp": 1793349155,
-          "block": 26304399,
-          "legs": 1,
-          "type": "transfer"
-        },
-        {
-          "hash": "0x0a209c74a9b93e7c874cd955623236533c21fbf0ea5338ce6b01149bf38a8f1e",
-          "from": "0x0a8accba63f42e743a31f33c44b87be0c83fe230",
-          "to": "0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb",
-          "token": "USDC",
-          "value": 1000000.0,
-          "timestamp": 1793348987,
-          "block": 26304385,
-          "legs": 6,
-          "type": "round_trip",
-          "net_flow": 0
         }
       ],
       "min_usd": 1000000
