@@ -2809,6 +2809,16 @@ const COLLECTORS = {
       return { value: n, sources: { sec_xbrl: { ok: typeof n === "number" } }, context: { company: "JPMorgan Chase & Co.", period_end: best?.end ?? null, form: best?.form ?? null } };
     },
   },
+  "dribba-jobs-count": {
+    config: { metric: "open_jobs", threshold_pct: 20, window: "7d", window_days: 7, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://dribba.com/api/v1/jobs", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { dribba: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total === "number" ? j.total : (Array.isArray(j?.items) ? j.items.length : null);
+      return { value: n, sources: { dribba: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 
