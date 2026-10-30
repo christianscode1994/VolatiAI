@@ -2845,28 +2845,6 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { org: "google" } };
     },
   },
-  "stackexchange-python-questions": {
-    config: { metric: "question_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["tag"] },
-    async collectAll(env) {
-      const r = await fetch("https://api.stackexchange.com/2.3/tags/python/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json", "Accept-Encoding": "identity" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) { const err = await r.text(); return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}: ${err.slice(0, 120)}` } } }; }
-      const j = await r.json();
-      const item = Array.isArray(j?.items) ? j.items[0] : null;
-      const n = typeof item?.count === "number" ? item.count : null;
-      return { value: n, sources: { stackexchange: { ok: typeof n === "number" } }, context: { tag: "python" } };
-    },
-  },
-  "stackexchange-rust-questions": {
-    config: { metric: "question_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["tag"] },
-    async collectAll(env) {
-      const r = await fetch("https://api.stackexchange.com/2.3/tags/rust/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json", "Accept-Encoding": "identity" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) { const err = await r.text(); return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}: ${err.slice(0, 120)}` } } }; }
-      const j = await r.json();
-      const item = Array.isArray(j?.items) ? j.items[0] : null;
-      const n = typeof item?.count === "number" ? item.count : null;
-      return { value: n, sources: { stackexchange: { ok: typeof n === "number" } }, context: { tag: "rust" } };
-    },
-  },
   "npm-nextjs-weekly-downloads": {
     config: { metric: "weekly_downloads", threshold_pct: 10, window: "7d", window_days: 7, ttl: 86400, context_keys: ["package"] },
     async collectAll(env) {
