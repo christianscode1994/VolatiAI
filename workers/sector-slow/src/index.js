@@ -2848,8 +2848,8 @@ const COLLECTORS = {
   "stackexchange-python-questions": {
     config: { metric: "question_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["tag"] },
     async collectAll(env) {
-      const r = await fetch("https://api.stackexchange.com/2.3/tags/python/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}` } } };
+      const r = await fetch("https://api.stackexchange.com/2.3/tags/python/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json", "Accept-Encoding": "identity" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) { const err = await r.text(); return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}: ${err.slice(0, 120)}` } } }; }
       const j = await r.json();
       const item = Array.isArray(j?.items) ? j.items[0] : null;
       const n = typeof item?.count === "number" ? item.count : null;
@@ -2859,8 +2859,8 @@ const COLLECTORS = {
   "stackexchange-rust-questions": {
     config: { metric: "question_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["tag"] },
     async collectAll(env) {
-      const r = await fetch("https://api.stackexchange.com/2.3/tags/rust/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}` } } };
+      const r = await fetch("https://api.stackexchange.com/2.3/tags/rust/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json", "Accept-Encoding": "identity" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) { const err = await r.text(); return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}: ${err.slice(0, 120)}` } } }; }
       const j = await r.json();
       const item = Array.isArray(j?.items) ? j.items[0] : null;
       const n = typeof item?.count === "number" ? item.count : null;
@@ -2920,10 +2920,10 @@ const COLLECTORS = {
   "github-linux-kernel-stars": {
     config: { metric: "stargazers", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["repo"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/repos/torvalds/linux", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const r = await fetch("https://api.github.com/search/repositories?q=repo:torvalds/linux&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) { const err = await r.text(); return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}: ${err.slice(0, 120)}` } } }; }
       const j = await r.json();
-      const n = typeof j?.stargazers_count === "number" ? j.stargazers_count : null;
+      const n = typeof j?.items?.[0]?.stargazers_count === "number" ? j.items[0].stargazers_count : null;
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "torvalds/linux" } };
     },
   },
