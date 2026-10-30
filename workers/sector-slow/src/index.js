@@ -2905,6 +2905,66 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "torvalds/linux" } };
     },
   },
+  "crates-io-total-crates": {
+    config: { metric: "total_crates", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://crates.io/api/v1/summary", { headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { crates_io: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.num_crates === "number" ? j.num_crates : null;
+      return { value: n, sources: { crates_io: { ok: typeof n === "number" } } };
+    },
+  },
+  "github-solidity-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Solidity&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Solidity" } };
+    },
+  },
+  "github-cpp-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:C%2B%2B&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "C++" } };
+    },
+  },
+  "github-haskell-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Haskell&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Haskell" } };
+    },
+  },
+  "packagist-laravel-downloads": {
+    config: { metric: "total_downloads", threshold_pct: 10, window: "30d", window_days: 30, ttl: 86400, context_keys: ["package"] },
+    async collectAll(env) {
+      const r = await fetch("https://packagist.org/packages/laravel/framework.json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { packagist: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.package?.downloads?.total === "number" ? j.package.downloads.total : null;
+      return { value: n, sources: { packagist: { ok: typeof n === "number" } }, context: { package: "laravel/framework" } };
+    },
+  },
+  "maven-kotlin-artifact-count": {
+    config: { metric: "kotlin_artifacts", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["group"] },
+    async collectAll(env) {
+      const r = await fetch("https://search.maven.org/solrsearch/select?q=g:org.jetbrains.kotlin&rows=0&wt=json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { maven_central: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.response?.numFound === "number" ? j.response.numFound : null;
+      return { value: n, sources: { maven_central: { ok: typeof n === "number" } }, context: { group: "org.jetbrains.kotlin" } };
+    },
+  },
 };
 
 
