@@ -3338,6 +3338,26 @@ const COLLECTORS = {
       return { value: (Number.isFinite(n) ? n : null), sources: { publicnode: { ok: Number.isFinite(n) } }, context: { chain: "ethereum" } };
     },
   },
+  "elm-package-count": {
+    config: { metric: "total_packages", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://package.elm-lang.org/all-packages", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { elm_registry: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = (j && typeof j === "object") ? Object.keys(j).length : null;
+      return { value: n, sources: { elm_registry: { ok: typeof n === "number" } }, context: { language: "Elm" } };
+    },
+  },
+  "nuget-fsharp-package-count": {
+    config: { metric: "total_packages", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://azuresearch-usnc.nuget.org/query?q=tags:Fsharp&take=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { nuget: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.totalHits === "number" ? j.totalHits : null;
+      return { value: n, sources: { nuget: { ok: typeof n === "number" } }, context: { language: "F#" } };
+    },
+  },
 };
 
 
