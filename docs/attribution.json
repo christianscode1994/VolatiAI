@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T09:56:33.463025Z",
+  "generated_at": "2026-10-30T10:03:44.707638Z",
   "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
   "sources": [
     {
@@ -64,6 +64,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "bart-train-count"
+      ]
+    },
+    {
+      "attribution": "BenchGecko (benchgecko.ai)",
+      "license": "CC BY 4.0 — attribution required (Source: BenchGecko)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "benchgecko-total-models"
       ]
     },
     {
@@ -588,6 +596,14 @@
       ]
     },
     {
+      "attribution": "GitHub (crewAIInc/crewAI)",
+      "license": "Public repository metadata — GitHub API Terms (authenticated via PAT)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-crewai-stars"
+      ]
+    },
+    {
       "attribution": "GitHub (github.com/android)",
       "license": "Public repository metadata — GitHub API Terms (commercial reuse of public repo data permitted)",
       "category": "SAFE_OPEN",
@@ -609,6 +625,22 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "github-microsoft-repo-count"
+      ]
+    },
+    {
+      "attribution": "GitHub (langchain-ai/langchain)",
+      "license": "Public repository metadata — GitHub API Terms (authenticated via PAT)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-langchain-stars"
+      ]
+    },
+    {
+      "attribution": "GitHub (microsoft/autogen)",
+      "license": "Public repository metadata — GitHub API Terms (authenticated via PAT)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-autogen-stars"
       ]
     },
     {
@@ -873,6 +905,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "hex-phoenix-downloads"
+      ]
+    },
+    {
+      "attribution": "Hugging Face (huggingface.co)",
+      "license": "Public model metadata (Hugging Face Hub API) — no key required for public models",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "hf-bert-downloads"
       ]
     },
     {
@@ -1630,6 +1670,9 @@
       "license": "CC BY 4.0 (World Bank Open Data)",
       "category": "SAFE_CC_BY",
       "sectors": [
+        "wb-us-infant-mortality",
+        "wb-us-life-expectancy",
+        "wb-us-population-65plus",
         "worldbank-internet-users",
         "worldbank-remittances",
         "worldbank-se-gdp",
