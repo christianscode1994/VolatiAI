@@ -2965,6 +2965,170 @@ const COLLECTORS = {
       return { value: n, sources: { maven_central: { ok: typeof n === "number" } }, context: { group: "org.jetbrains.kotlin" } };
     },
   },
+  "go-module-publishes-24h": {
+    config: { metric: "new_versions_24h", threshold_pct: 20, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const since = new Date(Date.now() - 24 * 3600e3).toISOString();
+      const r = await fetch("https://index.golang.org/index?since=" + encodeURIComponent(since) + "&limit=2000", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { go_index: { ok: false, error: `HTTP ${r.status}` } } };
+      const text = await r.text();
+      const lines = text.split("\n").filter(l => l.trim().length > 0);
+      return { value: lines.length, sources: { go_index: { ok: true } }, context: { capped: lines.length === 2000 } };
+    },
+  },
+  "nuget-package-count": {
+    config: { metric: "total_packages", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://azuresearch-usnc.nuget.org/query?q=*&take=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { nuget: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.totalHits === "number" ? j.totalHits : null;
+      return { value: n, sources: { nuget: { ok: typeof n === "number" } } };
+    },
+  },
+  "cpan-release-count": {
+    config: { metric: "total_releases", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://fastapi.metacpan.org/v1/release/_search?q=status:latest&size=0", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { cpan: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.hits?.total === "number" ? j.hits.total : (typeof j?.hits?.total?.value === "number" ? j.hits.total.value : null);
+      return { value: n, sources: { cpan: { ok: typeof n === "number" } } };
+    },
+  },
+  "cran-package-count": {
+    config: { metric: "total_packages", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://cran.r-project.org/src/contrib/PACKAGES", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { cran: { ok: false, error: `HTTP ${r.status}` } } };
+      const text = await r.text();
+      const n = (text.match(/^Package:/gm) || []).length;
+      return { value: n, sources: { cran: { ok: n > 0 } } };
+    },
+  },
+  "clojars-artifact-count": {
+    config: { metric: "matching_artifacts", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["query"] },
+    async collectAll(env) {
+      const r = await fetch("https://clojars.org/search?format=json&q=clojure", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { clojars: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : (typeof j?.total === "number" ? j.total : (Array.isArray(j?.results) ? j.results.length : null));
+      return { value: n, sources: { clojars: { ok: typeof n === "number" } }, context: { query: "clojure" } };
+    },
+  },
+  "hex-phoenix-downloads": {
+    config: { metric: "total_downloads", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["package"] },
+    async collectAll(env) {
+      const r = await fetch("https://hex.pm/api/packages/phoenix", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { hex: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.downloads?.total === "number" ? j.downloads.total : null;
+      return { value: n, sources: { hex: { ok: typeof n === "number" } }, context: { package: "phoenix" } };
+    },
+  },
+  "pubdev-flutter-package-count": {
+    config: { metric: "matching_packages", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["query"] },
+    async collectAll(env) {
+      const r = await fetch("https://pub.dev/api/search?q=flutter", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { pubdev: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total === "number" ? j.total : (typeof j?.count === "number" ? j.count : null);
+      return { value: n, sources: { pubdev: { ok: typeof n === "number" } }, context: { query: "flutter" } };
+    },
+  },
+  "maven-scala-artifact-count": {
+    config: { metric: "scala_artifacts", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["group"] },
+    async collectAll(env) {
+      const r = await fetch("https://search.maven.org/solrsearch/select?q=g:org.scala-lang&rows=0&wt=json", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { maven_scala: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.response?.numFound === "number" ? j.response.numFound : null;
+      return { value: n, sources: { maven_scala: { ok: typeof n === "number" } }, context: { group: "org.scala-lang" } };
+    },
+  },
+  "github-ocaml-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:OCaml&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "OCaml" } };
+    },
+  },
+  "github-nim-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Nim&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Nim" } };
+    },
+  },
+  "github-julia-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Julia&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Julia" } };
+    },
+  },
+  "hackernews-ai-story-count": {
+    config: { metric: "matching_stories", threshold_pct: 20, window: "7d", window_days: 7, ttl: 3600, context_keys: ["query"] },
+    async collectAll(env) {
+      const r = await fetch("https://hn.algolia.com/api/v1/search?query=AI&tags=story&hitsPerPage=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { hn_algolia: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.nbHits === "number" ? j.nbHits : null;
+      return { value: n, sources: { hn_algolia: { ok: typeof n === "number" } }, context: { query: "AI" } };
+    },
+  },
+  "mastodon-social-weekly-statuses": {
+    config: { metric: "weekly_statuses", threshold_pct: 20, window: "7d", window_days: 7, ttl: 3600, context_keys: ["instance"] },
+    async collectAll(env) {
+      const r = await fetch("https://mastodon.social/api/v1/instance/activity", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { mastodon: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const latest = Array.isArray(j) && j.length > 0 ? j[j.length - 1] : null;
+      const n = latest && typeof latest.statuses !== "undefined" ? Number(latest.statuses) : null;
+      return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { mastodon: { ok: typeof n === "number" && Number.isFinite(n) } }, context: { instance: "mastodon.social", week: latest?.week ?? null } };
+    },
+  },
+  "bluesky-ai-post-count": {
+    config: { metric: "matching_posts", threshold_pct: 20, window: "7d", window_days: 7, ttl: 3600, context_keys: ["query"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=AI&limit=100", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { bsky: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.posts) ? j.posts.length : null;
+      return { value: n, sources: { bsky: { ok: typeof n === "number" } }, context: { query: "AI", capped: n === 100 } };
+    },
+  },
+  "wikipedia-chatgpt-edit-count": {
+    config: { metric: "total_edits", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["article"] },
+    async collectAll(env) {
+      const r = await fetch("https://en.wikipedia.org/w/rest.php/v1/page/ChatGPT/history/counts/edits", { headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { wikipedia: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.count === "number" ? j.count : (typeof j?.edits === "number" ? j.edits : null);
+      return { value: n, sources: { wikipedia: { ok: typeof n === "number" } }, context: { article: "ChatGPT" } };
+    },
+  },
+  "un-comtrade-us-exports": {
+    config: { metric: "export_records", threshold_pct: 10, window: "30d", window_days: 30, ttl: 86400, context_keys: ["reporter", "period"] },
+    async collectAll(env) {
+      const r = await fetch("https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=842&period=2023&cmdCode=TOTAL&flowCode=X", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { comtrade: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const data = Array.isArray(j?.data) ? j.data : null;
+      if (!data) return { value: null, sources: { comtrade: { ok: false, error: "no_data" } } };
+      const total = data.reduce((a, x) => a + (typeof x.primaryValue === "number" ? x.primaryValue : 0), 0);
+      return { value: data.length, sources: { comtrade: { ok: true } }, context: { reporter: "USA", period: "2023", records: data.length, total_usd: total } };
+    },
+  },
 };
 
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T08:15:54.506357Z",
+  "generated_at": "2026-10-30T08:22:38.741248Z",
   "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
   "sources": [
     {
@@ -91,6 +91,14 @@
       ]
     },
     {
+      "attribution": "Bluesky (public AppView API)",
+      "license": "Public AT Protocol API (Bluesky); public posts only",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "bluesky-ai-post-count"
+      ]
+    },
+    {
       "attribution": "CDC",
       "license": "CDC (US Gov public domain)",
       "category": "SAFE_PD_CC0",
@@ -104,6 +112,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "cern-opendata-records"
+      ]
+    },
+    {
+      "attribution": "CRAN (R package archive)",
+      "license": "Public repository (CRAN)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "cran-package-count"
       ]
     },
     {
@@ -152,6 +168,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "clinicaltrials-study-total"
+      ]
+    },
+    {
+      "attribution": "Clojars (Clojure artifacts)",
+      "license": "Public API (Clojars)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "clojars-artifact-count"
       ]
     },
     {
@@ -540,6 +564,30 @@
       ]
     },
     {
+      "attribution": "GitHub (search: language:Julia)",
+      "license": "Public repository metadata — GitHub API Terms",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-julia-repo-count"
+      ]
+    },
+    {
+      "attribution": "GitHub (search: language:Nim)",
+      "license": "Public repository metadata — GitHub API Terms",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-nim-repo-count"
+      ]
+    },
+    {
+      "attribution": "GitHub (search: language:OCaml)",
+      "license": "Public repository metadata — GitHub API Terms",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-ocaml-repo-count"
+      ]
+    },
+    {
       "attribution": "GitHub (search: language:Solidity)",
       "license": "Public repository metadata — GitHub API Terms",
       "category": "SAFE_OPEN",
@@ -553,6 +601,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "github-linux-kernel-stars"
+      ]
+    },
+    {
+      "attribution": "Go Module Index (index.golang.org)",
+      "license": "Public module index (proxy.golang.org)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "go-module-publishes-24h"
       ]
     },
     {
@@ -572,6 +628,14 @@
       ]
     },
     {
+      "attribution": "Hacker News (Algolia Search API)",
+      "license": "Public API (Algolia HN Search); HN content is public",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "hackernews-ai-story-count"
+      ]
+    },
+    {
       "attribution": "Have I Been Pwned",
       "license": "HIBP public API (k-anonymity)",
       "category": "SAFE_OPEN",
@@ -585,6 +649,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "hibp-breach-catalog-size"
+      ]
+    },
+    {
+      "attribution": "Hex.pm (Elixir/Erlang registry)",
+      "license": "Public API (Hex.pm)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "hex-phoenix-downloads"
       ]
     },
     {
@@ -645,6 +717,14 @@
     },
     {
       "attribution": "Maven Central (Sonatype)",
+      "license": "Public metadata (Maven Central); note Sonatype 'Commercial Infrastructure Use' clause, low risk at 1 fetch/day",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "maven-scala-artifact-count"
+      ]
+    },
+    {
+      "attribution": "Maven Central (Sonatype)",
       "license": "Public metadata — Maven Central no-charge access; note Sonatype 'Commercial Infrastructure Use' clause, low risk at 1 fetch/day",
       "category": "SAFE_OPEN",
       "sectors": [
@@ -657,6 +737,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "medlineplus-topic-count"
+      ]
+    },
+    {
+      "attribution": "MetaCPAN (CPAN Perl)",
+      "license": "Public API (MetaCPAN)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "cpan-release-count"
       ]
     },
     {
@@ -770,6 +858,14 @@
       "category": "SAFE_OGL",
       "sectors": [
         "webtris-uk-traffic-sites"
+      ]
+    },
+    {
+      "attribution": "NuGet (.NET package registry)",
+      "license": "Public V3 API (nuget.org)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nuget-package-count"
       ]
     },
     {
@@ -1082,6 +1178,14 @@
       ]
     },
     {
+      "attribution": "UN Comtrade (United Nations Statistics Division)",
+      "license": "UN Comtrade Preview API — transformed/aggregated counts exempt from re-dissemination restrictions; no raw records stored",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "un-comtrade-us-exports"
+      ]
+    },
+    {
       "attribution": "UNESCO",
       "license": "UNESCO open data",
       "category": "SAFE_OPEN",
@@ -1215,6 +1319,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "wikimedia-chatgpt-pageviews"
+      ]
+    },
+    {
+      "attribution": "Wikipedia (MediaWiki REST API)",
+      "license": "Public API (MediaWiki REST); edit counts are metadata, not copyrightable content",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "wikipedia-chatgpt-edit-count"
       ]
     },
     {
@@ -2073,6 +2185,14 @@
       ]
     },
     {
+      "attribution": "mastodon.social (public API)",
+      "license": "Public instance API (Mastodon); instance activity is public",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "mastodon-social-weekly-statuses"
+      ]
+    },
+    {
       "attribution": "mempool.space",
       "license": "mempool.space public API",
       "category": "SAFE_OPEN",
@@ -2223,6 +2343,14 @@
       "category": "SAFE_CC_BY",
       "sectors": [
         "pangaea"
+      ]
+    },
+    {
+      "attribution": "pub.dev (Dart/Flutter registry)",
+      "license": "Public API (pub.dev, Google)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "pubdev-flutter-package-count"
       ]
     },
     {
