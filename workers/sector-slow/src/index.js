@@ -3544,6 +3544,57 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "openhwgroup/cva6" } };
     },
   },
+  "wb-us-life-expectancy": {
+    config: { metric: "life_expectancy_years", threshold_pct: 1, window: "365d", window_days: 365, ttl: 86400, context_keys: ["country", "year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/SP.DYN.LE00.IN?format=json&per_page=1&date=2023", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = Array.isArray(j) && Array.isArray(j[1]) && j[1][0] ? j[1][0].value : null;
+      const n = typeof v === "number" ? v : null;
+      return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2023" } };
+    },
+  },
+  "wb-us-infant-mortality": {
+    config: { metric: "infant_mortality_per_1000", threshold_pct: 2, window: "365d", window_days: 365, ttl: 86400, context_keys: ["country", "year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/SP.DYN.IMRT.IN?format=json&per_page=1&date=2023", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = Array.isArray(j) && Array.isArray(j[1]) && j[1][0] ? j[1][0].value : null;
+      const n = typeof v === "number" ? v : null;
+      return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2023" } };
+    },
+  },
+  "wb-us-population-65plus": {
+    config: { metric: "population_65plus_pct", threshold_pct: 1, window: "365d", window_days: 365, ttl: 86400, context_keys: ["country", "year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/SP.POP.65UP.TO.ZS?format=json&per_page=1&date=2022", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = Array.isArray(j) && Array.isArray(j[1]) && j[1][0] ? j[1][0].value : null;
+      const n = typeof v === "number" ? v : null;
+      return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2022" } };
+    },
+  },
+  "autario-pension-accrual": {
+    config: { metric: "accrued_pension_entitlements_mio_eur", threshold_pct: 5, window: "365d", window_days: 365, ttl: 86400, context_keys: ["source", "dataset"] },
+    async collectAll(env) {
+      const r = await fetch("https://autario.com/api/v1/public/datasets/b7b22e0f-54de-4d66-8548-c01b4847d73b/data?limit=100&sort=time_period:desc", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { autario: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const rows = Array.isArray(j?.data) ? j.data : [];
+      let n = null;
+      for (const row of rows) {
+        const v = row?.obs_value;
+        if (typeof v === "string" && v.trim() !== "") {
+          const parsed = Number(v);
+          if (Number.isFinite(parsed)) { n = parsed; break; }
+        }
+      }
+      return { value: n, sources: { autario: { ok: typeof n === "number" } }, context: { source: "Eurostat", dataset: "NASA_10_PENS2" } };
+    },
+  },
 };
 
 
