@@ -3182,6 +3182,70 @@ const COLLECTORS = {
       return { value: n > 0 ? n : null, sources: { ndbc: { ok: n > 0 } } };
     },
   },
+  "imf-sovereign-debt-stress-count": {
+    config: { metric: "countries_over_100pct_gdp", threshold_pct: 5, window: "90d", window_days: 90, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://www.imf.org/external/datamapper/api/v1/GGXWDG_NGDP/USA", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { imf: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const byCountry = j?.values?.GGXWDG_NGDP;
+      if (!byCountry || typeof byCountry !== "object") return { value: null, sources: { imf: { ok: false, error: "unexpected_shape" } } };
+      let count = 0;
+      for (const years of Object.values(byCountry)) {
+        if (!years || typeof years !== "object") continue;
+        const yearKeys = Object.keys(years).map(Number).filter(Number.isFinite).sort((a, b) => b - a);
+        if (yearKeys.length === 0) continue;
+        const latest = years[String(yearKeys[0])];
+        if (typeof latest === "number" && latest > 100) count++;
+      }
+      return { value: count, sources: { imf: { ok: count > 0 } }, context: { basis: "latest available year per country" } };
+    },
+  },
+  "imf-govt-debt-jpn": {
+    config: { metric: "govt_debt_pct_gdp", threshold_pct: 2, window: "90d", window_days: 90, ttl: 86400, context_keys: ["country"] },
+    async collectAll(env) {
+      const r = await fetch("https://www.imf.org/external/datamapper/api/v1/GGXWDG_NGDP/USA", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { imf: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const years = j?.values?.GGXWDG_NGDP?.["JPN"];
+      if (!years || typeof years !== "object") return { value: null, sources: { imf: { ok: false, error: "no_country_data" } }, context: { country: "Japan" } };
+      const yearKeys = Object.keys(years).map(Number).filter(Number.isFinite).sort((a, b) => b - a);
+      const latestYear = yearKeys.length > 0 ? yearKeys[0] : null;
+      const v = latestYear !== null ? years[String(latestYear)] : null;
+      const n = typeof v === "number" && Number.isFinite(v) ? v : null;
+      return { value: n, sources: { imf: { ok: typeof n === "number" } }, context: { country: "Japan", year: latestYear } };
+    },
+  },
+  "imf-govt-debt-ita": {
+    config: { metric: "govt_debt_pct_gdp", threshold_pct: 2, window: "90d", window_days: 90, ttl: 86400, context_keys: ["country"] },
+    async collectAll(env) {
+      const r = await fetch("https://www.imf.org/external/datamapper/api/v1/GGXWDG_NGDP/USA", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { imf: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const years = j?.values?.GGXWDG_NGDP?.["ITA"];
+      if (!years || typeof years !== "object") return { value: null, sources: { imf: { ok: false, error: "no_country_data" } }, context: { country: "Italy" } };
+      const yearKeys = Object.keys(years).map(Number).filter(Number.isFinite).sort((a, b) => b - a);
+      const latestYear = yearKeys.length > 0 ? yearKeys[0] : null;
+      const v = latestYear !== null ? years[String(latestYear)] : null;
+      const n = typeof v === "number" && Number.isFinite(v) ? v : null;
+      return { value: n, sources: { imf: { ok: typeof n === "number" } }, context: { country: "Italy", year: latestYear } };
+    },
+  },
+  "imf-govt-debt-usa": {
+    config: { metric: "govt_debt_pct_gdp", threshold_pct: 2, window: "90d", window_days: 90, ttl: 86400, context_keys: ["country"] },
+    async collectAll(env) {
+      const r = await fetch("https://www.imf.org/external/datamapper/api/v1/GGXWDG_NGDP/USA", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { imf: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const years = j?.values?.GGXWDG_NGDP?.["USA"];
+      if (!years || typeof years !== "object") return { value: null, sources: { imf: { ok: false, error: "no_country_data" } }, context: { country: "United States" } };
+      const yearKeys = Object.keys(years).map(Number).filter(Number.isFinite).sort((a, b) => b - a);
+      const latestYear = yearKeys.length > 0 ? yearKeys[0] : null;
+      const v = latestYear !== null ? years[String(latestYear)] : null;
+      const n = typeof v === "number" && Number.isFinite(v) ? v : null;
+      return { value: n, sources: { imf: { ok: typeof n === "number" } }, context: { country: "United States", year: latestYear } };
+    },
+  },
 };
 
 
