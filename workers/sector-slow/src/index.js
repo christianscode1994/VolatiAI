@@ -3627,6 +3627,26 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "microsoft/autogen" } };
     },
   },
+  "github-mcp-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["topic"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=topic:mcp&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { topic: "mcp" } };
+    },
+  },
+  "github-ai-agents-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["topic"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=topic:ai-agents&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { topic: "ai-agents" } };
+    },
+  },
 };
 
 
