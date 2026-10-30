@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T09:22:35.714260Z",
+  "generated_at": "2026-10-30T09:24:22.794582Z",
   "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
   "sources": [
     {
@@ -228,10 +228,58 @@
     },
     {
       "attribution": "DefiLlama",
+      "license": "DefiLlama coins API — see DefiLlama commercial caveat",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "defillama-eth-price"
+      ]
+    },
+    {
+      "attribution": "DefiLlama",
       "license": "DefiLlama public API (open data)",
       "category": "SAFE_OPEN",
       "sectors": [
         "defillama-dex-volume-24h"
+      ]
+    },
+    {
+      "attribution": "DefiLlama",
+      "license": "DefiLlama public API — see DefiLlama commercial caveat",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "defillama-chains-with-tvl"
+      ]
+    },
+    {
+      "attribution": "DefiLlama",
+      "license": "DefiLlama stablecoins API — see DefiLlama commercial caveat",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "defillama-stablecoin-supply"
+      ]
+    },
+    {
+      "attribution": "DefiLlama — https://defillama.com",
+      "license": "DefiLlama public API — free, no auth; data Apache-2.0. NOTE: hosted API pricing sells $300/mo for commercial; safe for monitoring, review before paid redistribution",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "defillama-total-tvl"
+      ]
+    },
+    {
+      "attribution": "DexPaprika (CoinPaprika)",
+      "license": "DexPaprika API — keyless free tier; commercial use requires attribution",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "dexpaprika-ethereum-volume"
+      ]
+    },
+    {
+      "attribution": "DexPaprika (CoinPaprika) — https://dexpaprika.com",
+      "license": "DexPaprika API — keyless free tier; commercial use requires attribution (do-follow link)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "dexpaprika-chains-count"
       ]
     },
     {
@@ -708,6 +756,22 @@
       ]
     },
     {
+      "attribution": "L2BEAT",
+      "license": "L2BEAT public JSON API — free, open-source",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "l2beat-total-activity"
+      ]
+    },
+    {
+      "attribution": "L2BEAT — https://l2beat.com",
+      "license": "L2BEAT public JSON API — free, open-source, no paid tier (Ethereum Foundation grants)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "l2beat-total-tvs"
+      ]
+    },
+    {
       "attribution": "Lium.io",
       "license": "Lium public API (open data)",
       "category": "SAFE_OPEN",
@@ -825,6 +889,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "nato-cyber-standards"
+      ]
+    },
+    {
+      "attribution": "NFTX — https://nftx.io",
+      "license": "NFTX public read-only API — no API key or authentication required",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "nftx-collections-count"
       ]
     },
     {
@@ -1124,6 +1196,22 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "transitous-route-count"
+      ]
+    },
+    {
+      "attribution": "TzKT API",
+      "license": "TzKT Free API — explicitly free for commercial and non-commercial use",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "tzkt-tezos-bakers"
+      ]
+    },
+    {
+      "attribution": "TzKT API — https://tzkt.io",
+      "license": "TzKT Free API — explicitly free for commercial and non-commercial use (attribution link to tzkt.io required)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "tzkt-tezos-level"
       ]
     },
     {
@@ -2233,6 +2321,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "bitcoin-mempool-tx-count"
+      ]
+    },
+    {
+      "attribution": "mempool.space — https://mempool.space",
+      "license": "mempool.space public REST API — no key required; rate-limited. Enterprise sponsorship for higher limits",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "mempool-btc-fastest-fee"
       ]
     },
     {
