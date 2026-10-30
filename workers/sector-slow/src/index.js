@@ -3647,6 +3647,39 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { topic: "ai-agents" } };
     },
   },
+  "openalex-total-works": {
+    config: { metric: "total_works", threshold_pct: 1, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.openalex.org/works?per-page=1&mailto=compliance@volatiai.local", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { openalex: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.meta?.count === "number" ? j.meta.count : null;
+      return { value: n, sources: { openalex: { ok: typeof n === "number" } } };
+    },
+  },
+  "semanticscholar-total-papers": {
+    config: { metric: "total_papers", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["query"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.semanticscholar.org/graph/v1/paper/search?query=machine+learning&limit=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { semanticscholar: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total === "number" ? j.total : null;
+      return { value: n, sources: { semanticscholar: { ok: typeof n === "number" } }, context: { query: "machine learning", approximate: true } };
+    },
+  },
+  "nsf-award-count": {
+    config: { metric: "matching_awards", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["query"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.nsf.gov/services/v1/awards.json?keyword=machine+learning&printFields=id&offset=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { nsf: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const total = (typeof j?.response?.meta?.total === "number" ? j.response.meta.total
+                   : typeof j?.metadata?.totalCount === "number" ? j.metadata.totalCount
+                   : typeof j?.totalCount === "number" ? j.totalCount
+                   : null);
+      return { value: total, sources: { nsf: { ok: typeof total === "number" } }, context: { query: "machine learning" } };
+    },
+  },
 };
 
 
