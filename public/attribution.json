@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T08:01:30.195557Z",
+  "generated_at": "2026-10-30T08:05:06.945003Z",
   "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
   "sources": [
     {
@@ -492,11 +492,43 @@
       ]
     },
     {
+      "attribution": "GitHub (github.com/android)",
+      "license": "Public repository metadata — GitHub API Terms (commercial reuse of public repo data permitted)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-android-repo-count"
+      ]
+    },
+    {
+      "attribution": "GitHub (github.com/apple)",
+      "license": "Public repository metadata — GitHub API Terms (commercial reuse of public repo data permitted)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-apple-repo-count"
+      ]
+    },
+    {
+      "attribution": "GitHub (github.com/microsoft)",
+      "license": "Public repository metadata — GitHub API Terms (commercial reuse of public repo data permitted)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-microsoft-repo-count"
+      ]
+    },
+    {
       "attribution": "GitHub (public API)",
       "license": "Public data — GitHub public API (commercial reuse of public repo metadata permitted)",
       "category": "SAFE_OPEN",
       "sectors": [
         "github-google-repo-count"
+      ]
+    },
+    {
+      "attribution": "GitHub (torvalds/linux)",
+      "license": "Public repository metadata — GitHub API Terms (commercial reuse of public repo data permitted)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "github-linux-kernel-stars"
       ]
     },
     {
@@ -890,6 +922,15 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "spaceflight-news-count"
+      ]
+    },
+    {
+      "attribution": "Stack Exchange Network (stackoverflow.com)",
+      "license": "Stack Exchange API Terms of Use — commercial use permitted, attribution required",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "stackexchange-python-questions",
+        "stackexchange-rust-questions"
       ]
     },
     {
@@ -1547,6 +1588,14 @@
       ]
     },
     {
+      "attribution": "crates.io (Rust package registry)",
+      "license": "crates.io Public API — no commercial restriction stated; index + daily dump published",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "crates-tokio-downloads"
+      ]
+    },
+    {
       "attribution": "cve-feed",
       "license": "NIST NVD (US Gov public domain)",
       "category": "SAFE_PD_CC0",
@@ -2030,6 +2079,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "npm-scraper-package-count"
+      ]
+    },
+    {
+      "attribution": "npm Public Registry (npmjs.com)",
+      "license": "npm Open-Source Terms — public registry data, commercial use permitted (not as general-purpose DB)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "npm-nextjs-weekly-downloads"
       ]
     },
     {

@@ -2845,6 +2845,88 @@ const COLLECTORS = {
       return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { org: "google" } };
     },
   },
+  "stackexchange-python-questions": {
+    config: { metric: "question_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["tag"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.stackexchange.com/2.3/tags/python/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const item = Array.isArray(j?.items) ? j.items[0] : null;
+      const n = typeof item?.count === "number" ? item.count : null;
+      return { value: n, sources: { stackexchange: { ok: typeof n === "number" } }, context: { tag: "python" } };
+    },
+  },
+  "stackexchange-rust-questions": {
+    config: { metric: "question_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["tag"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.stackexchange.com/2.3/tags/rust/info?site=stackoverflow", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { stackexchange: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const item = Array.isArray(j?.items) ? j.items[0] : null;
+      const n = typeof item?.count === "number" ? item.count : null;
+      return { value: n, sources: { stackexchange: { ok: typeof n === "number" } }, context: { tag: "rust" } };
+    },
+  },
+  "npm-nextjs-weekly-downloads": {
+    config: { metric: "weekly_downloads", threshold_pct: 10, window: "7d", window_days: 7, ttl: 86400, context_keys: ["package"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.npmjs.org/downloads/point/last-week/next", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { npm: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.downloads === "number" ? j.downloads : null;
+      return { value: n, sources: { npm: { ok: typeof n === "number" } }, context: { package: "next" } };
+    },
+  },
+  "crates-tokio-downloads": {
+    config: { metric: "total_downloads", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["crate"] },
+    async collectAll(env) {
+      const r = await fetch("https://crates.io/api/v1/crates/tokio", { headers: { "User-Agent": "VolatiAI/1.0 (contact@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { crates_io: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.crate?.downloads === "number" ? j.crate.downloads : null;
+      return { value: n, sources: { crates_io: { ok: typeof n === "number" } }, context: { crate: "tokio" } };
+    },
+  },
+  "github-apple-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=org:apple&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { org: "apple" } };
+    },
+  },
+  "github-android-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=org:android&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { org: "android" } };
+    },
+  },
+  "github-microsoft-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=org:microsoft&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { org: "microsoft" } };
+    },
+  },
+  "github-linux-kernel-stars": {
+    config: { metric: "stargazers", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["repo"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/repos/torvalds/linux", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.stargazers_count === "number" ? j.stargazers_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "torvalds/linux" } };
+    },
+  },
 };
 
 
