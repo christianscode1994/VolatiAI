@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T08:22:38.741248Z",
+  "generated_at": "2026-10-30T08:37:51.942331Z",
   "note": "Attribution required by each source's license. Derived signals only; no raw data redistributed.",
   "sources": [
     {
@@ -96,6 +96,14 @@
       "category": "SAFE_OPEN",
       "sectors": [
         "bluesky-ai-post-count"
+      ]
+    },
+    {
+      "attribution": "Brønnøysund Register Centre (Norway)",
+      "license": "Norwegian Licence for Open Government Data (NLOD)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "brreg-norway-company-count"
       ]
     },
     {
@@ -467,6 +475,14 @@
       ]
     },
     {
+      "attribution": "GLEIF (Global Legal Entity Identifier Foundation)",
+      "license": "CC0 (GLEIF open data)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "gleif-lei-count"
+      ]
+    },
+    {
       "attribution": "GNS Science",
       "license": "CC BY 3.0 NZ",
       "category": "SAFE_CC_BY",
@@ -828,6 +844,14 @@
       ]
     },
     {
+      "attribution": "NOAA National Data Buoy Center",
+      "license": "Public domain (US Government work — NOAA NDBC)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "noaa-ndbc-active-stations"
+      ]
+    },
+    {
       "attribution": "NYC Department of Buildings",
       "license": "NYC Open Data (public record)",
       "category": "SAFE_OPEN",
@@ -1053,6 +1077,14 @@
       ]
     },
     {
+      "attribution": "SpaceX API (api.spacexdata.com)",
+      "license": "Public API (SpaceX, keyless)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "spacex-launch-count"
+      ]
+    },
+    {
       "attribution": "Spaceflight News API",
       "license": "Open (Spaceflight News API)",
       "category": "SAFE_OPEN",
@@ -1116,6 +1148,23 @@
       "category": "SAFE_PD_CC0",
       "sectors": [
         "bts-port-throughput-teu"
+      ]
+    },
+    {
+      "attribution": "U.S. Census Bureau",
+      "license": "Public domain (US Census Bureau)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "census-us-population"
+      ]
+    },
+    {
+      "attribution": "U.S. Department of the Treasury",
+      "license": "Public domain (US Treasury Fiscal Data)",
+      "category": "SAFE_OPEN",
+      "sectors": [
+        "treasury-national-debt",
+        "treasury-operating-cash-balance"
       ]
     },
     {
@@ -1350,7 +1399,10 @@
       "license": "CC BY 4.0 (World Bank Open Data)",
       "category": "SAFE_CC_BY",
       "sectors": [
+        "worldbank-internet-users",
+        "worldbank-remittances",
         "worldbank-se-gdp",
+        "worldbank-urban-population",
         "worldbank-us-gdp"
       ]
     },

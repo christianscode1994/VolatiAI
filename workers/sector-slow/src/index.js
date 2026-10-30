@@ -3129,6 +3129,111 @@ const COLLECTORS = {
       return { value: data.length, sources: { comtrade: { ok: true } }, context: { reporter: "USA", period: "2023", records: data.length, total_usd: total } };
     },
   },
+  "treasury-national-debt": {
+    config: { metric: "total_public_debt_usd", threshold_pct: 0.5, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=-record_date&page[size]=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { treasury: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const row = Array.isArray(j?.data) ? j.data[0] : null;
+      const n = row ? Number(row.tot_pub_debt_out_amt) : null;
+      return { value: (Number.isFinite(n) ? n : null), sources: { treasury: { ok: Number.isFinite(n) } }, context: { record_date: row?.record_date ?? null } };
+    },
+  },
+  "treasury-operating-cash-balance": {
+    config: { metric: "operating_cash_balance_usd", threshold_pct: 20, window: "7d", window_days: 7, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance?sort=-record_date&page[size]=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { treasury: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const row = Array.isArray(j?.data) ? j.data[0] : null;
+      const n = row ? Number(row.open_today_bal) : null;
+      return { value: (Number.isFinite(n) ? n : null), sources: { treasury: { ok: Number.isFinite(n) } }, context: { record_date: row?.record_date ?? null } };
+    },
+  },
+  "gleif-lei-count": {
+    config: { metric: "total_lei_records", threshold_pct: 1, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.gleif.org/api/v1/lei-records?page[size]=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.api+json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { gleif: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.meta?.pagination?.total === "number" ? j.meta.pagination.total : null;
+      return { value: n, sources: { gleif: { ok: typeof n === "number" } } };
+    },
+  },
+  "brreg-norway-company-count": {
+    config: { metric: "registered_entities", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://data.brreg.no/enhetsregisteret/api/enheter?size=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { brreg: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.page?.totalElements === "number" ? j.page.totalElements : null;
+      return { value: n, sources: { brreg: { ok: typeof n === "number" } } };
+    },
+  },
+  "census-us-population": {
+    config: { metric: "population", threshold_pct: 1, window: "30d", window_days: 30, ttl: 86400, context_keys: ["year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.census.gov/data/2023/pep/population?get=NAME,POP_2023&for=us:1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { census: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) && Array.isArray(j[1]) ? Number(j[1][1]) : null;
+      return { value: (Number.isFinite(n) ? n : null), sources: { census: { ok: Number.isFinite(n) } }, context: { year: "2023" } };
+    },
+  },
+  "worldbank-remittances": {
+    config: { metric: "remittance_inflows_usd", threshold_pct: 10, window: "365d", window_days: 365, ttl: 86400, context_keys: ["country", "year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/BX.TRF.PWKR.CD.DT?format=json&per_page=1&date=2023", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = Array.isArray(j) && Array.isArray(j[1]) && j[1][0] ? j[1][0].value : null;
+      const n = typeof v === "number" ? v : null;
+      return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2023" } };
+    },
+  },
+  "worldbank-internet-users": {
+    config: { metric: "internet_users_pct", threshold_pct: 2, window: "365d", window_days: 365, ttl: 86400, context_keys: ["country", "year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/IT.NET.USER.ZS?format=json&per_page=1&date=2023", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = Array.isArray(j) && Array.isArray(j[1]) && j[1][0] ? j[1][0].value : null;
+      const n = typeof v === "number" ? v : null;
+      return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2023" } };
+    },
+  },
+  "worldbank-urban-population": {
+    config: { metric: "urban_population_pct", threshold_pct: 1, window: "365d", window_days: 365, ttl: 86400, context_keys: ["country", "year"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.worldbank.org/v2/country/US/indicator/SP.URB.TOTL.IN.ZS?format=json&per_page=1&date=2023", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { worldbank: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const v = Array.isArray(j) && Array.isArray(j[1]) && j[1][0] ? j[1][0].value : null;
+      const n = typeof v === "number" ? v : null;
+      return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2023" } };
+    },
+  },
+  "spacex-launch-count": {
+    config: { metric: "total_launches", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.spacexdata.com/v4/launches", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { spacex: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: n, sources: { spacex: { ok: typeof n === "number" } } };
+    },
+  },
+  "noaa-ndbc-active-stations": {
+    config: { metric: "active_buoys", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://www.ndbc.noaa.gov/activestations.xml", { headers: { "User-Agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { ndbc: { ok: false, error: `HTTP ${r.status}` } } };
+      const text = await r.text();
+      const n = (text.match(/<station\b/g) || []).length;
+      return { value: n > 0 ? n : null, sources: { ndbc: { ok: n > 0 } } };
+    },
+  },
 };
 
 
