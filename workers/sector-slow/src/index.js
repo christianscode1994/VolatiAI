@@ -3577,6 +3577,56 @@ const COLLECTORS = {
       return { value: n, sources: { worldbank: { ok: typeof n === "number" } }, context: { country: "USA", year: "2022" } };
     },
   },
+  "hf-bert-downloads": {
+    config: { metric: "downloads_30d", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["model"] },
+    async collectAll(env) {
+      const r = await fetch("https://huggingface.co/api/models/bert-base-uncased", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { huggingface: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.downloads === "number" ? j.downloads : null;
+      return { value: n, sources: { huggingface: { ok: typeof n === "number" } }, context: { model: "bert-base-uncased" } };
+    },
+  },
+  "benchgecko-total-models": {
+    config: { metric: "total_models", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://benchgecko.ai/api/v1/models?limit=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { benchgecko: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.meta?.total === "number" ? j.meta.total : null;
+      return { value: n, sources: { benchgecko: { ok: typeof n === "number" } } };
+    },
+  },
+  "github-langchain-stars": {
+    config: { metric: "stargazers", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["repo"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/repos/langchain-ai/langchain", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.stargazers_count === "number" ? j.stargazers_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "langchain-ai/langchain" } };
+    },
+  },
+  "github-crewai-stars": {
+    config: { metric: "stargazers", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["repo"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/repos/crewAIInc/crewAI", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.stargazers_count === "number" ? j.stargazers_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "crewAIInc/crewAI" } };
+    },
+  },
+  "github-autogen-stars": {
+    config: { metric: "stargazers", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["repo"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/repos/microsoft/autogen", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.stargazers_count === "number" ? j.stargazers_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { repo: "microsoft/autogen" } };
+    },
+  },
 };
 
 
