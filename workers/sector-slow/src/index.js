@@ -153,6 +153,12 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
   throw lastErr;
 }
 
+function ghHeaders(env) {
+  const h = { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" };
+  if (env && env.GITHUB_TOKEN) h["Authorization"] = "Bearer " + env.GITHUB_TOKEN;
+  return h;
+}
+
 const COLLECTORS = {
 
   "npm-react-weekly-downloads": {
@@ -2838,7 +2844,7 @@ const COLLECTORS = {
   "github-google-repo-count": {
     config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=org:google&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=org:google&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -2868,7 +2874,7 @@ const COLLECTORS = {
   "github-apple-repo-count": {
     config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=org:apple&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=org:apple&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -2878,7 +2884,7 @@ const COLLECTORS = {
   "github-android-repo-count": {
     config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=org:android&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=org:android&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -2888,7 +2894,7 @@ const COLLECTORS = {
   "github-microsoft-repo-count": {
     config: { metric: "public_repos", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["org"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=org:microsoft&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=org:microsoft&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -2898,7 +2904,7 @@ const COLLECTORS = {
   "github-linux-kernel-stars": {
     config: { metric: "stargazers", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["repo"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=repo:torvalds/linux&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=repo:torvalds/linux&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) { const err = await r.text(); return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}: ${err.slice(0, 120)}` } } }; }
       const j = await r.json();
       const n = typeof j?.items?.[0]?.stargazers_count === "number" ? j.items[0].stargazers_count : null;
@@ -2918,7 +2924,7 @@ const COLLECTORS = {
   "github-solidity-repo-count": {
     config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=language:Solidity&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Solidity&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -2928,7 +2934,7 @@ const COLLECTORS = {
   "github-cpp-repo-count": {
     config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=language:C%2B%2B&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=language:C%2B%2B&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -2938,7 +2944,7 @@ const COLLECTORS = {
   "github-haskell-repo-count": {
     config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=language:Haskell&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Haskell&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -3039,7 +3045,7 @@ const COLLECTORS = {
   "github-ocaml-repo-count": {
     config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=language:OCaml&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=language:OCaml&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -3049,7 +3055,7 @@ const COLLECTORS = {
   "github-nim-repo-count": {
     config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=language:Nim&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Nim&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -3059,7 +3065,7 @@ const COLLECTORS = {
   "github-julia-repo-count": {
     config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
     async collectAll(env) {
-      const r = await fetch("https://api.github.com/search/repositories?q=language:Julia&per_page=1", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/vnd.github+json" }, signal: AbortSignal.timeout(20000) });
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Julia&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
       if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
       const j = await r.json();
       const n = typeof j?.total_count === "number" ? j.total_count : null;
@@ -3356,6 +3362,156 @@ const COLLECTORS = {
       const j = await r.json();
       const n = typeof j?.totalHits === "number" ? j.totalHits : null;
       return { value: n, sources: { nuget: { ok: typeof n === "number" } }, context: { language: "F#" } };
+    },
+  },
+  "github-lisp-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Lisp&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Lisp" } };
+    },
+  },
+  "github-prolog-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Prolog&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Prolog" } };
+    },
+  },
+  "github-fortran-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Fortran&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Fortran" } };
+    },
+  },
+  "github-cobol-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:COBOL&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "COBOL" } };
+    },
+  },
+  "github-apl-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:APL&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "APL" } };
+    },
+  },
+  "github-forth-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Forth&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Forth" } };
+    },
+  },
+  "github-smalltalk-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Smalltalk&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Smalltalk" } };
+    },
+  },
+  "github-scheme-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Scheme&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Scheme" } };
+    },
+  },
+  "github-groovy-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Groovy&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Groovy" } };
+    },
+  },
+  "github-lua-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Lua&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Lua" } };
+    },
+  },
+  "github-zig-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Zig&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Zig" } };
+    },
+  },
+  "github-crystal-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Crystal&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Crystal" } };
+    },
+  },
+  "github-ada-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Ada&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Ada" } };
+    },
+  },
+  "github-erlang-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Erlang&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Erlang" } };
+    },
+  },
+  "github-vala-repo-count": {
+    config: { metric: "public_repos", threshold_pct: 3, window: "30d", window_days: 30, ttl: 86400, context_keys: ["language"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.github.com/search/repositories?q=language:Vala&per_page=1", { headers: ghHeaders(env), signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { github: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.total_count === "number" ? j.total_count : null;
+      return { value: n, sources: { github: { ok: typeof n === "number" } }, context: { language: "Vala" } };
     },
   },
 };
