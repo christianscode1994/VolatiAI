@@ -2713,6 +2713,102 @@ const COLLECTORS = {
       return { value: n, sources: { cma: { ok: typeof n === "number" } } };
     },
   },
+  "sec-aapl-quarterly-revenue": {
+    config: { metric: "quarterly_revenue_usd", threshold_pct: 5, window: "7d", window_days: 7, ttl: 86400, context_keys: ["company"] },
+    async collectAll(env) {
+      const r = await fetch("https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json", { headers: { "User-Agent": "VolatiAI/1.0 (compliance@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { sec_xbrl: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const facts = j?.facts?.["us-gaap"];
+      const tags = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "RevenueFromContractWithCustomerIncludingAssessedTax"];
+      let best = null;
+      for (const tag of tags) {
+        const entries = facts?.[tag]?.units?.USD;
+        if (!Array.isArray(entries)) continue;
+        for (const e of entries) {
+          if (!e.start || !e.end || typeof e.val !== "number") continue;
+          const days = (new Date(e.end).getTime() - new Date(e.start).getTime()) / 86400000;
+          if (days < 80 || days > 100) continue;
+          if (!best || e.end > best.end) best = e;
+        }
+        if (best) break;
+      }
+      const n = typeof best?.val === "number" ? best.val : null;
+      return { value: n, sources: { sec_xbrl: { ok: typeof n === "number" } }, context: { company: "Apple Inc.", period_end: best?.end ?? null, form: best?.form ?? null } };
+    },
+  },
+  "sec-msft-quarterly-revenue": {
+    config: { metric: "quarterly_revenue_usd", threshold_pct: 5, window: "7d", window_days: 7, ttl: 86400, context_keys: ["company"] },
+    async collectAll(env) {
+      const r = await fetch("https://data.sec.gov/api/xbrl/companyfacts/CIK0000789019.json", { headers: { "User-Agent": "VolatiAI/1.0 (compliance@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { sec_xbrl: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const facts = j?.facts?.["us-gaap"];
+      const tags = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "RevenueFromContractWithCustomerIncludingAssessedTax"];
+      let best = null;
+      for (const tag of tags) {
+        const entries = facts?.[tag]?.units?.USD;
+        if (!Array.isArray(entries)) continue;
+        for (const e of entries) {
+          if (!e.start || !e.end || typeof e.val !== "number") continue;
+          const days = (new Date(e.end).getTime() - new Date(e.start).getTime()) / 86400000;
+          if (days < 80 || days > 100) continue;
+          if (!best || e.end > best.end) best = e;
+        }
+        if (best) break;
+      }
+      const n = typeof best?.val === "number" ? best.val : null;
+      return { value: n, sources: { sec_xbrl: { ok: typeof n === "number" } }, context: { company: "Microsoft Corp.", period_end: best?.end ?? null, form: best?.form ?? null } };
+    },
+  },
+  "sec-nvda-quarterly-revenue": {
+    config: { metric: "quarterly_revenue_usd", threshold_pct: 5, window: "7d", window_days: 7, ttl: 86400, context_keys: ["company"] },
+    async collectAll(env) {
+      const r = await fetch("https://data.sec.gov/api/xbrl/companyfacts/CIK0001045810.json", { headers: { "User-Agent": "VolatiAI/1.0 (compliance@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { sec_xbrl: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const facts = j?.facts?.["us-gaap"];
+      const tags = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "RevenueFromContractWithCustomerIncludingAssessedTax"];
+      let best = null;
+      for (const tag of tags) {
+        const entries = facts?.[tag]?.units?.USD;
+        if (!Array.isArray(entries)) continue;
+        for (const e of entries) {
+          if (!e.start || !e.end || typeof e.val !== "number") continue;
+          const days = (new Date(e.end).getTime() - new Date(e.start).getTime()) / 86400000;
+          if (days < 80 || days > 100) continue;
+          if (!best || e.end > best.end) best = e;
+        }
+        if (best) break;
+      }
+      const n = typeof best?.val === "number" ? best.val : null;
+      return { value: n, sources: { sec_xbrl: { ok: typeof n === "number" } }, context: { company: "NVIDIA Corp.", period_end: best?.end ?? null, form: best?.form ?? null } };
+    },
+  },
+  "sec-jpm-quarterly-revenue": {
+    config: { metric: "quarterly_revenue_usd", threshold_pct: 5, window: "7d", window_days: 7, ttl: 86400, context_keys: ["company"] },
+    async collectAll(env) {
+      const r = await fetch("https://data.sec.gov/api/xbrl/companyfacts/CIK0000019617.json", { headers: { "User-Agent": "VolatiAI/1.0 (compliance@volatiai.local)", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { sec_xbrl: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const facts = j?.facts?.["us-gaap"];
+      const tags = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "RevenueFromContractWithCustomerIncludingAssessedTax"];
+      let best = null;
+      for (const tag of tags) {
+        const entries = facts?.[tag]?.units?.USD;
+        if (!Array.isArray(entries)) continue;
+        for (const e of entries) {
+          if (!e.start || !e.end || typeof e.val !== "number") continue;
+          const days = (new Date(e.end).getTime() - new Date(e.start).getTime()) / 86400000;
+          if (days < 80 || days > 100) continue;
+          if (!best || e.end > best.end) best = e;
+        }
+        if (best) break;
+      }
+      const n = typeof best?.val === "number" ? best.val : null;
+      return { value: n, sources: { sec_xbrl: { ok: typeof n === "number" } }, context: { company: "JPMorgan Chase & Co.", period_end: best?.end ?? null, form: best?.form ?? null } };
+    },
+  },
 };
 
 
