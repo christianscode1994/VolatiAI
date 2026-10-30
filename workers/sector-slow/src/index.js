@@ -3182,6 +3182,136 @@ const COLLECTORS = {
       return { value: n > 0 ? n : null, sources: { ndbc: { ok: n > 0 } } };
     },
   },
+  "dexpaprika-chains-count": {
+    config: { metric: "chains_indexed", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.dexpaprika.com/networks", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { dexpaprika: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.length : null;
+      return { value: n, sources: { dexpaprika: { ok: typeof n === "number" } } };
+    },
+  },
+  "dexpaprika-ethereum-volume": {
+    config: { metric: "volume_usd_24h", threshold_pct: 20, window: "24h", ttl: 3600, context_keys: ["chain"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.dexpaprika.com/networks", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { dexpaprika: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const eth = Array.isArray(j) ? j.find(x => x.id === "ethereum") : null;
+      const n = eth && typeof eth.volume_usd_24h === "number" ? eth.volume_usd_24h : null;
+      return { value: n, sources: { dexpaprika: { ok: typeof n === "number" } }, context: { chain: "ethereum" } };
+    },
+  },
+  "defillama-total-tvl": {
+    config: { metric: "total_chain_tvl_usd", threshold_pct: 10, window: "7d", window_days: 7, ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.llama.fi/v2/chains", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { defillama: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.reduce((a, c) => a + (typeof c.tvl === "number" ? c.tvl : 0), 0) : null;
+      return { value: n, sources: { defillama: { ok: typeof n === "number" } } };
+    },
+  },
+  "defillama-chains-with-tvl": {
+    config: { metric: "chains_count", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.llama.fi/v2/chains", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { defillama: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j) ? j.filter(c => typeof c.tvl === "number" && c.tvl > 0).length : null;
+      return { value: n, sources: { defillama: { ok: typeof n === "number" } } };
+    },
+  },
+  "defillama-stablecoin-supply": {
+    config: { metric: "total_circulating_usd", threshold_pct: 5, window: "7d", window_days: 7, ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://stablecoins.llama.fi/stablecoins", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { defillama_stables: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const arr = Array.isArray(j?.peggedAssets) ? j.peggedAssets : null;
+      if (!arr) return { value: null, sources: { defillama_stables: { ok: false, error: "no_peggedAssets" } } };
+      const n = arr.reduce((a, c) => a + (typeof c?.circulating?.peggedUSD === "number" ? c.circulating.peggedUSD : 0), 0);
+      return { value: n, sources: { defillama_stables: { ok: true } }, context: { assets: arr.length } };
+    },
+  },
+  "defillama-eth-price": {
+    config: { metric: "eth_usd", threshold_pct: 10, window: "24h", ttl: 3600, context_keys: ["asset"] },
+    async collectAll(env) {
+      const r = await fetch("https://coins.llama.fi/prices/current/coingecko:ethereum", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { llama_coins: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const p = j?.coins?.["coingecko:ethereum"]?.price;
+      const n = typeof p === "number" ? p : null;
+      return { value: n, sources: { llama_coins: { ok: typeof n === "number" } }, context: { asset: "ETH" } };
+    },
+  },
+  "tzkt-tezos-level": {
+    config: { metric: "block_level", threshold_pct: 0.1, window: "24h", ttl: 1800, context_keys: ["chain"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.tzkt.io/v1/head", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { tzkt: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.level === "number" ? j.level : null;
+      return { value: n, sources: { tzkt: { ok: typeof n === "number" } }, context: { chain: "tezos" } };
+    },
+  },
+  "tzkt-tezos-bakers": {
+    config: { metric: "active_bakers", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: ["chain"] },
+    async collectAll(env) {
+      const r = await fetch("https://api.tzkt.io/v1/statistics/current", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { tzkt: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.totalBakers === "number" ? j.totalBakers : null;
+      return { value: n, sources: { tzkt: { ok: typeof n === "number" } }, context: { chain: "tezos" } };
+    },
+  },
+  "l2beat-total-tvs": {
+    config: { metric: "total_value_secured_usd", threshold_pct: 10, window: "7d", window_days: 7, ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://l2beat.com/api/scaling/summary", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { l2beat: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const rows = Array.isArray(j?.chart?.data) ? j.chart.data : null;
+      if (!rows || rows.length === 0) return { value: null, sources: { l2beat: { ok: false, error: "no_chart" } } };
+      const last = rows[rows.length - 1];
+      const n = typeof last?.[1] === "number" ? (last[1] + (last[2] || 0) + (last[3] || 0)) : null;
+      return { value: n, sources: { l2beat: { ok: typeof n === "number" } }, context: { rows: rows.length } };
+    },
+  },
+  "l2beat-total-activity": {
+    config: { metric: "daily_transactions", threshold_pct: 15, window: "24h", ttl: 3600, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://l2beat.com/api/scaling/activity", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { l2beat: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const rows = Array.isArray(j?.data?.chart?.data) ? j.data.chart.data : null;
+      if (!rows || rows.length === 0) return { value: null, sources: { l2beat: { ok: false, error: "no_chart" } } };
+      const last = rows[rows.length - 1];
+      const n = typeof last?.[1] === "number" ? last[1] : null;
+      return { value: n, sources: { l2beat: { ok: typeof n === "number" } }, context: { rows: rows.length } };
+    },
+  },
+  "mempool-btc-fastest-fee": {
+    config: { metric: "fastest_fee_sat_vb", threshold_pct: 50, window: "24h", ttl: 1800, context_keys: ["chain"] },
+    async collectAll(env) {
+      const r = await fetch("https://mempool.space/api/v1/fees/recommended", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
+      if (!r.ok) return { value: null, sources: { mempool: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = typeof j?.fastestFee === "number" ? j.fastestFee : null;
+      return { value: n, sources: { mempool: { ok: typeof n === "number" } }, context: { chain: "bitcoin" } };
+    },
+  },
+  "nftx-collections-count": {
+    config: { metric: "collections_tracked", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
+    async collectAll(env) {
+      const r = await fetch("https://api.nftx.io/v1/collections", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
+      if (!r.ok) return { value: null, sources: { nftx: { ok: false, error: `HTTP ${r.status}` } } };
+      const j = await r.json();
+      const n = Array.isArray(j?.data) ? j.data.length : null;
+      return { value: n, sources: { nftx: { ok: typeof n === "number" } } };
+    },
+  },
 };
 
 
