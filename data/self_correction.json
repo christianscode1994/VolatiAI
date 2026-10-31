@@ -243,7 +243,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 19/24 runs (79%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -588,7 +588,7 @@
     },
     {
       "sector": "statistics",
-      "reason": "conf=0 in 21/24 runs (88%)",
+      "reason": "conf=0 in 20/24 runs (83%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -693,7 +693,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 19/24 runs (79%)",
+      "reason": "conf=0 in 18/24 runs (75%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -738,7 +738,7 @@
     },
     {
       "sector": "shopify-allbirds-product-count",
-      "reason": "conf=0 in 21/21 runs (100%)",
+      "reason": "conf=0 in 22/22 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -749,7 +749,7 @@
     },
     {
       "sector": "cve-feed",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "environment",
@@ -757,7 +757,7 @@
     },
     {
       "sector": "home-assistant",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "robonix",
@@ -765,11 +765,15 @@
     },
     {
       "sector": "dc-crime",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
+    },
+    {
+      "sector": "tweetfeed-c2",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -777,15 +781,15 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (58%) but no config found in workers"
-    },
-    {
-      "sector": "coinbase-btc-volume24h",
       "reason": "spam (62%) but no config found in workers"
     },
     {
-      "sector": "dex-ethereum-volume",
+      "sector": "coinbase-btc-volume24h",
       "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "dex-ethereum-volume",
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -793,27 +797,27 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (57%) but no config found in workers"
+      "reason": "spam (59%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -821,6 +825,11 @@
     }
   ],
   "monitor_quiet": [
+    {
+      "sector": "biology",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
     {
       "sector": "books",
       "runs": 24,
@@ -848,6 +857,11 @@
     },
     {
       "sector": "develop",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "earthquakes",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1124,7 +1138,7 @@
     {
       "sector": "clearlydefined-react-license",
       "runs": 24,
-      "avg_conf": 0.88
+      "avg_conf": 0.83
     },
     {
       "sector": "hn-tech-sentiment",
@@ -1172,11 +1186,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "defi-fees-aave",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "defi-open-interest-total",
       "runs": 24,
       "avg_conf": 1.0
@@ -1192,28 +1201,23 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "biology",
-      "runs": 24,
-      "avg_conf": 0.92
-    },
-    {
       "sector": "cheapshark-deal-count",
-      "runs": 21,
+      "runs": 22,
       "avg_conf": 0.95
     },
     {
       "sector": "espn-nfl-score-count",
-      "runs": 21,
+      "runs": 22,
       "avg_conf": 1.0
     },
     {
       "sector": "geocables-incidents",
-      "runs": 21,
+      "runs": 22,
       "avg_conf": 1.0
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "runs": 21,
+      "runs": 22,
       "avg_conf": 1.0
     }
   ]
