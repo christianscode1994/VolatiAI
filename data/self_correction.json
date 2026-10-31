@@ -112,6 +112,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "cisa-kev",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "climate-datasets",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -233,6 +238,11 @@
     },
     {
       "sector": "entertainment",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "epa-envirofacts",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -422,12 +432,22 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nasa-eonet",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "natural-disasters",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -442,12 +462,22 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "noaa-ndbc",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "npm-search",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nport-filings",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nvd-new-cves",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -662,6 +692,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "usgs-water",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "utilities",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -697,134 +732,114 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "cisa-kev",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nvd-new-cves",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nasa-eonet",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "usgs-water",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "noaa-ndbc",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "epa-envirofacts",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "museums",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "shopify-allbirds-product-count",
-      "reason": "conf=0 in 23/23 runs (100%)",
+      "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
+    },
+    {
+      "sector": "coinbase-btc-volume24h",
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "cve-feed",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "dc-crime",
+      "reason": "spam (92%) but no config found in workers"
+    },
+    {
+      "sector": "dex-ethereum-volume",
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "environment",
       "reason": "spam (100%) but no config found in workers"
     },
     {
-      "sector": "home-assistant",
-      "reason": "spam (79%) but no config found in workers"
-    },
-    {
-      "sector": "robonix",
-      "reason": "spam (100%) but no config found in workers"
-    },
-    {
-      "sector": "dc-crime",
-      "reason": "spam (88%) but no config found in workers"
-    },
-    {
-      "sector": "tweetfeed-c2",
-      "reason": "spam (54%) but no config found in workers"
-    },
-    {
-      "sector": "phishunt-domains",
-      "reason": "spam (92%) but no config found in workers"
+      "sector": "frankfurter-eursek",
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
       "reason": "spam (50%) but no config found in workers"
     },
     {
-      "sector": "frankfurter-eursek",
-      "reason": "spam (67%) but no config found in workers"
-    },
-    {
-      "sector": "coinbase-btc-volume24h",
-      "reason": "spam (71%) but no config found in workers"
-    },
-    {
-      "sector": "dex-ethereum-volume",
-      "reason": "spam (75%) but no config found in workers"
-    },
-    {
       "sector": "hackernews-top-scores",
       "reason": "spam (100%) but no config found in workers"
     },
     {
-      "sector": "pypi-downloads-requests",
-      "reason": "spam (54%) but no config found in workers"
-    },
-    {
-      "sector": "usgs-earthquake-count",
-      "reason": "spam (100%) but no config found in workers"
-    },
-    {
-      "sector": "pypi-daily-requests",
-      "reason": "spam (75%) but no config found in workers"
+      "sector": "home-assistant",
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
       "reason": "spam (92%) but no config found in workers"
     },
     {
-      "sector": "github-recent-commits",
-      "reason": "spam (62%) but no config found in workers"
+      "sector": "phishunt-domains",
+      "reason": "spam (96%) but no config found in workers"
+    },
+    {
+      "sector": "pypi-daily-requests",
+      "reason": "spam (79%) but no config found in workers"
+    },
+    {
+      "sector": "pypi-downloads-requests",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
+      "sector": "robonix",
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (61%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
-      "reason": "spam (87%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
+    },
+    {
+      "sector": "tweetfeed-c2",
+      "reason": "spam (58%) but no config found in workers"
+    },
+    {
+      "sector": "usgs-earthquake-count",
+      "reason": "spam (100%) but no config found in workers"
+    },
+    {
+      "sector": "github-recent-commits",
+      "reason": "spam (62%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
+    {
+      "sector": "abuse-ch-feodo",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "apis-guru-directory",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "ballotwatch-bills",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
     {
       "sector": "biology",
       "runs": 24,
@@ -836,12 +851,77 @@
       "avg_conf": 1.0
     },
     {
+      "sector": "cern-opendata",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "cheapshark-deal-count",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
+      "sector": "cisa-kev-count",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "cisa-kev-total",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "clearlydefined-react-license",
+      "runs": 24,
+      "avg_conf": 0.83
+    },
+    {
+      "sector": "cleveland-artworks",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "coinbase-btc-usd",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "crossref",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
+      "sector": "crossref-works",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
+      "sector": "datacite-dois",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "dbnomics-us-debt",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "defi-open-interest-total",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "defillama-protocol-count",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "demographics",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "deps-dev-react-versions",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -861,207 +941,42 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "earthquakes",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "gdp",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "github-trending",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "health",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "huggingface-models",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "osv-vulnerabilities",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "sec-filings",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "space",
-      "runs": 24,
-      "avg_conf": 0.92
-    },
-    {
-      "sector": "unemployment",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "vehicles",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "abuse-ch-feodo",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "ripestat",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "ietf-datatracker",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "poligraph",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "mattercatalog",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "saos",
-      "runs": 24,
-      "avg_conf": 0.88
-    },
-    {
-      "sector": "met-artworks",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "cern-opendata",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "wikidata-triples",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "ballotwatch-bills",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "openfda-drug-recalls",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "openfda-food-recalls",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "openfda-device-recalls",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "cleveland-artworks",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "apis-guru-directory",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "usgs-earthquakes",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "crossref-works",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
       "sector": "doaj-articles",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "datacite-dois",
+      "sector": "earthquakes",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "zenodo-records",
+      "sector": "ecosyste-ms-react",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "usgs-earthquakes-emsc",
+      "sector": "epss-log4shell",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "nvd-cve-count",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
-      "sector": "cisa-kev-count",
+      "sector": "espn-nfl-score-count",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "gleif-leis",
+      "sector": "eth-exchange-spread",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "dbnomics-us-debt",
+      "sector": "eurostat-eu-unemployment",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "worldbank-us-unemployment",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "worldbank-us-gdp",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "worldbank-se-gdp",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
-      "sector": "kraken-btc-usd",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "coinbase-btc-usd",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "defillama-protocol-count",
+      "sector": "feodo-c2-count",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1076,59 +991,29 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "eth-exchange-spread",
+      "sector": "gdp",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "stablecoin-total-supply",
+      "sector": "geocables-incidents",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "stablecoin-usdc-supply",
+      "sector": "github-trending",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "ossf-scorecard-linux",
+      "sector": "gleif-leis",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "ecosyste-ms-react",
+      "sector": "health",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "open-digger-openrank-vscode",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "osv-lodash-vuln-count",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "cisa-kev-total",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "epss-log4shell",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "deps-dev-react-versions",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "clearlydefined-react-license",
-      "runs": 24,
-      "avg_conf": 0.83
     },
     {
       "sector": "hn-tech-sentiment",
@@ -1136,32 +1021,17 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "spaceflight-news-count",
+      "sector": "huggingface-models",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "librariesio-sourcerank-react",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
-      "sector": "eurostat-eu-unemployment",
+      "sector": "ietf-datatracker",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "usgs-elevated-volcanoes",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "pocketworld-space-weather",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "kraken-xrp-usd",
+      "sector": "kraken-btc-usd",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1176,7 +1046,127 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "defi-open-interest-total",
+      "sector": "kraken-xrp-usd",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "librariesio-sourcerank-react",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
+      "sector": "mattercatalog",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "met-artworks",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "nvd-cve-count",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
+      "sector": "open-digger-openrank-vscode",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "openfda-device-recalls",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "openfda-drug-recalls",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "openfda-food-recalls",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "ossf-scorecard-linux",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "osv-lodash-vuln-count",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "osv-vulnerabilities",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "pocketworld-space-weather",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "poligraph",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "ripestat",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "saos",
+      "runs": 24,
+      "avg_conf": 0.88
+    },
+    {
+      "sector": "sec-filings",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "space",
+      "runs": 24,
+      "avg_conf": 0.92
+    },
+    {
+      "sector": "spaceflight-news-count",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "stablecoin-total-supply",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "stablecoin-usdc-supply",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "unemployment",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "usgs-earthquakes",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "usgs-earthquakes-emsc",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "usgs-elevated-volcanoes",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1186,28 +1176,38 @@
       "avg_conf": 0.96
     },
     {
-      "sector": "feodo-c2-count",
+      "sector": "vehicles",
       "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "cheapshark-deal-count",
-      "runs": 23,
+      "sector": "whiskyhunter-lot-count",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "wikidata-triples",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "worldbank-se-gdp",
+      "runs": 24,
       "avg_conf": 0.96
     },
     {
-      "sector": "espn-nfl-score-count",
-      "runs": 23,
+      "sector": "worldbank-us-gdp",
+      "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "geocables-incidents",
-      "runs": 23,
+      "sector": "worldbank-us-unemployment",
+      "runs": 24,
       "avg_conf": 1.0
     },
     {
-      "sector": "whiskyhunter-lot-count",
-      "runs": 23,
+      "sector": "zenodo-records",
+      "runs": 24,
       "avg_conf": 1.0
     }
   ]
