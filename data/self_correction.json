@@ -432,11 +432,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "networking",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -737,8 +732,13 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "shopify-allbirds-product-count",
-      "reason": "conf=0 in 22/22 runs (100%)",
+      "reason": "conf=0 in 23/23 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -749,7 +749,7 @@
     },
     {
       "sector": "cve-feed",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "environment",
@@ -757,7 +757,7 @@
     },
     {
       "sector": "home-assistant",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "robonix",
@@ -765,15 +765,15 @@
     },
     {
       "sector": "dc-crime",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -781,15 +781,15 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (62%) but no config found in workers"
-    },
-    {
-      "sector": "coinbase-btc-volume24h",
       "reason": "spam (67%) but no config found in workers"
     },
     {
-      "sector": "dex-ethereum-volume",
+      "sector": "coinbase-btc-volume24h",
       "reason": "spam (71%) but no config found in workers"
+    },
+    {
+      "sector": "dex-ethereum-volume",
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -797,7 +797,7 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
@@ -805,7 +805,7 @@
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -813,15 +813,15 @@
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (59%) but no config found in workers"
+      "reason": "spam (61%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
-      "reason": "spam (86%) but no config found in workers"
+      "reason": "spam (87%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -882,11 +882,6 @@
     },
     {
       "sector": "huggingface-models",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "music",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1091,11 +1086,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "stablecoin-usdt-supply",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "stablecoin-usdc-supply",
       "runs": 24,
       "avg_conf": 1.0
@@ -1202,22 +1192,22 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "runs": 22,
-      "avg_conf": 0.95
+      "runs": 23,
+      "avg_conf": 0.96
     },
     {
       "sector": "espn-nfl-score-count",
-      "runs": 22,
+      "runs": 23,
       "avg_conf": 1.0
     },
     {
       "sector": "geocables-incidents",
-      "runs": 22,
+      "runs": 23,
       "avg_conf": 1.0
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "runs": 22,
+      "runs": 23,
       "avg_conf": 1.0
     }
   ]
