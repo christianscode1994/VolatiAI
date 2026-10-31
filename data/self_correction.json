@@ -102,11 +102,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "chemistry",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "china",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -367,11 +362,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "infrastructure",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "institutional-finance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -432,17 +422,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-eonet",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "nasa-neo",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -483,11 +463,6 @@
     },
     {
       "sector": "openfda-recalls",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "optoelectronics",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -632,11 +607,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "theoretical-cs",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -737,8 +707,38 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "chemistry",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "infrastructure",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nasa-eonet",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "natural-disasters",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "optoelectronics",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "shopify-allbirds-product-count",
       "reason": "conf=0 in 23/24 runs (96%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -757,11 +757,19 @@
     },
     {
       "sector": "dc-crime",
-      "reason": "spam (92%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
+    },
+    {
+      "sector": "dex-total-volume-24h",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
+      "sector": "dex-uniswap-volume",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "environment",
@@ -769,11 +777,15 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
       "reason": "spam (50%) but no config found in workers"
+    },
+    {
+      "sector": "github-recent-commits",
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -781,11 +793,11 @@
     },
     {
       "sector": "home-assistant",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
-      "reason": "spam (92%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -793,11 +805,7 @@
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (79%) but no config found in workers"
-    },
-    {
-      "sector": "pypi-downloads-requests",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "robonix",
@@ -809,19 +817,15 @@
     },
     {
       "sector": "steam-dota2-players",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
       "reason": "spam (100%) but no config found in workers"
-    },
-    {
-      "sector": "github-recent-commits",
-      "reason": "spam (62%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -1106,11 +1110,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "pocketworld-space-weather",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "poligraph",
       "runs": 24,
       "avg_conf": 1.0
@@ -1129,11 +1128,6 @@
       "sector": "sec-filings",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "space",
-      "runs": 24,
-      "avg_conf": 0.92
     },
     {
       "sector": "spaceflight-news-count",
@@ -1209,6 +1203,11 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 1.0
+    },
+    {
+      "sector": "space",
+      "runs": 24,
+      "avg_conf": 0.92
     }
   ]
 }
