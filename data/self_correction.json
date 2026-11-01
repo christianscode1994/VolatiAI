@@ -57,6 +57,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "aviation-weather",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "beauty",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -93,6 +98,11 @@
     },
     {
       "sector": "chainsights-daos",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "chemistry",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -427,6 +437,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nasa-neo",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -617,6 +632,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -717,35 +737,15 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "aviation-weather",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "chemistry",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nasa-neo",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "shopify-allbirds-product-count",
       "reason": "conf=0 in 22/24 runs (92%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
-      "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "coinbase-btc-volume24h",
@@ -769,7 +769,7 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -777,7 +777,7 @@
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -785,7 +785,11 @@
     },
     {
       "sector": "home-assistant",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
+    },
+    {
+      "sector": "kraken-dot-usd",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -805,15 +809,15 @@
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
@@ -854,7 +858,7 @@
     {
       "sector": "cheapshark-deal-count",
       "runs": 24,
-      "avg_conf": 0.96
+      "avg_conf": 0.92
     },
     {
       "sector": "cisa-kev-count",
@@ -1177,6 +1181,11 @@
       "avg_conf": 1.0
     },
     {
+      "sector": "worldbank-se-gdp",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "worldbank-us-gdp",
       "runs": 24,
       "avg_conf": 1.0
@@ -1190,11 +1199,6 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "worldbank-se-gdp",
-      "runs": 24,
-      "avg_conf": 0.96
     }
   ]
 }
