@@ -3749,7 +3749,10 @@ export default {
     const results = [];
     const cron = event && event.cron ? event.cron : "unknown";
     console.log("cron start:", cron);
-    const CRONS = ["17 3 * * *", "37 3 * * *", "57 3 * * *", "17 4 * * *", "37 4 * * *"];
+    const CRONS = [
+      "17 3 * * *", "22 3 * * *", "27 3 * * *", "32 3 * * *", "37 3 * * *",
+      "42 3 * * *", "47 3 * * *", "52 3 * * *", "57 3 * * *", "02 4 * * *",
+    ];
     const shardIdx = CRONS.indexOf(cron);
     const shardCount = CRONS.length;
     const all = Object.entries(COLLECTORS);
@@ -3816,10 +3819,13 @@ export default {
       if (!env.RUN_TOKEN || token !== env.RUN_TOKEN) {
         return json({ error: "unauthorized" }, 401);
       }
-      const CRONS = ["17 3 * * *", "37 3 * * *", "57 3 * * *", "17 4 * * *", "37 4 * * *"];
+      const CRONS = [
+        "17 3 * * *", "22 3 * * *", "27 3 * * *", "32 3 * * *", "37 3 * * *",
+        "42 3 * * *", "47 3 * * *", "52 3 * * *", "57 3 * * *", "02 4 * * *",
+      ];
       const shardIdx = parseInt(url.searchParams.get("shard") || "-1", 10);
       if (shardIdx < 0 || shardIdx >= CRONS.length) {
-        return json({ error: "invalid_shard", allowed: [0,1,2,3,4] }, 400);
+        return json({ error: "invalid_shard", allowed: Array.from({length: CRONS.length}, (_, i) => i) }, 400);
       }
       const started = Date.now();
       await this.scheduled({ cron: CRONS[shardIdx] }, env, {});
