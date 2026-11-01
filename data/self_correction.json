@@ -102,6 +102,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "chemistry",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "china",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -362,7 +367,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "institutional-finance",
+      "sector": "infrastructure",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -422,12 +427,17 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nasa-eonet",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
+      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -457,12 +467,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nvd-new-cves",
+      "sector": "openfda-recalls",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "openfda-recalls",
+      "sector": "optoelectronics",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -607,6 +617,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -657,11 +672,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "usgs-streamflow",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "usgs-water",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -707,27 +717,17 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "chemistry",
+      "sector": "institutional-finance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "infrastructure",
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-eonet",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "natural-disasters",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "optoelectronics",
+      "sector": "nvd-new-cves",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -737,7 +737,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "theoretical-cs",
+      "sector": "usgs-streamflow",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -745,31 +745,19 @@
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "coinbase-btc-volume24h",
       "reason": "spam (67%) but no config found in workers"
     },
     {
-      "sector": "cve-feed",
-      "reason": "spam (67%) but no config found in workers"
-    },
-    {
       "sector": "dc-crime",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
       "reason": "spam (83%) but no config found in workers"
-    },
-    {
-      "sector": "dex-total-volume-24h",
-      "reason": "spam (50%) but no config found in workers"
-    },
-    {
-      "sector": "dex-uniswap-volume",
-      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "environment",
@@ -777,7 +765,7 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -793,11 +781,7 @@
     },
     {
       "sector": "home-assistant",
-      "reason": "spam (88%) but no config found in workers"
-    },
-    {
-      "sector": "nvd-new-cves-count",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -821,11 +805,19 @@
     },
     {
       "sector": "tweetfeed-c2",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
       "reason": "spam (100%) but no config found in workers"
+    },
+    {
+      "sector": "cve-feed",
+      "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "nvd-new-cves-count",
+      "reason": "spam (96%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -873,11 +865,6 @@
       "sector": "cisa-kev-total",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "clearlydefined-react-license",
-      "runs": 24,
-      "avg_conf": 0.83
     },
     {
       "sector": "cleveland-artworks",
@@ -1070,11 +1057,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "nvd-cve-count",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
       "sector": "open-digger-openrank-vscode",
       "runs": 24,
       "avg_conf": 1.0
@@ -1120,14 +1102,14 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "saos",
-      "runs": 24,
-      "avg_conf": 0.88
-    },
-    {
       "sector": "sec-filings",
       "runs": 24,
       "avg_conf": 1.0
+    },
+    {
+      "sector": "space",
+      "runs": 24,
+      "avg_conf": 0.96
     },
     {
       "sector": "spaceflight-news-count",
@@ -1165,11 +1147,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "usgs-streamflow-mississippi",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
       "sector": "vehicles",
       "runs": 24,
       "avg_conf": 1.0
@@ -1205,9 +1182,24 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "space",
+      "sector": "clearlydefined-react-license",
       "runs": 24,
-      "avg_conf": 0.92
+      "avg_conf": 0.79
+    },
+    {
+      "sector": "nvd-cve-count",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
+      "sector": "saos",
+      "runs": 24,
+      "avg_conf": 0.88
+    },
+    {
+      "sector": "usgs-streamflow-mississippi",
+      "runs": 24,
+      "avg_conf": 0.96
     }
   ]
 }
