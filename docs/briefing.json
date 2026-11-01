@@ -1,14 +1,15 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-11-01T03:25:06Z",
+  "ts": "2026-11-01T12:22:49Z",
   "run_number": 24,
   "briefing": {
     "headline": "26 signals across 291 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 25,
+        "count": 26,
         "sectors": [
           "arbetsformedlingen",
+          "audius",
           "coinbase-btc-volume24h",
           "dc-crime",
           "defi-total-tvl",
@@ -27,18 +28,12 @@
           "pypi-downloads-requests",
           "robonix",
           "stablecoin-usdt-supply",
-          "steam-csgo-players",
           "steam-dota2-players",
           "treasuries",
           "treasuries-gov",
           "tweetfeed-c2",
-          "usgs-earthquake-count"
-        ]
-      },
-      "security": {
-        "count": 1,
-        "sectors": [
-          "cve-feed"
+          "usgs-earthquake-count",
+          "usgs-streamflow-mississippi"
         ]
       }
     }
@@ -46,62 +41,62 @@
   "signals": [
     {
       "sector": "arbetsformedlingen",
-      "severity": "alert",
-      "summary": "job_vacancies 40266 (-10.0% vs 8.3d ago)",
+      "severity": "notice",
+      "summary": "job_vacancies 40294 (-9.9% vs 8.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -10.012068117820586,
+      "pct_change": -9.949492692084208,
       "fires_24": 3
+    },
+    {
+      "sector": "audius",
+      "severity": "notice",
+      "summary": "New: iLLPeTiLL - Post HospitiLL Slapperzzz Mix (Audius Exclusive) \u2014 @iLLPeTiLL",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": null,
+      "fires_24": 2
     },
     {
       "sector": "coinbase-btc-volume24h",
       "severity": "notice",
-      "summary": "btc_quote_volume_usd 166168014.87962243 (-49.8% vs 7.3d ago)",
+      "summary": "btc_quote_volume_usd 166584345.23698962 (-49.7% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -49.80549750152291,
-      "fires_24": 16
-    },
-    {
-      "sector": "cve-feed",
-      "severity": "notice",
-      "summary": "New: CVE-2026-120191: A weakness has been identified in Presenton up to 0.9.11-beta. Affected by this issue is some unknow",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": null,
+      "pct_change": -49.679736264150016,
       "fires_24": 16
     },
     {
       "sector": "dc-crime",
       "severity": "alert",
-      "summary": "crime_incidents 18357 (+3.0% vs 8.7d ago)",
+      "summary": "crime_incidents 18428 (+3.4% vs 9.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 2.967242539824994,
+      "pct_change": 3.365492483733453,
       "fires_24": 24
     },
     {
       "sector": "defi-total-tvl",
       "severity": "notice",
-      "summary": "tvl_usd 84946881026 (-4.0% vs 7.3d ago)",
+      "summary": "tvl_usd 85187062769 (-3.8% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -4.024084782046492,
-      "fires_24": 9
+      "pct_change": -3.752719167151075,
+      "fires_24": 10
     },
     {
       "sector": "dex-ethereum-volume",
       "severity": "alert",
-      "summary": "eth_24h 1900951498.1599998 (+82.0% vs 7.6d ago)",
+      "summary": "eth_24h 1890021549.1599998 (+80.9% vs 7.9d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 81.97208605130808,
+      "pct_change": 80.9257965368783,
       "fires_24": 20
     },
     {
       "sector": "environment",
       "severity": "notice",
-      "summary": "co2_ppm 428.16 (+0.5% vs 28.1d ago)",
+      "summary": "co2_ppm 428.16 (+0.5% vs 28.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 0.5330014792552159,
@@ -110,97 +105,97 @@
     {
       "sector": "frankfurter-eursek",
       "severity": "alert",
-      "summary": "eur_sek 10.978 (-1.4% vs 6.7d ago)",
+      "summary": "eur_sek 10.978 (-1.4% vs 7.1d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -1.374539574162254,
-      "fires_24": 19
+      "fires_24": 20
     },
     {
       "sector": "github-recent-commits",
       "severity": "alert",
-      "summary": "commit_count 19422454 (-32.5% vs 6.3d ago)",
+      "summary": "commit_count 24137920 (-16.1% vs 6.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -32.45089597155978,
+      "pct_change": -16.051037159868283,
       "fires_24": 15
     },
     {
       "sector": "hackernews-top-scores",
       "severity": "alert",
-      "summary": "top10_score_sum 2077 (+177.7% vs 7.3d ago)",
+      "summary": "top10_score_sum 3420 (+357.2% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 177.67379679144386,
+      "pct_change": 357.2192513368984,
       "fires_24": 24
     },
     {
       "sector": "home-assistant",
       "severity": "alert",
-      "summary": "installations 716658 (+1.1% vs 8.3d ago)",
+      "summary": "installations 717007 (+1.2% vs 8.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 1.1385991899405863,
-      "fires_24": 22
+      "pct_change": 1.1878519313001876,
+      "fires_24": 23
     },
     {
       "sector": "kraken-ada-usd",
       "severity": "notice",
-      "summary": "ada_usd 0.192207 (-6.3% vs 6.3d ago)",
+      "summary": "ada_usd 0.192359 (-6.2% vs 6.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -6.299907375810471,
-      "fires_24": 9
+      "pct_change": -6.22580802417979,
+      "fires_24": 10
     },
     {
       "sector": "kraken-dot-usd",
       "severity": "notice",
-      "summary": "dot_usd 0.952 (-7.9% vs 6.3d ago)",
+      "summary": "dot_usd 0.9413 (-9.0% vs 6.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -7.930367504835596,
-      "fires_24": 10
+      "pct_change": -8.965183752417795,
+      "fires_24": 11
     },
     {
       "sector": "kraken-sol-usd",
       "severity": "notice",
-      "summary": "sol_usd 95.41 (-6.0% vs 6.3d ago)",
+      "summary": "sol_usd 94.39 (-7.0% vs 6.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -6.037029741973616,
-      "fires_24": 7
+      "pct_change": -7.041559976364,
+      "fires_24": 8
     },
     {
       "sector": "nvd-new-cves-count",
-      "severity": "notice",
-      "summary": "new_cves 123 (-6.8% vs 6.3d ago)",
+      "severity": "alert",
+      "summary": "new_cves 73 (-44.7% vs 6.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -6.8181818181818175,
-      "fires_24": 23
+      "pct_change": -44.696969696969695,
+      "fires_24": 24
     },
     {
       "sector": "phishunt-domains",
       "severity": "notice",
-      "summary": "active_phishings 1169 (-8.5% vs 7.3d ago)",
+      "summary": "active_phishings 1159 (-9.2% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -8.45732184808144,
+      "pct_change": -9.240407204385278,
       "fires_24": 23
     },
     {
       "sector": "pocketworld-space-weather",
       "severity": "alert",
-      "summary": "event_count 2 (+100.0% vs 7.3d ago)",
+      "summary": "event_count 2 (+100.0% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 100,
-      "fires_24": 2
+      "fires_24": 3
     },
     {
       "sector": "pypi-downloads-requests",
       "severity": "alert",
-      "summary": "last_day 37829304 (-26.5% vs 7.4d ago)",
+      "summary": "last_day 37829304 (-26.5% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -26.479329000269562,
@@ -209,7 +204,7 @@
     {
       "sector": "robonix",
       "severity": "alert",
-      "summary": "packages 69 (+16.9% vs 9d ago)",
+      "summary": "packages 69 (+16.9% vs 9.4d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 16.94915254237288,
@@ -218,34 +213,25 @@
     {
       "sector": "stablecoin-usdt-supply",
       "severity": "notice",
-      "summary": "usdt_usd 179700391188.5006 (-1.5% vs 7.3d ago)",
+      "summary": "usdt_usd 179687722996.29514 (-1.5% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -1.5131452544884747,
-      "fires_24": 4
-    },
-    {
-      "sector": "steam-csgo-players",
-      "severity": "alert",
-      "summary": "player_count 508257 (-50.2% vs 6.3d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": -50.18235994648291,
-      "fires_24": 15
+      "pct_change": -1.520088202121349,
+      "fires_24": 5
     },
     {
       "sector": "steam-dota2-players",
       "severity": "alert",
-      "summary": "player_count 354774 (-61.2% vs 6.3d ago)",
+      "summary": "player_count 701958 (-23.3% vs 6.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -61.22302873837726,
-      "fires_24": 22
+      "pct_change": -23.27564817921782,
+      "fires_24": 23
     },
     {
       "sector": "treasuries",
       "severity": "notice",
-      "summary": "yield_10y 4.98 (-6.2% vs 27.1d ago)",
+      "summary": "yield_10y 4.98 (-6.2% vs 27.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -6.214689265536708,
@@ -254,7 +240,7 @@
     {
       "sector": "treasuries-gov",
       "severity": "notice",
-      "summary": "yield_10y 4.94 (-7.0% vs 27.1d ago)",
+      "summary": "yield_10y 4.94 (-7.0% vs 27.5d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": -6.967984934086615,
@@ -263,47 +249,52 @@
     {
       "sector": "tweetfeed-c2",
       "severity": "alert",
-      "summary": "weekly_c2_ips 155 (-89.8% vs 8.3d ago)",
+      "summary": "weekly_c2_ips 156 (-89.8% vs 8.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -89.8360655737705,
-      "fires_24": 16
+      "pct_change": -89.77049180327869,
+      "fires_24": 17
     },
     {
       "sector": "usgs-earthquake-count",
       "severity": "alert",
-      "summary": "m45_count 11 (-78.0% vs 7.3d ago)",
+      "summary": "m45_count 16 (-68.0% vs 7.7d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -78,
+      "pct_change": -68,
       "fires_24": 24
+    },
+    {
+      "sector": "usgs-streamflow-mississippi",
+      "severity": "notice",
+      "summary": "discharge_cfs 123000 (-26.3% vs 7.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -26.34730538922156,
+      "fires_24": 1
     }
   ],
   "delta": {
-    "previous_ts": "2026-10-31 20:49",
-    "signals_before": 27,
+    "previous_ts": "2026-11-01 03:25",
+    "signals_before": 26,
     "signals_after": 26,
     "new": [
-      "arbetsformedlingen",
-      "github-recent-commits",
-      "pypi-downloads-requests",
-      "steam-csgo-players"
+      "audius",
+      "usgs-streamflow-mississippi"
     ],
     "dropped": [
-      "defi-fees-aave",
-      "dex-total-volume-24h",
-      "dex-uniswap-volume",
-      "free-games",
-      "pypi-daily-requests"
+      "cve-feed",
+      "steam-csgo-players"
     ],
     "persistent": [
+      "arbetsformedlingen",
       "coinbase-btc-volume24h",
-      "cve-feed",
       "dc-crime",
       "defi-total-tvl",
       "dex-ethereum-volume",
       "environment",
       "frankfurter-eursek",
+      "github-recent-commits",
       "hackernews-top-scores",
       "home-assistant",
       "kraken-ada-usd",
@@ -312,6 +303,7 @@
       "nvd-new-cves-count",
       "phishunt-domains",
       "pocketworld-space-weather",
+      "pypi-downloads-requests",
       "robonix",
       "stablecoin-usdt-supply",
       "steam-dota2-players",
@@ -322,121 +314,131 @@
     ],
     "movements": [
       {
-        "sector": "coinbase-btc-volume24h",
-        "previous": "btc_quote_volume_usd 216627021.6914749 (-34.6% vs 7d ago)",
-        "current": "btc_quote_volume_usd 166168014.87962243 (-49.8% vs 7.3d ago)"
+        "sector": "arbetsformedlingen",
+        "previous": "job_vacancies 40266 (-10.0% vs 8.3d ago)",
+        "current": "job_vacancies 40294 (-9.9% vs 8.6d ago)"
       },
       {
-        "sector": "cve-feed",
-        "previous": "New: CVE-2026-118147: Improper certificate validation in Visual Studio allows an",
-        "current": "New: CVE-2026-120191: A weakness has been identified in Presenton up to 0.9.11-b"
+        "sector": "coinbase-btc-volume24h",
+        "previous": "btc_quote_volume_usd 166168014.87962243 (-49.8% vs 7.3d ago)",
+        "current": "btc_quote_volume_usd 166584345.23698962 (-49.7% vs 7.7d ago)"
       },
       {
         "sector": "dc-crime",
-        "previous": "crime_incidents 18357 (+3.0% vs 8.4d ago)",
-        "current": "crime_incidents 18357 (+3.0% vs 8.7d ago)"
+        "previous": "crime_incidents 18357 (+3.0% vs 8.7d ago)",
+        "current": "crime_incidents 18428 (+3.4% vs 9.1d ago)"
       },
       {
         "sector": "defi-total-tvl",
-        "previous": "tvl_usd 84903257675 (-4.1% vs 7d ago)",
-        "current": "tvl_usd 84946881026 (-4.0% vs 7.3d ago)"
+        "previous": "tvl_usd 84946881026 (-4.0% vs 7.3d ago)",
+        "current": "tvl_usd 85187062769 (-3.8% vs 7.7d ago)"
       },
       {
         "sector": "dex-ethereum-volume",
-        "previous": "eth_24h 3747499415.3 (+258.7% vs 7.3d ago)",
-        "current": "eth_24h 1900951498.1599998 (+82.0% vs 7.6d ago)"
+        "previous": "eth_24h 1900951498.1599998 (+82.0% vs 7.6d ago)",
+        "current": "eth_24h 1890021549.1599998 (+80.9% vs 7.9d ago)"
       },
       {
         "sector": "environment",
-        "previous": "co2_ppm 428.16 (+0.7% vs 29.9d ago)",
-        "current": "co2_ppm 428.16 (+0.5% vs 28.1d ago)"
+        "previous": "co2_ppm 428.16 (+0.5% vs 28.1d ago)",
+        "current": "co2_ppm 428.16 (+0.5% vs 28.5d ago)"
       },
       {
         "sector": "frankfurter-eursek",
-        "previous": "eur_sek 10.978 (-1.4% vs 6.5d ago)",
-        "current": "eur_sek 10.978 (-1.4% vs 6.7d ago)"
+        "previous": "eur_sek 10.978 (-1.4% vs 6.7d ago)",
+        "current": "eur_sek 10.978 (-1.4% vs 7.1d ago)"
+      },
+      {
+        "sector": "github-recent-commits",
+        "previous": "commit_count 19422454 (-32.5% vs 6.3d ago)",
+        "current": "commit_count 24137920 (-16.1% vs 6.7d ago)"
       },
       {
         "sector": "hackernews-top-scores",
-        "previous": "top10_score_sum 1056 (+41.2% vs 7d ago)",
-        "current": "top10_score_sum 2077 (+177.7% vs 7.3d ago)"
+        "previous": "top10_score_sum 2077 (+177.7% vs 7.3d ago)",
+        "current": "top10_score_sum 3420 (+357.2% vs 7.7d ago)"
       },
       {
         "sector": "home-assistant",
-        "previous": "installations 716417 (+1.1% vs 8d ago)",
-        "current": "installations 716658 (+1.1% vs 8.3d ago)"
+        "previous": "installations 716658 (+1.1% vs 8.3d ago)",
+        "current": "installations 717007 (+1.2% vs 8.6d ago)"
       },
       {
         "sector": "kraken-ada-usd",
-        "previous": "ada_usd 0.192379 (-6.2% vs 6d ago)",
-        "current": "ada_usd 0.192207 (-6.3% vs 6.3d ago)"
+        "previous": "ada_usd 0.192207 (-6.3% vs 6.3d ago)",
+        "current": "ada_usd 0.192359 (-6.2% vs 6.7d ago)"
       },
       {
         "sector": "kraken-dot-usd",
-        "previous": "dot_usd 0.9471 (-8.4% vs 6d ago)",
-        "current": "dot_usd 0.952 (-7.9% vs 6.3d ago)"
+        "previous": "dot_usd 0.952 (-7.9% vs 6.3d ago)",
+        "current": "dot_usd 0.9413 (-9.0% vs 6.7d ago)"
       },
       {
         "sector": "kraken-sol-usd",
-        "previous": "sol_usd 95.51 (-5.9% vs 6d ago)",
-        "current": "sol_usd 95.41 (-6.0% vs 6.3d ago)"
+        "previous": "sol_usd 95.41 (-6.0% vs 6.3d ago)",
+        "current": "sol_usd 94.39 (-7.0% vs 6.7d ago)"
       },
       {
         "sector": "nvd-new-cves-count",
-        "previous": "new_cves 176 (+33.3% vs 6d ago)",
-        "current": "new_cves 123 (-6.8% vs 6.3d ago)"
+        "previous": "new_cves 123 (-6.8% vs 6.3d ago)",
+        "current": "new_cves 73 (-44.7% vs 6.7d ago)"
       },
       {
         "sector": "phishunt-domains",
-        "previous": "active_phishings 1160 (-9.2% vs 7d ago)",
-        "current": "active_phishings 1169 (-8.5% vs 7.3d ago)"
+        "previous": "active_phishings 1169 (-8.5% vs 7.3d ago)",
+        "current": "active_phishings 1159 (-9.2% vs 7.7d ago)"
       },
       {
         "sector": "pocketworld-space-weather",
-        "previous": "event_count 2 (+100.0% vs 7.1d ago)",
-        "current": "event_count 2 (+100.0% vs 7.3d ago)"
+        "previous": "event_count 2 (+100.0% vs 7.3d ago)",
+        "current": "event_count 2 (+100.0% vs 7.7d ago)"
+      },
+      {
+        "sector": "pypi-downloads-requests",
+        "previous": "last_day 37829304 (-26.5% vs 7.4d ago)",
+        "current": "last_day 37829304 (-26.5% vs 7.7d ago)"
       },
       {
         "sector": "robonix",
-        "previous": "packages 69 (+16.9% vs 8.8d ago)",
-        "current": "packages 69 (+16.9% vs 9d ago)"
+        "previous": "packages 69 (+16.9% vs 9d ago)",
+        "current": "packages 69 (+16.9% vs 9.4d ago)"
       },
       {
         "sector": "stablecoin-usdt-supply",
-        "previous": "usdt_usd 179690495002.34393 (-1.5% vs 7d ago)",
-        "current": "usdt_usd 179700391188.5006 (-1.5% vs 7.3d ago)"
+        "previous": "usdt_usd 179700391188.5006 (-1.5% vs 7.3d ago)",
+        "current": "usdt_usd 179687722996.29514 (-1.5% vs 7.7d ago)"
       },
       {
         "sector": "steam-dota2-players",
-        "previous": "player_count 653286 (-28.6% vs 6d ago)",
-        "current": "player_count 354774 (-61.2% vs 6.3d ago)"
+        "previous": "player_count 354774 (-61.2% vs 6.3d ago)",
+        "current": "player_count 701958 (-23.3% vs 6.7d ago)"
       },
       {
         "sector": "treasuries",
-        "previous": "yield_10y 4.98 (-5.7% vs 29.9d ago)",
-        "current": "yield_10y 4.98 (-6.2% vs 27.1d ago)"
+        "previous": "yield_10y 4.98 (-6.2% vs 27.1d ago)",
+        "current": "yield_10y 4.98 (-6.2% vs 27.5d ago)"
       },
       {
         "sector": "treasuries-gov",
-        "previous": "yield_10y 4.94 (-6.4% vs 29.9d ago)",
-        "current": "yield_10y 4.94 (-7.0% vs 27.1d ago)"
+        "previous": "yield_10y 4.94 (-7.0% vs 27.1d ago)",
+        "current": "yield_10y 4.94 (-7.0% vs 27.5d ago)"
       },
       {
         "sector": "tweetfeed-c2",
-        "previous": "weekly_c2_ips 167 (-89.0% vs 8d ago)",
-        "current": "weekly_c2_ips 155 (-89.8% vs 8.3d ago)"
+        "previous": "weekly_c2_ips 155 (-89.8% vs 8.3d ago)",
+        "current": "weekly_c2_ips 156 (-89.8% vs 8.6d ago)"
       },
       {
         "sector": "usgs-earthquake-count",
-        "previous": "m45_count 11 (-78.0% vs 7d ago)",
-        "current": "m45_count 11 (-78.0% vs 7.3d ago)"
+        "previous": "m45_count 11 (-78.0% vs 7.3d ago)",
+        "current": "m45_count 16 (-68.0% vs 7.7d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "btc-exchange-spread",
-      "avg_volatility": 180.98,
+      "avg_volatility": 184.34,
       "max_volatility": 725.29,
       "fires_in_window": 1
     },
@@ -448,19 +450,19 @@
     },
     {
       "sector": "dex-uniswap-volume",
-      "avg_volatility": 62.93,
+      "avg_volatility": 62.51,
       "max_volatility": 220.83,
-      "fires_in_window": 11
+      "fires_in_window": 10
     },
     {
       "sector": "eth-exchange-spread",
-      "avg_volatility": 60.42,
+      "avg_volatility": 61.27,
       "max_volatility": 124.77,
       "fires_in_window": 0
     },
     {
       "sector": "pypi-daily-requests",
-      "avg_volatility": 52.78,
+      "avg_volatility": 53.17,
       "max_volatility": 74.11,
       "fires_in_window": 20
     },
@@ -472,25 +474,25 @@
     },
     {
       "sector": "dex-total-volume-24h",
-      "avg_volatility": 34.35,
+      "avg_volatility": 33.99,
       "max_volatility": 110.32,
-      "fires_in_window": 11
-    },
-    {
-      "sector": "transportation",
-      "avg_volatility": 25,
-      "max_volatility": 25,
-      "fires_in_window": 0
+      "fires_in_window": 10
     },
     {
       "sector": "energy-carbon",
-      "avg_volatility": 22.85,
+      "avg_volatility": 27.14,
       "max_volatility": 49.28,
       "fires_in_window": 1
     },
     {
+      "sector": "steam-csgo-players",
+      "avg_volatility": 23.09,
+      "max_volatility": 59.52,
+      "fires_in_window": 14
+    },
+    {
       "sector": "defi-fees-aave",
-      "avg_volatility": 15.59,
+      "avg_volatility": 16.12,
       "max_volatility": 60.44,
       "fires_in_window": 4
     }
