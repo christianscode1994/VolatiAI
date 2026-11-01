@@ -1,0 +1,21 @@
+name: Sector crawl
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  slow:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4]
+    steps:
+      - name: Run sector-slow shard ${{ matrix.shard }}
+        run: |
+          curl --max-time 300 --fail-with-body -X POST \
+            "${{ secrets.SECTOR_SLOW_URL }}/internal/run?shard=${{ matrix.shard }}" \
+            -H "Authorization: Bearer ${{ secrets.RUN_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            | jq .

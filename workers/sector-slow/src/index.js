@@ -2239,17 +2239,6 @@ const COLLECTORS = {
       return v;
     }) } }),
   },
-  "affirmations-length": {
-    config: { metric: "affirmation_length", threshold_pct: 20.0, window: "1d", window_days: 1, ttl: 86400 },
-    collectAll: async () => ({ sources: { affirmation_length: await fetchSafe(async () => {
-      const r = await fetch("https://www.affirmations.dev/");
-      if (!r.ok) throw new Error("http_" + r.status);
-      const j = await r.json();
-      const v = j?.affirmation?.length;
-      if (!Number.isFinite(v) || v <= 0) throw new Error("no_affirmation");
-      return v;
-    }) } }),
-  },
   "cdc-covid-total-deaths": {
     config: { metric: "deaths", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 86400 },
     collectAll: async () => ({ sources: { deaths: await fetchSafe(async () => {
@@ -2455,7 +2444,7 @@ const COLLECTORS = {
     }) } }),
   },
   "obis-marine-occurrences": {
-    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    config: { metric: "total", threshold_pct: 4.0, window: "30d", window_days: 30, ttl: 604800 },
     collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
       const r = await fetch("https://api.obis.org/v3/occurrence?size=1");
       if (!r.ok) throw new Error("http_" + r.status);
@@ -2466,7 +2455,7 @@ const COLLECTORS = {
     }) } }),
   },
   "gleif-total-leis": {
-    config: { metric: "total", threshold_pct: 1.0, window: "30d", window_days: 30, ttl: 604800 },
+    config: { metric: "total", threshold_pct: 4.0, window: "30d", window_days: 30, ttl: 604800 },
     collectAll: async () => ({ sources: { total: await fetchSafe(async () => {
       const r = await fetch("https://api.gleif.org/api/v1/lei-records?page%5Bsize%5D=1",
         { headers: { "user-agent": "VolatiAI/1.0 (admin@fourieranalys.se)" } });
@@ -3716,12 +3705,31 @@ async function runSectorForCron(sectorName, collector, env) {
   const envelope = buildSlowEnvelope(sectorName, config, result, history);
   const current = result.sources[config.metric]?.ok ? result.sources[config.metric].data : null;
   if (current === null || current === undefined) {
+    const src = result.sources[config.metric];
+    console.log("no_current", sectorName, "err:", src && src.error, "allFailed:", envelope.sources.failed);
     return { sector: sectorName, skipped: "no_current", failed: envelope.sources.failed };
   }
   const today = new Date().toISOString().slice(0, 10);
   const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
   const valueChanged = !todayEntry || todayEntry.v !== current;
   if (!valueChanged) {
+    if (envelope.has_signal) {
+      try {
+        await env.SECTOR_KV.put(
+          `${sectorName}_signal`,
+          JSON.stringify({
+            severity: envelope.severity,
+            has_signal: true,
+            computed_at: Date.now(),
+            pct_change: envelope.delta ? envelope.delta.pct_change : null,
+            window_days: envelope.delta ? envelope.delta.actual_window_days : null,
+          }),
+          { expirationTtl: 86400 * 7 }
+        );
+      } catch (e) {
+        console.log("signal_put_failed", sectorName, String(e).slice(0, 120));
+      }
+    }
     return { sector: sectorName, skipped: "unchanged_today", has_signal: envelope.has_signal };
   }
   history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
@@ -3741,7 +3749,15 @@ export default {
     const results = [];
     const cron = event && event.cron ? event.cron : "unknown";
     console.log("cron start:", cron);
-    for (const [name, collector] of Object.entries(COLLECTORS)) {
+    const CRONS = ["17 3 * * *", "37 3 * * *", "57 3 * * *", "17 4 * * *", "37 4 * * *"];
+    const shardIdx = CRONS.indexOf(cron);
+    const shardCount = CRONS.length;
+    const all = Object.entries(COLLECTORS);
+    const slice = shardIdx >= 0
+      ? all.filter((_, i) => i % shardCount === shardIdx)
+      : all;
+    console.log(`cron shard ${shardIdx + 1}/${shardCount}: ${slice.length} of ${all.length} sectors`);
+    for (const [name, collector] of slice) {
       try {
         const r = await runSectorForCron(name, collector, env);
         results.push(r);
@@ -3793,6 +3809,28 @@ export default {
       }
     }
 
+    // ─── POST /internal/run?shard=N — token-gated shard trigger ───
+    if (parts[0] === "internal" && parts[1] === "run" && request.method === "POST") {
+      const auth = request.headers.get("authorization") || "";
+      const token = auth.replace(/^Bearer\s+/i, "");
+      if (!env.RUN_TOKEN || token !== env.RUN_TOKEN) {
+        return json({ error: "unauthorized" }, 401);
+      }
+      const CRONS = ["17 3 * * *", "37 3 * * *", "57 3 * * *", "17 4 * * *", "37 4 * * *"];
+      const shardIdx = parseInt(url.searchParams.get("shard") || "-1", 10);
+      if (shardIdx < 0 || shardIdx >= CRONS.length) {
+        return json({ error: "invalid_shard", allowed: [0,1,2,3,4] }, 400);
+      }
+      const started = Date.now();
+      await this.scheduled({ cron: CRONS[shardIdx] }, env, {});
+      const meta = await env.SECTOR_KV.get("_last_cron_run", "json");
+      return json({
+        ok: true, shard: shardIdx, cron: CRONS[shardIdx],
+        duration_ms: Date.now() - started,
+        result: meta ? { total: meta.total, written: meta.written, failed: meta.failed } : null,
+      });
+    }
+
     // ─── /metrics — read-only health from history timestamps ───
     if (parts[0] === "metrics") {
       try {
@@ -3837,7 +3875,7 @@ export default {
           _cached_at: new Date().toISOString(),
         };
         // Cache 120s (KV minimum TTL is 60s)
-        await env.SECTOR_KV.put("_metrics_cache", JSON.stringify(result), { expirationTtl: 120 });
+        // moved to cron; see scheduled()
         return json(result);
       } catch (e) {
         return json({ error: "metrics_failed", message: String(e && e.message || e) }, 500);
@@ -3889,8 +3927,8 @@ export default {
     }
 
 
-    // ─── /latest — batch summary from KV, no upstream fetches ───
-    if (parts[0] === "latest") {
+    // ─── /latest and /summary — batch read from KV, no upstream fetches ───
+    if (parts[0] === "latest" || parts[0] === "summary") {
       try {
         // Always read from history keys — consistent shape, no cron dependency
         const list = await env.SECTOR_KV.list({ limit: 1000 });
@@ -3915,8 +3953,9 @@ export default {
             const firstUnderscore = withoutSuffix.indexOf("_");
             const sector = firstUnderscore === -1 ? withoutSuffix : withoutSuffix.substring(0, firstUnderscore);
             const absPct = Math.abs(pct);
-            const sev = absPct >= 15 ? "critical"
-                      : absPct >= 5  ? "warn" : "info";
+            const tp = (COLLECTORS[sector] && COLLECTORS[sector].config && COLLECTORS[sector].config.threshold_pct) || 5;
+            const sev = absPct >= tp * 2 ? "critical"
+                      : absPct >= tp     ? "warn" : "info";
             rows.push({
               sector, current: last.v, previous: prev.v, pct_change: pct,
               pts: hist.length, t: last.t,
@@ -3924,13 +3963,112 @@ export default {
             });
           });
         }
+        // Merge persisted signals from cron (for unchanged sectors).
+        try {
+          const sigList = await env.SECTOR_KV.list({ limit: 1000 });
+          const sigKeys = sigList.keys.filter(k => k.name.endsWith("_signal"));
+          const now = Date.now();
+          const sigMap = new Map();
+          for (const k of sigKeys) {
+            const sig = await env.SECTOR_KV.get(k.name, "json");
+            if (sig && sig.has_signal && now - (sig.computed_at || 0) < 7 * 86400 * 1000) {
+              sigMap.set(k.name.replace(/_signal$/, ""), sig);
+            }
+          }
+          for (const r of rows) {
+            const sig = sigMap.get(r.sector);
+            if (sig && !r.has_signal) {
+              r.has_signal = true;
+              r.severity = sig.severity === "alert" ? "critical" : "warn";
+              r.from_persisted_signal = true;
+              if (sig.pct_change != null) {
+                r.window_pct_change = sig.pct_change;
+                r.window_days = sig.window_days;
+                r.pct_change = sig.pct_change;
+              }
+            }
+          }
+        } catch (e) {
+          console.log("signal_merge_failed", String(e).slice(0, 120));
+        }
+        // Dedupe by sector: keep newest t.
+        const bySector = new Map();
+        for (const r of rows) {
+          const cur = bySector.get(r.sector);
+          if (!cur || (r.t || 0) > (cur.t || 0)) bySector.set(r.sector, r);
+        }
+        const deduped = Array.from(bySector.values());
+        const wantSummary = parts[0] === "summary" || url.searchParams.get("summary") === "1";
+        const signalsOnly = url.searchParams.get("signals") === "1";
+        const severityFilter = (url.searchParams.get("severity") || "").split(",").filter(Boolean);
+        const fieldsParam = url.searchParams.get("fields");
+        const limitParam = parseInt(url.searchParams.get("limit") || "0", 10);
+        const sevRank = { critical: 3, warn: 2, info: 1 };
+
+        if (wantSummary) {
+          const visible = deduped;
+          const signals = visible.filter(r => r.has_signal);
+          const bySeverity = { critical: 0, warn: 0, info: 0 };
+          for (const r of visible) bySeverity[r.severity] = (bySeverity[r.severity] || 0) + 1;
+          let top = signals.slice();
+          if (url.searchParams.get("group") === "1") {
+            const GROUP_OF = (s) => {
+              if (s.startsWith("dex-")) return "dex-volume";
+              if (s.endsWith("-exchange-spread")) return "exchange-spread";
+              return s;
+            };
+            const groups = new Map();
+            for (const r of top) {
+              const g = GROUP_OF(r.sector);
+              if (!groups.has(g)) groups.set(g, []);
+              groups.get(g).push(r);
+            }
+            const collapsed = [];
+            for (const [g, rows] of groups) {
+              if (rows.length === 1) { collapsed.push(rows[0]); continue; }
+              const lead = rows.reduce((a, b) => Math.abs(b.pct_change) > Math.abs(a.pct_change) ? b : a);
+              collapsed.push({ ...lead, sector: g, grouped: true, members: rows.map(r => r.sector) });
+            }
+            top = collapsed;
+          }
+          if (severityFilter.length) top = top.filter(r => severityFilter.includes(r.severity));
+          top.sort((a, b) => Math.abs(b.pct_change || 0) - Math.abs(a.pct_change || 0));
+          const topN = limitParam > 0 ? limitParam : 10;
+          const _summary = {
+            ts: new Date().toISOString(),
+            count: visible.length,
+            alerting: signals.length,
+            by_severity: bySeverity,
+            top: top.slice(0, topN),
+            source: "kv_list",
+          };
+          const _sig = await signLatest(_summary, env);
+          if (_sig) _summary.signature = _sig;
+          return json(_summary);
+        }
+
+        let view = deduped;
+        if (signalsOnly) view = view.filter(r => r.has_signal);
+        if (severityFilter.length) view = view.filter(r => severityFilter.includes(r.severity));
+        if (signalsOnly || url.searchParams.get("sort") === "1") {
+          view = view.slice().sort((a, b) =>
+            (sevRank[b.severity] || 0) - (sevRank[a.severity] || 0)
+            || Math.abs(b.pct_change || 0) - Math.abs(a.pct_change || 0));
+        }
+        if (limitParam > 0) view = view.slice(0, limitParam);
+        let out = view;
+        if (fieldsParam) {
+          const fields = fieldsParam.split(",");
+          out = view.map(r => Object.fromEntries(fields.map(f => [f, r[f]])));
+        }
         const _latest = {
           ts: new Date().toISOString(),
-          count: rows.length,
-          with_history: rows.length,
-          alerting: 0,
+          count: deduped.length,
+          returned: out.length,
+          with_history: deduped.length,
+          alerting: deduped.filter(r => r.has_signal).length,
           source: "kv_list",
-          rows,
+          rows: out,
         };
         const _sig = await signLatest(_latest, env);
         if (_sig) _latest.signature = _sig;
