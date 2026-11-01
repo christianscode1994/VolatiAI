@@ -155,6 +155,34 @@ async function fetchWithRetry(url, opts = {}, maxRetries = 3) {
   throw lastErr;
 }
 
+async function runSectorForCronDense(sectorName, collector, env) {
+  const config = collector.config;
+  const histKey = `${sectorName}_${config.metric}_history`;
+  const raw = await env.SECTOR_KV.get(histKey);
+  let history = raw ? JSON.parse(raw) : [];
+  const result = await collector.collectAll(env);
+  const current = result.value;
+  if (current === null || current === undefined) {
+    return { sector: sectorName, skipped: "no_current" };
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
+  const valueChanged = !todayEntry || todayEntry.v !== current;
+  if (!valueChanged) {
+    return { sector: sectorName, skipped: "unchanged_today" };
+  }
+  history = history.filter(h => new Date(h.t).toISOString().slice(0, 10) !== today);
+  history.push({ t: Date.now(), v: current });
+  history = history.filter(h => h.t > Date.now() - 90 * 24 * 60 * 60 * 1000);
+  try {
+    await env.SECTOR_KV.put(histKey, JSON.stringify(history), { expirationTtl: 86400 * 31 });
+    await env.SECTOR_KV.put(`${sectorName}_${config.metric}`, String(current), { expirationTtl: config.ttl || 3600 });
+    return { sector: sectorName, written: true, value: current };
+  } catch (e) {
+    return { sector: sectorName, error: String(e).slice(0, 120) };
+  }
+}
+
 const COLLECTORS = {
 
   "gemini-btc-spot": {
@@ -3784,9 +3812,76 @@ Object.assign(COLLECTORS, {
 
 
 export default {
+  async scheduled(event, env, ctx) {
+    const results = [];
+    const cron = event && event.cron ? event.cron : "unknown";
+    console.log("dense cron start:", cron);
+    const CRONS = [
+      "17 3 * * *", "22 3 * * *", "27 3 * * *", "32 3 * * *", "37 3 * * *",
+      "42 3 * * *", "47 3 * * *", "52 3 * * *", "57 3 * * *", "02 4 * * *",
+    ];
+    const shardIdx = CRONS.indexOf(cron);
+    const shardCount = CRONS.length;
+    const all = Object.entries(COLLECTORS);
+    const slice = shardIdx >= 0
+      ? all.filter((_, i) => i % shardCount === shardIdx)
+      : all;
+    console.log(`dense cron shard ${shardIdx + 1}/${shardCount}: ${slice.length} of ${all.length} sectors`);
+    for (const [name, collector] of slice) {
+      try {
+        const r = await runSectorForCronDense(name, collector, env);
+        results.push(r);
+      } catch (e) {
+        results.push({ sector: name, error: String(e).slice(0, 120) });
+      }
+    }
+    const written = results.filter(r => r.written).length;
+    const skipped = results.filter(r => r.skipped).length;
+    const failed = results.filter(r => r.error).length;
+    const summary = {
+      timestamp: new Date().toISOString(),
+      source: "cron", cron,
+      total: results.length,
+      written, skipped, failed,
+      results,
+    };
+    try {
+      await env.SECTOR_KV.put("_last_cron_run_dense", JSON.stringify(summary), { expirationTtl: 86400 * 7 });
+    } catch (e) {
+      console.log("dense cron status write failed:", String(e));
+    }
+    console.log(`dense cron summary: ${written} written, ${skipped} skipped, ${failed} failed`);
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const parts = url.pathname.split("/").filter(Boolean);
+
+    // ─── POST /internal/run?shard=N — token-gated shard trigger ───
+    if (parts[0] === "internal" && parts[1] === "run" && request.method === "POST") {
+      const auth = request.headers.get("authorization") || "";
+      const token = auth.replace(/^Bearer\s+/i, "");
+      if (!env.RUN_TOKEN || token !== env.RUN_TOKEN) {
+        return json({ error: "unauthorized" }, 401);
+      }
+      const CRONS = [
+        "17 3 * * *", "22 3 * * *", "27 3 * * *", "32 3 * * *", "37 3 * * *",
+        "42 3 * * *", "47 3 * * *", "52 3 * * *", "57 3 * * *", "02 4 * * *",
+      ];
+      const shardIdx = parseInt(url.searchParams.get("shard") || "-1", 10);
+      if (shardIdx < 0 || shardIdx >= CRONS.length) {
+        return json({ error: "invalid_shard", allowed: Array.from({length: CRONS.length}, (_, i) => i) }, 400);
+      }
+      const started = Date.now();
+      await this.scheduled({ cron: CRONS[shardIdx] }, env, {});
+      const meta = await env.SECTOR_KV.get("_last_cron_run_dense", "json");
+      return json({
+        ok: true, shard: shardIdx, worker: "dense",
+        cron: CRONS[shardIdx],
+        duration_ms: Date.now() - started,
+        result: meta ? { total: meta.total, written: meta.written, failed: meta.failed } : null,
+      });
+    }
 
     if (parts.length === 0) {
       return json({ ok: true, density: "dense", sectors: Object.keys(COLLECTORS) });
