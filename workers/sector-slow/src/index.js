@@ -3789,6 +3789,34 @@ export default {
     } catch (e) {
       console.log("cron status write failed:", String(e));
     }
+
+    // Daily calibration snapshot: merge this shard's fired sectors into
+    // _daily_<YYYY-MM-DD>. Idempotent — each shard appends its contribution.
+    try {
+      const day = new Date().toISOString().slice(0, 10);
+      const dailyKey = `_daily_${day}`;
+      const existing = (await env.SECTOR_KV.get(dailyKey, "json")) || { date: day, fired: [], updated_at: null };
+      const firedMap = new Map(existing.fired.map(f => [f.sector, f]));
+      for (const r of results) {
+        if (r.has_signal && r.written) {
+          firedMap.set(r.sector, {
+            sector: r.sector,
+            value: r.value,
+            shard_cron: cron,
+          });
+        }
+      }
+      const daily = {
+        date: day,
+        fired: Array.from(firedMap.values()).sort((a, b) => a.sector.localeCompare(b.sector)),
+        count: firedMap.size,
+        updated_at: new Date().toISOString(),
+      };
+      await env.SECTOR_KV.put(dailyKey, JSON.stringify(daily), { expirationTtl: 86400 * 90 });
+    } catch (e) {
+      console.log("calibration write failed:", String(e).slice(0, 120));
+    }
+
     console.log(`cron summary: ${written} written, ${skipped} skipped, ${failed} failed`);
   },
 
@@ -3909,6 +3937,60 @@ export default {
         });
       } catch (e) {
         return json({ error: "history_failed", message: String(e && e.message || e) }, 500);
+      }
+    }
+
+    // ─── /calibration — daily snapshots + multi-day aggregate stats ───
+    if (parts[0] === "calibration") {
+      try {
+        const days = Math.min(parseInt(url.searchParams.get("days") || "7", 10), 90);
+        const list = await env.SECTOR_KV.list({ prefix: "_daily_", limit: 1000 });
+        const dayKeys = list.keys
+          .map(k => ({ name: k.name, date: k.name.replace("_daily_", "") }))
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .slice(0, days);
+
+        const daily = [];
+        for (const k of dayKeys) {
+          const d = await env.SECTOR_KV.get(k.name, "json");
+          if (d) daily.push(d);
+        }
+
+        // Aggregate: how often each sector fired across the window
+        const counts = new Map();
+        for (const d of daily) {
+          for (const f of d.fired || []) {
+            counts.set(f.sector, (counts.get(f.sector) || 0) + 1);
+          }
+        }
+        const totalDays = daily.length;
+        const table = [...counts.entries()]
+          .map(([sector, n]) => ({
+            sector,
+            fires: n,
+            fire_rate: totalDays > 0 ? Math.round((n / totalDays) * 1000) / 10 : 0,
+          }))
+          .sort((a, b) => b.fires - a.fires || a.sector.localeCompare(b.sector));
+
+        // Classifications
+        const everyDay = table.filter(t => t.fires === totalDays && totalDays >= 3);
+        const once = table.filter(t => t.fires === 1);
+        const frequent = table.filter(t => t.fires >= 2 && t.fires < totalDays);
+
+        return json({
+          ts: new Date().toISOString(),
+          window_days: totalDays,
+          daily,
+          aggregate: {
+            unique_sectors: table.length,
+            every_day: everyDay.map(t => t.sector),
+            once: once.map(t => t.sector),
+            frequent: frequent.slice(0, 30),
+          },
+          full_table: table,
+        });
+      } catch (e) {
+        return json({ error: "calibration_failed", message: String(e && e.message || e) }, 500);
       }
     }
 
