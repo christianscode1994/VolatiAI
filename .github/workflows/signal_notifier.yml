@@ -2,7 +2,7 @@ name: Signal Notifier
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # hourly at :17 (offset from bots.yml at :00 and publish.yml at :00)
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 concurrency:
