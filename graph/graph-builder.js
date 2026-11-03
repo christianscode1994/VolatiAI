@@ -71,3 +71,6 @@ export function buildGraphFromEnvelopes(envelopes) {
     source_count: nodes.filter(n => n.type === "source").length,
   };
 }
+
+// Backwards-compat alias for intelligence-engine.js
+export const buildGraph = buildKnowledgeGraph;
