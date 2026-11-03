@@ -5,6 +5,10 @@ on:
     - cron: "0 */6 * * *"
   workflow_dispatch:
 
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
 jobs:
   run-engine:
     runs-on: ubuntu-latest

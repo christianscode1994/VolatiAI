@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
 jobs:
   digest:
     runs-on: ubuntu-latest

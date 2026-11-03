@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
 jobs:
   snapshot:
     runs-on: ubuntu-latest

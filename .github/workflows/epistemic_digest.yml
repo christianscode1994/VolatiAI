@@ -12,6 +12,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
 jobs:
   digest:
     runs-on: ubuntu-latest

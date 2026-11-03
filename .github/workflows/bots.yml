@@ -9,6 +9,10 @@ concurrency:
   group: volatiai-bots
   cancel-in-progress: true
 
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
 jobs:
   run-bots:
     runs-on: ubuntu-latest

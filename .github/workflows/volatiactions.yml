@@ -11,6 +11,10 @@ concurrency:
   group: volatiai-engine
   cancel-in-progress: true
 
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
 jobs:
   run-engine:
     runs-on: ubuntu-latest
