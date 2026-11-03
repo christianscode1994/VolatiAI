@@ -4436,7 +4436,7 @@ export default {
                    : "outlier",
             detrended_verdict: detScore === null
                    ? (sorted.length === 0 ? "no_data" : "insufficient_data")
-                   : detScore >= 0.85 ? "confirmed"
+                   : detScore >= 0.85 && sorted.length >= 7 ? "confirmed"
                    : detScore >= 0.5  ? "likely"
                    : "outlier",
           };
