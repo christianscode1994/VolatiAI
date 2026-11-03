@@ -72,8 +72,6 @@ def _filter_high_risk(text: str) -> str:
     return "\n".join(kept)
 
 
-_PLATFORM_LIMITS = {"bluesky": 300, "mastodon": 500, "telegram": 4096, "discord": 2000, "slack": 4000, "nostr": 65536}
-
 def safe_digest(raw_text: str, platform: str = "all") -> str:
     """Return a platform-safe version of the digest."""
     out = _sanitize(raw_text)
@@ -97,7 +95,3 @@ if __name__ == "__main__":
         platform = sys.argv[sys.argv.index("--platform") + 1]
     input_text = sys.stdin.read()
     sys.stdout.write(safe_digest(input_text, platform))
-    limit = _PLATFORM_LIMITS.get(platform)
-    if limit and len(out) > limit:
-        out = out[:limit-3].rstrip() + "…"
-    return out
