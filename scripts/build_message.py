@@ -62,7 +62,22 @@ except Exception:
     sys.exit(0)
 
 _verify_or_die(d)
-signals = [r for r in d.get("rows", []) if r.get("has_signal")]
+_RAW_SIGNALS = [r for r in d.get("rows", []) if r.get("has_signal")]
+_CYCLICAL = {
+    "espn-nba-score-count", "espn-nfl-score-count", "tvmaze-us-schedule-count",
+    "steam-csgo-players", "steam-dota2-players", "open-meteo-berlin-temp",
+    "open-meteo-pm25", "7timer-berlin-temp", "wttr-dhaka-temp",
+    "sunrise-berlin-daylength",
+}
+signals = [
+    r for r in _RAW_SIGNALS
+    if r.get("severity") == "critical"
+    and not r.get("from_persisted_signal")
+    and (r.get("pts") or 0) >= 3
+    and (r.get("sector") or "") not in _CYCLICAL
+    and not (r.get("sector") or "").startswith("cluster_")
+    and not (abs(r.get("current") or 0) < 0.5 and abs(r.get("pct_change") or 0) > 100)
+]
 total = d.get("with_history", 0)
 
 # Load cluster graph if available
@@ -73,7 +88,8 @@ except Exception:
     s2c = {}
 
 if not signals:
-    print(f"VolatiAI · {total} sectors active · all quiet\n→ {URL}\ndid: {DID}")
+    if not _RAW_SIGNALS:
+        print(f"VolatiAI · {total} sectors · all quiet\n→ {URL}\ndid: {DID}")
     sys.exit(0)
 
 # Load cluster analysis
@@ -81,10 +97,14 @@ analysis = _run_cluster_signals() or {}
 clusters_firing = analysis.get("clusters_firing", [])
 outliers = analysis.get("outliers", [])
 
-lines = [f"VolatiAI · {len(signals)} signal(s)"]
+_shown_estimate = min(2, len(clusters_firing)) + min(2, len(_outliers if "_outliers" in dir() else [])) + 2
+if len(signals) > 6:
+    lines = [f"VolatiAI · {len(signals)} alerts · top shown"]
+else:
+    lines = [f"VolatiAI · {len(signals)} signal(s)"]
 
 # 1. Cluster summaries with momentum (dedup the firehose)
-for c in clusters_firing[:2]:
+for c in [c for c in clusters_firing if c.get("firing_count", 0) >= 2 and not str(c.get("cluster_id", "")).startswith("cluster_")][:2]:
     arrow = "▼" if c["avg_pct"] < 0 else "▲"
     mom = ""
     if c.get("momentum") is not None:
@@ -92,7 +112,12 @@ for c in clusters_firing[:2]:
     lines.append(f"{c['cluster_id']} ×{c['firing_count']}: {c['avg_pct']:+.1f}% {arrow}{mom}")
 
 # 2. Outliers — THE signal worth posting
-for o in outliers[:2]:
+_outliers = [
+    o for o in outliers
+    if (o.get("sector") or "") not in _CYCLICAL
+    and not str(o.get("cluster_id", "")).startswith("cluster_")
+]
+for o in _outliers[:2]:
     arrow = "▲" if o["z_score"] > 0 else "▼"
     lines.append(
         f"⚠ {o['sector']} {o['pct']:+.1f}% {arrow} "
@@ -103,12 +128,11 @@ for o in outliers[:2]:
 handled = {c["cluster_id"] for c in clusters_firing} | {o["sector"] for o in outliers}
 singles = [r for r in signals
            if r["sector"] not in handled and r["sector"] not in s2c]
-for r in sorted(singles, key=lambda x: abs(x.get("pct_change", 0) or 0), reverse=True)[:2]:
+for r in sorted(singles, key=lambda x: (x.get("severity") == "critical", abs(x.get("pct_change", 0) or 0)), reverse=True)[:2]:
     pct = r.get("pct_change") or 0
     cur = r.get("current", 0)
     cur_s = (f"{cur:,.2f}" if abs(cur) >= 1 else f"{cur:.4g}") if isinstance(cur, (int, float)) else str(cur)
     lines.append(f"{r['sector']}: {cur_s} ({pct:+.1f}%)")
 
 lines.append(f"→ {URL}")
-lines.append(f"did: {DID}")
 print("\n".join(lines))
