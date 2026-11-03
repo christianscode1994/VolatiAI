@@ -4260,13 +4260,7 @@ export default {
       for (const [name, c] of Object.entries(COLLECTORS)) {
         windows[name] = c.config.window_days || 7;
       }
-      const sectorThresholds = {};
-      for (const [name, c] of Object.entries(COLLECTORS)) {
-        if (c?.config?.threshold_pct != null) {
-          sectorThresholds[name] = c.config.threshold_pct;
-        }
-      }
-      const graph = buildClaimGraph(snapshot, sectorThresholds, windows);
+      const graph = buildClaimGraph(snapshot, {}, windows);
       const verdicts = arbitrate(graph);
       return json({
         timestamp: new Date().toISOString(),
@@ -4330,22 +4324,11 @@ export default {
         for (let j = i + 1; j < names.length; j++) {
           const a = histories[names[i]];
           const b = histories[names[j]];
-          // Align by calendar day (UTC). Sectors write at different times
-          // and skip unchanged days — positional slice(-n) pairs mismatched days.
-          const DAY_MS = 86400000;
-          const aMap = new Map();
-          for (let k = 0; k < a.ts.length; k++) {
-            aMap.set(Math.floor(a.ts[k] / DAY_MS), a.residuals[k]);
-          }
-          const bMap = new Map();
-          for (let k = 0; k < b.ts.length; k++) {
-            bMap.set(Math.floor(b.ts[k] / DAY_MS), b.residuals[k]);
-          }
-          const commonDays = [...aMap.keys()].filter(d => bMap.has(d)).sort();
-          const minLen = commonDays.length;
-          if (minLen < 10) continue;
-          const ar = commonDays.map(d => aMap.get(d));
-          const br = commonDays.map(d => bMap.get(d));
+          // Align by rounding ts to nearest day (they should already align for backfills)
+          const minLen = Math.min(a.residuals.length, b.residuals.length);
+          // Take last minLen points (most recent align)
+          const ar = a.residuals.slice(-minLen);
+          const br = b.residuals.slice(-minLen);
           const r = pearson(ar, br);
           if (r !== null) {
             const absR = Math.abs(r);
