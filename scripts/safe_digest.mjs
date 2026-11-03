@@ -1,12 +1,7 @@
 const SITE = process.env.VOLATIAI_SITE
   || 'https://christianscode1994.github.io/VolatiAI';
 
-const FOOTER = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  Informational only. Not financial, medical, or legal advice.
-🤖  Automated bot · AI-generated content · Non-commercial · Stateless
-📚  Attribution: ${SITE}/attribution.json
-📄  Terms: ${SITE}/terms.html
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+const FOOTER = '⚠️ Info only · automated';
 
 const HIGH_RISK = /coinbase-|kraken-|\bdex-|defi-|stablecoin-|exchange-spread|^treasuries|^fed-rate|^btc-|^eth-|nbp-gold/i;
 
@@ -35,11 +30,8 @@ function filterHighRisk(text) {
     if (HIGH_RISK.test(line)) removed++;
     else kept.push(line);
   }
-  if (removed > 0) {
-    kept.push('');
-    const label = removed === 1 ? "signal" : "signals";
-  kept.push(`[${removed} financial ${label} omitted on this platform — see ${SITE}/intel.json]`);
-  }
+  // Financial signals silently filtered — no placeholder line
+  // (previous version advertised the count and linked to a frozen intel.json)
   return kept.join('\n');
 }
 
