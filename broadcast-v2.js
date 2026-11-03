@@ -130,11 +130,11 @@ function fmtSignal(s) {
   return `• ${sev}${sector}: ${trimmed}`;
 }
 
-// Domain summary for the header: "energy 1, security 1, info 2, other 3"
-const domainParts = Object.entries(byDomain)
-  .filter(([, v]) => (v.sectors?.length ?? 0) > 0)
-  .map(([dom, v]) => `${dom} ${v.sectors.length}`);
-const domainLine = domainParts.length > 0 ? `(${domainParts.join(", ")})` : "";
+// Domain summary: deliberately dropped. by_domain counts all fired sectors
+// (e.g. 50), but the message now caps to 5 signals after tier ranking.
+// Showing "45 other, 1 energy, ..." alongside 5 signals is misleading.
+// If the bot is ever un-capped, restore the block from git history.
+const domainLine = "";
 
 // Full message — for platforms with large or no limits
 const fullLines = ["VolatiAI — " + headline];
