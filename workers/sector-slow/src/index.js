@@ -4260,7 +4260,17 @@ export default {
       for (const [name, c] of Object.entries(COLLECTORS)) {
         windows[name] = c.config.window_days || 7;
       }
-      const graph = buildClaimGraph(snapshot, {}, windows);
+      // Populate per-sector window_days for the claim graph.
+      // Uses COLLECTORS.config.window_days — the same value that determines
+      // pct_change basis — so a prior observation from outside the sector's
+      // own comparison window does NOT count as evidence about today's claim.
+      const sectorWindows = {};
+      for (const [name, c] of Object.entries(COLLECTORS)) {
+        if (c?.config?.window_days != null) {
+          sectorWindows[name] = c.config.window_days;
+        }
+      }
+      const graph = buildClaimGraph(snapshot, {}, sectorWindows);
       const verdicts = arbitrate(graph);
       return json({
         timestamp: new Date().toISOString(),
