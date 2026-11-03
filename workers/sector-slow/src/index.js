@@ -161,6 +161,8 @@ function ghHeaders(env) {
 
 const COLLECTORS = {
 
+
+
   "npm-react-weekly-downloads": {
     config: { metric: "downloads", threshold_pct: 10, window: "7d", window_days: 7 },
     async collectAll(env) {

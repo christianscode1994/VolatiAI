@@ -167,7 +167,8 @@ async function runSectorForCronDense(sectorName, collector, env) {
   }
   const today = new Date().toISOString().slice(0, 10);
   const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
-  const valueChanged = !todayEntry || todayEntry.v !== current;
+  const isFirstWrite = history.length === 0;
+  const valueChanged = isFirstWrite || !todayEntry || todayEntry.v !== current;
   if (!valueChanged) {
     return { sector: sectorName, skipped: "unchanged_today" };
   }
