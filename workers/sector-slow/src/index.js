@@ -4307,8 +4307,12 @@ export default {
           if (sorted.length >= 10) {
             const det = detrendedResiduals(sorted);
             if (det) {
+              // det.ts is days-since-t0 relative (0, 1, 2, ...).
+              // Reconstruct absolute timestamps for cross-sector day alignment.
+              const t0 = sorted[0].t;
+              const absTs = det.ts.map(rel => t0 + rel * 86400000);
               histories[name] = {
-                ts: det.ts,
+                ts: absTs,
                 residuals: det.residuals,
                 points: sorted.length,
               };
@@ -4324,11 +4328,17 @@ export default {
         for (let j = i + 1; j < names.length; j++) {
           const a = histories[names[i]];
           const b = histories[names[j]];
-          // Align by rounding ts to nearest day (they should already align for backfills)
-          const minLen = Math.min(a.residuals.length, b.residuals.length);
-          // Take last minLen points (most recent align)
-          const ar = a.residuals.slice(-minLen);
-          const br = b.residuals.slice(-minLen);
+          // Align by UTC calendar day (a.ts and b.ts are absolute timestamps).
+          const DAY_MS = 86400000;
+          const aMap = new Map();
+          for (let k = 0; k < a.ts.length; k++) aMap.set(Math.floor(a.ts[k] / DAY_MS), a.residuals[k]);
+          const bMap = new Map();
+          for (let k = 0; k < b.ts.length; k++) bMap.set(Math.floor(b.ts[k] / DAY_MS), b.residuals[k]);
+          const commonDays = [...aMap.keys()].filter(d => bMap.has(d)).sort();
+          const minLen = commonDays.length;
+          if (minLen < 10) continue;
+          const ar = commonDays.map(d => aMap.get(d));
+          const br = commonDays.map(d => bMap.get(d));
           const r = pearson(ar, br);
           if (r !== null) {
             const absR = Math.abs(r);
