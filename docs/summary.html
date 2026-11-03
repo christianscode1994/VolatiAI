@@ -1,17 +1,693 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head><title>VolatiAI Summary</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>VolatiAI Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0b0c10; color: #c5c6c7; margin: 0; padding: 2rem; }
+    h1 { color: #66fcf1; margin: 0 0 0.5rem 0; font-size: 2rem; }
+    h2 { color: #66fcf1; margin: 2rem 0 1rem 0; font-size: 1.2rem; border-bottom: 1px solid #1f2833; padding-bottom: 0.5rem; }
+    .updated { color: #7a7a7a; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .score-card { display: inline-block; padding: 1.5rem 2rem; border-radius: 8px; margin: 1rem 0; background: #1f2833; }
+    .score-card .label { font-size: 0.8rem; color: #7a7a7a; text-transform: uppercase; letter-spacing: 0.1em; }
+    .score-card .value { font-size: 2.5rem; font-weight: 700; margin-top: 0.25rem; }
+    .score-bull { color: #4ade80; }
+    .score-bear { color: #f87171; }
+    .score-neutral { color: #fbbf24; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .card { background: #1f2833; padding: 1rem 1.25rem; border-radius: 8px; border-left: 3px solid #45a29e; }
+    .card .label { color: #7a7a7a; font-size: 0.85rem; }
+    .card .value { color: #66fcf1; font-size: 1.4rem; font-weight: 600; margin-top: 0.25rem; }
+    .card .sub { color: #a0a0a0; font-size: 0.85rem; margin-top: 0.25rem; }
+    .pill { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; }
+    .pill-bull { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .pill-bear { background: rgba(248,113,113,0.15); color: #f87171; }
+    .pill-neutral { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    th, td { border: 1px solid #1f2833; padding: 0.5rem 0.6rem; text-align: right; font-size: 0.9rem; }
+    th { background: #1f2833; color: #66fcf1; text-align: right; font-weight: 600; }
+    td:first-child, th:first-child { text-align: center; }
+    td:nth-child(2), th:nth-child(2) { text-align: left; }
+    tr:hover { background: rgba(102,252,241,0.05); }
+    .pos { color: #4ade80; }
+    .neg { color: #f87171; }
+    .empty { color: #7a7a7a; font-style: italic; padding: 0.5rem 0; }
+  </style>
+</head>
 <body>
-  <h1>VolatiAI Summary</h1>
-  <p>Timestamp: 2026-11-03T10:11:36.252Z</p>
-  <ul>
-    <li>Trend acceleration: 0.000</li>
-    <li>Narrative velocity: 0.000</li>
-    <li>Whale pressure: 0.000</li>
-    <li>Spoofing probability: 0.000</li>
-    <li>Chain truth: 0.000</li>
-    <li>Sector growth: 0.000</li>
-  </ul>
+  <h1>VolatiAI Intelligence</h1>
+  <div class="updated">Updated: 2026-11-03T10:47:33.343449Z</div>
+
+  <div class="score-card">
+    <div class="label">Composite Score</div>
+    <div class="value score-neutral">—</div>
+  </div>
+
+  <h2>Sentiment</h2>
+  <div class="card">
+    <div class="label">Hacker News</div>
+    <div class="value"><span class="pill pill-neutral">neutral</span></div>
+    <div class="sub">avg +0.000 across 20 titles</div>
+  </div>
+
+  <div class="card" style="border-left-color: #66fcf1; margin-bottom: 1.5rem;">
+    <div class="label">Briefing — 2026-11-03 00:14Z</div>
+    <div style="font-size: 1.1rem; color: #66fcf1; margin: 0.5rem 0; line-height: 1.5;">
+      50 signals across 291 sectors evaluated
+    </div>
+    <ul style="margin: 0.5rem 0; padding-left: 1.2rem; color: #c5c6c7; line-height: 1.8;">
+      <li>Other: anime, arbetsformedlingen, art-design, coinbase-btc-volume24h, dc-crime, defi-total-tvl, defillama-protocol-count, dex-total-volume-24h, dex-uniswap-volume, environment, espn-nba-score-count, eu-open-data, food-drink, frankfurter-eursek, fred-fedfunds, github-recent-commits, hackernews-top-scores, home-assistant, jobs, kraken-ada-usd, kraken-dot-usd, kraken-sol-usd, nbp-gold-spot, nft, npm-downloads-react, nvd-new-cves-count, open-digger-openrank-vscode, open-source-packages, phishunt-domains, pypi-downloads-requests, pypi-packages, robonix, stablecoin-usdt-supply, steam-csgo-players, steam-dota2-players, treasuries, treasuries-gov, tv, tweetfeed-c2, usgs-earthquake-count, usgs-elevated-volcanoes, usgs-streamflow-mississippi, whiskyhunter-lot-count, xbrl-frames</li>
+      <li>⚡ Energy: 1 signal — carbon-intensity</li>
+      <li>🔒 Security: 1 signal (includes CVE publication)</li>
+      <li>🪙 Crypto: 1 signal — depin-network</li>
+      <li>Health: drug-recall</li>
+      <li>📰 Information: 1 new item — events</li>
+      <li>🌊 Environment: 1 signal — water</li>
+    </ul>
+  </div>
+
+  <h2>Watchlist — high historical volatility, currently quiet</h2>
+  <table>
+    <tr><th>#</th><th>Sector</th><th>Avg vol</th><th>Max vol</th><th>Fires (24)</th></tr>
+    <tr><td>1</td><td>btc-exchange-spread</td><td>214.26%</td><td>725.29%</td><td>1</td></tr>
+    <tr><td>2</td><td>dex-ethereum-volume</td><td>151.11%</td><td>497.69%</td><td>17</td></tr>
+    <tr><td>3</td><td>pocketworld-space-weather</td><td>100%</td><td>100%</td><td>3</td></tr>
+    <tr><td>4</td><td>web-apps</td><td>100%</td><td>100%</td><td>1</td></tr>
+    <tr><td>5</td><td>eth-exchange-spread</td><td>65.85%</td><td>124.77%</td><td>0</td></tr>
+    <tr><td>6</td><td>pypi-daily-requests</td><td>50.66%</td><td>74.11%</td><td>18</td></tr>
+    <tr><td>7</td><td>energy-carbon</td><td>18.33%</td><td>49.28%</td><td>1</td></tr>
+    <tr><td>8</td><td>defi-fees-aave</td><td>16.54%</td><td>60.44%</td><td>4</td></tr>
+    <tr><td>9</td><td>nport-filings</td><td>14.61%</td><td>14.61%</td><td>0</td></tr>
+    <tr><td>10</td><td>grid-demand</td><td>11.48%</td><td>20.33%</td><td>1</td></tr>
+  </table>
+
+  <div class="card" style="border-left-color: #45a29e; margin-bottom: 1.5rem;">
+    <div class="label">Since 2026-11-02 14:17Z</div>
+    <div style="font-size: 1.1rem; color: #66fcf1; margin: 0.5rem 0;">
+      26 → 50 signals
+    </div>
+    <div style="margin: 0.4rem 0;"><span class="pill pill-bull">NEW</span> anime, art-design, carbon-intensity, coinbase-btc-volume24h, cve-feed, defillama-protocol-count, depin-network, drug-recall, espn-nba-score-count, eu-open-data, events, food-drink, fred-fedfunds, jobs, nft, npm-downloads-react, open-digger-openrank-vscode, open-source-packages, pypi-packages, stablecoin-usdt-supply, steam-csgo-players, tv, usgs-elevated-volcanoes, water, xbrl-frames</div>
+    <div style="margin: 0.4rem 0;"><span class="pill pill-bear">DROPPED</span> ripe-atlas-public</div>
+    <div style="margin: 0.4rem 0; color: #a0a0a0;"><strong>Persistent (25)</strong>: arbetsformedlingen, dc-crime, defi-total-tvl, dex-total-volume-24h, dex-uniswap-volume, environment, frankfurter-eursek, github-recent-commits, hackernews-top-scores, home-assistant, kraken-ada-usd, kraken-dot-usd, kraken-sol-usd, nbp-gold-spot, nvd-new-cves-count, phishunt-domains, pypi-downloads-requests, robonix, steam-dota2-players, treasuries, treasuries-gov, tweetfeed-c2, usgs-earthquake-count, usgs-streamflow-mississippi, whiskyhunter-lot-count</div>
+    <div style="margin-top: 0.8rem;"><strong>Movement in persistent signals</strong></div>
+    <table style="margin-top: 0.4rem; font-size: 0.85rem;">
+      <tr><th>Sector</th><th>Previous</th><th>Current</th></tr>
+      <tr><td>arbetsformedlingen</td><td>job_vacancies 39650 (-11.4% vs 9.7d ago)</td><td>job_vacancies 39088 (-12.6% vs 10.1d ago)</td></tr>
+      <tr><td>dc-crime</td><td>crime_incidents 18491 (+3.7% vs 10.1d ago)</td><td>crime_incidents 18491 (+3.7% vs 10.6d ago)</td></tr>
+      <tr><td>defi-total-tvl</td><td>tvl_usd 85150462856 (-3.8% vs 8.8d ago)</td><td>tvl_usd 81783765275 (-7.6% vs 9.2d ago)</td></tr>
+      <tr><td>dex-total-volume-24h</td><td>total24h 5458843434.8 (-29.9% vs 9d ago)</td><td>total24h 5458844628.8 (-29.9% vs 9.4d ago)</td></tr>
+      <tr><td>dex-uniswap-volume</td><td>uniswap_24h 1165777715.66 (-37.4% vs 9d ago)</td><td>uniswap_24h 1165777715.66 (-37.4% vs 9.4d ago)</td></tr>
+      <tr><td>environment</td><td>co2_ppm 428.19 (+0.5% vs 29.6d ago)</td><td>co2_ppm 428.19 (+0.5% vs 30d ago)</td></tr>
+      <tr><td>frankfurter-eursek</td><td>eur_sek 10.978 (-1.4% vs 8.2d ago)</td><td>eur_sek 10.9475 (-1.6% vs 8.6d ago)</td></tr>
+      <tr><td>github-recent-commits</td><td>commit_count 25629606 (-10.9% vs 7.8d ago)</td><td>commit_count 19379402 (-32.6% vs 8.2d ago)</td></tr>
+      <tr><td>hackernews-top-scores</td><td>top10_score_sum 6328 (+746.0% vs 8.8d ago)</td><td>top10_score_sum 3665 (+390.0% vs 9.2d ago)</td></tr>
+      <tr><td>home-assistant</td><td>installations 718197 (+1.4% vs 9.7d ago)</td><td>installations 718559 (+1.4% vs 10.1d ago)</td></tr>
+      <tr><td>kraken-ada-usd</td><td>ada_usd 0.190302 (-7.2% vs 7.8d ago)</td><td>ada_usd 0.189017 (-7.9% vs 8.2d ago)</td></tr>
+      <tr><td>kraken-dot-usd</td><td>dot_usd 0.9416 (-8.9% vs 7.8d ago)</td><td>dot_usd 0.9423 (-8.9% vs 8.2d ago)</td></tr>
+      <tr><td>kraken-sol-usd</td><td>sol_usd 94.04 (-7.4% vs 7.8d ago)</td><td>sol_usd 91.95 (-9.4% vs 8.2d ago)</td></tr>
+      <tr><td>nbp-gold-spot</td><td>pln_per_gram 503.71 (-1.3% vs 8.2d ago)</td><td>pln_per_gram 503.71 (-1.3% vs 8.6d ago)</td></tr>
+      <tr><td>nvd-new-cves-count</td><td>new_cves 189 (+43.2% vs 7.8d ago)</td><td>new_cves 479 (+262.9% vs 8.2d ago)</td></tr>
+      <tr><td>phishunt-domains</td><td>active_phishings 1090 (-14.6% vs 8.8d ago)</td><td>active_phishings 1083 (-15.2% vs 9.2d ago)</td></tr>
+      <tr><td>pypi-downloads-requests</td><td>last_day 38146686 (-25.9% vs 8.8d ago)</td><td>last_day 38146686 (-25.9% vs 9.2d ago)</td></tr>
+      <tr><td>robonix</td><td>packages 69 (+16.9% vs 10.5d ago)</td><td>packages 69 (+16.9% vs 10.9d ago)</td></tr>
+      <tr><td>steam-dota2-players</td><td>player_count 680724 (-25.6% vs 7.8d ago)</td><td>player_count 340133 (-62.8% vs 8.2d ago)</td></tr>
+      <tr><td>treasuries</td><td>yield_10y 4.98 (-6.2% vs 28.6d ago)</td><td>yield_10y 4.94 (-7.0% vs 29d ago)</td></tr>
+      <tr><td>treasuries-gov</td><td>yield_10y 4.94 (-7.0% vs 28.6d ago)</td><td>yield_10y 4.91 (-7.5% vs 29d ago)</td></tr>
+      <tr><td>tweetfeed-c2</td><td>weekly_c2_ips 128 (-91.6% vs 9.7d ago)</td><td>weekly_c2_ips 136 (-91.1% vs 10.1d ago)</td></tr>
+      <tr><td>usgs-earthquake-count</td><td>m45_count 20 (-60.0% vs 8.8d ago)</td><td>m45_count 17 (-66.0% vs 9.2d ago)</td></tr>
+      <tr><td>usgs-streamflow-mississippi</td><td>discharge_cfs 119000 (-28.7% vs 8.2d ago)</td><td>discharge_cfs 119000 (-28.7% vs 8.6d ago)</td></tr>
+      <tr><td>whiskyhunter-lot-count</td><td>all_auctions_lots_count 54342 (-15.7% vs 7.9d ago)</td><td>all_auctions_lots_count 54342 (-15.7% vs 8.3d ago)</td></tr>
+    </table>
+  </div>
+
+  <h2>Live Signals (50 firing)</h2>
+  <div class="updated">Last digest run: 2026-11-03T00:14:28Z</div>
+  <table>
+    <tr><th>Sev</th><th>Sector</th><th>What</th><th>Fires</th><th>Conf</th></tr>
+    
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>anime</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Spy x Family Movie: Code: White Manner Movie</td>
+      <td>3/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>arbetsformedlingen</td>
+      <td style="text-align:left; font-size:0.85rem;">job_vacancies 39088 (-12.6% vs 10.1d ago)</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>art-design</td>
+      <td style="text-align:left; font-size:0.85rem;">New: The Abduction of Rebecca — Eugène Delacroix</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>carbon-intensity</td>
+      <td style="text-align:left; font-size:0.85rem;">New: UK grid: 129 gCO2/kWh (moderate)</td>
+      <td>13/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>coinbase-btc-volume24h</td>
+      <td style="text-align:left; font-size:0.85rem;">btc_quote_volume_usd 589508718.0535846 (+78.1% vs 9.2d ago)</td>
+      <td>14/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>cve-feed</td>
+      <td style="text-align:left; font-size:0.85rem;">New: CVE-2026-120752: PyMuPDF 1.25.3 before 2.0 contains a stack-based buffer ov…</td>
+      <td>15/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>dc-crime</td>
+      <td style="text-align:left; font-size:0.85rem;">crime_incidents 18491 (+3.7% vs 10.6d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>defi-total-tvl</td>
+      <td style="text-align:left; font-size:0.85rem;">tvl_usd 81783765275 (-7.6% vs 9.2d ago)</td>
+      <td>14/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>defillama-protocol-count</td>
+      <td style="text-align:left; font-size:0.85rem;">protocol_count 8919 (+1.1% vs 9.2d ago)</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>depin-network</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Flux nodes: 6,811</td>
+      <td>8/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>dex-total-volume-24h</td>
+      <td style="text-align:left; font-size:0.85rem;">total24h 5458844628.8 (-29.9% vs 9.4d ago)</td>
+      <td>11/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>dex-uniswap-volume</td>
+      <td style="text-align:left; font-size:0.85rem;">uniswap_24h 1165777715.66 (-37.4% vs 9.4d ago)</td>
+      <td>11/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>drug-recall</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Brush Buddies, Mint Chocolate Chip Ice Cream Flavored Toothpaste, Anticavit…</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>environment</td>
+      <td style="text-align:left; font-size:0.85rem;">co2_ppm 428.19 (+0.5% vs 30d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>espn-nba-score-count</td>
+      <td style="text-align:left; font-size:0.85rem;">game_count 15 (+114.3% vs 8.3d ago)</td>
+      <td>8/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-bear">critical</span></td>
+      <td>eu-open-data</td>
+      <td style="text-align:left; font-size:0.85rem;">total_datasets 1994868 (-1.9%)</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>events</td>
+      <td style="text-align:left; font-size:0.85rem;">New: [1750] Astra can read and write weights to improve Qwen</td>
+      <td>9/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>food-drink</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Jovy Gummy Worms Neon; packaged in 1lb plastic units. UPC 712199083411 — un…</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>frankfurter-eursek</td>
+      <td style="text-align:left; font-size:0.85rem;">eur_sek 10.9475 (-1.6% vs 8.6d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>fred-fedfunds</td>
+      <td style="text-align:left; font-size:0.85rem;">fedfunds 3.88 (+3.5% vs 9.6d ago)</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>github-recent-commits</td>
+      <td style="text-align:left; font-size:0.85rem;">commit_count 19379402 (-32.6% vs 8.2d ago)</td>
+      <td>16/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>hackernews-top-scores</td>
+      <td style="text-align:left; font-size:0.85rem;">top10_score_sum 3665 (+390.0% vs 9.2d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>home-assistant</td>
+      <td style="text-align:left; font-size:0.85rem;">installations 718559 (+1.4% vs 10.1d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>jobs</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Software Engineer Infrastructure @ Sodalis, Inc.</td>
+      <td>7/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>kraken-ada-usd</td>
+      <td style="text-align:left; font-size:0.85rem;">ada_usd 0.189017 (-7.9% vs 8.2d ago)</td>
+      <td>14/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>kraken-dot-usd</td>
+      <td style="text-align:left; font-size:0.85rem;">dot_usd 0.9423 (-8.9% vs 8.2d ago)</td>
+      <td>15/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>kraken-sol-usd</td>
+      <td style="text-align:left; font-size:0.85rem;">sol_usd 91.95 (-9.4% vs 8.2d ago)</td>
+      <td>12/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>nbp-gold-spot</td>
+      <td style="text-align:left; font-size:0.85rem;">pln_per_gram 503.71 (-1.3% vs 8.6d ago)</td>
+      <td>5/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>nft</td>
+      <td style="text-align:left; font-size:0.85rem;">New: moonbirds: floor 0.479999 ETH</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>npm-downloads-react</td>
+      <td style="text-align:left; font-size:0.85rem;">downloads 23851036 (-43.8% vs 9.2d ago)</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>nvd-new-cves-count</td>
+      <td style="text-align:left; font-size:0.85rem;">new_cves 479 (+262.9% vs 8.2d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>open-digger-openrank-vscode</td>
+      <td style="text-align:left; font-size:0.85rem;">openrank 611.02 (+43.8% vs 9.2d ago)</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>open-source-packages</td>
+      <td style="text-align:left; font-size:0.85rem;">New: lodash 4.18.1 (latest)</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>phishunt-domains</td>
+      <td style="text-align:left; font-size:0.85rem;">active_phishings 1083 (-15.2% vs 9.2d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>pypi-downloads-requests</td>
+      <td style="text-align:left; font-size:0.85rem;">last_day 38146686 (-25.9% vs 9.2d ago)</td>
+      <td>13/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>pypi-packages</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Top PyPI: boto3 (2,672,326,221 downloads)</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>robonix</td>
+      <td style="text-align:left; font-size:0.85rem;">packages 69 (+16.9% vs 10.9d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>stablecoin-usdt-supply</td>
+      <td style="text-align:left; font-size:0.85rem;">usdt_usd 178462060503.5648 (-2.2% vs 9.2d ago)</td>
+      <td>8/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>steam-csgo-players</td>
+      <td style="text-align:left; font-size:0.85rem;">player_count 488263 (-52.1% vs 8.2d ago)</td>
+      <td>14/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>steam-dota2-players</td>
+      <td style="text-align:left; font-size:0.85rem;">player_count 340133 (-62.8% vs 8.2d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>treasuries</td>
+      <td style="text-align:left; font-size:0.85rem;">yield_10y 4.94 (-7.0% vs 29d ago)</td>
+      <td>14/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>treasuries-gov</td>
+      <td style="text-align:left; font-size:0.85rem;">yield_10y 4.91 (-7.5% vs 29d ago)</td>
+      <td>12/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>tv</td>
+      <td style="text-align:left; font-size:0.85rem;">New: unknown — Episode 214</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>tweetfeed-c2</td>
+      <td style="text-align:left; font-size:0.85rem;">weekly_c2_ips 136 (-91.1% vs 10.1d ago)</td>
+      <td>21/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>usgs-earthquake-count</td>
+      <td style="text-align:left; font-size:0.85rem;">m45_count 17 (-66.0% vs 9.2d ago)</td>
+      <td>24/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>usgs-elevated-volcanoes</td>
+      <td style="text-align:left; font-size:0.85rem;">elevated_count 3 (-25.0% vs 9.2d ago)</td>
+      <td>1/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>usgs-streamflow-mississippi</td>
+      <td style="text-align:left; font-size:0.85rem;">discharge_cfs 119000 (-28.7% vs 8.6d ago)</td>
+      <td>5/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">notice</span></td>
+      <td>water</td>
+      <td style="text-align:left; font-size:0.85rem;">New: Mississippi flow: 122,000 cfs</td>
+      <td>6/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">alert</span></td>
+      <td>whiskyhunter-lot-count</td>
+      <td style="text-align:left; font-size:0.85rem;">all_auctions_lots_count 54342 (-15.7% vs 8.3d ago)</td>
+      <td>3/24</td>
+      <td>100%</td>
+    </tr>
+    <tr>
+      <td><span class="pill pill-neutral">info</span></td>
+      <td>xbrl-frames</td>
+      <td style="text-align:left; font-size:0.85rem;">reporting_filers 1012 (+8.1%)</td>
+      <td>7/24</td>
+      <td>32%</td>
+    </tr>
+  </table>
+
+  <h2>Crypto Sentiment</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="label">Fear &amp; Greed Index</div>
+      <div class="value"><span class="pill pill-bear">Fear</span></div>
+      <div class="sub">26/100 · 7d avg 37 · trend worsening</div>
+    </div>
+    <div class="card">
+      <div class="label">Crypto News (RSS)</div>
+      <div class="value"><span class="pill pill-neutral">neutral</span></div>
+      <div class="sub">avg -0.250 across 40 headlines</div>
+    </div>
+  </div>
+
+  <h2>DeFi TVL Leaders</h2>
+  <table>
+    <tr><th>#</th><th>Protocol</th><th>Category</th><th>TVL</th></tr>
+    <tr><td>1</td><td>Binance CEX</td><td>CEX</td><td>$128.06B</td></tr><tr><td>2</td><td>OKX</td><td>CEX</td><td>$28.80B</td></tr><tr><td>3</td><td>Lido</td><td>Liquid Staking</td><td>$21.87B</td></tr><tr><td>4</td><td>LayerZero V2</td><td>Bridge</td><td>$16.40B</td></tr><tr><td>5</td><td>Aave V3</td><td>Lending</td><td>$15.28B</td></tr><tr><td>6</td><td>Bybit</td><td>CEX</td><td>$14.51B</td></tr><tr><td>7</td><td>Bitfinex</td><td>CEX</td><td>$14.50B</td></tr><tr><td>8</td><td>Robinhood</td><td>CEX</td><td>$13.80B</td></tr><tr><td>9</td><td>SSV Network</td><td>Staking Pool</td><td>$11.77B</td></tr><tr><td>10</td><td>Morpho Blue</td><td>Lending</td><td>$10.96B</td></tr>
+  </table>
+
+  <h2>Trending NFTs</h2>
+  <table>
+    <tr><th>#</th><th>Collection</th><th>Symbol</th><th>Floor</th></tr>
+    <tr><td>1</td><td>Ordinal Maxi Biz (OMB)</td><td>OMB</td><td>0.018 BTC</td></tr><tr><td>2</td><td>Bitcoin Shrooms</td><td>BITCOINSHROOMS</td><td>0.34 BTC</td></tr><tr><td>3</td><td>Mad Lads</td><td>MLADS</td><td>9.50 SOL</td></tr><tr><td>4</td><td>Lil Pudgys</td><td>LilPudgys</td><td>0.23 ETH</td></tr><tr><td>5</td><td>CryptoPunks</td><td>PUNK</td><td>30.41 ETH</td></tr><tr><td>6</td><td>Mutant Ape Yacht Club</td><td>MAYC</td><td>0.89 ETH</td></tr><tr><td>7</td><td>Pudgy Penguins</td><td>PPG</td><td>2.32 ETH</td></tr>
+  </table>
+
+  <h2>Market Microstructure</h2>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">Whale Pressure Index</div>
+      <div class="value score-bull">64</div>
+      <div class="sub">imbalance 0.28004</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Liquidity Distribution</div>
+      <div class="value">2 exchanges</div>
+      <div class="sub">kraken 75% · okx 25%</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Arbitrage (base: kraken)</div>
+      <div class="value">0.166%</div>
+      <div class="sub">max delta across 2 exchanges</div>
+    </div>
+  </div>
+
+  <h2>Spoofing Detection</h2>
+  <div class="card">
+    <div class="label">Status</div>
+    <div class="value"><span class="pill pill-bull">Clean</span></div>
+    <div class="sub">no spoofing signals detected across all exchanges</div>
+  </div>
+  <h2>Depth Heatmaps</h2>
+  <div class="grid">
+    <div class="card"><div class="label">Kraken</div>
+    <div class="sub" style="margin-top:0.5rem">
+      <div><span class="neg">ASK</span> $76,800 → $512,067</div>
+      <div><span class="pos">BID</span> $76,800 → $1.06M</div>
+      <div><span class="neg">ASK</span> $76,900 → $883,855</div>
+    </div></div>
+    <div class="card"><div class="label">Okx</div>
+    <div class="sub" style="margin-top:0.5rem">
+      <div><span class="neg">ASK</span> $77,000 → $358,215</div>
+      <div><span class="pos">BID</span> $77,000 → $439,960</div>
+    </div></div>
+  </div>
+  <h2>Exchanges</h2>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">Kraken · BTC/USD</div>
+      <div class="value">$76,897.50</div>
+      <div class="sub">spread $0.10 (0.0001%)</div>
+      <div class="sub">24h <span class="pos">+0.29%</span></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Okx · BTC/USD</div>
+      <div class="value">$77,024.80</div>
+      <div class="sub">spread $0.10 (0.0001%)</div>
+      <div class="sub">24h <span class="neg">-1.27%</span></div>
+    </div>
+  </div>
+
+  <h2>Top by Volatility</h2>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Symbol</th>
+      <th>Price</th>
+      <th>Volatility</th>
+      <th>1h</th>
+      <th>24h</th>
+      <th>7d</th>
+      <th>Market Cap</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>Hyperliquid</td>
+      <td>HYPE</td>
+      <td>$84.22</td>
+      <td>4.178</td>
+      <td class="pos">+0.98%</td>
+      <td class="neg">-1.54%</td>
+      <td class="pos">+8.31%</td>
+      <td>$20.16B</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Solana</td>
+      <td>SOL</td>
+      <td>$92.30</td>
+      <td>3.382</td>
+      <td class="pos">+0.50%</td>
+      <td class="neg">-1.79%</td>
+      <td class="neg">-7.54%</td>
+      <td>$54.49B</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>BNB</td>
+      <td>BNB</td>
+      <td>$696.64</td>
+      <td>2.481</td>
+      <td class="pos">+0.58%</td>
+      <td class="neg">-1.32%</td>
+      <td class="neg">-5.37%</td>
+      <td>$91.62B</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>XRP</td>
+      <td>XRP</td>
+      <td>$1.25</td>
+      <td>1.802</td>
+      <td class="pos">+0.21%</td>
+      <td class="pos">+0.54%</td>
+      <td class="neg">-3.44%</td>
+      <td>$79.47B</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Bitcoin</td>
+      <td>BTC</td>
+      <td>$76,947.00</td>
+      <td>1.661</td>
+      <td class="pos">+0.54%</td>
+      <td class="neg">-1.23%</td>
+      <td class="neg">-3.52%</td>
+      <td>$1547.04B</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>TRON</td>
+      <td>TRX</td>
+      <td>$0.32</td>
+      <td>1.538</td>
+      <td class="pos">+0.26%</td>
+      <td class="pos">+2.23%</td>
+      <td class="neg">-1.53%</td>
+      <td>$30.67B</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Ethereum</td>
+      <td>ETH</td>
+      <td>$2,267.13</td>
+      <td>0.992</td>
+      <td class="pos">+0.46%</td>
+      <td class="neg">-0.71%</td>
+      <td class="neg">-1.97%</td>
+      <td>$277.01B</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Figure Heloc</td>
+      <td>FIGR_HELOC</td>
+      <td>$1.03</td>
+      <td>0.177</td>
+      <td class="pos">+0.00%</td>
+      <td class="">—</td>
+      <td class="neg">-0.35%</td>
+      <td>$26.86B</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Tether</td>
+      <td>USDT</td>
+      <td>$1.00</td>
+      <td>0.015</td>
+      <td class="pos">+0.01%</td>
+      <td class="neg">-0.02%</td>
+      <td class="pos">+0.00%</td>
+      <td>$178.89B</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>USDC</td>
+      <td>USDC</td>
+      <td>$1.00</td>
+      <td>0.011</td>
+      <td class="pos">+0.01%</td>
+      <td class="neg">-0.02%</td>
+      <td class="pos">+0.00%</td>
+      <td>$70.89B</td>
+    </tr>
+
+  </table>
 </body>
 </html>
