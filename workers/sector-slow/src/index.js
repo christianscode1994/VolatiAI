@@ -4304,7 +4304,7 @@ export default {
           const sorted = (h || [])
             .filter(x => x && Number.isFinite(x.t) && Number.isFinite(x.v))
             .sort((a, b) => a.t - b.t);
-          if (sorted.length >= 30) {
+          if (sorted.length >= 10) {
             const det = detrendedResiduals(sorted);
             if (det) {
               histories[name] = {
@@ -4350,12 +4350,20 @@ export default {
       }
       pairs.sort((x, y) => y.abs_r - x.abs_r);
 
+      // Return only pairs worth showing: significant AND |r| >= 0.5
+      // (or same_metric pairs which are provenance, always relevant)
+      const surfaced = pairs.filter(p =>
+        p.same_metric ||
+        (p.bonferroni_significant && p.abs_r >= 0.7 && p.n >= 15)
+      );
+
       return json({
         timestamp: new Date().toISOString(),
         sectors: names.length,
         sector_names: names,
-        pairs_count: pairs.length,
-        pairs,
+        pairs_count: surfaced.length,
+        pairs_evaluated: pairs.length,
+        pairs: surfaced,
       });
     }
 
