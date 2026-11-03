@@ -3790,6 +3790,24 @@ export default {
       console.log("cron status write failed:", String(e));
     }
 
+    // Track which shards fired today. Used by /health to detect partial
+    // coverage (e.g. GitHub Actions failing but Cloudflare crons still firing).
+    if (shardIdx >= 0) {
+      try {
+        const day = new Date().toISOString().slice(0, 10);
+        const shardsKey = `_cron_shards_${day}`;
+        const existing = (await env.SECTOR_KV.get(shardsKey, "json")) || { date: day, shards: [] };
+        if (!existing.shards.includes(shardIdx)) {
+          existing.shards.push(shardIdx);
+          existing.shards.sort((a, b) => a - b);
+          existing.updated_at = new Date().toISOString();
+          await env.SECTOR_KV.put(shardsKey, JSON.stringify(existing), { expirationTtl: 86400 * 90 });
+        }
+      } catch (e) {
+        console.log("shard tracking failed:", String(e).slice(0, 100));
+      }
+    }
+
     // Daily calibration snapshot: merge this shard's fired sectors into
     // _daily_<YYYY-MM-DD>. Idempotent — each shard appends its contribution.
     try {
@@ -3981,7 +3999,22 @@ export default {
           if (!failOk) issues.push(`cron: ${meta.failed} failures last run`);
         }
 
-        // 3. Calibration
+        // 3. Shard coverage today
+        const today = new Date().toISOString().slice(0, 10);
+        const shardData = await env.SECTOR_KV.get(`_cron_shards_${today}`, "json");
+        const expectedShards = 10;   // length of CRONS array
+        const seenShards = shardData && Array.isArray(shardData.shards) ? shardData.shards.length : 0;
+        checks.cron.shards_today = { seen: seenShards, expected: expectedShards };
+        // Only flag after 05:00 UTC — all crons should have fired by 04:02
+        const hourUtc = new Date().getUTCHours();
+        // Only flag if tracking data exists (i.e. at least one shard
+        // fired today) AND coverage is incomplete. On the first day after
+        // enabling tracking, no data means "not yet observed," not "failed."
+        if (shardData && hourUtc >= 5 && seenShards < expectedShards) {
+          issues.push(`shards: ${seenShards}/${expectedShards} fired today`);
+        }
+
+        // 4. Calibration
         if (dailyKeys.length === 0) {
           checks.calibration = {
             window_days: 0,
