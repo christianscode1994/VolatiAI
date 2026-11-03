@@ -253,7 +253,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 19/24 runs (79%)",
+      "reason": "conf=0 in 18/24 runs (75%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -377,12 +377,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "kaspa-blockdag",
+      "sector": "interop-messaging",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "korean-culture",
+      "sector": "kaspa-blockdag",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -718,7 +718,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 18/24 runs (75%)",
+      "reason": "conf=0 in 17/24 runs (71%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -727,12 +727,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "interop-messaging",
+      "sector": "museums",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "museums",
+      "sector": "korean-culture",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -745,7 +745,7 @@
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "coinbase-btc-volume24h",
@@ -761,11 +761,11 @@
     },
     {
       "sector": "defi-total-tvl",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "environment",
@@ -773,7 +773,7 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -793,11 +793,15 @@
     },
     {
       "sector": "kraken-ada-usd",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "kraken-dot-usd",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
+    },
+    {
+      "sector": "kraken-sol-usd",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -805,15 +809,15 @@
     },
     {
       "sector": "phishunt-domains",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "robonix",
@@ -829,11 +833,15 @@
     },
     {
       "sector": "treasuries",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
+    },
+    {
+      "sector": "treasuries-gov",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
@@ -874,7 +882,7 @@
     {
       "sector": "cheapshark-deal-count",
       "runs": 24,
-      "avg_conf": 0.96
+      "avg_conf": 0.92
     },
     {
       "sector": "cisa-kev-count",
@@ -909,7 +917,7 @@
     {
       "sector": "crossref-works",
       "runs": 24,
-      "avg_conf": 0.96
+      "avg_conf": 0.92
     },
     {
       "sector": "datacite-dois",
@@ -923,11 +931,6 @@
     },
     {
       "sector": "defi-open-interest-total",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "defillama-protocol-count",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -958,11 +961,6 @@
     },
     {
       "sector": "doaj-articles",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "drug-recall",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1002,17 +1000,7 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "food-drink",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "fred-dgs10",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "fred-fedfunds",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -1097,11 +1085,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "open-digger-openrank-vscode",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "openfda-device-recalls",
       "runs": 24,
       "avg_conf": 1.0
@@ -1159,7 +1142,7 @@
     {
       "sector": "spaceflight-news-count",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "stablecoin-total-supply",
@@ -1183,11 +1166,6 @@
     },
     {
       "sector": "usgs-earthquakes-emsc",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "usgs-elevated-volcanoes",
       "runs": 24,
       "avg_conf": 1.0
     },
