@@ -152,12 +152,23 @@ def build_briefing():
     # Watchlist from narrative
     narrative = summarize(history) or {}
 
+    # Honest headline: if we cap signals, say so. A reader seeing
+    # "50 signals" then 5 lines assumes truncation. "5 of 50 signals"
+    # is the truth and sets expectation.
+    _full_count = len(fired)
+    _shown_count = len(signals)
+    _narrative_headline = narrative.get("headline") or quiet_headline(sectors, fired)
+    if _shown_count > 0 and _shown_count < _full_count:
+        _final_headline = f"{_shown_count} of {_full_count} signals · {len(sectors)} sectors evaluated"
+    else:
+        _final_headline = _narrative_headline
+
     return {
         "sector": "volati-ai",
         "ts": (current.get("timestamp") or "")[:19] + "Z",
         "run_number": len(runs),
         "briefing": {
-            "headline": narrative.get("headline") or quiet_headline(sectors, fired),
+            "headline": _final_headline,
             "by_domain": by_domain,
         },
         "signals": signals,

@@ -3785,7 +3785,16 @@ export default {
       results,
     };
     try {
+      // Two keys: _last_cron_run for /status backwards compat (overwritten),
+      // _cron_last_shard_<N> for /health?full=1 (preserves all shards).
       await env.SECTOR_KV.put("_last_cron_run", JSON.stringify(summary), { expirationTtl: 86400 * 7 });
+      if (shardIdx >= 0) {
+        await env.SECTOR_KV.put(
+          `_cron_last_shard_${shardIdx}`,
+          JSON.stringify(summary),
+          { expirationTtl: 86400 * 7 }
+        );
+      }
     } catch (e) {
       console.log("cron status write failed:", String(e));
     }
@@ -4038,21 +4047,47 @@ export default {
           }
         }
 
-        // 4. Optional full scan
-        if (full && meta && Array.isArray(meta.results)) {
-          const failedSectors = meta.results.filter(r => r.error).map(r => ({
+        // 4. Optional full scan — merge results from all shard runs today
+        if (full) {
+          const shardKeys = list.keys
+            .filter(k => k.name.startsWith("_cron_last_shard_"))
+            .map(k => ({ name: k.name, shard: parseInt(k.name.replace("_cron_last_shard_", ""), 10) }))
+            .filter(k => Number.isFinite(k.shard))
+            .sort((a, b) => a.shard - b.shard);
+
+          const merged = [];
+          const failuresByShard = {};
+          const noCurrentByShard = {};
+          for (const k of shardKeys) {
+            const s = await env.SECTOR_KV.get(k.name, "json");
+            if (!s || !Array.isArray(s.results)) continue;
+            for (const r of s.results) {
+              merged.push({ ...r, shard: k.shard });
+              if (r.error) {
+                (failuresByShard[k.shard] = failuresByShard[k.shard] || []).push(r.sector);
+              }
+              if (r.skipped === "no_current") {
+                (noCurrentByShard[k.shard] = noCurrentByShard[k.shard] || []).push(r.sector);
+              }
+            }
+          }
+
+          const failedSectors = merged.filter(r => r.error).map(r => ({
             sector: r.sector,
+            shard: r.shard,
             error: String(r.error).slice(0, 80),
           }));
-          const noCurrentSectors = meta.results.filter(r => r.skipped === "no_current").map(r => r.sector);
+          const noCurrentSectors = merged.filter(r => r.skipped === "no_current").map(r => r.sector);
+
           checks.sectors = {
-            last_run_total: meta.total,
-            last_run_written: meta.written,
-            last_run_failed: meta.failed,
-            failed: failedSectors.slice(0, 10),
+            shards_merged: shardKeys.length,
+            total_sector_runs: merged.length,
+            failed: failedSectors.slice(0, 15),
+            failures_by_shard: failuresByShard,
             no_current_count: noCurrentSectors.length,
+            no_current_by_shard: noCurrentByShard,
             no_current_sample: noCurrentSectors.slice(0, 5),
-            ok: (meta.failed || 0) <= 5,
+            ok: failedSectors.length === 0,
           };
         }
 
