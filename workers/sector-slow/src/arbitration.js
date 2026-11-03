@@ -52,6 +52,29 @@ export function buildClaimGraph(snapshot, thresholds = {}, windows = {}) {
     const current = sorted[sorted.length - 1];
     const claimId = `${sector}::current`;
 
+    // Per-sector volatility: median absolute pct_change across history.
+    // Median rather than mean, because a single data glitch or one big
+    // news day should not permanently inflate the band. Falls back to 2%
+    // (typical slow-sector volatility) when history is too short.
+    const sectorVol = (() => {
+      const pcts = [];
+      for (let k = 1; k < sorted.length; k++) {
+        const p = sorted[k-1].v;
+        const c = sorted[k].v;
+        if (Number.isFinite(p) && Number.isFinite(c) && p !== 0) {
+          pcts.push(Math.abs((c - p) / p));
+        }
+      }
+      if (pcts.length < 3) return 0.02;
+      pcts.sort((a, b) => a - b);
+      const mid = Math.floor(pcts.length / 2);
+      return pcts.length % 2 === 0
+        ? (pcts[mid-1] + pcts[mid]) / 2
+        : pcts[mid];
+    })();
+    const nearThresh = Math.max(sectorVol * 0.5, 0.002);
+    const farThresh  = Math.max(sectorVol * 2.0, 0.01);
+
     nodes.push({
       id: claimId,
       type: "claim",
@@ -75,10 +98,14 @@ export function buildClaimGraph(snapshot, thresholds = {}, windows = {}) {
 
       const pctDelta = Math.abs(current.v - prior.v) / Math.max(Math.abs(prior.v), 1);
 
+      // Per-sector bands. A 5% move in CO2 (extreme) is not the same event
+      // as a 5% move in BTC (normal). Both were classified identically by
+      // the old hardcoded bands. Using the sector's own historical volatility
+      // makes the classification actually sector-aware.
       let relation, weight;
-      if (pctDelta < 0.01)      { relation = "supports";    weight = 1.0; }
-      else if (pctDelta < 0.05) { relation = "supports";    weight = 0.5; }
-      else                      { relation = "contradicts"; weight = 0.3; }
+      if (pctDelta < nearThresh)      { relation = "supports";    weight = 1.0; }
+      else if (pctDelta < farThresh)  { relation = "supports";    weight = 0.5; }
+      else                            { relation = "contradicts"; weight = 0.3; }
 
       const priorId = `${sector}::prior::${prior.t}`;
       nodes.push({
