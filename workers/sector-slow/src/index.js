@@ -3940,6 +3940,102 @@ export default {
       }
     }
 
+    // ─── /health — consolidated system state, one endpoint ───
+    if (parts[0] === "health") {
+      try {
+        const full = url.searchParams.get("full") === "1";
+        const issues = [];
+        const checks = {};
+
+        // 1. KV storage
+        const list = await env.SECTOR_KV.list({ limit: 1000 });
+        const histKeys = list.keys.filter(k => k.name.endsWith("_history") && !k.name.startsWith("_"));
+        const dailyKeys = list.keys.filter(k => k.name.startsWith("_daily_"));
+        checks.kv = {
+          total_keys: list.keys.length,
+          history_keys: histKeys.length,
+          daily_keys: dailyKeys.length,
+          ok: true,
+        };
+
+        // 2. Cron health
+        const meta = await env.SECTOR_KV.get("_last_cron_run", "json");
+        if (!meta) {
+          checks.cron = { ok: false, reason: "no _last_cron_run key" };
+          issues.push("cron: never fired");
+        } else {
+          const ageMs = Date.now() - new Date(meta.timestamp).getTime();
+          const ageH = ageMs / 3600000;
+          const ageOk = ageH <= 26;
+          const failOk = (meta.failed || 0) <= 5;
+          checks.cron = {
+            last_run: meta.timestamp,
+            age_hours: Math.round(ageH * 10) / 10,
+            cron: meta.cron,
+            total: meta.total,
+            written: meta.written,
+            failed: meta.failed,
+            ok: ageOk && failOk,
+          };
+          if (!ageOk) issues.push(`cron: stale ${ageH.toFixed(1)}h (>26h)`);
+          if (!failOk) issues.push(`cron: ${meta.failed} failures last run`);
+        }
+
+        // 3. Calibration
+        if (dailyKeys.length === 0) {
+          checks.calibration = {
+            window_days: 0,
+            ok: "pending",
+            reason: "no _daily_ keys yet (populates at next cron)",
+          };
+        } else {
+          const newest = dailyKeys.slice().sort((a, b) => b.name.localeCompare(a.name))[0];
+          const day = await env.SECTOR_KV.get(newest.name, "json");
+          if (day && day.date) {
+            const dayMs = new Date(day.date + "T00:00:00Z").getTime();
+            const daysBack = Math.round((Date.now() - dayMs) / 86400000);
+            checks.calibration = {
+              window_days: dailyKeys.length,
+              newest_date: day.date,
+              newest_count: day.count,
+              days_since_newest: daysBack,
+              ok: daysBack <= 1,
+            };
+            if (daysBack > 1) issues.push(`calibration: newest is ${daysBack}d old`);
+          }
+        }
+
+        // 4. Optional full scan
+        if (full && meta && Array.isArray(meta.results)) {
+          const failedSectors = meta.results.filter(r => r.error).map(r => ({
+            sector: r.sector,
+            error: String(r.error).slice(0, 80),
+          }));
+          const noCurrentSectors = meta.results.filter(r => r.skipped === "no_current").map(r => r.sector);
+          checks.sectors = {
+            last_run_total: meta.total,
+            last_run_written: meta.written,
+            last_run_failed: meta.failed,
+            failed: failedSectors.slice(0, 10),
+            no_current_count: noCurrentSectors.length,
+            no_current_sample: noCurrentSectors.slice(0, 5),
+            ok: (meta.failed || 0) <= 5,
+          };
+        }
+
+        const ok = issues.length === 0;
+        return json({
+          ts: new Date().toISOString(),
+          ok,
+          summary: ok ? "healthy" : `${issues.length} issue(s)`,
+          checks,
+          issues,
+        });
+      } catch (e) {
+        return json({ error: "health_failed", message: String(e && e.message || e) }, 500);
+      }
+    }
+
     // ─── /calibration — daily snapshots + multi-day aggregate stats ───
     if (parts[0] === "calibration") {
       try {
