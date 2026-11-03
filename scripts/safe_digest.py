@@ -12,7 +12,7 @@ import re
 
 SITE = os.environ.get("VOLATIAI_SITE", "https://christianscode1994.github.io/VolatiAI")
 
-FOOTER = "⚠️ Info only · automated"
+FOOTER = f"⚠️ Info only · automated · attribution: {SITE}/attribution.json"
 
 FOOTER_SHORT = f"""⚠️ automated · info only
 {SITE}/d.html"""

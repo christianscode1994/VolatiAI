@@ -1,7 +1,7 @@
 const SITE = process.env.VOLATIAI_SITE
   || 'https://christianscode1994.github.io/VolatiAI';
 
-const FOOTER = '⚠️ Info only · automated';
+const FOOTER = `⚠️ Info only · automated · attribution: ${SITE}/attribution.json`;
 
 const HIGH_RISK = /coinbase-|kraken-|\bdex-|defi-|stablecoin-|exchange-spread|^treasuries|^fed-rate|^btc-|^eth-|nbp-gold/i;
 
