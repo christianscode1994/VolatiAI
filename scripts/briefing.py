@@ -105,8 +105,14 @@ def build_briefing():
                 fire_counts[name] = fire_counts.get(name, 0) + 1
 
     # Signals array (detailed)
+    # Cap to top 5 critical signals sorted by |pct_change|
+    _candidates = [
+        (name, data) for name, data in fired.items()
+        if (data.get("severity") or "").lower() in ("critical", "warning")
+    ]
+    _candidates.sort(key=lambda kv: -abs(kv[1].get("pct_change") or 0))
     signals = []
-    for name, data in sorted(fired.items(), key=lambda x: -(x[1].get("confidence") or 0)):
+    for name, data in _candidates[:5]:
         signals.append({
             "sector": name,
             "severity": data.get("severity", "notice"),

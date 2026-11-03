@@ -19,7 +19,7 @@ function fitForPlatform(text, maxLen) {
   if (text.length <= maxLen) return text;
 
   const lines = text.split('\n');
-  const footerIdx = lines.findIndex(l => l.startsWith('━'));
+  const footerIdx = lines.findIndex(l => l.startsWith('━') || l.startsWith('⚠️ Info only'));
 
   if (footerIdx < 0) {
     // No footer (unusual), truncate whole
