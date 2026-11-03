@@ -143,7 +143,7 @@ if (signals.length > 0) {
   fullLines.push("");
   for (const s of signals) fullLines.push(fmtSignal(s));
 }
-if (watchlist.length > 0) {
+if (false && watchlist.length > 0) {
   const watchLines = watchlist.slice(0, 3).map(w =>
     `${w.sector} vol=${Math.round(w.avg_volatility ?? 0)}`
   );
@@ -152,7 +152,7 @@ if (watchlist.length > 0) {
 }
 // Enrichment lines: portfolio + correlation + provenance
 // (only in fullText, not compactText — those platforms have space)
-if (coherence?.sectors) {
+if (false && coherence?.sectors) {
   const counts = { confirmed: 0, likely: 0, outlier: 0, insufficient: 0, no_data: 0 };
   for (const v of Object.values(coherence.sectors)) {
     const k = v.verdict || "no_data";
@@ -163,7 +163,7 @@ if (coherence?.sectors) {
   fullLines.push(portfolioLine);
 }
 
-if (correlation?.pairs) {
+if (false && correlation?.pairs) {
   // Highest |r| pair with no warning and same_metric=false (meaningful cross-sector)
   const topMeaningful = correlation.pairs.find(p => !p.warning && !p.same_metric && Math.abs(p.r) >= 0.5);
   if (topMeaningful) {
