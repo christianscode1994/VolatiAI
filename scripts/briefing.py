@@ -105,12 +105,35 @@ def build_briefing():
                 fire_counts[name] = fire_counts.get(name, 0) + 1
 
     # Signals array (detailed)
-    # Cap to top 5 critical signals sorted by |pct_change|
+    # ─── Tiered ranking (partial-order frame at current scale) ───
+    # Signals have multiple incomparable dimensions. At current data volume
+    # we use a tiered lexicographic order:
+    #   1. Severity tier (alert > critical > warning) — hard boundaries
+    #   2. |pct_change| descending within tier — magnitude differentiator
+    #
+    # Why tiered, not pure magnitude: a warn-tier signal at +680% (e.g. spread
+    # widening beyond its 500% threshold) must NOT outrank an alert-tier signal
+    # at -75% (e.g. NVD CVE count collapse). The tier is assigned by the
+    # sector's own calibrated threshold_pct. Comparing across tiers is
+    # comparing incomparable things — the partial-order instinct.
+    #
+    # When provenance, freshness, and calibration-confidence become available
+    # as additional dimensions, this function becomes a true Pareto filter.
+    # Today: two dimensions, both total, one hard boundary.
+    _TIER = {"alert": 0, "critical": 1, "warning": 2, "notice": 3, "info": 4}
+
+    def _tier_rank(kv):
+        name, data = kv
+        sev = (data.get("severity") or "").lower()
+        tier = _TIER.get(sev, 9)           # unknown severity sorts to bottom
+        pct = abs(data.get("pct_change") or 0)
+        return (tier, -pct)
+
     _candidates = [
         (name, data) for name, data in fired.items()
         if (data.get("severity") or "").lower() in ("alert", "critical", "warning")
     ]
-    _candidates.sort(key=lambda kv: -abs(kv[1].get("pct_change") or 0))
+    _candidates.sort(key=_tier_rank)
     signals = []
     for name, data in _candidates[:5]:
         signals.append({
