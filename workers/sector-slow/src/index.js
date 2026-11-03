@@ -4425,9 +4425,13 @@ export default {
             current,
             coherence: rawScore === null ? null : Math.round(rawScore * 1000) / 1000,
             detrended: detScore === null ? null : Math.round(detScore * 1000) / 1000,
+            // Require at least 7 observations before "confirmed".
+            // With fewer samples, "tight current value" is coincidence, not
+            // stability — 28.6% of sectors hitting "confirmed" on 5-point
+            // histories isn't evidence of anything.
             verdict: rawScore === null
                    ? (sorted.length === 0 ? "no_data" : "insufficient_data")
-                   : rawScore >= 0.85 ? "confirmed"
+                   : rawScore >= 0.85 && sorted.length >= 7 ? "confirmed"
                    : rawScore >= 0.5  ? "likely"
                    : "outlier",
             detrended_verdict: detScore === null
