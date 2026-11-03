@@ -73,4 +73,4 @@ export function buildGraphFromEnvelopes(envelopes) {
 }
 
 // Backwards-compat alias for intelligence-engine.js
-export const buildGraph = buildKnowledgeGraph;
+export const buildGraph = buildGraphFromEnvelopes;
