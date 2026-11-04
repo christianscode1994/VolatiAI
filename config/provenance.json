@@ -14,21 +14,6 @@
     "url": "https://api.kraken.com/0/public/Ticker?pair=SOLUSD",
     "license": "Public market data"
   },
-  "coinbase-btc-usd": {
-    "provider": "Coinbase",
-    "url": "https://api.exchange.coinbase.com/products/BTC-USD/ticker",
-    "license": "Public market data"
-  },
-  "coinbase-eth-usd": {
-    "provider": "Coinbase",
-    "url": "https://api.exchange.coinbase.com/products/ETH-USD/ticker",
-    "license": "Public market data"
-  },
-  "coinbase-btc-volume24h": {
-    "provider": "Coinbase",
-    "url": "https://api.exchange.coinbase.com/products/BTC-USD/stats",
-    "license": "Public market data"
-  },
   "btc-exchange-spread": {
     "provider": "Derived",
     "url": "Kraken+Coinbase",
@@ -288,11 +273,6 @@
     "provider": "WhiskyHunter",
     "url": "https://whiskyhunter.net/api/auctions_data/?format=json",
     "license": "Free public"
-  },
-  "shopify-allbirds-product-count": {
-    "provider": "Allbirds (Shopify)",
-    "url": "https://allbirds.com/products.json?limit=250",
-    "license": "Public storefront"
   },
   "cheapshark-deal-count": {
     "provider": "CheapShark",

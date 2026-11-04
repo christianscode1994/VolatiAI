@@ -995,22 +995,6 @@ const COLLECTORS = {
       },
     }),
   },
-  "coinbase-btc-usd": {
-    config: { metric: "btc_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        btc_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.exchange.coinbase.com/products/BTC-USD/ticker",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = parseFloat(j?.price);
-          if (!Number.isFinite(v)) throw new Error("no_price");
-          return v;
-        }),
-      },
-    }),
-  },
   "defillama-protocol-count": {
     config: { metric: "protocol_count", threshold_pct: 1.0, window: "7d", window_days: 7, ttl: 86400 },
     collectAll: async () => ({
@@ -1022,23 +1006,6 @@ const COLLECTORS = {
           const j = await r.json();
           if (!Array.isArray(j)) throw new Error("not_array");
           return j.length;
-        }),
-      },
-    }),
-  },
-  "coinbase-btc-volume24h": {
-    config: { metric: "btc_quote_volume_usd", threshold_pct: 25, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        btc_quote_volume_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.exchange.coinbase.com/products/BTC-USD/stats",
-            { headers: { "user-agent": "VolatiAI/1.0 (christianscode1994@gmail.com)" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const vol = parseFloat(j?.volume);
-          const price = parseFloat(j?.last);
-          if (!Number.isFinite(vol) || !Number.isFinite(price)) throw new Error("bad_stats");
-          return vol * price;
         }),
       },
     }),
@@ -1224,22 +1191,6 @@ const COLLECTORS = {
           const result = j?.result || {};
           const key = Object.keys(result)[0];
           const v = parseFloat(result[key]?.c?.[0]);
-          if (!Number.isFinite(v)) throw new Error("no_price");
-          return v;
-        }),
-      },
-    }),
-  },
-  "coinbase-eth-usd": {
-    config: { metric: "eth_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        eth_usd: await fetchSafe(async () => {
-          const r = await fetch("https://api.exchange.coinbase.com/products/ETH-USD/ticker",
-            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const v = parseFloat(j?.price);
           if (!Number.isFinite(v)) throw new Error("no_price");
           return v;
         }),
@@ -1885,22 +1836,6 @@ const COLLECTORS = {
           const v = j[0]?.all_auctions_lots_count;
           if (typeof v !== "number") throw new Error("no_lots_count");
           return v;
-        }),
-      },
-    }),
-  },
-  "shopify-allbirds-product-count": {
-    config: { metric: "product_count", threshold_pct: 2.0, window: "7d", window_days: 7, ttl: 86400 },
-    collectAll: async () => ({
-      sources: {
-        product_count: await fetchSafe(async () => {
-          const r = await fetch("https://allbirds.com/products.json?limit=250",
-            { headers: { "user-agent": "VolatiAI/1.0", "accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-          if (!r.ok) throw new Error("http_" + r.status);
-          const j = await r.json();
-          const products = j?.products || [];
-          if (!Array.isArray(products)) throw new Error("no_products_array");
-          return products.length;
         }),
       },
     }),
@@ -3084,16 +3019,6 @@ const COLLECTORS = {
       return { value: (typeof n === "number" && Number.isFinite(n)) ? n : null, sources: { mastodon: { ok: typeof n === "number" && Number.isFinite(n) } }, context: { instance: "mastodon.social", week: latest?.week ?? null } };
     },
   },
-  "bluesky-ai-post-count": {
-    config: { metric: "matching_posts", threshold_pct: 20, window: "7d", window_days: 7, ttl: 3600, context_keys: ["query"] },
-    async collectAll(env) {
-      const r = await fetch("https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=AI&limit=100", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(20000) });
-      if (!r.ok) return { value: null, sources: { bsky: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = Array.isArray(j?.posts) ? j.posts.length : null;
-      return { value: n, sources: { bsky: { ok: typeof n === "number" } }, context: { query: "AI", capped: n === 100 } };
-    },
-  },
   "wikipedia-chatgpt-edit-count": {
     config: { metric: "total_edits", threshold_pct: 5, window: "30d", window_days: 30, ttl: 86400, context_keys: ["article"] },
     async collectAll(env) {
@@ -3177,27 +3102,6 @@ const COLLECTORS = {
       const text = await r.text();
       const n = (text.match(/<station\b/g) || []).length;
       return { value: n > 0 ? n : null, sources: { ndbc: { ok: n > 0 } } };
-    },
-  },
-  "dexpaprika-chains-count": {
-    config: { metric: "chains_indexed", threshold_pct: 2, window: "30d", window_days: 30, ttl: 86400, context_keys: [] },
-    async collectAll(env) {
-      const r = await fetch("https://api.dexpaprika.com/networks", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-      if (!r.ok) return { value: null, sources: { dexpaprika: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const n = Array.isArray(j) ? j.length : null;
-      return { value: n, sources: { dexpaprika: { ok: typeof n === "number" } } };
-    },
-  },
-  "dexpaprika-ethereum-volume": {
-    config: { metric: "volume_usd_24h", threshold_pct: 20, window: "24h", ttl: 3600, context_keys: ["chain"] },
-    async collectAll(env) {
-      const r = await fetch("https://api.dexpaprika.com/networks", { headers: { "User-Agent": "VolatiAI/1.0", "Accept": "application/json" }, signal: AbortSignal.timeout(25000) });
-      if (!r.ok) return { value: null, sources: { dexpaprika: { ok: false, error: `HTTP ${r.status}` } } };
-      const j = await r.json();
-      const eth = Array.isArray(j) ? j.find(x => x.id === "ethereum") : null;
-      const n = eth && typeof eth.volume_usd_24h === "number" ? eth.volume_usd_24h : null;
-      return { value: n, sources: { dexpaprika: { ok: typeof n === "number" } }, context: { chain: "ethereum" } };
     },
   },
   "defillama-total-tvl": {
@@ -4621,11 +4525,50 @@ export default {
           };
         }).sort((a, b) => b.days_present - a.days_present || Math.abs(b.r_mean) - Math.abs(a.r_mean));
 
+        // Structure drift: Frobenius distance of r-vectors between consecutive snapshots.
+        // Today: 1 snapshot, drifts = []. After Nov 5, 1 real delta value per day.
+        const drifts = [];
+        if (snapshots.length >= 2) {
+          const sortedSnaps = [...snapshots].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+          for (let i = 1; i < sortedSnaps.length; i++) {
+            const prev = sortedSnaps[i-1], curr = sortedSnaps[i];
+            const rMap = new Map();
+            for (const p of prev.pairs || []) rMap.set([p.a, p.b].sort().join("|"), p.r);
+            let sumSq = 0, count = 0;
+            for (const p of curr.pairs || []) {
+              const k = [p.a, p.b].sort().join("|");
+              if (rMap.has(k)) {
+                const d = p.r - rMap.get(k);
+                sumSq += d * d;
+                count++;
+              }
+            }
+            drifts.push({
+              from: prev.date, to: curr.date,
+              pairs_compared: count,
+              frobenius: count > 0 ? Math.round(Math.sqrt(sumSq) * 1000) / 1000 : null
+            });
+          }
+        }
+
+        // Pareto frontier on (stability_pct, |r_mean|). A pair is Pareto if no
+        // other pair dominates it on both axes.
+        for (const p of aggregated) {
+          const dominated = aggregated.some(q =>
+            q !== p &&
+            q.stability_pct >= p.stability_pct &&
+            Math.abs(q.r_mean) >= Math.abs(p.r_mean) &&
+            (q.stability_pct > p.stability_pct || Math.abs(q.r_mean) > Math.abs(p.r_mean))
+          );
+          p.pareto = !dominated;
+        }
+
         return json({
           ts: new Date().toISOString(),
           window_days: totalDays,
           dates: snapshots.map(s => s.date),
           pairs: aggregated,
+          drifts: drifts,
         });
       }
 
@@ -4704,6 +4647,7 @@ export default {
         }
       }
       pairs.sort((x, y) => y.abs_r - x.abs_r);
+      const transitivity = computeTransitivity(pairs);
 
       // BH-FDR over the full evaluated set, using t-approx p-values.
       // (permutation p-values are floored at 1/200 = 0.005 and cannot
@@ -4797,6 +4741,7 @@ export default {
         sector_names: names,
         pairs_count: surfaced.length,
         pairs_evaluated: pairs.length,
+        transitivity: transitivity,
         pairs: surfaced,
       });
     }
@@ -4933,8 +4878,6 @@ export default {
 //   cisa-kev-count/cisa-kev-total = same KEV list
 //   gleif-leis/gleif-total-leis = same LEI count
 const PROVENANCE_PAIRS = new Set([
-  "kraken-btc-usd|coinbase-btc-usd",
-  "kraken-eth-usd|coinbase-eth-usd",
   "treasuries|treasuries-gov",
   "cisa-kev-count|cisa-kev-total",
   "gleif-leis|gleif-total-leis",
@@ -4967,8 +4910,6 @@ function bhAdjust(pValues, q = 0.05) {
 
 // Contradiction priors — pairs whose r is far from what we expect
 const PRIORS = {
-  "kraken-btc-usd|coinbase-btc-usd": { expect: "identical", tolerance: 0.02 },
-  "kraken-eth-usd|coinbase-eth-usd": { expect: "identical", tolerance: 0.02 },
   "treasuries|treasuries-gov":       { expect: "identical", tolerance: 0.25 },
   "cisa-kev-count|cisa-kev-total":   { expect: "identical", tolerance: 0.10 },
   "openfda-food-recalls|openfda-device-recalls": { expect: "independent", tolerance: 0.40 },
@@ -5014,4 +4955,55 @@ function computeReliability(pair) {
   const pct = Math.round(score * 100);
   const tier = pct >= 75 ? "A" : pct >= 55 ? "B" : pct >= 35 ? "C" : "D";
   return { score: pct, tier };
+}
+
+
+// Transitivity check on the provenance subgraph. A "gluing obstruction"
+// is a triple (A-B, B-C, A-C) where two edges claim high correlation
+// (>0.9) but the third contradicts them (|r| < 0.75). If B is genuinely
+// a proxy for A and C, then A and C should correlate. If they don't,
+// at least one provenance claim is wrong.
+//
+// Today: 0 triples (only 2 provenance pairs, no shared sectors).
+// Becomes meaningful when a 3rd source for an already-paired metric is added.
+function computeTransitivity(pairs) {
+  const prov = pairs.filter(p => p.provenance === true);
+  if (prov.length < 2) return { triples_checked: 0, obstructions: [] };
+  const bySector = new Map();
+  for (const p of prov) {
+    for (const s of [p.a, p.b]) {
+      if (!bySector.has(s)) bySector.set(s, []);
+      bySector.get(s).push(p);
+    }
+  }
+  const obstructions = [];
+  let checked = 0;
+  const seen = new Set();
+  for (const [mid, edges] of bySector) {
+    if (edges.length < 2) continue;
+    for (let i = 0; i < edges.length; i++) {
+      for (let j = i + 1; j < edges.length; j++) {
+        const e1 = edges[i], e2 = edges[j];
+        const other1 = e1.a === mid ? e1.b : e1.a;
+        const other2 = e2.a === mid ? e2.b : e2.a;
+        if (other1 === other2) continue;
+        const ac = prov.find(p =>
+          (p.a === other1 && p.b === other2) || (p.a === other2 && p.b === other1)
+        );
+        if (!ac) continue;
+        const key = [other1, mid, other2].sort().join("|");
+        if (seen.has(key)) continue;
+        seen.add(key);
+        checked++;
+        if (e1.r > 0.9 && e2.r > 0.9 && Math.abs(ac.r) < 0.75) {
+          obstructions.push({
+            triple: [other1, mid, other2],
+            r_ab: e1.r, r_bc: e2.r, r_ac: ac.r,
+            gap: Math.round((0.75 - Math.abs(ac.r)) * 1000) / 1000
+          });
+        }
+      }
+    }
+  }
+  return { triples_checked: checked, obstructions };
 }
