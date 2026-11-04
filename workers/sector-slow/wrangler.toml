@@ -11,4 +11,6 @@ id = "5a2afb46033e49dc8d2ddefac347ddb5"
 DENSITY = "slow"
 
 [triggers]
-crons = []
+crons = [
+  "17 3 * * *", "27 3 * * *", "37 3 * * *", "47 3 * * *", "57 3 * * *"
+]

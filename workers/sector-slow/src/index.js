@@ -3752,8 +3752,7 @@ export default {
     const cron = event && event.cron ? event.cron : "unknown";
     console.log("cron start:", cron);
     const CRONS = [
-      "17 3 * * *", "22 3 * * *", "27 3 * * *", "32 3 * * *", "37 3 * * *",
-      "42 3 * * *", "47 3 * * *", "52 3 * * *", "57 3 * * *", "02 4 * * *",
+      "17 3 * * *", "27 3 * * *", "37 3 * * *", "47 3 * * *", "57 3 * * *",
     ];
     const shardIdx = CRONS.indexOf(cron);
     const shardCount = CRONS.length;
@@ -4028,7 +4027,7 @@ export default {
         // 3. Shard coverage today
         const today = new Date().toISOString().slice(0, 10);
         const shardData = await env.SECTOR_KV.get(`_cron_shards_${today}`, "json");
-        const expectedShards = 10;   // length of CRONS array
+        const expectedShards = 5;    // length of CRONS array
         const seenShards = shardData && Array.isArray(shardData.shards) ? shardData.shards.length : 0;
         checks.cron.shards_today = { seen: seenShards, expected: expectedShards };
         // Only flag after 05:00 UTC — all crons should have fired by 04:02
