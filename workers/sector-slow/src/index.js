@@ -3844,6 +3844,22 @@ export default {
       console.log("calibration write failed:", String(e).slice(0, 120));
     }
 
+    // Daily correlation snapshot (shard 0 only, idempotent). Later shards
+    // in the same day won't duplicate — check the key first.
+    if (shardIdx === 0) {
+      try {
+        const day = new Date().toISOString().slice(0, 10);
+        const existing = await env.SECTOR_KV.get(`_corr_${day}`, "json");
+        if (!existing) {
+          const req = new Request("https://placeholder/correlation?snapshot=1", { method: "GET" });
+          const resp = await this.fetch(req, env);
+          if (!resp.ok) throw new Error("snapshot endpoint " + resp.status);
+        }
+      } catch (e) {
+        console.log("corr snapshot trigger failed:", String(e).slice(0, 120));
+      }
+    }
+
     console.log(`cron summary: ${written} written, ${skipped} skipped, ${failed} failed`);
   },
 
@@ -4553,6 +4569,66 @@ export default {
     }
 
     if (sectorName === "_correlation") {
+      // ─── ?days=N — historical correlation stability ───
+      // Reads _corr_<date> snapshots written by cron (one per day).
+      // For each pair that has ever surfaced: how many days it appeared,
+      // mean r, min/max r. A pair at 100% with tight r range is real.
+      const days = parseInt(url.searchParams.get("days") || "0", 10);
+      if (days > 0) {
+        const list = await env.SECTOR_KV.list({ prefix: "_corr_", limit: 1000 });
+        const dayKeys = list.keys
+          .map(k => ({ name: k.name, date: k.name.replace("_corr_", "") }))
+          .filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k.date))
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .slice(0, days);
+
+        const snapshots = [];
+        for (const k of dayKeys) {
+          const s = await env.SECTOR_KV.get(k.name, "json");
+          if (s && Array.isArray(s.pairs)) snapshots.push(s);
+        }
+
+        const pairMap = new Map();
+        for (const snap of snapshots) {
+          for (const pr of snap.pairs) {
+            const key = [pr.a, pr.b].sort().join("|");
+            if (!pairMap.has(key)) {
+              pairMap.set(key, {
+                a: pr.a, b: pr.b,
+                days_present: 0,
+                r_values: [],
+                provenance: pr.provenance === true,
+              });
+            }
+            const entry = pairMap.get(key);
+            entry.days_present++;
+            entry.r_values.push(pr.r);
+          }
+        }
+
+        const totalDays = snapshots.length;
+        const aggregated = [...pairMap.values()].map(e => {
+          const rm = e.r_values.reduce((s, r) => s + r, 0) / e.r_values.length;
+          return {
+            a: e.a, b: e.b,
+            days_present: e.days_present,
+            window_days: totalDays,
+            stability_pct: totalDays > 0 ? Math.round((e.days_present / totalDays) * 100) : 0,
+            r_mean: Math.round(rm * 1000) / 1000,
+            r_min: Math.round(Math.min(...e.r_values) * 1000) / 1000,
+            r_max: Math.round(Math.max(...e.r_values) * 1000) / 1000,
+            provenance: e.provenance,
+          };
+        }).sort((a, b) => b.days_present - a.days_present || Math.abs(b.r_mean) - Math.abs(a.r_mean));
+
+        return json({
+          ts: new Date().toISOString(),
+          window_days: totalDays,
+          dates: snapshots.map(s => s.date),
+          pairs: aggregated,
+        });
+      }
+
       // Load all sector histories with >= 30 points
       const histories = {};
       for (const [name, c] of Object.entries(COLLECTORS)) {
@@ -4670,6 +4746,25 @@ export default {
         pairs_evaluated: pairs.length,
         pairs: surfaced,
       });
+      // ─── ?snapshot=1 — persist today's surfaced pairs for stability tracking ───
+      if (url.searchParams.get("snapshot") === "1") {
+        try {
+          const day = new Date().toISOString().slice(0, 10);
+          const snapshot = {
+            date: day,
+            pairs: surfaced.map(p => ({
+              a: p.a, b: p.b, r: p.r, n: p.n,
+              provenance: p.provenance === true,
+            })),
+            count: surfaced.length,
+            updated_at: new Date().toISOString(),
+          };
+          await env.SECTOR_KV.put(`_corr_${day}`, JSON.stringify(snapshot), { expirationTtl: 86400 * 90 });
+        } catch (e) {
+          console.log("corr snapshot write failed:", String(e).slice(0, 120));
+        }
+      }
+
     }
 
     if (sectorName === "_validate_history") {
