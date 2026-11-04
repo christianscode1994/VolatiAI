@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: volatiai-writes
+  group: volatiai-main-writer
   cancel-in-progress: false
 
 jobs:

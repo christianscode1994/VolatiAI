@@ -5,7 +5,7 @@ on:
     paths:
       - 'workers/sector-slow/src/index.js'
 concurrency:
-  group: volatiai-writes
+  group: volatiai-main-writer
   cancel-in-progress: false
 
 jobs:

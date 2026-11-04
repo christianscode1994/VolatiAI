@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: volatiai-engine
-  cancel-in-progress: true
+  group: volatiai-main-writer
+  cancel-in-progress: false
 
 concurrency:
   group: volatiai-main-writer
