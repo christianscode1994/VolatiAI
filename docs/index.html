@@ -1,1 +1,206 @@
-error code: 1042
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VolatiAI — honest statistics over public data</title>
+<meta name="description" content="Correlation analysis of public-domain datasets. Every claim carries its own p-value, FDR-corrected significance, confidence interval, stability score, and provenance class.">
+<style>
+:root { --fg:#1a1a1a; --muted:#666; --border:#e0e0e0; --accent:#0a6; --warn:#c60; --danger:#a00; }
+* { box-sizing: border-box; }
+body { font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:var(--fg); max-width:960px; margin:0 auto; padding:2rem 1.5rem; }
+h1 { margin:0 0 .25rem; font-size:1.9rem; letter-spacing:-.02em; }
+h2 { margin:2rem 0 .75rem; font-size:1.15rem; letter-spacing:-.01em; border-bottom:1px solid var(--border); padding-bottom:.35rem; }
+h2 small { font-weight:normal; color:var(--muted); font-size:.8em; }
+.tagline { color:var(--muted); margin:0 0 1rem; }
+.meta { color:var(--muted); font-size:.85rem; margin-bottom:2rem; }
+.meta code { background:#f5f5f5; padding:.1rem .35rem; border-radius:3px; font-size:.95em; }
+.row { display:grid; grid-template-columns:2rem 1fr 6rem 5rem; gap:.5rem; padding:.55rem .25rem; border-bottom:1px solid var(--border); align-items:baseline; }
+.row:last-child { border-bottom:none; }
+.row .sev { text-align:center; }
+.row .name { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.92em; }
+.row .pct { text-align:right; font-variant-numeric:tabular-nums; }
+.row .rate { text-align:right; color:var(--muted); font-size:.85em; font-variant-numeric:tabular-nums; }
+.sev-alert { color:var(--danger); }
+.sev-critical { color:#c40; }
+.sev-warning { color:var(--warn); }
+.sev-info { color:var(--muted); }
+.note { color:var(--muted); font-size:.9rem; padding:.75rem 0; }
+.empty-state { color:var(--muted); font-style:italic; padding:.5rem 0; }
+dl.empty-fields { display:grid; grid-template-columns:max-content 1fr; gap:.35rem 1.5rem; margin:0; }
+dl.empty-fields dt { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; color:var(--muted); }
+dl.empty-fields dd { margin:0; }
+footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); color:var(--muted); font-size:.88rem; }
+footer a { color:var(--fg); }
+footer ul { list-style:none; padding:0; margin:.5rem 0 0; display:flex; flex-wrap:wrap; gap:1.25rem; }
+nav.top { margin:0 0 2rem; font-size:.9rem; }
+nav.top a { color:var(--muted); margin-right:1.25rem; text-decoration:none; }
+nav.top a:hover { color:var(--fg); text-decoration:underline; }
+@media (max-width:600px) { .row { grid-template-columns:1.5rem 1fr 5rem 4rem; font-size:.92em; } }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="./">home</a>
+  <a href="summary.html">summary</a>
+  <a href="dashboard.html">dashboard</a>
+  <a href="graph.html">graph</a>
+  <a href="health.html">health</a>
+  <a href="intel.html">intel</a>
+  <a href="verify.html">verify</a>
+  <a href="attribution.json">attribution</a>
+</nav>
+
+<header>
+  <h1>VolatiAI</h1>
+  <p class="tagline">Correlation analysis of public-domain datasets. Every claim carries its uncertainty.</p>
+  <p class="meta" id="meta">Loading briefing…</p>
+</header>
+
+<section>
+  <h2>Current signals <small>ranked by per-day log-rate, not raw percentage</small></h2>
+  <div id="signals"><p class="note">Loading…</p></div>
+</section>
+
+<section>
+  <h2>Provenance validations <small>tier P — same metric, different source</small></h2>
+  <div id="provenance"><p class="note">Loading…</p></div>
+</section>
+
+<section>
+  <h2>What we don't know yet <small>honest empty results are information, not absence</small></h2>
+  <dl class="empty-fields" id="unknowns">
+    <dt>Transitivity</dt><dd id="transitivity">—</dd>
+    <dt>Structure drift</dt><dd id="drifts">—</dd>
+  </dl>
+</section>
+
+<footer>
+  <p>All data sourced from public domain. <a href="attribution.json">Attribution &amp; licenses</a>. No proprietary sources. No personal data.</p>
+  <p><strong>Design principle:</strong> when the system cannot verify something, it returns that fact explicitly rather than omitting it.</p>
+  <ul>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="privacy.html">Privacy</a></li>
+    <li><a href="sources.html">Sources</a></li>
+    <li><a href="reliability.html">Reliability</a></li>
+    <li><a href="https://github.com/christianscode1994/VolatiAI">Source code</a></li>
+  </ul>
+</footer>
+
+<script>
+(async function() {
+  const WORKER = "https://sector-slow.fourieranalys.workers.dev";
+
+  // ── 1. Signals from briefing.json (same-origin, always works) ──
+  try {
+    const res = await fetch("briefing.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const b = await res.json();
+    document.getElementById("meta").innerHTML =
+      `Run ${b.run_number || "?"} · <code>${b.ts || "?"}</code> · ` +
+      `${b.stats?.total_sectors || "?"} sectors monitored · ` +
+      `${b.stats?.firing_sectors || "?"} firing · ` +
+      `headline: <em>${b.briefing?.headline || "—"}</em>`;
+    renderSignals(b.signals || []);
+  } catch (e) {
+    document.getElementById("signals").innerHTML =
+      `<p class="note">briefing.json unavailable: ${e.message}</p>`;
+    document.getElementById("meta").textContent = "Briefing data unavailable";
+  }
+
+  // ── 2. Provenance + empty fields from worker (cross-origin, graceful fallback) ──
+  try {
+    const res = await fetch(`${WORKER}/_correlation`, { cache: "no-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const c = await res.json();
+    renderProvenance(c.pairs || []);
+    renderUnknowns(c.transitivity, c.pairs_count, c.pairs_evaluated);
+    // drifts live in ?days=N; fetch separately, may be empty
+    try {
+      const dr = await fetch(`${WORKER}/_correlation?days=7`, { cache: "no-cache" });
+      if (dr.ok) {
+        const d = await dr.json();
+        if (d.drifts && d.drifts.length > 0) {
+          document.getElementById("drifts").textContent =
+            `${d.drifts.length} snapshot pair(s) compared, last Frobenius distance ${d.drifts[d.drifts.length-1].frobenius}`;
+        }
+      }
+    } catch (_) { /* ignore */ }
+  } catch (e) {
+    document.getElementById("provenance").innerHTML =
+      `<p class="note">Worker unavailable (${e.message}). This may be a CORS restriction or the endpoint being offline. Signals above are still accurate.</p>`;
+    document.getElementById("transitivity").textContent = "worker unreachable";
+    document.getElementById("drifts").textContent = "worker unreachable";
+  }
+
+  function renderSignals(signals) {
+    const el = document.getElementById("signals");
+    if (!signals.length) {
+      el.innerHTML = `<p class="empty-state">No signals firing.</p>`;
+      return;
+    }
+    const rows = signals.map(s => {
+      const sev = (s.severity || "info").toLowerCase();
+      const icon = { alert: "🚨", critical: "⚠️", warning: "⚠", info: "·" }[sev] || "·";
+      const pct = typeof s.pct_change === "number"
+        ? (s.pct_change >= 0 ? "+" : "") + s.pct_change.toFixed(1) + "%"
+        : "—";
+      const rate = typeof s.log_rate === "number" ? s.log_rate.toFixed(3) : "—";
+      return `<div class="row">
+        <span class="sev sev-${sev}" title="${sev}">${icon}</span>
+        <span class="name">${escapeHtml(s.sector)}</span>
+        <span class="pct">${pct} / ${s.days ?? "?"}d</span>
+        <span class="rate">log=${rate}</span>
+      </div>`;
+    }).join("");
+    el.innerHTML = rows;
+  }
+
+  function renderProvenance(pairs) {
+    const el = document.getElementById("provenance");
+    const prov = (pairs || []).filter(p => p.provenance === true);
+    if (!prov.length) {
+      el.innerHTML = `<p class="empty-state">No provenance pairs in this run.</p>`;
+      return;
+    }
+    const rows = prov.map(p => {
+      const r = typeof p.r === "number" ? p.r.toFixed(3) : "—";
+      const contradiction = p.contradiction
+        ? `<span style="color:var(--danger);font-size:.85em" title="expected ${p.contradiction.prior}, gap ${p.contradiction.gap}">⚠ prior violated</span>`
+        : "";
+      return `<div class="row" style="grid-template-columns:1.5rem 1fr 1fr 4rem">
+        <span class="sev" style="color:var(--accent)">✓</span>
+        <span class="name">${escapeHtml(p.a)}</span>
+        <span class="name">${escapeHtml(p.b)}</span>
+        <span class="pct">r=${r} ${contradiction}</span>
+      </div>`;
+    }).join("");
+    el.innerHTML = rows;
+  }
+
+  function renderUnknowns(transitivity, count, evaluated) {
+    const t = document.getElementById("transitivity");
+    if (transitivity) {
+      if (transitivity.triples_checked === 0) {
+        t.textContent = `0 triples checked — no 3-way provenance chains exist yet (${count} provenance pairs)`;
+      } else {
+        t.textContent = `${transitivity.triples_checked} triple(s) checked, ${transitivity.obstructions?.length || 0} obstruction(s)`;
+      }
+    } else {
+      t.textContent = "not reported";
+    }
+    const d = document.getElementById("drifts");
+    if (!d.textContent || d.textContent === "—") {
+      d.textContent = "no drift data — needs 2+ daily snapshots (cron writes one per day)";
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+})();
+</script>
+</body>
+</html>
