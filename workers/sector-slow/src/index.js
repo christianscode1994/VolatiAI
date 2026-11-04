@@ -4627,6 +4627,40 @@ export default {
         (p.bonferroni_significant && p.abs_r >= 0.7 && p.n >= 15)
       );
 
+      // Augment each surfaced pair with honesty metrics:
+      //   - Fisher 95% CI on r (answers "how confident is the magnitude?")
+      //   - Permutation p-value (answers "is this real, without normality assumption?")
+      // The current p_value uses the t-approximation (assumes bivariate normal),
+      // which is wrong for fat-tailed detrended residuals. perm_p is assumption-free.
+      for (const p of surfaced) {
+        const n = p.n;
+        if (n > 3) {
+          const z = Math.atanh(p.r);
+          const se = 1 / Math.sqrt(n - 3);
+          p.ci_low = Math.round(Math.tanh(z - 1.96 * se) * 1000) / 1000;
+          p.ci_high = Math.round(Math.tanh(z + 1.96 * se) * 1000) / 1000;
+          p.ci_width = Math.round((p.ci_high - p.ci_low) * 1000) / 1000;
+        }
+        const aData = histories[p.a]?.residuals || [];
+        const bData = histories[p.b]?.residuals || [];
+        const nn = Math.min(aData.length, bData.length);
+        if (nn >= 10) {
+          const ar = aData.slice(-nn);
+          const br = bData.slice(-nn);
+          let exceed = 0;
+          for (let k = 0; k < 200; k++) {
+            const shuffled = br.slice();
+            for (let i = nn - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            const rPerm = pearson(ar, shuffled);
+            if (rPerm !== null && Math.abs(rPerm) >= Math.abs(p.r)) exceed++;
+          }
+          p.perm_p = Math.round(((exceed + 1) / 201) * 1000) / 1000;
+        }
+      }
+
       return json({
         timestamp: new Date().toISOString(),
         sectors: names.length,
