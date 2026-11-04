@@ -29,16 +29,16 @@ def make_env(metric, current, pct=None):
 # currency-ex reports EUR/USD = 1.12
 # exchange-rate reports USD→EUR = 0.75, which is 1/0.75 = 1.333 after
 # reciprocal normalization. Difference: |1.12 - 1.333| / 1.333 ≈ 16%.
-print("=== Test 1: FX reciprocal divergence >10% ===")
+print("=== Test 1: FX reciprocal divergence >20% ===")
 arbs = [make_arb("currency-ex"), make_arb("exchange-rate")]
 envs = {
     "currency-ex": make_env("eur_usd", 1.12),
-    "exchange-rate": make_env("usd_eur", 0.75),  # reciprocal: 1.333
+    "exchange-rate": make_env("usd_eur", 0.60),  # reciprocal: 1.333
 }
 result = find_contradictions(arbs, envs)
 assert len(result) == 1, f"Expected 1, got {len(result)}: {result}"
 assert result[0]["type"] == "metric_divergence", f"type={result[0]['type']}"
-assert result[0]["divergence_pct"] > 10, f"divergence={result[0]['divergence_pct']}"
+assert result[0]["divergence_pct"] > 20, f"divergence={result[0]['divergence_pct']}"
 print(f"  ✓ divergence={result[0]['divergence_pct']:.2f}%")
 
 
