@@ -4695,7 +4695,7 @@ export default {
               abs_r: Math.round(absR * 1000) / 1000,
               n: minLen,
               stale_data: (av.length >= 5 && new Set(av).size / av.length < 0.25) || (bv.length >= 5 && new Set(bv).size / bv.length < 0.25),
-              p_value: pValue !== null ? Math.round(pValue * 10000) / 10000 : null,
+              p_value: pValue !== null ? Number(pValue.toPrecision(3)) : null,
               bonferroni_significant: pValue !== null && pValue < (0.05 / ((names.length * (names.length - 1)) / 2)),
               same_metric_name: (COLLECTORS[names[i]]?.config?.metric || "") === (COLLECTORS[names[j]]?.config?.metric || "") && (COLLECTORS[names[i]]?.config?.metric !== undefined),
               provenance: isProvenance(names[i], names[j]),
@@ -4754,7 +4754,7 @@ export default {
             const rPerm = pearson(ar, shuffled);
             if (rPerm !== null && Math.abs(rPerm) >= Math.abs(p.r)) exceed++;
           }
-          p.perm_p = Math.round(((exceed + 1) / 201) * 1000) / 1000;
+          p.perm_p = Math.round(((exceed + 1) / 2001) * 1e5) / 1e5;
         }
       }
 
