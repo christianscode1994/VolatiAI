@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "0 */6 * * *"   # every 6 hours
 
+concurrency:
+  group: volatiai-writes
+  cancel-in-progress: false
+
 jobs:
   broadcast:
     runs-on: ubuntu-latest

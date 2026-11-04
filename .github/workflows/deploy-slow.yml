@@ -4,6 +4,10 @@ on:
     branches: [main]
     paths:
       - 'workers/sector-slow/src/index.js'
+concurrency:
+  group: volatiai-writes
+  cancel-in-progress: false
+
 jobs:
   verify:
     runs-on: ubuntu-latest

@@ -2,6 +2,10 @@ name: Test
 on:
   push: { branches: [main] }
   pull_request: { branches: [main] }
+concurrency:
+  group: volatiai-writes
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -6,6 +6,10 @@ on:
     - cron: "0 * * * *"
   workflow_dispatch: {}
 
+concurrency:
+  group: volatiai-writes
+  cancel-in-progress: false
+
 jobs:
   run-signal-engine:
     runs-on: ubuntu-latest

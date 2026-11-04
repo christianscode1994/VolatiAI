@@ -7,6 +7,10 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  group: volatiai-writes
+  cancel-in-progress: false
+
 jobs:
 
   health:

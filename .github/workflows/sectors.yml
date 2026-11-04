@@ -4,6 +4,10 @@ on:
     - cron: '17 3 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: volatiai-writes
+  cancel-in-progress: false
+
 jobs:
   slow:
     runs-on: ubuntu-latest
