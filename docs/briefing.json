@@ -89,12 +89,25 @@
   },
   "signals": [
     {
+      "sector": "tweetfeed-c2",
+      "severity": "alert",
+      "summary": "weekly_c2_ips 136 (-91.1% vs 10.1d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": -91.08196721311475,
+      "log_rate": 0.2393,
+      "days": 10.1,
+      "fires_24": 21
+    },
+    {
       "sector": "hackernews-top-scores",
       "severity": "alert",
       "summary": "top10_score_sum 3665 (+390.0% vs 9.2d ago)",
       "confidence": 1,
       "magnitude": null,
       "pct_change": 389.9732620320856,
+      "log_rate": 0.1727,
+      "days": 9.2,
       "fires_24": 24
     },
     {
@@ -104,34 +117,31 @@
       "confidence": 1,
       "magnitude": null,
       "pct_change": 262.8787878787879,
+      "log_rate": 0.1572,
+      "days": 8.2,
       "fires_24": 24
     },
     {
-      "sector": "espn-nba-score-count",
+      "sector": "steam-dota2-players",
       "severity": "alert",
-      "summary": "game_count 15 (+114.3% vs 8.3d ago)",
+      "summary": "player_count 340133 (-62.8% vs 8.2d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 114.28571428571428,
-      "fires_24": 8
+      "pct_change": -62.82329718037531,
+      "log_rate": 0.1207,
+      "days": 8.2,
+      "fires_24": 24
     },
     {
-      "sector": "tweetfeed-c2",
+      "sector": "usgs-earthquake-count",
       "severity": "alert",
-      "summary": "weekly_c2_ips 136 (-91.1% vs 10.1d ago)",
+      "summary": "m45_count 17 (-66.0% vs 9.2d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -91.08196721311475,
-      "fires_24": 21
-    },
-    {
-      "sector": "coinbase-btc-volume24h",
-      "severity": "alert",
-      "summary": "btc_quote_volume_usd 589508718.0535846 (+78.1% vs 9.2d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": 78.07336052398962,
-      "fires_24": 14
+      "pct_change": -66,
+      "log_rate": 0.1173,
+      "days": 9.2,
+      "fires_24": 24
     }
   ],
   "delta": {

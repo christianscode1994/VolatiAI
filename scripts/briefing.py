@@ -75,6 +75,47 @@ def quiet_headline(sectors, fired):
                 f"Closest: {name} {pc:+.2f}% vs {thr}% threshold")
     return f"{len(sectors)} sectors monitored, all quiet. Closest: {name} {pc:+.2f}%"
 
+def _parse_days(data):
+    """Extract window-in-days from the /signal summary string.
+    Returns None if not parseable. Falls back to old behavior in _log_rate."""
+    import re
+    summary = data.get("summary") or ""
+    m = re.search(r'vs\s+([\d.]+)d\b', summary)
+    if m:
+        try:
+            return float(m.group(1))
+        except ValueError:
+            pass
+    return None
+
+
+def _log_rate(data):
+    """Per-day log-rate of change, window-normalized.
+    
+    Replaces raw |pct_change| in tier-internal sort. Raw pct across
+    different windows (8.2d vs 10.8d) isn't comparable — +200% over
+    10d is a slower rate than +100% over 3d. Log-rate normalizes for
+    window length and is sign-symmetric: +100% and -50% contribute
+    equally (log(2.0) = 0.693, -log(0.5) = 0.693).
+    
+    Falls back to abs(pct_change) if window days not parseable.
+    """
+    import math
+    pct = data.get("pct_change")
+    if not isinstance(pct, (int, float)):
+        return 0.0
+    days = _parse_days(data)
+    if not days or days <= 0:
+        return abs(pct)
+    ratio = 1.0 + pct / 100.0
+    if ratio <= 0:
+        return 0.0
+    try:
+        return abs(math.log(ratio) / days)
+    except (ValueError, ZeroDivisionError):
+        return abs(pct)
+
+
 def build_briefing():
     """Assemble the unified briefing object."""
     with open("data/digest_history.json") as f:
@@ -126,8 +167,7 @@ def build_briefing():
         name, data = kv
         sev = (data.get("severity") or "").lower()
         tier = _TIER.get(sev, 9)           # unknown severity sorts to bottom
-        pct = abs(data.get("pct_change") or 0)
-        return (tier, -pct)
+        return (tier, -_log_rate(data))    # log-rate: window-normalized
 
     _candidates = [
         (name, data) for name, data in fired.items()
@@ -143,6 +183,8 @@ def build_briefing():
             "confidence": data.get("confidence") or 0,
             "magnitude": data.get("magnitude"),
             "pct_change": data.get("pct_change"),
+            "log_rate": round(_log_rate(data), 4),
+            "days": _parse_days(data),
             "fires_24": fire_counts.get(name, 0),
         })
 
