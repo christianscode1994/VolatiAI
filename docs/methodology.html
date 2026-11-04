@@ -113,6 +113,16 @@ BH rank-100 threshold:            (100/5000)*0.05 = 1e-3</code></pre>
 { expect: "inverse",     tolerance: 0.10 }   // r should be ≈ −1.0</code></pre>
 <p>If observed r falls outside the tolerance, <code>contradiction</code> fires with the gap. A contradiction is <strong>data</strong> — either a real coupling, a bug in one collector, or a wrong prior. Each is worth knowing.</p>
 
+<h2>Contradiction detection scope</h2>
+<p>Contradiction detection currently covers <strong>FX only</strong>. The <code>CONFLICT_GROUPS</code> registry in the worker has exactly two sectors:</p>
+<ul>
+<li><code>currency-ex</code> → <code>fx_usd_eur</code> group</li>
+<li><code>exchange-rate</code> → <code>fx_usd_eur</code> group</li>
+</ul>
+<p>Both measure USD↔EUR exchange rate from different sources. When they disagree by more than 20% after reciprocal normalization, a <code>metric_divergence</code> contradiction fires. When they move in opposite directions by more than 1%, a <code>directional_conflict</code> fires.</p>
+<p><strong>This is honest scope, not a bug.</strong> When the digest says "0 contradictions", that means "the two FX sources agree today" — not "no semantic contradictions exist anywhere". Every other sector is single-source and cannot contradict itself.</p>
+<p>Expanding this registry to include other multi-source metrics is a separate project. The semantic registry at <code>config/semantic_registry.json</code> documents the intent; wiring it into <code>CONFLICT_GROUPS</code> is planned for a future iteration. Candidate pairs for expansion are found by <code>scripts/find_candidates.py</code>.</p>
+
 <h2>What the system does NOT do</h2>
 <ul>
 <li><strong>No semantic alignment.</strong> Two sectors might mean different things despite similar names. Handled by curation and priors — scales only to a few hundred sectors.</li>
