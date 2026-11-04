@@ -4612,7 +4612,8 @@ export default {
               n: minLen,
               p_value: pValue !== null ? Math.round(pValue * 10000) / 10000 : null,
               bonferroni_significant: pValue !== null && pValue < (0.05 / ((names.length * (names.length - 1)) / 2)),
-              same_metric: (COLLECTORS[names[i]]?.config?.metric || "") === (COLLECTORS[names[j]]?.config?.metric || "") && (COLLECTORS[names[i]]?.config?.metric !== undefined),
+              same_metric_name: (COLLECTORS[names[i]]?.config?.metric || "") === (COLLECTORS[names[j]]?.config?.metric || "") && (COLLECTORS[names[i]]?.config?.metric !== undefined),
+              provenance: isProvenance(names[i], names[j]),
               warning: warning,
             });
           }
@@ -4623,7 +4624,7 @@ export default {
       // Return only pairs worth showing: significant AND |r| >= 0.5
       // (or same_metric pairs which are provenance, always relevant)
       const surfaced = pairs.filter(p =>
-        p.same_metric ||
+        p.provenance ||
         (p.bonferroni_significant && p.abs_r >= 0.7 && p.n >= 15)
       );
 
@@ -4794,3 +4795,22 @@ export default {
     return json({ not: "found" }, 404);
   },
 };
+
+// Provenance: sectors that measure the SAME underlying quantity under
+// different names. These are provenance, not cross-sector insight.
+//   kraken/coinbase BTC/ETH = same price
+//   usgs-earthquakes/usgs-emsc = same earthquake feed
+//   treasuries/treasuries-gov = same 10y yield
+//   cisa-kev-count/cisa-kev-total = same KEV list
+//   gleif-leis/gleif-total-leis = same LEI count
+const PROVENANCE_PAIRS = new Set([
+  "kraken-btc-usd|coinbase-btc-usd",
+  "kraken-eth-usd|coinbase-eth-usd",
+  "usgs-earthquakes|usgs-earthquakes-emsc",
+  "treasuries|treasuries-gov",
+  "cisa-kev-count|cisa-kev-total",
+  "gleif-leis|gleif-total-leis",
+]);
+function isProvenance(a, b) {
+  return PROVENANCE_PAIRS.has(a + "|" + b) || PROVENANCE_PAIRS.has(b + "|" + a);
+}
