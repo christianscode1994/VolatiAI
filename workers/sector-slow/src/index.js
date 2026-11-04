@@ -4712,7 +4712,7 @@ export default {
       const _allP = pairs.map(p => p.p_value ?? 1);
       const _bhAll = bhAdjust(_allP, 0.05);
       pairs.forEach((p, i) => {
-        p.p_bh = Math.round(_bhAll.adj[i] * 100000) / 100000;
+        p.p_bh = Number(_bhAll.adj[i].toPrecision(3));
         p.bh_significant = _bhAll.sig[i];
       });
 
