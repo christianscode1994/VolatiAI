@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Methodology — VolatiAI</title>
+<meta name="description" content="How VolatiAI handles uncertainty: every field explained, every empty result justified.">
+<style>
+:root { --fg:#1a1a1a; --muted:#666; --border:#e0e0e0; --accent:#0a6; --code:#f5f5f5; }
+* { box-sizing: border-box; }
+body { font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:var(--fg); max-width:720px; margin:0 auto; padding:2rem 1.5rem; }
+h1 { margin:0 0 .25rem; font-size:1.75rem; letter-spacing:-.02em; }
+h2 { margin:2.25rem 0 .75rem; font-size:1.15rem; letter-spacing:-.01em; }
+h3 { margin:1.5rem 0 .35rem; font-size:1rem; }
+p, li { margin:.6rem 0; }
+code { background:var(--code); padding:.1rem .35rem; border-radius:3px; font-size:.92em; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+pre { background:var(--code); padding:.75rem 1rem; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.45; }
+pre code { background:none; padding:0; }
+table { width:100%; border-collapse:collapse; margin:.75rem 0; font-size:.92rem; }
+th, td { text-align:left; padding:.5rem .4rem; border-bottom:1px solid var(--border); vertical-align:top; }
+th { font-weight:600; color:var(--muted); font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; }
+td code { font-size:.88em; }
+nav.top { margin:0 0 2rem; font-size:.9rem; }
+nav.top a { color:var(--muted); margin-right:1.25rem; text-decoration:none; }
+nav.top a:hover { color:var(--fg); text-decoration:underline; }
+.principle { border-left:3px solid var(--accent); padding:.35rem 0 .35rem 1rem; margin:1rem 0; color:var(--muted); font-style:italic; }
+footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); color:var(--muted); font-size:.88rem; }
+footer a { color:var(--fg); }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="./">home</a>
+  <a href="methodology.html"><strong>methodology</strong></a>
+  <a href="summary.html">summary</a>
+  <a href="dashboard.html">dashboard</a>
+  <a href="health.html">health</a>
+  <a href="verify.html">verify</a>
+  <a href="attribution.json">attribution</a>
+</nav>
+
+<h1>Methodology</h1>
+<p style="color:#666">How VolatiAI handles uncertainty, and why every empty result is information.</p>
+
+<h2>The premise</h2>
+<p>Public data is fragmented: same metric under different names, different update cadences, different levels of trust, different definitions of what counts as the same thing. Most correlation dashboards hide that fragmentation and present a single number as if it were a fact.</p>
+<p>VolatiAI does the opposite. Every claim carries its own uncertainty — p-value, FDR-corrected significance, confidence interval, stability score, provenance class. When the system cannot verify something, it returns that fact explicitly.</p>
+
+<div class="principle">Empty results are information, not absence. "0 triples checked" means we looked and found nothing to check. "drifts: []" means we have one snapshot and cannot compute a drift yet. Both are true, both are displayed.</div>
+
+<h2>Every field, explained</h2>
+
+<h3>On <code>/_correlation</code> — per pair</h3>
+<table>
+<tr><th>Field</th><th>Meaning</th><th>Why it matters</th></tr>
+<tr><td><code>r</code></td><td>Pearson correlation on detrended residuals</td><td>Removes shared trend before correlating</td></tr>
+<tr><td><code>n</code></td><td>Common daily observations</td><td>Below 15, correlation is too noisy to trust</td></tr>
+<tr><td><code>p_value</code></td><td>Two-tailed t-approximation p-value</td><td>Naive significance; assumes normality</td></tr>
+<tr><td><code>p_bh</code></td><td>Benjamini-Hochberg adjusted p, q=0.05, m=~5,000</td><td>Corrects for testing ~5,000 pairs at once — the honest significance</td></tr>
+<tr><td><code>bh_significant</code></td><td>Whether <code>p_bh &lt; 0.05</code></td><td>True = survives multiple-testing correction</td></tr>
+<tr><td><code>perm_p</code></td><td>Permutation p-value (2,000 shuffles)</td><td>Assumption-free check; does not assume normality</td></tr>
+<tr><td><code>ci_low</code>, <code>ci_high</code></td><td>Fisher 95% confidence interval on r</td><td>Tight interval = reliable magnitude</td></tr>
+<tr><td><code>ci_width</code></td><td><code>ci_high − ci_low</code></td><td>Above 0.6 means too wide to trust</td></tr>
+<tr><td><code>provenance</code></td><td>Two sources measuring the same underlying quantity</td><td>Different from "insight" — validation, not discovery</td></tr>
+<tr><td><code>stale_data</code></td><td>&lt;25% unique values across window</td><td>Detects batch-updated counters posing as correlated series</td></tr>
+<tr><td><code>contradiction</code></td><td>Prior violated (expected ~1.0, observed 0.777)</td><td>Fires when reality disagrees with expectation — data, not noise</td></tr>
+<tr><td><code>verdict</code></td><td><code>confirm:provenance</code> / <code>surface</code> / <code>suppress:*</code> / <code>dispute:*</code></td><td>Named outcome — auditable, not a boolean filter</td></tr>
+<tr><td><code>tier</code></td><td>P (provenance) / A / B / C / D</td><td>Reliability class; P is exempt from FDR</td></tr>
+</table>
+
+<h3>On <code>/_correlation?days=N</code> — stability</h3>
+<table>
+<tr><th>Field</th><th>Meaning</th></tr>
+<tr><td><code>days_present</code></td><td>How many snapshots contained this pair</td></tr>
+<tr><td><code>stability_pct</code></td><td><code>days_present / available_days</code> — does it recur?</td></tr>
+<tr><td><code>r_mean</code>, <code>r_min</code>, <code>r_max</code></td><td>Correlation range across snapshots</td></tr>
+<tr><td><code>r_range</code></td><td><code>r_max − r_min</code> — tight range = stable</td></tr>
+<tr><td><code>drifts[]</code></td><td>Frobenius distance of r-vector between consecutive snapshots</td></tr>
+<tr><td><code>pareto</code></td><td>True if no other pair dominates on both stability and |r|</td></tr>
+<tr><td><code>transitivity</code></td><td>Triples checked for gluing obstruction (A~B, B~C, A≁C)</td></tr>
+</table>
+
+<h3>On <code>/signal</code> — per-sector delta</h3>
+<table>
+<tr><th>Field</th><th>Meaning</th></tr>
+<tr><td><code>pct_change</code></td><td>Raw percentage change vs. previous observation</td></tr>
+<tr><td><code>actual_window_days</code></td><td>Days between current and previous observation</td></tr>
+<tr><td><code>log_rate</code> (briefing)</td><td><code>log(1 + pct/100) / days</code> — per-day rate, sign-symmetric, window-normalized</td></tr>
+</table>
+
+<h2>Why log-rate, not raw percentage</h2>
+<p>Raw percentage is incomparable across different comparison windows. "+390% over 9.2 days" and "−91% over 10.1 days" have different denominators — the second is actually a faster per-day change despite the smaller magnitude.</p>
+<pre><code>log_rate(+390% / 9.2d) = log(4.9) / 9.2  = 0.173
+log_rate( −91% / 10.1d) = −log(0.089) / 10.1 = 0.239</code></pre>
+<p>Ranked by log-rate, the drop is #1 — because it IS the largest rate of change. Ranked by raw percentage, it would be last. The system ranks by log-rate because that's what "biggest change" actually means once you account for window length.</p>
+
+<h2>Why BH, not Bonferroni</h2>
+<p>With ~5,000 tested pairs, raw p &lt; 0.05 would produce ~250 false positives. Bonferroni (α/m) is too strict — it controls the probability of *any* false positive, which is overkill. BH-FDR controls the *expected fraction* of false positives among discoveries, which is what actually matters when ranking candidates.</p>
+<pre><code>Bonferroni threshold at m=5,000:  0.05/5000 = 1e-5
+BH rank-1 threshold at q=0.05:    (1/5000)*0.05 = 1e-5
+BH rank-100 threshold:            (100/5000)*0.05 = 1e-3</code></pre>
+<p>BH is less strict at higher ranks — appropriate for a discovery-ranked list where the top result gets more scrutiny than the 100th.</p>
+
+<h2>What "provenance" means — and doesn't</h2>
+<p>A provenance pair is two sectors that measure the same underlying quantity under different names, from different sources. <code>treasuries</code> and <code>treasuries-gov</code> both report <code>yield_10y</code> — different endpoints, same metric. <code>cisa-kev-count</code> and <code>cisa-kev-total</code> both count KEV entries.</p>
+<p>These pairs are <strong>not insights</strong>. They are <strong>controls</strong> — validation that the pipeline can still detect a known-same pair after all the noise filtering. They get <code>tier: P</code> and bypass multiple-testing correction because the null hypothesis "these are unrelated" is known to be false by construction.</p>
+
+<h2>What contradiction priors mean</h2>
+<p>A prior encodes what the relationship <em>should</em> look like, independent of observed data:</p>
+<pre><code>{ expect: "identical",   tolerance: 0.25 }   // r should be ≈ 1.0
+{ expect: "independent", tolerance: 0.40 }   // r should be ≈ 0.0
+{ expect: "inverse",     tolerance: 0.10 }   // r should be ≈ −1.0</code></pre>
+<p>If observed r falls outside the tolerance, <code>contradiction</code> fires with the gap. A contradiction is <strong>data</strong> — either a real coupling, a bug in one collector, or a wrong prior. Each is worth knowing.</p>
+
+<h2>What the system does NOT do</h2>
+<ul>
+<li><strong>No semantic alignment.</strong> Two sectors might mean different things despite similar names. Handled by curation and priors — scales only to a few hundred sectors.</li>
+<li><strong>No Aitchison geometry.</strong> Sectors aren't a closed composition. Log-rate on residuals is the correct transform for open, non-compositional data.</li>
+<li><strong>No causal inference.</strong> Correlation ≠ causation, always. The system ranks correlations; it does not claim any of them are causal.</li>
+<li><strong>No prediction.</strong> Every number is a description of the past, not a forecast.</li>
+<li><strong>No personal data.</strong> All sources are public domain. No PII is collected, processed, or stored.</li>
+</ul>
+
+<h2>The commitment</h2>
+<p>Every claim on this site can be independently verified. The code is <a href="https://github.com/christianscode1994/VolatiAI">public</a>. The data is public. The computation is deterministic. When the system is wrong, the same numbers that made it wrong are visible.</p>
+<p>Snapshots will be cryptographically signed (Ed25519) once the pipeline has accumulated a week of real cron-written history. Then any past claim can be verified byte-for-byte against the signed record.</p>
+
+<footer>
+  <p><strong>Design principle:</strong> When the system cannot verify something, it returns that fact explicitly rather than omitting it.</p>
+  <p><a href="./">← back to VolatiAI</a></p>
+</footer>
+
+</body>
+</html>
