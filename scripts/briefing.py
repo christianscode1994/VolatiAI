@@ -50,9 +50,12 @@ def domain_of(sector):
 def quiet_headline(sectors, fired):
     """Produce a headline for briefing.json, whether or not any signals fired.
 
-    When fired is empty, ranks sectors by |pct_change| and names the one
-    closest to firing — so a quiet day still says something true instead
-    of "0 signals" or null.
+    When fired is empty, ranks sectors by |pct_change| / threshold_pct —
+    the fraction of the sector's own firing threshold that today's move
+    represents. A sector at 95% of its threshold ranks above one at 60%,
+    regardless of raw magnitude — because that's what "closest to firing"
+    actually means. Falls back to _log_rate for sectors without a
+    declared threshold_pct.
     """
     if fired:
         return f"{len(fired)} signals"
@@ -63,7 +66,12 @@ def quiet_headline(sectors, fired):
         pc = d.get("pct_change")
         if pc is None:
             continue
-        ranked.append((name, d, abs(pc)))
+        thr = d.get("threshold_pct")
+        if isinstance(thr, (int, float)) and thr > 0:
+            score = abs(pc) / thr       # fraction of threshold = proximity
+        else:
+            score = _log_rate(d)        # fallback: per-day rate
+        ranked.append((name, d, score))
     ranked.sort(key=lambda x: -x[2])
     if not ranked:
         return f"{len(sectors)} sectors monitored, all quiet"
