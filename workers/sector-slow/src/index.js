@@ -4739,6 +4739,28 @@ export default {
         }
       }
 
+      // ─── Statistical honesty wire-in (after perm_p loop) ───
+      // 1. BH-FDR over surfaced perm_p values
+      const _rawP = surfaced.map(p => p.perm_p ?? 1);
+      const _bh = bhAdjust(_rawP, 0.05);
+      surfaced.forEach((sp, si) => {
+        sp.perm_p_adj = Math.round(_bh.adj[si] * 1000) / 1000;
+        sp.bh_significant = _bh.sig[si];
+      });
+      // 2. Contradiction priors — computed on all pairs (cheap, only r needed)
+      for (const p of pairs) {
+        const _c = checkContradiction(p.a, p.b, p.r);
+        if (_c) p.contradiction = _c;
+      }
+      // 3. Verdict + reliability on surfaced pairs (they now have all inputs)
+      for (const p of surfaced) {
+        p.verdict = computeVerdict(p);
+        const _rel = computeReliability(p);
+        p.reliability = _rel.score;
+        p.tier = _rel.tier;
+      }
+
+
       // ─── ?snapshot=1 — persist today's surfaced pairs for stability tracking ───
       if (url.searchParams.get("snapshot") === "1") {
         try {
@@ -4910,4 +4932,74 @@ const PROVENANCE_PAIRS = new Set([
 ]);
 function isProvenance(a, b) {
   return PROVENANCE_PAIRS.has(a + "|" + b) || PROVENANCE_PAIRS.has(b + "|" + a);
+}
+
+// ─── Statistical honesty layer ───────────────────────────────────
+// BH-FDR across all candidate pairs
+function bhAdjust(pValues, q = 0.05) {
+  const m = pValues.length;
+  if (m === 0) return { adj: [], sig: [], m };
+  const idx = pValues.map((p, i) => ({ p, i })).sort((a, b) => a.p - b.p);
+  const adj = new Array(m);
+  for (let k = 0; k < m; k++) {
+    adj[idx[k].i] = Math.min(1, idx[k].p * m / (k + 1));
+  }
+  let runningMin = 1;
+  for (let k = m - 1; k >= 0; k--) {
+    runningMin = Math.min(runningMin, adj[idx[k].i]);
+    adj[idx[k].i] = runningMin;
+  }
+  let maxK = -1;
+  for (let k = 0; k < m; k++) if (idx[k].p <= ((k + 1) / m) * q) maxK = k;
+  const sig = new Array(m).fill(false);
+  for (let k = 0; k <= maxK; k++) sig[idx[k].i] = true;
+  return { adj, sig, m };
+}
+
+// Contradiction priors — pairs whose r is far from what we expect
+const PRIORS = {
+  "kraken-btc-usd|coinbase-btc-usd": { expect: "identical", tolerance: 0.02 },
+  "kraken-eth-usd|coinbase-eth-usd": { expect: "identical", tolerance: 0.02 },
+  "treasuries|treasuries-gov":       { expect: "identical", tolerance: 0.15 },
+  "usgs-earthquakes|usgs-earthquakes-emsc": { expect: "identical", tolerance: 0.20 },
+  "cisa-kev-count|cisa-kev-total":   { expect: "identical", tolerance: 0.10 },
+  "openfda-food-recalls|openfda-device-recalls": { expect: "independent", tolerance: 0.40 },
+};
+
+function checkContradiction(a, b, r) {
+  const prior = PRIORS[a + "|" + b] || PRIORS[b + "|" + a];
+  if (!prior) return null;
+  const { expect, tolerance } = prior;
+  if (expect === "identical" && Math.abs(1 - r) > tolerance) {
+    return { prior: "identical", observed: r, gap: Math.round((Math.abs(1 - r) - tolerance) * 1000) / 1000 };
+  }
+  if (expect === "independent" && Math.abs(r) > tolerance) {
+    return { prior: "independent", observed: r, gap: Math.round((Math.abs(r) - tolerance) * 1000) / 1000 };
+  }
+  return null;
+}
+
+// Verdict: KEEPS provenance pairs as "confirm:provenance" (validation set),
+// surfaces non-provenance pairs that pass statistical gates.
+function computeVerdict(pair) {
+  if (pair.provenance === true) return "confirm:provenance";
+  if (pair.bh_significant === false) return "suppress:multiple_testing";
+  if ((pair.ci_width ?? Infinity) > 0.6) return "suppress:noisy";
+  if ((pair.n ?? 0) < 15) return "suppress:too_short";
+  if ((pair.abs_r ?? 0) < 0.7) return "suppress:weak";
+  return "surface";
+}
+
+// Reliability tier: A/B/C/D, or P for provenance (always shown)
+function computeReliability(pair) {
+  if (pair.provenance === true) return { score: 100, tier: "P" };
+  const cCi = 1 - Math.min(1, pair.ci_width ?? 1);
+  const cP  = 1 - Math.min(1, pair.perm_p_adj ?? pair.p_value ?? 1);
+  const cStab = 0.5;   // neutral until ?days=N has 3+ days
+  const cRange = 0.5;
+  let score = 0.35 * cCi + 0.25 * cP + 0.25 * cStab + 0.15 * cRange;
+  if (pair.bh_significant === false) score *= 0.5;
+  const pct = Math.round(score * 100);
+  const tier = pct >= 75 ? "A" : pct >= 55 ? "B" : pct >= 35 ? "C" : "D";
+  return { score: pct, tier };
 }
