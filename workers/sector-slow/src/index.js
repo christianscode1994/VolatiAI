@@ -4706,11 +4706,22 @@ export default {
       }
       pairs.sort((x, y) => y.abs_r - x.abs_r);
 
-      // Return only pairs worth showing: significant AND |r| >= 0.5
-      // (or same_metric pairs which are provenance, always relevant)
+      // BH-FDR over the full evaluated set, using t-approx p-values.
+      // (permutation p-values are floored at 1/200 = 0.005 and cannot
+      // achieve BH significance at rank 1 when m is in the thousands.)
+      const _allP = pairs.map(p => p.p_value ?? 1);
+      const _bhAll = bhAdjust(_allP, 0.05);
+      pairs.forEach((p, i) => {
+        p.p_bh = Math.round(_bhAll.adj[i] * 100000) / 100000;
+        p.bh_significant = _bhAll.sig[i];
+      });
+
+      // Surface: provenance always; everything else requires proper BH
+      // significance on the full test universe, plus strong |r| and n,
+      // and no stale-data artifact.
       const surfaced = pairs.filter(p =>
         p.provenance ||
-        (p.bonferroni_significant && p.abs_r >= 0.7 && p.n >= 15)
+        (p.bh_significant && !p.stale_data && p.abs_r >= 0.7 && p.n >= 15)
       );
 
       // Augment each surfaced pair with honesty metrics:
@@ -4734,7 +4745,7 @@ export default {
           const ar = aData.slice(-nn);
           const br = bData.slice(-nn);
           let exceed = 0;
-          for (let k = 0; k < 200; k++) {
+          for (let k = 0; k < 2000; k++) {
             const shuffled = br.slice();
             for (let i = nn - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1));
@@ -4747,14 +4758,6 @@ export default {
         }
       }
 
-      // ─── Statistical honesty wire-in (after perm_p loop) ───
-      // 1. BH-FDR over surfaced perm_p values
-      const _rawP = surfaced.map(p => p.perm_p ?? 1);
-      const _bh = bhAdjust(_rawP, 0.05);
-      surfaced.forEach((sp, si) => {
-        sp.perm_p_adj = Math.round(_bh.adj[si] * 1000) / 1000;
-        sp.bh_significant = _bh.sig[si];
-      });
       // 2. Contradiction priors — computed on all pairs (cheap, only r needed)
       for (const p of pairs) {
         const _c = checkContradiction(p.a, p.b, p.r);
