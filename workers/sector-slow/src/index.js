@@ -3844,19 +3844,20 @@ export default {
       console.log("calibration write failed:", String(e).slice(0, 120));
     }
 
-    // Daily correlation snapshot (shard 0 only, idempotent). Later shards
-    // in the same day won't duplicate — check the key first.
+    // Shard 0 writes today's correlation snapshot. Idempotent — checks
+    // existing key first. Self-fetch is fine on Workers (in-process route).
     if (shardIdx === 0) {
       try {
         const day = new Date().toISOString().slice(0, 10);
         const existing = await env.SECTOR_KV.get(`_corr_${day}`, "json");
         if (!existing) {
-          const req = new Request("https://placeholder/correlation?snapshot=1", { method: "GET" });
+          const req = new Request("https://placeholder/_correlation?snapshot=1", { method: "GET" });
           const resp = await this.fetch(req, env);
           if (!resp.ok) throw new Error("snapshot endpoint " + resp.status);
+          console.log("cron corr snapshot: ok");
         }
       } catch (e) {
-        console.log("corr snapshot trigger failed:", String(e).slice(0, 120));
+        console.log("cron corr snapshot failed:", String(e).slice(0, 120));
       }
     }
 
@@ -4738,14 +4739,6 @@ export default {
         }
       }
 
-      return json({
-        timestamp: new Date().toISOString(),
-        sectors: names.length,
-        sector_names: names,
-        pairs_count: surfaced.length,
-        pairs_evaluated: pairs.length,
-        pairs: surfaced,
-      });
       // ─── ?snapshot=1 — persist today's surfaced pairs for stability tracking ───
       if (url.searchParams.get("snapshot") === "1") {
         try {
@@ -4760,11 +4753,20 @@ export default {
             updated_at: new Date().toISOString(),
           };
           await env.SECTOR_KV.put(`_corr_${day}`, JSON.stringify(snapshot), { expirationTtl: 86400 * 90 });
+          console.log(`corr snapshot written: ${day}, ${surfaced.length} pairs`);
         } catch (e) {
           console.log("corr snapshot write failed:", String(e).slice(0, 120));
         }
       }
 
+      return json({
+        timestamp: new Date().toISOString(),
+        sectors: names.length,
+        sector_names: names,
+        pairs_count: surfaced.length,
+        pairs_evaluated: pairs.length,
+        pairs: surfaced,
+      });
     }
 
     if (sectorName === "_validate_history") {
