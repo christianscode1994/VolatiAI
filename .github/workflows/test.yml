@@ -16,7 +16,6 @@ jobs:
         with: { python-version: "3.11" }
       - run: pip install certifi
       - run: python3 scripts/test_contradictions.py
-        continue-on-error: true   # still failing; needs lines 193-250 of epistemic_digest.py
       - run: python3 scripts/test_correlations.py
       - run: python3 scripts/test_trends.py
       - run: python3 tests/test_briefing.py
