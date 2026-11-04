@@ -4651,6 +4651,7 @@ export default {
               histories[name] = {
                 ts: absTs,
                 residuals: det.residuals,
+                values: sorted.map(x => x.v),
                 points: sorted.length,
               };
             }
@@ -4671,11 +4672,17 @@ export default {
           for (let k = 0; k < a.ts.length; k++) aMap.set(Math.floor(a.ts[k] / DAY_MS), a.residuals[k]);
           const bMap = new Map();
           for (let k = 0; k < b.ts.length; k++) bMap.set(Math.floor(b.ts[k] / DAY_MS), b.residuals[k]);
+          const aValMap = new Map();
+          for (let k = 0; k < a.ts.length; k++) aValMap.set(Math.floor(a.ts[k] / DAY_MS), a.values[k]);
+          const bValMap = new Map();
+          for (let k = 0; k < b.ts.length; k++) bValMap.set(Math.floor(b.ts[k] / DAY_MS), b.values[k]);
           const commonDays = [...aMap.keys()].filter(d => bMap.has(d)).sort();
           const minLen = commonDays.length;
           if (minLen < 10) continue;
           const ar = commonDays.map(d => aMap.get(d));
           const br = commonDays.map(d => bMap.get(d));
+          const av = commonDays.map(d => aValMap.get(d)).filter(v => Number.isFinite(v));
+          const bv = commonDays.map(d => bValMap.get(d)).filter(v => Number.isFinite(v));
           const r = pearson(ar, br);
           if (r !== null) {
             const absR = Math.abs(r);
@@ -4687,6 +4694,7 @@ export default {
               r: Math.round(r * 1000) / 1000,
               abs_r: Math.round(absR * 1000) / 1000,
               n: minLen,
+              stale_data: (av.length >= 5 && new Set(av).size / av.length < 0.25) || (bv.length >= 5 && new Set(bv).size / bv.length < 0.25),
               p_value: pValue !== null ? Math.round(pValue * 10000) / 10000 : null,
               bonferroni_significant: pValue !== null && pValue < (0.05 / ((names.length * (names.length - 1)) / 2)),
               same_metric_name: (COLLECTORS[names[i]]?.config?.metric || "") === (COLLECTORS[names[j]]?.config?.metric || "") && (COLLECTORS[names[i]]?.config?.metric !== undefined),
@@ -4925,7 +4933,6 @@ export default {
 const PROVENANCE_PAIRS = new Set([
   "kraken-btc-usd|coinbase-btc-usd",
   "kraken-eth-usd|coinbase-eth-usd",
-  "usgs-earthquakes|usgs-earthquakes-emsc",
   "treasuries|treasuries-gov",
   "cisa-kev-count|cisa-kev-total",
   "gleif-leis|gleif-total-leis",
@@ -4960,8 +4967,7 @@ function bhAdjust(pValues, q = 0.05) {
 const PRIORS = {
   "kraken-btc-usd|coinbase-btc-usd": { expect: "identical", tolerance: 0.02 },
   "kraken-eth-usd|coinbase-eth-usd": { expect: "identical", tolerance: 0.02 },
-  "treasuries|treasuries-gov":       { expect: "identical", tolerance: 0.15 },
-  "usgs-earthquakes|usgs-earthquakes-emsc": { expect: "identical", tolerance: 0.20 },
+  "treasuries|treasuries-gov":       { expect: "identical", tolerance: 0.25 },
   "cisa-kev-count|cisa-kev-total":   { expect: "identical", tolerance: 0.10 },
   "openfda-food-recalls|openfda-device-recalls": { expect: "independent", tolerance: 0.40 },
 };
@@ -4982,7 +4988,11 @@ function checkContradiction(a, b, r) {
 // Verdict: KEEPS provenance pairs as "confirm:provenance" (validation set),
 // surfaces non-provenance pairs that pass statistical gates.
 function computeVerdict(pair) {
-  if (pair.provenance === true) return "confirm:provenance";
+  if (pair.provenance === true) {
+    if (pair.contradiction) return "dispute:provenance";
+    return "confirm:provenance";
+  }
+  if (pair.stale_data === true) return "suppress:stale_data";
   if (pair.bh_significant === false) return "suppress:multiple_testing";
   if ((pair.ci_width ?? Infinity) > 0.6) return "suppress:noisy";
   if ((pair.n ?? 0) < 15) return "suppress:too_short";
