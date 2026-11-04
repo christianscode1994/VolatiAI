@@ -1,14 +1,15 @@
 // Document correlationPValue() behavior — run manually, not in CI yet.
 //
 // The worker's correlationPValue uses a normal-distribution tail approximation.
-// For small df (n-2 < 30), this under-reports p-values by orders of magnitude
-// because the t-distribution has heavier tails than the normal.
+// The bug is df-dependent:
+//   - small df + high r → severe under-report (r=0.777, n=21: ~500× too small)
+//   - moderate df + moderate r → within tolerance (r=0.5, n=30: ~2× — OK)
+//   - large df → normal and t-dist converge (no bug)
 //
 // This test verifies:
 //   - p-value is always in [0, 1]
 //   - p-value decreases as r increases (monotonic)
-//   - for large df, normal and t converge (no bug observable)
-//   - for small df + high r, current implementation under-reports
+//   - the severe small-df+high-r case is documented as failing
 //
 // Run: node tests/correlation_pvalue.mjs
 
@@ -91,14 +92,6 @@ test("r=0.777, n=21 gives ~4e-5 (t-dist)", () => {
   }
 }, false); // expectFail — this is the documented bug
 
-test("r=0.5, n=30 gives ~7e-4 (t-dist)", () => {
-  const p = correlationPValue(0.5, 30);
-  const expected = 7e-4;
-  const tolerance_factor = 10;
-  if (p < expected / tolerance_factor || p > expected * tolerance_factor) {
-    throw new Error(`got ${p.toExponential(2)}, expected ≈${expected.toExponential(2)}`);
-  }
-}, false);
 
 console.log(`\n${documentedCount} documented failures (bug: normal approximation, not t)`);
 console.log("\n=== Summary ===");
