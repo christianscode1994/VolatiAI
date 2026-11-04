@@ -1,0 +1,20 @@
+name: deploy-slow
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/sector-slow/src/index.js'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Syntax check
+        run: node --check workers/sector-slow/src/index.js
+      - name: Smoke test (local, no deploy)
+        run: |
+          # Verify the four functions exist
+          test $(grep -c 'function bhAdjust\|function checkContradiction\|function computeVerdict\|function computeReliability' workers/sector-slow/src/index.js) -eq 4
+          echo "OK — all four functions present"
