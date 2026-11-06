@@ -23,6 +23,7 @@ jobs:
       - name: Notify new high-severity signals
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python3 scripts/signal_notifier.py
 
       - name: Commit notify state
