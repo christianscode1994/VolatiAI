@@ -12,6 +12,9 @@ if [ -n "$HITS" ]; then
     exit 1
 fi
 
+# ─── UNKNOWN SECTOR GUARD ───
+bash scripts/check_unknown.sh || exit 1
+
 # ─── SAFETY GATE (syntax + JSON + duplicate/empty collectors) ───
 echo "→ Safety gate..."
 set +e
