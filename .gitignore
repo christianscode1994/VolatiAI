@@ -57,3 +57,10 @@ logs/
 !.env.example
 secrets/
 private/
+
+# ============ Stray state / placeholder files ============
+.signal-notify-state.json
+pulse/YYYY-MM-DDTHH.json
+history/uio/YYYY-MM-DD.json
+*.broken
+*.template
