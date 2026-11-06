@@ -42,6 +42,16 @@ PREFIX = {
 EXACT_PATH = Path("config/sector_exact.json")
 EXACT = json.loads(EXACT_PATH.read_text()) if EXACT_PATH.exists() else {}
 
+def check_ollama_up(timeout=3):
+    """Quick probe: is Ollama reachable?"""
+    try:
+        import requests
+        r = requests.get("http://127.0.0.1:11434/api/tags", timeout=timeout)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
 def by_prefix(s):
     s = s.lower()
     for k, v in PREFIX.items():
@@ -133,6 +143,17 @@ def main():
         print("nothing to do")
         return
 
+    # Pre-flight: if any sector needs the LLM, Ollama must be reachable.
+    # This prevents the "90 sectors stuck as 'other' after shell crash" bug.
+    needs_llm = [s for s in todo if by_prefix(s) is None and s not in EXACT]
+    if needs_llm and not check_ollama_up():
+        print(f"✗ {len(needs_llm)} sector(s) need LLM classification,", file=sys.stderr)
+        print(f"  but Ollama is not responding on http://127.0.0.1:11434", file=sys.stderr)
+        print(f"", file=sys.stderr)
+        print(f"  Start it:   brew services start ollama", file=sys.stderr)
+        print(f"  Then retry: python3 classify_residue.py", file=sys.stderr)
+        sys.exit(1)
+
     n_prefix = 0
     for s in list(todo):
         c = by_prefix(s)
@@ -146,6 +167,8 @@ def main():
 
     n_llm = 0
     if todo:
+        if len(todo) > 3:
+            print(f"  classifying {len(todo)} sector(s) with {MODEL_CASCADE[0]}...")
         labels = llm_batch(todo)
         for s in todo:
             d[s] = labels.get(s, "unclassified")
