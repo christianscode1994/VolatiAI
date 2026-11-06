@@ -1,0 +1,23 @@
+name: 13f-notifier
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for new 13F filings
+        run: |
+          R=$(curl -s https://sector-13f.fourieranalys.workers.dev/signal)
+          H=$(echo "$R" | jq -r '.has_signal')
+          S=$(echo "$R" | jq -r '.summary')
+          L=$(echo "$R" | jq -r '.context.link // ""')
+          if [ "$H" = "true" ]; then
+            curl -X POST "$SLACK_WEBHOOK" \
+              -H 'Content-Type: application/json' \
+              -d "{\"text\":\"$S\\n$L\"}"
+          fi
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
