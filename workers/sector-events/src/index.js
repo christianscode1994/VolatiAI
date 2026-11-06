@@ -1,5 +1,13 @@
 const SECTOR = "events";
 
+
+// Only fire on real news — not games, PR, or tutorial posts
+const REAL_NEWS = /\b(acqui(?:re|red|sition)|merger|IPO|SEC|FTC|DOJ|lawsuit|bankrupt|shutdown|raise[sd]?\s+\$|valuation|earnings|layoffs?|deal|billion|million)\b/i;
+function isRealNews(summary) {
+  if (!summary) return false;
+  return REAL_NEWS.test(summary);
+}
+
 function envelope({ has_signal, summary, context, sources }) {
   return new Response(JSON.stringify({
     sector: SECTOR,
@@ -67,7 +75,7 @@ export default {
     }
 
     return envelope({
-      has_signal: isNew,
+      has_signal: isNew && isRealNews(event.title || event.summary || ''),
       summary: isNew ? "New: " + (event.title || event.id) : "quiet",
       context: { last_event_id: lastSeen || null, current_id: event.id },
       sources: {
