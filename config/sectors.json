@@ -1,0 +1,186 @@
+{
+  "currency-ex": {
+    "type": "value",
+    "density": "dense",
+    "metric": "eur_usd",
+    "threshold_pct": 0.5,
+    "threshold_abs": 0.003,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "eur_usd": "const r = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD');\n        const j = await r.json();\n        if (!j.rates || !j.rates.USD) throw new Error('no rate');\n        return Math.round(j.rates.USD * 10000) / 10000;",
+      "gbp_usd": "const r = await fetch('https://api.frankfurter.app/latest?from=GBP&to=USD');\n        const j = await r.json();\n        return j.rates && j.rates.USD ? Math.round(j.rates.USD * 10000) / 10000 : null;",
+      "jpy_usd": "const r = await fetch('https://api.frankfurter.app/latest?from=JPY&to=USD');\n        const j = await r.json();\n        return j.rates && j.rates.USD ? Math.round(j.rates.USD * 100000) / 100000 : null;"
+    },
+    "context_keys": [
+      "gbp_usd",
+      "jpy_usd"
+    ]
+  },
+  "weather": {
+    "type": "value",
+    "density": "dense",
+    "metric": "temp_stockholm",
+    "threshold_pct": 15.0,
+    "threshold_abs": 3.0,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "temp_stockholm": "const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.33&longitude=18.07&current=temperature_2m');\n        const j = await r.json();\n        if (!j.current || j.current.temperature_2m === undefined) throw new Error('no temp');\n        return j.current.temperature_2m;",
+      "wind_stockholm": "const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.33&longitude=18.07&current=wind_speed_10m');\n        const j = await r.json();\n        return j.current && j.current.wind_speed_10m !== undefined ? j.current.wind_speed_10m : null;"
+    },
+    "context_keys": [
+      "wind_stockholm"
+    ]
+  },
+  "develop": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "ethereum_release",
+    "ttl": 3600,
+    "collectors": {
+      "ethereum_release": "const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };\n        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;\n        const r = await fetch('https://api.github.com/repos/ethereum/go-ethereum/releases?per_page=1', { headers });\n        if (!r.ok) throw new Error('github status ' + r.status);\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release array: ' + JSON.stringify(j).slice(0, 100));\n        return { id: j[0].id, title: j[0].name || j[0].tag_name, published_at: j[0].published_at };"
+    }
+  },
+  "news": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "hackernews_top",
+    "ttl": 1800,
+    "collectors": {
+      "hackernews_top": "const r = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');\n        const ids = await r.json();\n        if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');\n        const topId = ids[0];\n        const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + topId + '.json');\n        const story = await detail.json();\n        if (!story || !story.title) throw new Error('no story');\n        return { id: story.id, title: story.title, by: story.by };"
+    }
+  },
+  "jobs": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "remoteok_latest",
+    "ttl": 3600,
+    "collectors": {
+      "remoteok_latest": "const r = await fetch('https://remoteok.com/api', {\n          headers: { 'user-agent': 'VolatiAI/1.0' }\n        });\n        if (!r.ok) throw new Error('status ' + r.status);\n        const jobs = await r.json();\n        if (!Array.isArray(jobs) || jobs.length < 2) throw new Error('no jobs');\n        const job = jobs[1];\n        if (!job || !job.id) throw new Error('no job id');\n        return { id: job.id, title: (job.position || 'job') + ' @ ' + (job.company || '?') };"
+    }
+  },
+  "open-source": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "vscode_release",
+    "ttl": 3600,
+    "collectors": {
+      "vscode_release": "const headers = { 'user-agent': 'VolatiAI/1.0', 'accept': 'application/vnd.github+json' };\n        if (env.GITHUB_TOKEN) headers['authorization'] = 'Bearer ' + env.GITHUB_TOKEN;\n        const r = await fetch('https://api.github.com/repos/microsoft/vscode/releases?per_page=1', { headers });\n        if (!r.ok) throw new Error('github status ' + r.status);\n        const j = await r.json();\n        if (!Array.isArray(j) || !j[0]) throw new Error('no release');\n        return { id: j[0].id, title: (j[0].name || j[0].tag_name) + ' (vscode)', published_at: j[0].published_at };"
+    }
+  },
+  "finance": {
+    "type": "value",
+    "density": "dense",
+    "metric": "treasury_10y",
+    "threshold_pct": 5.0,
+    "threshold_abs": 0.1,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "treasury_10y": "const r = await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-01-01');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const csv = await r.text();\n        const lines = csv.trim().split('\\n').slice(1).filter(l => !l.endsWith(','));\n        if (!lines.length) throw new Error('no data');\n        const last = lines[lines.length - 1].split(',');\n        const val = parseFloat(last[1]);\n        if (isNaN(val)) throw new Error('invalid');\n        return val;",
+      "dxy": "const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,JPY,GBP,CAD,SEK,CHF');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.rates || !j.rates.EUR) throw new Error('no rates');\n        return Math.round((1 / j.rates.EUR) * 10000) / 10000;"
+    },
+    "context_keys": [
+      "dxy"
+    ]
+  },
+  "science-math": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "arxiv_math",
+    "ttl": 3600,
+    "collectors": {
+      "arxiv_math": "const r = await fetch('http://export.arxiv.org/api/query?search_query=cat:math.*&sortBy=submittedDate&sortOrder=descending&max_results=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const idMatch = text.match(/<entry>[\\s\\S]*?<id>([^<]+)<\\/id>/);\n        const titleMatch = text.match(/<entry>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!idMatch || !titleMatch) throw new Error('no entry');\n        return { id: idMatch[1].trim(), title: titleMatch[1].trim().replace(/\\s+/g, ' ').slice(0, 100) };"
+    }
+  },
+  "security": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "cisa_kev",
+    "ttl": 3600,
+    "collectors": {
+      "cisa_kev": "const r = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.vulnerabilities || !j.vulnerabilities.length) throw new Error('no vulns');\n        const latest = j.vulnerabilities[0];\n        return { id: latest.cveID, title: latest.cveID + ' \u2014 ' + (latest.vulnerabilityName || 'CISA KEV') };"
+    }
+  },
+  "education": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "arxiv_education",
+    "ttl": 3600,
+    "collectors": {
+      "arxiv_education": "const r = await fetch('http://export.arxiv.org/api/query?search_query=cat:cs.CY&sortBy=submittedDate&sortOrder=descending&max_results=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const idMatch = text.match(/<entry>[\\s\\S]*?<id>([^<]+)<\\/id>/);\n        const titleMatch = text.match(/<entry>[\\s\\S]*?<title>([^<]+)<\\/title>/);\n        if (!idMatch || !titleMatch) throw new Error('no entry');\n        return { id: idMatch[1].trim(), title: titleMatch[1].trim().replace(/\\s+/g, ' ').slice(0, 100) };"
+    }
+  },
+  "sports-fitness": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "espn_news",
+    "ttl": 1800,
+    "collectors": {
+      "espn_news": "const r = await fetch('https://www.espn.com/espn/rss/news');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const text = await r.text();\n        const itemMatches = text.match(/<item>[\\s\\S]*?<\\/item>/g);\n        if (!itemMatches || !itemMatches.length) throw new Error('no items');\n        const first = itemMatches[0];\n        const titleMatch = first.match(/<title>(?:<!\\[CDATA\\[)?([^<\\]]+)/);\n        const linkMatch = first.match(/<link>([^<]+)<\\/link>/) || first.match(/<guid[^>]*>([^<]+)<\\/guid>/);\n        if (!titleMatch) throw new Error('no title');\n        return {\n          id: (linkMatch ? linkMatch[1] : titleMatch[1]).trim().slice(0, 80),\n          title: titleMatch[1].trim().slice(0, 100)\n        };"
+    }
+  },
+  "events": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "hn_frontpage",
+    "ttl": 1800,
+    "collectors": {
+      "hn_frontpage": "const r = await fetch('https://hacker-news.firebaseio.com/v0/newstories.json');\n        const ids = await r.json();\n        if (!Array.isArray(ids) || !ids.length) throw new Error('no ids');\n        const topId = ids[0];\n        const detail = await fetch('https://hacker-news.firebaseio.com/v0/item/' + topId + '.json');\n        const story = await detail.json();\n        if (!story || !story.title) throw new Error('no story');\n        return { id: story.id, title: story.title.slice(0, 100) };"
+    }
+  },
+  "vehicles": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "nhtsa_recall",
+    "ttl": 3600,
+    "collectors": {
+      "nhtsa_recall": "const r = await fetch('https://api.nhtsa.gov/recalls/recallsByVehicle?make=honda&model=civic&modelYear=2024');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.results || !j.results.length) throw new Error('no recalls');\n        const r0 = j.results[0];\n        return {\n          id: r0.NHTSACampaignNumber || r0.nhtsaCampaignNumber || 'unknown',\n          title: (r0.Component || 'Recall') + ' \u2014 ' + (r0.Summary || '').slice(0, 80)\n        };"
+    }
+  },
+  "books": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "openlibrary_recent",
+    "ttl": 3600,
+    "collectors": {
+      "openlibrary_recent": "const today = new Date();\n        const q = 'first_publish_year:' + today.getFullYear();\n        const r = await fetch('https://openlibrary.org/search.json?q=' + encodeURIComponent(q) + '&sort=new&limit=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.docs || !j.docs.length) throw new Error('no docs');\n        const b = j.docs[0];\n        return {\n          id: b.key || b.title,\n          title: (b.title || 'unknown') + ' \u2014 ' + (b.author_name ? b.author_name[0] : 'unknown')\n        };"
+    }
+  },
+  "music": {
+    "type": "event",
+    "density": "sparse",
+    "event_source": "deezer_chart",
+    "ttl": 3600,
+    "collectors": {
+      "deezer_chart": "const r = await fetch('https://api.deezer.com/chart/0/tracks?limit=1');\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        if (!j.data || !j.data.length) throw new Error('no tracks');\n        const t = j.data[0];\n        return {\n          id: String(t.id),\n          title: (t.title || 'unknown') + ' \u2014 ' + (t.artist ? t.artist.name : 'unknown')\n        };"
+    }
+  },
+  "tracking": {
+    "type": "value",
+    "density": "dense",
+    "metric": "vix",
+    "threshold_pct": 10.0,
+    "threshold_abs": 1.5,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "vix": "const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d', {\n          headers: { 'user-agent': 'Mozilla/5.0' }\n        });\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        const result = j.chart && j.chart.result && j.chart.result[0];\n        if (!result || !result.meta || !result.meta.regularMarketPrice) throw new Error('no price');\n        return Math.round(result.meta.regularMarketPrice * 100) / 100;"
+    },
+    "context_keys": []
+  },
+  "shopping": {
+    "type": "value",
+    "density": "dense",
+    "metric": "wti",
+    "threshold_pct": 3.0,
+    "threshold_abs": 1.5,
+    "window": "24h",
+    "ttl": 3600,
+    "collectors": {
+      "wti": "const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d', {\n          headers: { 'user-agent': 'Mozilla/5.0' }\n        });\n        if (!r.ok) throw new Error('status ' + r.status);\n        const j = await r.json();\n        const result = j.chart && j.chart.result && j.chart.result[0];\n        if (!result || !result.meta || !result.meta.regularMarketPrice) throw new Error('no price');\n        return Math.round(result.meta.regularMarketPrice * 100) / 100;"
+    },
+    "context_keys": []
+  }
+}

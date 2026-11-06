@@ -1,0 +1,2232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VolatiAI Super Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+  --bg: #020617;
+  --fg: #e5e7eb;
+  --muted: #9ca3af;
+
+  --accent: #4f46e5;
+  --accent2: #22c55e;
+
+  --border: #1f2937;
+  --card: #0b1120;
+
+  --bad: #7f1d1d;
+  --ok: #78350f;
+  --good: #064e3b;
+
+  --radius: 16px;
+  --transition: 0.25s ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at top,
+      #0f172a 0%,
+      #020617 40%,
+      #000000 100%
+    );
+
+  color: var(--fg);
+
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+/* ---------- HEADER ---------- */
+
+header {
+  padding: 18px 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  border-bottom: 1px solid var(--border);
+
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* ---------- NAV ---------- */
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+
+  transition: color var(--transition);
+}
+
+nav a:hover {
+  color: var(--fg);
+}
+
+/* ---------- MAIN ---------- */
+
+main {
+  max-width: 1200px;
+  margin: 24px auto 40px;
+  padding: 0 20px 40px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+h2 {
+  line-height: 1.3;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ---------- GRID ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.6fr)
+    minmax(0, 1.2fr);
+
+  gap: 18px;
+  margin-top: 20px;
+}
+
+/* ---------- PANELS ---------- */
+
+.panel {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+
+  background: rgba(11, 17, 32, 0.96);
+
+  padding: 14px;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.15s ease,
+    border-color var(--transition);
+}
+
+.panel:hover {
+  border-color: #334155;
+}
+
+.panel h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.panel p {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+
+/* ---------- METRICS ---------- */
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.metric {
+  background: rgba(15, 23, 42, 0.9);
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  padding: 10px;
+}
+
+.metric-label {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.metric-sub {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ---------- TABLES ---------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+
+  font-size: 11px;
+
+  overflow-x: auto;
+}
+
+th,
+td {
+  border: 1px solid #111827;
+  padding: 6px 5px;
+  text-align: left;
+}
+
+th {
+  background: #020617;
+  font-weight: 600;
+}
+
+.good {
+  background: var(--good);
+}
+
+.ok {
+  background: var(--ok);
+}
+
+.bad {
+  background: var(--bad);
+}
+
+/* ---------- PILLS ---------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 2px 8px;
+
+  border-radius: 999px;
+  border: 1px solid var(--border);
+
+  font-size: 11px;
+
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--fg);
+}
+
+.pill-green {
+  color: var(--accent2);
+  border-color: var(--accent2);
+}
+
+.pill-red {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* ---------- CANVAS ---------- */
+
+canvas {
+  display: block;
+
+  width: 100%;
+  min-height: 220px;
+
+  margin-top: 8px;
+
+  border-radius: 12px;
+  border: 1px solid var(--border);
+
+  background: #020617;
+}
+
+/* ---------- PRE ---------- */
+
+pre {
+  margin-top: 8px;
+
+  padding: 8px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+
+  overflow-x: auto;
+
+  background: #020617;
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* ---------- MAP ---------- */
+
+.map-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fill, minmax(220px, 1fr));
+
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+.map-card {
+  border-radius: 12px;
+
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.9);
+
+  padding: 8px 10px;
+
+  font-size: 11px;
+}
+
+.url {
+  word-break: break-word;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* ---------- STATUS ---------- */
+
+.status-ok {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.status-bad {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* ---------- LISTS ---------- */
+
+ul {
+  padding-left: 18px;
+  font-size: 11px;
+}
+
+li {
+  margin-bottom: 4px;
+}
+
+/* ---------- SCROLLBAR ---------- */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- TABLET ---------- */
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+
+  header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  th,
+  td {
+    padding: 4px;
+  }
+
+  table {
+    font-size: 10px;
+  }
+
+  canvas {
+    min-height: 160px;
+  }
+
+  main {
+    padding: 0 12px 30px;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">VolatiAI · Super Dashboard</div>
+    <nav>
+      <a href="index.html">Landing</a>
+      <a href="status.html">Status</a>
+      <a href="api.html">API</a>
+      <button id="themeToggle" class="pill" style="cursor:pointer;">Toggle Theme</button>
+    </nav>
+  </header>
+
+  <!-- main goes here -->
+
+<main>
+  <h1>Combined Intelligence, Health, Reliability & Trends</h1>
+  <p>
+    This Super Dashboard is fully static and serverless. It reads JSON files generated by the local runner:
+    <code>latest.json</code>, <code>health.json</code>, <code>reliability.json</code>, <code>reliability_history.json</code>, <code>uptime_history.json</code>, <code>sector_reliability.json</code>, <code>alerts.json</code>.
+  </p>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Global Intelligence & Reliability</h2>
+      <p>Latest intelligence snapshot + global reliability score.</p>
+      <div class="metrics-grid" id="global-metrics"></div>
+      <pre id="intel-json"></pre>
+    </div>
+
+    <div class="panel">
+      <h2>Sector Reliability Overview</h2>
+      <p>Average reliability per sector, computed from Worker health.</p>
+      <div id="sector-summary"></div>
+      <table id="sector-table">
+        <thead>
+          <tr>
+            <th>Sector</th>
+            <th>Avg Reliability</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top: 20px;">
+    <div class="panel">
+      <h2>Worker Reliability Table</h2>
+      <p>Per‑Worker reliability, status, latency, JSON validity.</p>
+      <table id="worker-table">
+        <thead>
+          <tr>
+            <th>Worker</th>
+            <th>Sector</th>
+            <th>Status</th>
+            <th>Latency (ms)</th>
+            <th>JSON</th>
+            <th>Reliability</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Sector Reliability Trend (24h / 7d)</h2>
+      <p>Simple line chart from <code>reliability_history.json</code>.</p>
+      <canvas id="trend-canvas"></canvas>
+      <div id="trend-meta" style="margin-top: 6px; font-size: 11px; color: var(--muted);"></div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top: 20px;">
+    <div class="panel">
+      <h2>Live Worker Map</h2>
+      <p>Visual overview of all sector Workers from <code>reliability.json</code>.</p>
+      <div id="worker-map" class="map-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Sector Volatility Radar</h2>
+      <p>Radar chart from <code>sector_reliability.json</code>.</p>
+      <canvas id="radar-canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top: 20px;">
+    <div class="panel">
+      <h2>Worker Uptime Tracker</h2>
+      <p>Aggregated uptime from <code>uptime_history.json</code>.</p>
+      <table id="uptime-table">
+        <thead>
+          <tr>
+            <th>Worker</th>
+            <th>Sector</th>
+            <th>Uptime (%)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>VolatiAI Insights (Anomalies)</h2>
+      <p>Simple anomaly detection from <code>reliability_history.json</code> and <code>latest.json</code>.</p>
+      <ul id="anomalies"></ul>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top: 20px;">
+    <div class="panel">
+      <h2>Autonomous Alerts</h2>
+      <p>Generated from latest, reliability history, and uptime history.</p>
+      <ul id="alerts-list"></ul>
+    </div>
+
+    <div class="panel">
+      <h2>Narrative Engine v2</h2>
+      <p>Storyline view from <code>latest.json</code> (actors, arcs, risk & opportunity).</p>
+      <ul id="narrative-list"></ul>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Global Heatmap</h2>
+    <p>Animated Mercator SVG showing worker reliability and latency.</p>
+    <div id="heatmap-svg-container" style="width:100%;height:260px;"></div>
+
+    <div style="margin-top:8px;">
+      <label>Zoom:
+        <input type="range" id="heatmapZoom" min="0.5" max="3" step="0.1" value="1">
+      </label>
+      <label style="margin-left:12px;">Pan X:
+        <input type="range" id="heatmapPanX" min="-200" max="200" step="10" value="0">
+      </label>
+      <label style="margin-left:12px;">Pan Y:
+        <input type="range" id="heatmapPanY" min="-150" max="150" step="10" value="0">
+      </label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Sector Flow Engine (Visual)</h2>
+    <p>Animated curved arrows showing flow strength between sectors.</p>
+    <canvas id="sector-flow-canvas"></canvas>
+  </div>
+
+  <div class="panel">
+    <h2>Narrative Timeline & Arc Strength</h2>
+    <p>Visualizing chapters and arc strength from <code>latest.json</code>.</p>
+    <canvas id="narrative-timeline-canvas"></canvas>
+  </div>
+
+  <div class="panel">
+    <h2>Unified Legend & Controls</h2>
+    <p>Controls for Global Heatmap and Sector Flow Engine.</p>
+
+    <div id="legend">
+      <div><strong>Reliability Colors:</strong></div>
+      <div style="margin-top:6px;">
+        <span style="color:#22c55e;">●</span> High (≥ 0.8)<br>
+        <span style="color:#eab308;">●</span> Medium (0.4–0.8)<br>
+        <span style="color:#ef4444;">●</span> Low (< 0.4)
+      </div>
+
+      <div style="margin-top:12px;"><strong>Sector Colors:</strong></div>
+      <div style="margin-top:6px;">
+        <span class="sector-hover" data-sector="market" style="color:#4f46e5;cursor:pointer;">● market</span><br>
+        <span class="sector-hover" data-sector="sentiment" style="color:#22c55e;cursor:pointer;">● sentiment</span><br>
+        <span class="sector-hover" data-sector="developer" style="color:#eab308;cursor:pointer;">● developer</span><br>
+        <span class="sector-hover" data-sector="depth" style="color:#ef4444;cursor:pointer;">● depth</span><br>
+        <span class="sector-hover" data-sector="truth" style="color:#14b8a6;cursor:pointer;">● truth</span>
+      </div>
+
+      <div style="margin-top:12px;"><strong>Controls:</strong></div>
+      <div style="margin-top:6px;">
+        <label><input type="checkbox" id="toggleHeatmap" checked> Show Global Heatmap</label><br>
+        <label><input type="checkbox" id="toggleFlow" checked> Show Sector Flow</label><br>
+        <label><input type="checkbox" id="toggleGlow" checked> Glow Effects</label><br>
+        <label><input type="checkbox" id="toggleCurves" checked> Curved Arrows</label><br>
+        <label><input type="range" id="animSpeed" min="0.2" max="3" step="0.1" value="1"> Animation Speed</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Unified Mini‑Map Overlay</h2>
+    <p>Combined view of workers and sector flows.</p>
+    <canvas id="unified-minimap-canvas"></canvas>
+  </div>
+
+  <div class="panel">
+    <h2>Focus Sector Mode</h2>
+    <p>Dim all other sectors and highlight one across all panels.</p>
+
+    <label>
+      <strong>Select sector:</strong>
+      <select id="focusSector">
+        <option value="none">None (show all)</option>
+        <option value="market">market</option>
+        <option value="sentiment">sentiment</option>
+        <option value="developer">developer</option>
+        <option value="depth">depth</option>
+        <option value="truth">truth</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="panel">
+    <h2>Analysis Session Recorder</h2>
+    <p>Record focus/hover interactions into a JSON analysis session.</p>
+
+    <button id="recStart">Start Recording</button>
+    <button id="recStop" disabled>Stop Recording</button>
+    <button id="recDownload" disabled>Download Session</button>
+
+    <p id="recStatus" style="margin-top:10px;color:#22c55e;"></p>
+  </div>
+</main>
+
+
+  <script>
+    async function safeFetch(path) {
+  try {
+    const res = await fetch(path, {
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      throw new Error(`${path}: HTTP ${res.status}`);
+    }
+
+    const text = await res.text();
+
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      console.error(`Invalid JSON in ${path}`);
+      console.error(text.substring(0, 1000));
+      return null;
+    }
+
+  } catch (err) {
+    console.error(`Failed loading ${path}`, err);
+    return null;
+  }
+}
+
+function safeNumber(v, fallback = 0) {
+  return Number.isFinite(v) ? v : fallback;
+}
+
+function safeFixed(v, digits = 2, fallback = "–") {
+  return Number.isFinite(v)
+    ? v.toFixed(digits)
+    : fallback;
+}
+
+function clsForReliability(r) {
+  r = safeNumber(r);
+
+  if (r >= 0.8) return "good";
+  if (r >= 0.5) return "ok";
+
+  return "bad";
+}
+
+async function initDashboard() {
+
+  try {
+
+    const [
+      latest,
+      reliability,
+      history,
+      uptimeHistory,
+      sectorRel,
+      alerts
+    ] = await Promise.all([
+
+      safeFetch("latest.json"),
+      safeFetch("reliability.json"),
+      safeFetch("reliability_history.json"),
+      safeFetch("uptime_history.json"),
+      safeFetch("sector_reliability.json"),
+      safeFetch("alerts.json")
+
+    ]);
+
+    const metricsEl =
+      document.getElementById("global-metrics");
+
+    const intelJsonEl =
+      document.getElementById("intel-json");
+
+    if (!metricsEl || !intelJsonEl) {
+      throw new Error(
+        "Dashboard elements missing"
+      );
+    }
+
+    if (latest && reliability) {
+
+      const m = [
+
+        {
+          label: "Global Reliability",
+          value: safeFixed(
+            reliability.avgReliability,
+            2
+          ),
+          sub: "From reliability.json"
+        },
+
+        {
+          label: "Trend acceleration",
+          value: safeFixed(
+            latest.trend_acceleration,
+            3
+          ),
+          sub: "τ(t)"
+        },
+
+        {
+          label: "Narrative velocity",
+          value: safeFixed(
+            latest.narrative_velocity,
+            3
+          ),
+          sub: "ν(t)"
+        },
+
+        {
+          label: "Whale pressure",
+          value: safeFixed(
+            latest.whale_pressure,
+            3
+          ),
+          sub: "ω(t)"
+        },
+
+        {
+          label: "Spoofing probability",
+          value: safeFixed(
+            latest.spoofing_probability,
+            3
+          ),
+          sub: "σ(t)"
+        },
+
+        {
+          label: "Sector growth",
+          value: safeFixed(
+            latest.sector_growth,
+            3
+          ),
+          sub: "g(t)"
+        }
+
+      ];
+
+      metricsEl.innerHTML = m.map(x => `
+        <div class="metric">
+          <div class="metric-label">${x.label}</div>
+          <div class="metric-value">${x.value}</div>
+          <div class="metric-sub">${x.sub}</div>
+        </div>
+      `).join("");
+
+      intelJsonEl.textContent =
+        JSON.stringify(latest, null, 2);
+
+    }
+
+      const sectorSummaryEl = document.getElementById("sector-summary");
+      const sectorTableBody = document.querySelector("#sector-table tbody");
+
+      if (reliability && Array.isArray(reliability.sectorReliability)) {
+        const sectors = reliability.sectorReliability;
+        const best = sectors.reduce((a, b) => (b.avgReliability > (a?.avgReliability ?? -1) ? b : a), null);
+        const worst = sectors.reduce((a, b) => (b.avgReliability < (a?.avgReliability ?? 999) ? b : a), null);
+
+        sectorSummaryEl.innerHTML = `
+          <span class="pill pill-green">Best: ${best?.sector ?? "–"} (${best?.avgReliability ?? "–"})</span>
+          &nbsp;
+          <span class="pill pill-red">Worst: ${worst?.sector ?? "–"} (${worst?.avgReliability ?? "–"})</span>
+        `;
+
+        sectorTableBody.innerHTML = sectors.map(s => {
+          const cls = clsForReliability(s.avgReliability);
+          return `
+            <tr class="${cls}">
+              <td>${s.sector}</td>
+              <td>${s.avgReliability}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      const workerTableBody = document.querySelector("#worker-table tbody");
+      if (reliability && Array.isArray(reliability.workers)) {
+        workerTableBody.innerHTML = reliability.workers.map(w => {
+          const cls = clsForReliability(w.reliability);
+          return `
+            <tr class="${cls}">
+              <td>${w.url}</td>
+              <td>${w.sector}</td>
+              <td>${w.status}</td>
+              <td>${w.latency_ms}</td>
+              <td>${w.jsonValid}</td>
+              <td>${w.reliability}</td>
+            </tr>
+          `;
+        }).join("");
+
+        const mapEl = document.getElementById("worker-map");
+        mapEl.innerHTML = reliability.workers.map(w => {
+          const ok = w.status === "OK" && w.jsonValid && w.latency_ms < 500;
+          return `
+            <div class="map-card">
+              <div><strong>${w.sector}</strong></div>
+              <div class="url">${w.url}</div>
+              <div>
+                Status:
+                <span class="${ok ? "status-ok" : "status-bad"}">
+                  ${w.status} · ${w.jsonValid ? "JSON OK" : "JSON ERR"} · ${w.latency_ms} ms
+                </span>
+              </div>
+              <div>Reliability: ${w.reliability}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const trendCanvas =
+  document.getElementById("trend-canvas");
+
+const trendMeta =
+  document.getElementById("trend-meta");
+
+if (!trendCanvas || !trendMeta) {
+  console.warn("Trend canvas missing");
+  return;
+}
+
+      if (Array.isArray(history) && history.length > 1) {
+        const ctx = trendCanvas.getContext("2d");
+        const points = history.slice(-50);
+        const values = points.map(p => p.avgReliability);
+        const times = points.map(p => p.timestamp);
+        const minVal = Math.min(...values);
+        const maxVal = Math.max(...values);
+        const minTime = Math.min(...times);
+        const maxTime = Math.max(...times);
+
+        ctx.clearRect(0, 0, trendCanvas.width, trendCanvas.height);
+        const w = trendCanvas.width;
+        const h = trendCanvas.height;
+
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.strokeStyle = "#22c55e";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        points.forEach((p, i) => {
+          const x = ((p.timestamp - minTime) / (maxTime - minTime || 1)) * (w - 20) + 10;
+          const yNorm = (p.avgReliability - minVal) / (maxVal - minVal || 1);
+          const y = h - 30 - yNorm * (h - 60);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        trendMeta.textContent =
+          `Points: ${points.length} · Min: ${minVal.toFixed(2)} · Max: ${maxVal.toFixed(2)} · Latest: ${values[values.length - 1].toFixed(2)}`;
+      } else {
+        trendMeta.textContent = "Not enough history to draw trend.";
+      }
+
+      const radarCanvas =
+  document.getElementById("radar-canvas");
+
+if (!radarCanvas) {
+  console.warn("Radar canvas missing");
+  return;
+}
+      if (sectorRel && Array.isArray(sectorRel.sectorReliability)) {
+        const ctx = radarCanvas.getContext("2d");
+        const sectors = sectorRel.sectorReliability.map(s => s.sector);
+        const values = sectorRel.sectorReliability.map(s => s.avgReliability);
+
+        const w = radarCanvas.width;
+        const h = radarCanvas.height;
+        const cx = w / 2;
+        const cy = h / 2;
+        const radius = Math.min(w, h) * 0.35;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = "#1f2937";
+        ctx.lineWidth = 1;
+
+        for (let r = radius; r > 0; r -= radius / 4) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        const angleStep = (Math.PI * 2) / sectors.length;
+
+        ctx.strokeStyle = "#22c55e";
+        ctx.fillStyle = "rgba(34,197,94,0.25)";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        sectors.forEach((sector, i) => {
+          const angle = i * angleStep - Math.PI / 2;
+          const value = values[i];
+          const r = radius * value;
+          const x = cx + r * Math.cos(angle);
+          const y = cy + r * Math.sin(angle);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#e5e7eb";
+        ctx.font = "12px system-ui";
+        sectors.forEach((sector, i) => {
+          const angle = i * angleStep - Math.PI / 2;
+          const x = cx + (radius + 20) * Math.cos(angle);
+          const y = cy + (radius + 20) * Math.sin(angle);
+          ctx.fillText(sector, x - 20, y);
+        });
+      }
+
+      const uptimeBody = document.querySelector("#uptime-table tbody");
+if (Array.isArray(uptimeHistory)) {
+  const map = {};
+  uptimeHistory.forEach(entry => {
+    (entry.workers || []).forEach(w => {
+      if (!map[w.url]) {
+        map[w.url] = { url: w.url, sector: w.sector, upSamples: 0, totalSamples: 0 };
+      }
+      map[w.url].totalSamples += 1;
+      if (w.up) map[w.url].upSamples += 1;
+    });
+  });
+
+  const rows = Object.values(map).map(w => {
+    const uptime = w.totalSamples ? (w.upSamples / w.totalSamples) * 100 : 0;
+    return `
+      <tr>
+        <td>${w.url}</td>
+        <td>${w.sector}</td>
+        <td>${uptime.toFixed(1)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  uptimeBody.innerHTML = rows;
+}
+
+const anomaliesEl = document.getElementById("anomalies");
+anomaliesEl.innerHTML = "";
+if (Array.isArray(history) && history.length > 5 && latest) {
+  const values = history.map(h => h.avgReliability);
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
+  const std = Math.sqrt(variance);
+  const last = values[values.length - 1];
+
+  const items = [];
+  if (Math.abs(last - mean) > 2 * std) {
+    items.push(`Global reliability spike: ${last.toFixed(2)} (mean ${mean.toFixed(2)}, std ${std.toFixed(2)})`);
+  }
+  if (latest.spoofing_probability > 0.7) {
+    items.push(`High spoofing probability: ${latest.spoofing_probability.toFixed(3)}`);
+  }
+  if (latest.whale_pressure > 0.7) {
+    items.push(`Elevated whale pressure: ${latest.whale_pressure.toFixed(3)}`);
+  }
+  if (latest.trend_acceleration > 0.7) {
+    items.push(`Strong trend acceleration: ${latest.trend_acceleration.toFixed(3)}`);
+  }
+
+  anomaliesEl.innerHTML = items.length
+    ? items.map(a => `<li>${a}</li>`).join("")
+    : "<li>No anomalies detected.</li>";
+} else {
+  anomaliesEl.innerHTML = "<li>Failed to compute anomalies.</li>";
+}
+
+const alertsList = document.getElementById("alerts-list");
+if (Array.isArray(alerts) && alerts.length) {
+  alertsList.innerHTML = alerts.map(a => `
+    <li>
+      <strong>[${a.severity.toUpperCase()}]</strong> ${a.message}
+      <br /><span style="font-size:11px;color:var(--muted);">
+        signal: ${a.signal} · source: ${a.source}
+      </span>
+    </li>
+  `).join("");
+} else {
+  alertsList.innerHTML = "<li>No active alerts.</li>";
+}
+
+const narrativeEl = document.getElementById("narrative-list");
+narrativeEl.innerHTML = "";
+if (latest && latest.narrative) {
+  const n = latest.narrative;
+  const items = [];
+
+  if (Array.isArray(n.actors)) items.push(`Actors: ${n.actors.join(", ")}`);
+  if (Array.isArray(n.chapters)) items.push(`Chapters: ${n.chapters.join(" → ")}`);
+  if (typeof n.arc_strength === "number") items.push(`Arc strength: ${n.arc_strength.toFixed(3)}`);
+  if (n.risk_story) items.push(`Risk: ${n.risk_story}`);
+  if (n.opportunity_story) items.push(`Opportunity: ${n.opportunity_story}`);
+  if (n.current_episode) items.push(`Episode: ${n.current_episode}`);
+
+  narrativeEl.innerHTML = items.length
+    ? items.map(x => `<li>${x}</li>`).join("")
+    : "<li>No narrative data available.</li>";
+} else {
+  narrativeEl.innerHTML = "<li>No narrative data available.</li>";
+}
+
+/* ------------------ HEATMAP ------------------ */
+
+const heatmapCanvas =
+  document.getElementById("heatmap-canvas");
+
+const hctx =
+  heatmapCanvas
+    ? heatmapCanvas.getContext("2d")
+    : null;
+
+function drawHeatmap(geo) {
+
+  if (!heatmapCanvas || !hctx) {
+    console.warn("heatmap-canvas missing");
+    return;
+  }
+
+  if (!Array.isArray(geo)) {
+    return;
+  }
+  const w = heatmapCanvas.width;
+  const h = heatmapCanvas.height;
+
+  hctx.clearRect(0, 0, w, h);
+  hctx.fillStyle = "#020617";
+  hctx.fillRect(0, 0, w, h);
+
+  const regions = {
+    "North America": { x: 0.25, y: 0.35 },
+    "South America": { x: 0.30, y: 0.70 },
+    "Europe":        { x: 0.55, y: 0.30 },
+    "Africa":        { x: 0.55, y: 0.60 },
+    "Asia":          { x: 0.75, y: 0.40 },
+    "Oceania":       { x: 0.85, y: 0.75 }
+  };
+
+  geo.forEach(w => {
+    const region = regions[w.region] || { x: 0.5, y: 0.5 };
+
+    // FIXED BUG: you wrote region.x * w (wrong)
+    // Correct is region.x * canvas_width
+    const x = region.x * heatmapCanvas.width;
+    const y = region.y * heatmapCanvas.height;
+
+    const reliability = w.reliability;
+    const color =
+      reliability >= 0.8 ? "#22c55e" :
+      reliability >= 0.5 ? "#eab308" :
+      "#ef4444";
+
+    hctx.fillStyle = color;
+    hctx.beginPath();
+    hctx.arc(x, y, 8, 0, Math.PI * 2);
+    hctx.fill();
+  });
+}
+
+if (Array.isArray(geo)) {
+  drawHeatmap(geo);
+}
+
+/* ------------------ SECTOR FLOW ------------------ */
+
+const sectorFlow = await safeFetch("sector_flow.json");
+const flowCanvas = document.getElementById("sector-flow-canvas");
+const fctx = flowCanvas.getContext("2d");
+
+function drawSectorFlow(flows) {
+
+  if (!flowCanvas || !fctx) return;
+
+  if (!Array.isArray(flows)) return;
+
+  const w = flowCanvas.width;
+  const h = flowCanvas.height;
+
+  fctx.clearRect(0, 0, w, h);
+
+  fctx.fillStyle = "#020617";
+  fctx.fillRect(0, 0, w, h);
+
+  const sectors = [
+    "market",
+    "sentiment",
+    "developer",
+    "depth",
+    "truth"
+  ];
+
+  const positions = {
+    market:    { x: w * 0.15, y: h * 0.50 },
+    sentiment: { x: w * 0.35, y: h * 0.30 },
+    developer: { x: w * 0.55, y: h * 0.50 },
+    depth:     { x: w * 0.75, y: h * 0.30 },
+    truth:     { x: w * 0.85, y: h * 0.60 }
+  };
+
+  sectors.forEach(sec => {
+
+    const { x, y } = positions[sec];
+
+    fctx.fillStyle = "#4f46e5";
+
+    fctx.beginPath();
+    fctx.arc(x, y, 18, 0, Math.PI * 2);
+    fctx.fill();
+
+    fctx.fillStyle = "#e5e7eb";
+    fctx.font = "12px system-ui";
+    fctx.fillText(sec, x - 20, y + 35);
+
+  });
+
+  flows.forEach(flow => {
+
+    const from = positions[flow.from];
+    const to = positions[flow.to];
+
+    if (!from || !to) return;
+
+    const strength =
+      Number.isFinite(flow.flow_strength)
+      ? flow.flow_strength
+      : 0;
+
+    const color =
+      strength >= 0.7
+        ? "#22c55e"
+        : strength >= 0.4
+        ? "#eab308"
+        : "#ef4444";
+
+    fctx.strokeStyle = color;
+    fctx.lineWidth = 2 + strength * 3;
+
+    fctx.beginPath();
+    fctx.moveTo(from.x, from.y);
+    fctx.lineTo(to.x, to.y);
+    fctx.stroke();
+
+    const angle =
+      Math.atan2(
+        to.y - from.y,
+        to.x - from.x
+      );
+
+    const headLen =
+      10 + strength * 5;
+
+    fctx.beginPath();
+
+    fctx.moveTo(to.x, to.y);
+
+    fctx.lineTo(
+      to.x -
+      headLen *
+      Math.cos(angle - Math.PI / 6),
+
+      to.y -
+      headLen *
+      Math.sin(angle - Math.PI / 6)
+    );
+
+    fctx.lineTo(
+      to.x -
+      headLen *
+      Math.cos(angle + Math.PI / 6),
+
+      to.y -
+      headLen *
+      Math.sin(angle + Math.PI / 6)
+    );
+
+    fctx.closePath();
+
+    fctx.fillStyle = color;
+    fctx.fill();
+
+  });
+
+}
+
+// Draw arrows
+flows.forEach(f => {
+  const from = positions[f.from];
+  const to = positions[f.to];
+
+  const strength = f.flow_strength;
+  const color =
+    strength >= 0.7 ? "#22c55e" :
+    strength >= 0.4 ? "#eab308" :
+    "#ef4444";
+
+  fctx.strokeStyle = color;
+  fctx.lineWidth = 2 + strength * 3;
+
+  fctx.beginPath();
+  fctx.moveTo(from.x, from.y);
+  fctx.lineTo(to.x, to.y);
+  fctx.stroke();
+
+  // Arrowhead
+  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+  const headLen = 10 + strength * 5;
+
+  fctx.beginPath();
+  fctx.moveTo(to.x, to.y);
+  fctx.lineTo(
+    to.x - headLen * Math.cos(angle - Math.PI / 6),
+    to.y - headLen * Math.sin(angle - Math.PI / 6)
+  );
+  fctx.lineTo(
+    to.x - headLen * Math.cos(angle + Math.PI / 6),
+    to.y - headLen * Math.sin(angle + Math.PI / 6)
+  );
+  fctx.closePath();
+  fctx.fillStyle = color;
+  fctx.fill();
+});
+}
+
+if (Array.isArray(sectorFlow)) {
+  drawSectorFlow(sectorFlow);
+}
+
+// Refresh dashboard every 30s
+let REFRESH_INTERVAL = 30000;
+setInterval(initDashboard, REFRESH_INTERVAL);
+
+// Theme toggle
+const root = document.documentElement;
+const toggle = document.getElementById("themeToggle");
+let dark = true;
+
+// Load geo.json for SVG heatmap
+const geo = await safeFetch("geo.json");
+
+// Mercator projection
+function lonLatToMercatorXY(lon, lat, width, height) {
+  const lambda = lon * Math.PI / 180;
+  const phi = lat * Math.PI / 180;
+  const x = (lambda + Math.PI) / (2 * Math.PI) * width;
+  const y = (height / 2) - (width / (2 * Math.PI)) * Math.log(Math.tan(Math.PI / 4 + phi / 2));
+  return { x, y };
+}
+
+// SVG heatmap
+function createHeatmapSVG(geo) {
+  const container = document.getElementById("heatmap-svg-container");
+  container.innerHTML = "";
+
+  const base =
+  document.getElementById("world-svg");
+
+if (!base) {
+  console.warn("world-svg missing");
+  return;
+}
+
+const svg =
+  base.cloneNode(true);
+  svg.style.display = "block";
+
+  const width = 1000;
+  const height = 500;
+
+  geo.forEach((w, idx) => {
+    if (typeof w.lon !== "number" || typeof w.lat !== "number") return;
+
+    const { x, y } = lonLatToMercatorXY(w.lon, w.lat, width, height);
+
+    const reliability = w.reliability || 0;
+    const latency = w.latency_ms || 0;
+
+    const color =
+      reliability >= 0.8 ? "#22c55e" :
+      reliability >= 0.5 ? "#eab308" :
+      "#ef4444";
+
+    const radius = 4 + reliability * 6;
+
+    const circle = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  "circle"
+);
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", radius);
+    circle.setAttribute("fill", color);
+    circle.setAttribute("fill-opacity", "0.85");
+
+    const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    pulse.setAttribute("cx", x);
+    pulse.setAttribute("cy", y);
+    pulse.setAttribute("r", radius);
+    pulse.setAttribute("fill", color);
+    pulse.setAttribute("fill-opacity", "0.25");
+
+    const animate = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  "animate"
+);
+    animate.setAttribute("attributeName", "r");
+    animate.setAttribute("from", radius.toString());
+    animate.setAttribute("to", (radius + 12).toString());
+    animate.setAttribute("dur", (2 + latency / 500).toFixed(2) + "s");
+    animate.setAttribute("repeatCount", "indefinite");
+    animate.setAttribute("begin", (idx * 0.2).toFixed(2) + "s");
+    pulse.appendChild(animate);
+
+    const animateOpacity = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+    animateOpacity.setAttribute("attributeName", "fill-opacity");
+    animateOpacity.setAttribute("from", "0.25");
+    animateOpacity.setAttribute("to", "0");
+    animateOpacity.setAttribute("dur", (2 + latency / 500).toFixed(2) + "s");
+    animateOpacity.setAttribute("repeatCount", "indefinite");
+    animateOpacity.setAttribute("begin", (idx * 0.2).toFixed(2) + "s");
+    pulse.appendChild(animateOpacity);
+
+    svg.appendChild(pulse);
+    svg.appendChild(circle);
+  });
+
+  container.appendChild(svg);
+}
+
+if (Array.isArray(geo)) {
+  createHeatmapSVG(geo);
+}
+
+// Narrative timeline
+const timelineCanvas =
+  document.getElementById(
+    "narrative-timeline-canvas"
+  );
+
+const tctx =
+  timelineCanvas
+    ? timelineCanvas.getContext("2d")
+    : null;
+
+function drawNarrativeTimeline(latest) {
+
+  if (!timelineCanvas || !tctx) {
+    return;
+  }
+
+  if (!latest?.narrative) {
+    return;
+  } {
+  if (!latest || !latest.narrative) return;
+  const n = latest.narrative;
+  const chapters = Array.isArray(n.chapters) ? n.chapters : [];
+  const arcStrength = typeof n.arc_strength === "number" ? n.arc_strength : 0;
+
+  const w = timelineCanvas.width;
+  const h = timelineCanvas.height;
+
+  tctx.clearRect(0, 0, w, h);
+  tctx.fillStyle = "#020617";
+  tctx.fillRect(0, 0, w, h);
+
+  const margin = 40;
+  const y = h * 0.6;
+
+  tctx.strokeStyle = "#4f46e5";
+  tctx.lineWidth = 2;
+  tctx.beginPath();
+  tctx.moveTo(margin, y);
+  tctx.lineTo(w - margin, y);
+  tctx.stroke();
+
+  const count = chapters.length || 1;
+  chapters.forEach((ch, i) => {
+    const x = margin + (i / (count - 1 || 1)) * (w - 2 * margin);
+
+    tctx.fillStyle = "#22c55e";
+    tctx.beginPath();
+    tctx.arc(x, y, 8, 0, Math.PI * 2);
+    tctx.fill();
+
+    tctx.fillStyle = "#e5e7eb";
+    tctx.font = "11px system-ui";
+    tctx.fillText(ch, x - 30, y + 24);
+  });
+
+  const baseY = h * 0.25;
+  const maxHeight = h * 0.2;
+  const strengthHeight = arcStrength * maxHeight;
+
+  tctx.strokeStyle = "#eab308";
+  tctx.lineWidth = 3;
+  tctx.beginPath();
+  tctx.moveTo(margin, baseY + maxHeight);
+  tctx.quadraticCurveTo(
+    w / 2,
+    baseY + maxHeight - strengthHeight,
+    w - margin,
+    baseY + maxHeight
+  );
+  tctx.stroke();
+
+  tctx.fillStyle = "#e5e7eb";
+  tctx.font = "12px system-ui";
+  tctx.fillText(
+    `Arc strength: ${arcStrength.toFixed(3)}`,
+    margin,
+    baseY + maxHeight - strengthHeight - 10
+  );
+}
+
+if (latest) {
+  drawNarrativeTimeline(latest);
+}
+
+// Animated Sector Flow Engine
+const sectorFlow2 =
+  await safeFetch("sector_flow.json");
+
+const flowCanvas =
+  document.getElementById(
+    "sector-flow-canvas"
+  );
+
+const fctx =
+  flowCanvas
+    ? flowCanvas.getContext("2d")
+    : null;
+
+function drawAnimatedSectorFlow(flows) {
+  if (!flowCanvas || !fctx) {
+  console.warn(
+    "sector-flow-canvas missing"
+  );
+  return;
+}
+
+if (!Array.isArray(flows)) {
+  return;
+}
+
+const w = flowCanvas.width;
+const h = flowCanvas.height;
+
+  const sectors = ["market", "sentiment", "developer", "depth", "truth"];
+  const positions = {
+    market:    { x: w * 0.12, y: h * 0.55 },
+    sentiment: { x: w * 0.32, y: h * 0.30 },
+    developer: { x: w * 0.52, y: h * 0.55 },
+    depth:     { x: w * 0.72, y: h * 0.30 },
+    truth:     { x: w * 0.88, y: h * 0.60 }
+  };
+
+  let t = 0;
+
+  function frame() {
+    fctx.clearRect(0, 0, w, h);
+    fctx.fillStyle = "#020617";
+    fctx.fillRect(0, 0, w, h);
+
+    sectors.forEach(sec => {
+      const { x, y } = positions[sec];
+      fctx.save();
+      fctx.shadowColor = "#4f46e5";
+      fctx.shadowBlur = 12;
+      fctx.fillStyle = "#4f46e5";
+      fctx.beginPath();
+      fctx.arc(x, y, 18, 0, Math.PI * 2);
+      fctx.fill();
+      fctx.restore();
+
+      fctx.fillStyle = "#e5e7eb";
+      fctx.font = "12px system-ui";
+      fctx.fillText(sec, x - 22, y + 32);
+    });
+
+    flows.forEach(f => {
+      const from = positions[f.from];
+      const to = positions[f.to];
+      if (!from || !to) return;
+
+      const strength = f.flow_strength || 0;
+      const color =
+        strength >= 0.7 ? "#22c55e" :
+        strength >= 0.4 ? "#eab308" :
+        "#ef4444";
+
+      const cp = {
+        x: (from.x + to.x) / 2,
+        y: ((from.y + to.y) / 2) - 40 * strength
+      };
+
+      fctx.save();
+      fctx.strokeStyle = color;
+      fctx.lineWidth = 2 + strength * 4;
+      fctx.shadowColor = color;
+      fctx.shadowBlur = 14;
+
+      fctx.beginPath();
+      fctx.moveTo(from.x, from.y);
+      fctx.quadraticCurveTo(cp.x, cp.y, to.x, to.y);
+      fctx.stroke();
+      fctx.restore();
+
+      const angle = Math.atan2(to.y - cp.y, to.x - cp.x);
+      const headLen = 10 + strength * 4;
+
+      fctx.fillStyle = color;
+      fctx.beginPath();
+      fctx.moveTo(to.x, to.y);
+      fctx.lineTo(
+        to.x - headLen * Math.cos(angle - Math.PI / 6),
+        to.y - headLen * Math.sin(angle - Math.PI / 6)
+      );
+      fctx.lineTo(
+        to.x - headLen * Math.cos(angle + Math.PI / 6),
+        to.y - headLen * Math.sin(angle + Math.PI / 6)
+      );
+      fctx.closePath();
+      fctx.fill();
+
+      const phase = (t * (0.5 + strength)) % 1;
+      const u = phase;
+      const flowX =
+        (1 - u) * (1 - u) * from.x +
+        2 * (1 - u) * u * cp.x +
+        u * u * to.x;
+      const flowY =
+        (1 - u) * (1 - u) * from.y +
+        2 * (1 - u) * u * cp.y +
+        u * u * to.y;
+
+      fctx.save();
+      fctx.fillStyle = color;
+      fctx.shadowColor = color;
+      fctx.shadowBlur = 10;
+      fctx.beginPath();
+      fctx.arc(flowX, flowY, 4 + strength * 2, 0, Math.PI * 2);
+      fctx.fill();
+      fctx.restore();
+    });
+
+    t += 0.01;
+    requestAnimationFrame(frame);
+  }
+
+  frame();
+}
+
+if (Array.isArray(sectorFlow2)) {
+  drawAnimatedSectorFlow(sectorFlow2);
+}
+
+// Unified Controls
+const toggleHeatmap = document.getElementById("toggleHeatmap");
+const toggleFlow = document.getElementById("toggleFlow");
+const toggleGlow = document.getElementById("toggleGlow");
+const toggleCurves = document.getElementById("toggleCurves");
+const animSpeed = document.getElementById("animSpeed");
+
+let SHOW_HEATMAP = true;
+let SHOW_FLOW = true;
+let GLOW = true;
+let CURVES = true;
+let SPEED = 1.0;
+
+/* ==========================================================
+   CONTROL BINDINGS
+========================================================== */
+
+if (toggleHeatmap) {
+  toggleHeatmap.onchange = () => {
+    SHOW_HEATMAP = toggleHeatmap.checked;
+
+    const heatmapContainer =
+      document.getElementById("heatmap-svg-container");
+
+    if (heatmapContainer) {
+      heatmapContainer.style.display =
+        SHOW_HEATMAP ? "block" : "none";
+    }
+
+    logEvent("toggle_heatmap", {
+      enabled: SHOW_HEATMAP
+    });
+  };
+}
+
+if (toggleFlow) {
+  toggleFlow.onchange = () => {
+    SHOW_FLOW = toggleFlow.checked;
+
+    const flowCanvas =
+      document.getElementById("sector-flow-canvas");
+
+    if (flowCanvas) {
+      flowCanvas.style.display =
+        SHOW_FLOW ? "block" : "none";
+    }
+
+    logEvent("toggle_flow", {
+      enabled: SHOW_FLOW
+    });
+  };
+}
+
+if (toggleGlow) {
+  toggleGlow.onchange = () => {
+    GLOW = toggleGlow.checked;
+
+    logEvent("toggle_glow", {
+      enabled: GLOW
+    });
+  };
+}
+
+if (toggleCurves) {
+  toggleCurves.onchange = () => {
+    CURVES = toggleCurves.checked;
+
+    logEvent("toggle_curves", {
+      enabled: CURVES
+    });
+  };
+}
+
+if (animSpeed) {
+  animSpeed.oninput = () => {
+    const speed = parseFloat(animSpeed.value);
+
+    SPEED =
+      Number.isFinite(speed)
+        ? speed
+        : 1.0;
+
+    logEvent("speed_change", {
+      speed: SPEED
+    });
+  };
+}
+
+/*
+Inside animation loops:
+
+t += 0.01 * SPEED;
+
+fctx.shadowBlur = GLOW ? 14 : 0;
+
+if (CURVES) {
+  fctx.quadraticCurveTo(cp.x, cp.y, to.x, to.y);
+} else {
+  fctx.lineTo(to.x, to.y);
+}
+*/
+
+
+/* ==========================================================
+   HEATMAP ZOOM / PAN
+========================================================== */
+
+let HEATMAP_ZOOM = 1.0;
+let HEATMAP_PAN_X = 0;
+let HEATMAP_PAN_Y = 0;
+
+const heatmapZoom =
+  document.getElementById("heatmapZoom");
+
+const heatmapPanX =
+  document.getElementById("heatmapPanX");
+
+const heatmapPanY =
+  document.getElementById("heatmapPanY");
+
+if (heatmapZoom) {
+  heatmapZoom.oninput = e => {
+    HEATMAP_ZOOM =
+      parseFloat(e.target.value) || 1.0;
+
+    if (Array.isArray(geo)) {
+      createHeatmapSVG(geo);
+    }
+  };
+}
+
+if (heatmapPanX) {
+  heatmapPanX.oninput = e => {
+    HEATMAP_PAN_X =
+      parseFloat(e.target.value) || 0;
+
+    if (Array.isArray(geo)) {
+      createHeatmapSVG(geo);
+    }
+  };
+}
+
+if (heatmapPanY) {
+  heatmapPanY.oninput = e => {
+    HEATMAP_PAN_Y =
+      parseFloat(e.target.value) || 0;
+
+    if (Array.isArray(geo)) {
+      createHeatmapSVG(geo);
+    }
+  };
+}
+
+/*
+Inside createHeatmapSVG()
+
+const { x, y } =
+  lonLatToMercatorXY(
+    w.lon,
+    w.lat,
+    width,
+    height
+  );
+
+const zx =
+  x * HEATMAP_ZOOM +
+  HEATMAP_PAN_X;
+
+const zy =
+  y * HEATMAP_ZOOM +
+  HEATMAP_PAN_Y;
+
+circle.setAttribute("cx", zx);
+circle.setAttribute("cy", zy);
+
+pulse.setAttribute("cx", zx);
+pulse.setAttribute("cy", zy);
+*/
+
+
+/* ==========================================================
+   FOCUS MODE
+========================================================== */
+
+let FOCUS_SECTOR = "none";
+let PREV_FOCUS_SECTOR = "none";
+let FOCUS_TRANSITION_T = 0;
+
+const focusSectorEl =
+  document.getElementById("focusSector");
+
+if (focusSectorEl) {
+  focusSectorEl.onchange = e => {
+    PREV_FOCUS_SECTOR =
+      FOCUS_SECTOR;
+
+    FOCUS_SECTOR =
+      e.target.value;
+
+    FOCUS_TRANSITION_T = 0;
+
+    animateFocusTransition();
+
+    logEvent("focus_change", {
+      from: PREV_FOCUS_SECTOR,
+      to: FOCUS_SECTOR
+    });
+  };
+}
+
+
+/* ==========================================================
+   FOCUS ANIMATION
+========================================================== */
+
+function renderFocusUpdate() {
+
+  if (Array.isArray(geo)) {
+    createHeatmapSVG(geo);
+  }
+
+  const flows =
+    sectorFlow2 ||
+    sectorFlow ||
+    [];
+
+  if (Array.isArray(flows)) {
+    drawAnimatedSectorFlow(flows);
+  }
+
+  const panelEl =
+    document.querySelector(
+      ".panel-narrative"
+    );
+
+  if (panelEl) {
+    panelEl.style.opacity =
+      0.6 +
+      0.4 * FOCUS_TRANSITION_T;
+  }
+}
+
+function animateFocusTransition() {
+
+  const duration = 0.6;
+
+  const start =
+    performance.now();
+
+  function step(now) {
+
+    const elapsed =
+      (now - start) / 1000;
+
+    FOCUS_TRANSITION_T =
+      Math.min(
+        elapsed / duration,
+        1
+      );
+
+    renderFocusUpdate();
+
+    if (elapsed < duration) {
+
+      requestAnimationFrame(
+        step
+      );
+
+    } else {
+
+      FOCUS_TRANSITION_T = 1;
+
+      if (typeof initDashboard === "function") {
+        initDashboard();
+      }
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+
+/* ==========================================================
+   HOVER MODE
+========================================================== */
+
+let HOVER_SECTOR = "none";
+
+document
+  .querySelectorAll(
+    ".sector-hover"
+  )
+  .forEach(el => {
+
+    el.onmouseenter = () => {
+
+      HOVER_SECTOR =
+        el.dataset.sector ||
+        "none";
+
+      logEvent(
+        "hover_start",
+        {
+          sector:
+            HOVER_SECTOR
+        }
+      );
+
+      if (
+        typeof initDashboard ===
+        "function"
+      ) {
+        initDashboard();
+      }
+    };
+
+    el.onmouseleave = () => {
+
+      logEvent(
+        "hover_end",
+        {
+          sector:
+            HOVER_SECTOR
+        }
+      );
+
+      HOVER_SECTOR =
+        "none";
+
+      if (
+        typeof initDashboard ===
+        "function"
+      ) {
+        initDashboard();
+      }
+    };
+  });
+
+
+/* ==========================================================
+   RECORDING MODE
+========================================================== */
+
+let RECORDING = false;
+let RECORD_LOG = [];
+let RECORD_START_TIME = null;
+
+function logEvent(
+  type,
+  data = {}
+) {
+
+  if (
+    !RECORDING ||
+    !RECORD_START_TIME
+  ) {
+    return;
+  }
+
+  RECORD_LOG.push({
+    type,
+    timestamp:
+      Date.now() -
+      RECORD_START_TIME,
+    ...data
+  });
+}
+
+const recStart =
+  document.getElementById(
+    "recStart"
+  );
+
+const recStop =
+  document.getElementById(
+    "recStop"
+  );
+
+const recDownload =
+  document.getElementById(
+    "recDownload"
+  );
+
+const recStatus =
+  document.getElementById(
+    "recStatus"
+  );
+
+if (
+  recStart &&
+  recStop &&
+  recDownload &&
+  recStatus
+) {
+
+  recStart.onclick = () => {
+
+    RECORDING = true;
+
+    RECORD_LOG = [];
+
+    RECORD_START_TIME =
+      Date.now();
+
+    recStatus.textContent =
+      "Recording...";
+
+    recStart.disabled = true;
+    recStop.disabled = false;
+    recDownload.disabled = true;
+
+    logEvent(
+      "session_start"
+    );
+  };
+
+  recStop.onclick = () => {
+
+    logEvent(
+      "session_stop"
+    );
+
+    RECORDING = false;
+
+    recStatus.textContent =
+      "Recording stopped.";
+
+    recStart.disabled =
+      false;
+
+    recStop.disabled =
+      true;
+
+    recDownload.disabled =
+      false;
+  };
+
+  recDownload.onclick =
+    () => {
+
+      const blob =
+        new Blob(
+          [
+            JSON.stringify(
+              RECORD_LOG,
+              null,
+              2
+            )
+          ],
+          {
+            type:
+              "application/json"
+          }
+        );
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+      const a =
+        document.createElement(
+          "a"
+        );
+
+      a.href = url;
+
+      a.download =
+        `analysis_session_${new Date().toISOString()}.json`;
+
+      a.click();
+
+      URL.revokeObjectURL(
+        url
+      );
+    };
+}
+
+
+/* ==========================================================
+   SNAPSHOTS
+========================================================== */
+
+if (latest?.narrative) {
+
+  logEvent(
+    "narrative_snapshot",
+    {
+      arc_strength:
+        latest.narrative
+          .arc_strength,
+
+      actors:
+        latest.narrative
+          .actors
+    }
+  );
+}
+
+if (reliability) {
+
+  logEvent(
+    "reliability_snapshot",
+    {
+      workers:
+        reliability.workers
+    }
+  );
+}
+
+if (
+  typeof sectorFlow !==
+  "undefined"
+) {
+
+  logEvent(
+    "flow_snapshot",
+    {
+      flows: sectorFlow
+    }
+  );
+}
+
+
+/* ==========================================================
+   THEME TOGGLE
+========================================================== */
+
+if (toggle) {
+
+  toggle.onclick =
+    () => {
+
+      dark = !dark;
+
+      if (dark) {
+
+        root.style.setProperty(
+          "--bg",
+          "#020617"
+        );
+
+        root.style.setProperty(
+          "--fg",
+          "#e5e7eb"
+        );
+
+        root.style.setProperty(
+          "--card",
+          "#0b1120"
+        );
+
+        root.style.setProperty(
+          "--border",
+          "#1f2937"
+        );
+
+        root.style.setProperty(
+          "--muted",
+          "#9ca3af"
+        );
+
+        document.body.style.background =
+          "radial-gradient(circle at top, #0f172a 0, #020617 40%, #000 100%)";
+
+      } else {
+
+        root.style.setProperty(
+          "--bg",
+          "#f9fafb"
+        );
+
+        root.style.setProperty(
+          "--fg",
+          "#111827"
+        );
+
+        root.style.setProperty(
+          "--card",
+          "#ffffff"
+        );
+
+        root.style.setProperty(
+          "--border",
+          "#e5e7eb"
+        );
+
+        root.style.setProperty(
+          "--muted",
+          "#6b7280"
+        );
+
+        document.body.style.background =
+          "#f9fafb";
+      }
+
+      logEvent(
+        "theme_change",
+        {
+          dark
+        }
+      );
+    };
+}
+
+
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+if (
+  typeof initDashboard ===
+  "function"
+) {
+  initDashboard();
+}

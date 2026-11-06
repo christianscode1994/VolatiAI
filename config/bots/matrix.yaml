@@ -1,0 +1,17 @@
+bot:
+  name: "VolatiAI Matrix Bot"
+  enabled: true
+
+targets:
+  daily_room: "!daily:matrix.org"
+  alerts_room: "!alerts:matrix.org"
+  events_room: "!events:matrix.org"
+
+format:
+  markdown: true
+  include_images: true
+
+schedule:
+  daily: "09:00"
+  hourly: true
+  alerts: true

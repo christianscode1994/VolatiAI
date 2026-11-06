@@ -1,0 +1,59 @@
+# ============ Python ============
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ============ Node ============
+node_modules/
+.npm/
+.yarn/
+.pnp.*
+# NOTE: package-lock.json is kept on purpose (reproducible installs)
+
+# ============ Wrangler / Cloudflare ============
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+# ============ Generated reports ============
+reports/
+
+# ============ Runtime / config backups ============
+config/*.bak
+config/*.rolled-back
+config/*.pre-fix
+config/*.fixed-*
+config/.classify_prev.json
+config/classify_changes.log
+config/classify_runs.log
+config/cron.log
+*.bak
+*.bak.*
+*.local
+
+# ============ Logs ============
+*.log
+logs/
+
+# ============ macOS ============
+.DS_Store
+._*
+
+# ============ Editor ============
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============ Secrets (never commit) ============
+*.env
+*.env.*
+!.env.example
+secrets/
+private/

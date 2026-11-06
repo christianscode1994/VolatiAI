@@ -1,0 +1,48 @@
+import json
+import argparse
+from core.uio import build_uio
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="VolatiAI — Unified Intelligence Object Runner"
+    )
+
+    parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Pretty-print the UIO JSON output"
+    )
+
+    parser.add_argument(
+        "--section",
+        type=str,
+        default=None,
+        help="Print only a specific UIO section (developer, market, defi, nft, narratives, risk, agents, meta)"
+    )
+
+    args = parser.parse_args()
+
+    # Build the full UIO
+    uio = build_uio()
+
+    # If user wants a specific section
+    if args.section:
+        section = args.section.lower()
+        if section in uio:
+            data = uio[section]
+        else:
+            print(f"Section '{section}' not found in UIO.")
+            return
+    else:
+        data = uio
+
+    # Pretty or raw JSON
+    if args.pretty:
+        print(json.dumps(data, indent=2))
+    else:
+        print(json.dumps(data))
+
+
+if __name__ == "__main__":
+    main()

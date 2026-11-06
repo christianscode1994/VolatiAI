@@ -1,0 +1,38 @@
+body {
+  font-family: system-ui, sans-serif;
+  background: #f7f7f7;
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: 100vh;
+}
+
+nav {
+  background: #111827;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+nav button {
+  background: #1f2937;
+  border: none;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background: #4b5563;
+}
+
+main {
+  padding: 20px;
+  overflow: auto;
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VolatiAI · Epistemic Graph</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: #0a0e14;
+    color: #d4d8de;
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 20px; font-weight: 500; margin: 0 0 4px; color: #fff; }
+  .sub { color: #6b7280; font-size: 13px; margin-bottom: 24px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .stat { background: #151922; border: 1px solid #1f2530; border-radius: 8px; padding: 16px; }
+  .stat-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 28px; font-weight: 600; color: #fff; margin-top: 4px; }
+  .section { margin-bottom: 32px; }
+  .section-title { font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .claims { display: grid; gap: 6px; }
+  .claim { background: #151922; border: 1px solid #1f2530; border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .claim.signal { border-color: #3b82f6; background: #0f1a2e; }
+  .claim.broken { border-color: #ef4444; opacity: 0.6; }
+  .claim-sector { min-width: 140px; color: #9ca3af; font-family: ui-monospace, monospace; font-size: 12px; }
+  .claim-bar { flex: 1; height: 6px; background: #1f2530; border-radius: 3px; overflow: hidden; }
+  .claim-bar-fill { height: 100%; background: #3b82f6; border-radius: 3px; transition: width 0.3s; }
+  .claim-bar-fill.high { background: #10b981; }
+  .claim-bar-fill.low { background: #f59e0b; }
+  .claim-bar-fill.zero { background: #ef4444; }
+  .claim-conf { min-width: 48px; text-align: right; font-family: ui-monospace, monospace; font-size: 12px; color: #9ca3af; }
+  .claim-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: #3b82f6; color: white; font-weight: 600; }
+  .claim-badge.dense { background: #ef4444; }
+  .claim-badge.sparse { background: #f59e0b; color: #000; }
+  .claim-badge.slow { background: #9ca3af; color: #000; }
+  .diff-row { display: flex; gap: 8px; padding: 8px 14px; font-size: 12px; background: #151922; border: 1px solid #1f2530; border-radius: 6px; font-family: ui-monospace, monospace; }
+  .diff-type { min-width: 110px; color: #6b7280; }
+  .diff-sector { min-width: 140px; color: #9ca3af; }
+  .diff-detail { flex: 1; color: #d4d8de; }
+  .diff-detail .old { color: #ef4444; text-decoration: line-through; }
+  .diff-detail .new { color: #10b981; }
+  .empty { color: #4b5563; font-style: italic; font-size: 13px; padding: 12px 0; }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #1f2530; color: #4b5563; font-size: 11px; }
+  .footer a { color: #6b7280; }
+</style>
+</head>
+<body>
+  <h1>VolatiAI · Epistemic Graph</h1>
+  <div class="sub" id="timestamp">Loading...</div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="section">
+    <div class="section-title">Live Claims <span id="claim-count"></span></div>
+    <div class="claims" id="claims"><div class="empty">Loading...</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Changes since last snapshot</div>
+    <div class="claims" id="diff"><div class="empty">Loading...</div></div>
+  </div>
+
+  <div class="footer">
+    <span id="snapshot-info"></span> · <a href="https://github.com/christianscode1994/VolatiAI" target="_blank">GitHub</a>
+  </div>
+
+<script>
+async function load() {
+  try {
+    const resp = await fetch("graph_snapshot.json?" + Date.now());
+    if (!resp.ok) throw new Error("No snapshot yet");
+    const store = await resp.json();
+    const snaps = store.snapshots || [];
+    if (!snaps.length) throw new Error("Empty snapshots array");
+
+    const latest = snaps[snaps.length - 1];
+    const previous = snaps.length >= 2 ? snaps[snaps.length - 2] : null;
+
+    document.getElementById("timestamp").textContent =
+      "Snapshot from " + new Date(latest.timestamp).toLocaleString();
+    document.getElementById("snapshot-info").textContent =
+      snaps.length + " snapshots retained";
+
+    // Stats
+    const claims = (latest.nodes || []).filter(n => n.type === "claim");
+    const edges = latest.edges || [];
+    const bySector = {};
+    for (const c of claims) {
+      bySector[c.sector] = c;
+    }
+    const withSignal = claims.filter(c => c.has_signal).length;
+    const broken = claims.filter(c => (c.original_confidence ?? 1) === 0).length;
+
+    document.getElementById("stats").innerHTML = [
+      { label: "Sectors", value: claims.length },
+      { label: "Signaling", value: withSignal },
+      { label: "Broken", value: broken },
+      { label: "Edges", value: edges.length },
+    ].map(s => `
+      <div class="stat">
+        <div class="stat-label">${s.label}</div>
+        <div class="stat-value">${s.value}</div>
+      </div>
+    `).join("");
+
+    // Claims grid
+    const sorted = [...claims].sort((a, b) => {
+      const ca = a.original_confidence ?? 0;
+      const cb = b.original_confidence ?? 0;
+      return cb - ca;
+    });
+    document.getElementById("claim-count").textContent = `(${claims.length})`;
+
+    document.getElementById("claims").innerHTML = sorted.map(c => {
+      const conf = c.original_confidence ?? 0;
+      const pct = Math.round(conf * 100);
+      const cls = conf >= 0.99 ? "high" : conf >= 0.5 ? "" : conf > 0 ? "low" : "zero";
+      const densityClass = c.density || "dense";
+      const badge = c.has_signal ? `<span class="claim-badge ${densityClass}">${densityClass}</span>` : "";
+      const signalClass = c.has_signal ? "signal" : (conf === 0 ? "broken" : "");
+      return `
+        <div class="claim ${signalClass}">
+          <div class="claim-sector">${c.sector}</div>
+          ${badge}
+          <div class="claim-bar"><div class="claim-bar-fill ${cls}" style="width:${pct}%"></div></div>
+          <div class="claim-conf">${pct}%</div>
+        </div>
+      `;
+    }).join("");
+
+    // Diff
+    if (previous) {
+      const prevClaims = {};
+      for (const c of (previous.nodes || [])) {
+        if (c.type === "claim") prevClaims[c.sector] = c;
+      }
+      const diffRows = [];
+      for (const [sector, curr] of Object.entries(bySector)) {
+        const prev = prevClaims[sector];
+        if (!prev) {
+          diffRows.push({ type: "new", sector, detail: `appeared (${curr.summary || "quiet"})` });
+        } else if (prev.summary !== curr.summary) {
+          diffRows.push({
+            type: "changed",
+            sector,
+            detail: `<span class="old">${prev.summary || "quiet"}</span> → <span class="new">${curr.summary || "quiet"}</span>`
+          });
+        }
+      }
+      for (const sector of Object.keys(prevClaims)) {
+        if (!bySector[sector]) {
+          diffRows.push({ type: "dropped", sector, detail: "disappeared" });
+        }
+      }
+      document.getElementById("diff").innerHTML = diffRows.length
+        ? diffRows.map(r => `
+          <div class="diff-row">
+            <div class="diff-type">${r.type}</div>
+            <div class="diff-sector">${r.sector}</div>
+            <div class="diff-detail">${r.detail}</div>
+          </div>
+        `).join("")
+        : '<div class="empty">No changes since previous snapshot</div>';
+    } else {
+      document.getElementById("diff").innerHTML = '<div class="empty">First snapshot — no previous to compare</div>';
+    }
+  } catch (e) {
+    document.getElementById("claims").innerHTML = `<div class="empty">Error: ${e.message}</div>`;
+    document.getElementById("timestamp").textContent = "No data yet";
+  }
+}
+
+load();
+</script>
+</body>
+</html>

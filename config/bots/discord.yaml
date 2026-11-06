@@ -1,0 +1,17 @@
+bot:
+  name: "VolatiAI Discord Bot"
+  enabled: true
+
+targets:
+  daily_channel: "intel-daily"
+  alerts_channel: "intel-alerts"
+  events_channel: "intel-events"
+
+format:
+  embeds: true
+  color_by_severity: true
+
+schedule:
+  daily: "09:00"
+  hourly: true
+  alerts: true

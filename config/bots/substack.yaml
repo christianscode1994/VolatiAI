@@ -1,0 +1,17 @@
+bot:
+  name: "VolatiAI Substack Publisher"
+  enabled: true
+
+targets:
+  daily_post: true
+  weekly_post: true
+  monthly_post: true
+
+format:
+  markdown: true
+  include_charts: true
+
+schedule:
+  daily: "09:00"
+  weekly: "Sunday 10:00"
+  monthly: "1st 10:00"

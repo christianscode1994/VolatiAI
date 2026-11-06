@@ -1,0 +1,7 @@
+def detect_chain_health(intel):
+    return {
+        "type": "chain_health",
+        "value": intel["signals"]["chain_risk"],
+        "healthy": intel["signals"]["chain_risk"] > 0.70
+    }
+}

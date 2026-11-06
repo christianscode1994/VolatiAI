@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://volatiai.dev/schemas/snapshot.schema.json",
+  "title": "VolatiAI Correlation Snapshot",
+  "description": "A daily snapshot of surfaced correlation pairs. Chain-linked via prev_hash, signed via Ed25519.",
+  "type": "object",
+  "required": ["timestamp", "pairs"],
+  "properties": {
+    "timestamp": { "type": "string", "format": "date-time", "description": "When snapshot was created (UTC)" },
+    "date":      { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "UTC date of the snapshot" },
+    "sectors":   { "type": "integer", "minimum": 0, "description": "Number of sectors considered" },
+    "sector_names": { "type": "array", "items": { "type": "string" } },
+    "pairs_count":   { "type": "integer", "minimum": 0 },
+    "pairs_evaluated": { "type": "integer", "minimum": 0 },
+    "pairs": {
+      "type": "array",
+      "items": { "$ref": "pair.schema.json" }
+    },
+    "transitivity": {
+      "type": ["object", "null"],
+      "properties": {
+        "triples_checked": { "type": "integer", "minimum": 0 },
+        "obstructions":    { "type": "array" }
+      }
+    },
+    "prev_hash": {
+      "type": ["string", "null"],
+      "description": "SHA-256 of the previous snapshot's full signed canonical form. null for genesis.",
+      "pattern": "^(sha256:[a-f0-9]{64}|null)$"
+    },
+    "signed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When this snapshot was signed (UTC). null for unsigned snapshots."
+    },
+    "signature": {
+      "type": ["string", "null"],
+      "description": "Ed25519 signature over canonicalized payload (base64). null for unsigned."
+    },
+    "pubkey_id": {
+      "type": ["string", "null"],
+      "description": "Identifier for the signing key (for rotation tracking)."
+    }
+  },
+  "additionalProperties": true
+}

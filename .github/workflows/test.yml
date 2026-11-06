@@ -1,0 +1,51 @@
+name: Test
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+concurrency:
+  group: volatiai-test-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Install Python deps
+        run: pip install certifi cryptography
+
+      - name: Python tests
+        run: |
+          python3 tests/test_briefing.py
+          python3 tests/test_find_candidates.py
+
+      - name: Python self-tests
+        run: |
+          python3 scripts/verify_signature.py --self-test
+          python3 scripts/verify_signature.py --canonical-test
+          python3 scripts/resolve_entities.py --file tests/fixtures/entity_qids_test.json --target 1.0
+          python3 scripts/classify_sector.py --self-test
+
+      - name: Node tests
+        run: |
+          node tests/arbitration.mjs
+          node tests/coherence.mjs
+          node tests/signing.mjs
+          node tests/chain.mjs
+          node tests/antichains.mjs
+          node tests/test_tdist.mjs
+
+      - name: Syntax checks (worker files)
+        run: |
+          node --check workers/sector-slow/src/index.js
+          node --check workers/sector-slow/src/arbitration.js
+          node --check workers/sector-slow/src/signing.js
+          node --check workers/sector-slow/src/chain.js

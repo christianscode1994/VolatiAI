@@ -1,0 +1,15 @@
+{
+  "description": "Canonicalization test vectors — shared by signing.mjs (JS) and verify_signature.py (Python). Both must produce the 'expected' string for each 'input'. Any divergence means JS-signed snapshots won't verify in Python.",
+  "vectors": [
+    { "input": { "a": 1, "b": 2 },        "expected": "{\"a\":1,\"b\":2}" },
+    { "input": { "b": 2, "a": 1 },        "expected": "{\"a\":1,\"b\":2}" },
+    { "input": { "nested": { "y": 2, "x": 1 }, "z": 3 },
+      "expected": "{\"nested\":{\"x\":1,\"y\":2},\"z\":3}" },
+    { "input": [1, 2, 3],                 "expected": "[1,2,3]" },
+    { "input": null,                       "expected": "null" },
+    { "input": true,                       "expected": "true" },
+    { "input": "hello",                    "expected": "\"hello\"" },
+    { "input": { "date": "2026-11-05", "pairs": [{"a":"x","b":"y","r":0.777}] },
+      "expected": "{\"date\":\"2026-11-05\",\"pairs\":[{\"a\":\"x\",\"b\":\"y\",\"r\":0.777}]}" }
+  ]
+}

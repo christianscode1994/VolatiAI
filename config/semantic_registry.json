@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "description": "Semantic registry \u2014 declares which sectors measure the same underlying quantity",
+    "version": "0.1.0",
+    "status": "schema-only \u2014 not yet wired into worker",
+    "created": "2026-11-04",
+    "planned_wiring": "Nov 5+ after cron produces fresh data",
+    "consumers": "none yet \u2014 future PROVENANCE_PAIRS derivation will read this",
+    "schema": {
+      "groups": "map of canonical_metric_name \u2192 { sectors, direction, tolerance, note }",
+      "direction": "raw | reciprocal | negate \u2014 how to align values before comparison",
+      "tolerance": "max |r - 1.0| for 'identical' prior; used by PRIORS in worker",
+      "sectors": "list of sector names that measure canonical_metric_name"
+    }
+  },
+  "groups": {
+    "us_10y_yield": {
+      "sectors": [
+        "treasuries",
+        "treasuries-gov"
+      ],
+      "direction": "raw",
+      "tolerance": 0.25,
+      "note": "Both report 10-year US Treasury yield. Different endpoints (fiscaldata vs treasury.gov), same underlying metric. 1-day lag observed on one source; r\u22480.777 is expected source disagreement, not a bug.",
+      "source": "manual",
+      "verified_2026_11_04": true
+    },
+    "fx_usd_eur": {
+      "sectors": [
+        "currency-ex",
+        "exchange-rate"
+      ],
+      "direction": "reciprocal",
+      "tolerance": 0.2,
+      "note": "Different quote directions. currency-ex reports EUR\u2192USD, exchange-rate reports USD\u2192EUR. Reciprocal normalization required before comparison (already implemented in find_contradictions).",
+      "source": "manual",
+      "verified_2026_11_04": true
+    },
+    "cisa_kev": {
+      "sectors": [
+        "cisa-kev-count",
+        "cisa-kev-total"
+      ],
+      "direction": "raw",
+      "tolerance": 0.1,
+      "note": "Both count KEV (Known Exploited Vulnerabilities) entries. Likely a subset relationship (count = new per window, total = cumulative) rather than exact identity \u2014 r=0.993 observed. Included as provenance but might be better labeled 'related subset'.",
+      "source": "manual",
+      "verified_2026_11_04": true,
+      "caveat": "Confirm whether count is new-per-window vs cumulative; if subset, tolerance should be higher"
+    },
+    "gleif_leis": {
+      "sectors": [
+        "gleif-leis",
+        "gleif-total-leis"
+      ],
+      "direction": "raw",
+      "tolerance": 0.1,
+      "note": "Both count GLEIF Legal Entity Identifiers. Crossed n=10 threshold on Nov 5; confirmed with r=0.99, ci_width=0.041. First provenance pair validated by data accumulation rather than manual declaration.",
+      "source": "data-driven",
+      "verified_2026_11_05": true
+    }
+  },
+  "removed_groups": {
+    "note": "Groups removed Nov 4 2026 due to non-public-domain sources or non-identical semantics",
+    "usgs_earthquakes": "removed from PROVENANCE_PAIRS \u2014 EMSC vs USGS have different magnitude cutoffs, constant \u221216,500 offset observed. Different catalogs, not same feed.",
+    "coinbase_kraken_btc": "removed \u2014 Coinbase ToS restricts commercial redistribution",
+    "coinbase_kraken_eth": "removed \u2014 same reason"
+  }
+}

@@ -1,0 +1,26 @@
+bot:
+  name: "VolatiAI Nostr Bot"
+  enabled: true
+
+targets:
+  relays:
+    - "wss://relay.damus.io"
+    - "wss://nostr.wine"
+    - "wss://relay.snort.social"
+    - "wss://relay.nostr.band"
+
+
+format:
+  tags:
+    - "volatai"
+    - "intel"
+    - "crypto"
+    - "narrative"
+    - "whale"
+    - "dev"
+    - "truth"
+
+schedule:
+  daily: "09:00"
+  hourly: false
+  alerts: true

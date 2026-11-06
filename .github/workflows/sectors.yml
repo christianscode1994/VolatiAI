@@ -1,0 +1,40 @@
+name: Sector crawl
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
+jobs:
+  slow:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Run sector-slow shard ${{ matrix.shard }}
+        run: |
+          curl --max-time 300 --fail-with-body -X POST \
+            "${{ secrets.SECTOR_SLOW_URL }}/internal/run?shard=${{ matrix.shard }}" \
+            -H "Authorization: Bearer ${{ secrets.RUN_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            | jq .
+
+  dense:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Run sector-dense shard ${{ matrix.shard }}
+        run: |
+          curl --max-time 300 --fail-with-body -X POST \
+            "${{ secrets.SECTOR_DENSE_URL }}/internal/run?shard=${{ matrix.shard }}" \
+            -H "Authorization: Bearer ${{ secrets.RUN_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            | jq .

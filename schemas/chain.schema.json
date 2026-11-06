@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://volatiai.dev/schemas/chain.schema.json",
+  "title": "VolatiAI Snapshot Chain",
+  "type": "object",
+  "required": ["snapshots"],
+  "properties": {
+    "snapshots": {
+      "type": "array",
+      "items": { "$ref": "snapshot.schema.json" },
+      "minItems": 1
+    },
+    "length": { "type": "integer", "minimum": 1 },
+    "chain_valid": { "type": "boolean" },
+    "broken_at": { "type": ["integer", "null"], "minimum": 0 }
+  }
+}

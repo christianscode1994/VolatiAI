@@ -1,0 +1,317 @@
+{
+  "kraken-btc-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=XBTUSD",
+    "license": "Public market data"
+  },
+  "kraken-eth-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=ETHUSD",
+    "license": "Public market data"
+  },
+  "kraken-sol-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=SOLUSD",
+    "license": "Public market data"
+  },
+  "btc-exchange-spread": {
+    "provider": "Derived",
+    "url": "Kraken+Coinbase",
+    "license": "Derived from open data"
+  },
+  "eth-exchange-spread": {
+    "provider": "Derived",
+    "url": "Kraken+Coinbase",
+    "license": "Derived from open data"
+  },
+  "frankfurter-eurusd": {
+    "provider": "ECB / Frankfurter",
+    "url": "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD",
+    "license": "MIT"
+  },
+  "frankfurter-eursek": {
+    "provider": "ECB / Frankfurter",
+    "url": "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=SEK",
+    "license": "MIT"
+  },
+  "nbp-gold-spot": {
+    "provider": "NBP Poland",
+    "url": "https://api.nbp.pl/api/cenyzlota/",
+    "license": "Public domain"
+  },
+  "fred-dgs10": {
+    "provider": "US Federal Reserve",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+    "license": "Public domain"
+  },
+  "fred-fedfunds": {
+    "provider": "US Federal Reserve",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS",
+    "license": "Public domain"
+  },
+  "dbnomics-us-debt": {
+    "provider": "IMF WEO / DBnomics",
+    "url": "https://api.db.nomics.world/v22/series/IMF/WEO:2024-10/USA.GGXWDG_NGDP.pcent_gdp",
+    "license": "Open"
+  },
+  "worldbank-us-unemployment": {
+    "provider": "World Bank (ILO)",
+    "url": "https://api.worldbank.org/v2/country/US/indicator/SL.UEM.TOTL.ZS",
+    "license": "CC BY 4.0"
+  },
+  "worldbank-us-gdp": {
+    "provider": "World Bank",
+    "url": "https://api.worldbank.org/v2/country/US/indicator/NY.GDP.MKTP.CD",
+    "license": "CC BY 4.0"
+  },
+  "worldbank-se-gdp": {
+    "provider": "World Bank",
+    "url": "https://api.worldbank.org/v2/country/SE/indicator/NY.GDP.MKTP.CD",
+    "license": "CC BY 4.0"
+  },
+  "defillama-protocol-count": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/protocols",
+    "license": "Open"
+  },
+  "stablecoin-total-supply": {
+    "provider": "DefiLlama",
+    "url": "https://stablecoins.llama.fi/stablecoins",
+    "license": "Free public API"
+  },
+  "stablecoin-usdt-supply": {
+    "provider": "DefiLlama",
+    "url": "https://stablecoins.llama.fi/stablecoins",
+    "license": "Free public API"
+  },
+  "stablecoin-usdc-supply": {
+    "provider": "DefiLlama",
+    "url": "https://stablecoins.llama.fi/stablecoins",
+    "license": "Free public API"
+  },
+  "dex-total-volume-24h": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/overview/dexs",
+    "license": "Free public API"
+  },
+  "dex-uniswap-volume": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/summary/dexs/uniswap",
+    "license": "Free public API"
+  },
+  "dex-ethereum-volume": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/overview/dexs/ethereum",
+    "license": "Free public API"
+  },
+  "defi-total-tvl": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/v2/historicalChainTvl",
+    "license": "Free public API"
+  },
+  "ossf-scorecard-linux": {
+    "provider": "OpenSSF",
+    "url": "https://api.securityscorecards.dev/projects/github.com/torvalds/linux",
+    "license": "Apache 2.0"
+  },
+  "ecosyste-ms-react": {
+    "provider": "Ecosyste.ms",
+    "url": "https://packages.ecosyste.ms/api/v1/registries/npmjs.org/packages/react",
+    "license": "Open data"
+  },
+  "open-digger-openrank-vscode": {
+    "provider": "OpenDigger",
+    "url": "https://oss.open-digger.cn/github/microsoft/vscode/openrank.json",
+    "license": "Open data"
+  },
+  "hackernews-top-scores": {
+    "provider": "Hacker News",
+    "url": "https://hacker-news.firebaseio.com/v0/topstories.json",
+    "license": "Public API"
+  },
+  "osv-lodash-vuln-count": {
+    "provider": "OSV.dev (Google)",
+    "url": "https://api.osv.dev/v1/query",
+    "license": "Open"
+  },
+  "cisa-kev-total": {
+    "provider": "CISA",
+    "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "license": "Public domain"
+  },
+  "epss-log4shell": {
+    "provider": "FIRST.org",
+    "url": "https://api.first.org/data/v1/epss?cve=CVE-2021-44228",
+    "license": "Open"
+  },
+  "deps-dev-react-versions": {
+    "provider": "deps.dev (Google)",
+    "url": "https://api.deps.dev/v3/systems/npm/packages/react",
+    "license": "Open"
+  },
+  "clearlydefined-react-license": {
+    "provider": "ClearlyDefined",
+    "url": "https://api.clearlydefined.io/definitions/npm/npmjs/-/react/18.2.0",
+    "license": "Open"
+  },
+  "hn-tech-sentiment": {
+    "provider": "Hacker News (Algolia)",
+    "url": "https://hn.algolia.com/api/v1/search",
+    "license": "Public API"
+  },
+  "spaceflight-news-count": {
+    "provider": "Spaceflight News API",
+    "url": "https://api.spaceflightnewsapi.net/v4/articles",
+    "license": "Open"
+  },
+  "pypi-downloads-requests": {
+    "provider": "PyPI Stats",
+    "url": "https://pypistats.org/api/packages/requests/recent",
+    "license": "Open"
+  },
+  "npm-downloads-react": {
+    "provider": "npm registry",
+    "url": "https://api.npmjs.org/downloads/point/last-day/react",
+    "license": "Public API"
+  },
+  "librariesio-sourcerank-react": {
+    "provider": "Libraries.io",
+    "url": "https://libraries.io/api/npm/react",
+    "license": "Open"
+  },
+  "usgs-earthquake-count": {
+    "provider": "USGS",
+    "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson",
+    "license": "Public domain"
+  },
+  "eurostat-eu-unemployment": {
+    "provider": "Eurostat",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m",
+    "license": "Open"
+  },
+  "uk-carbon-intensity": {
+    "provider": "National Grid ESO",
+    "url": "https://api.carbonintensity.org.uk/intensity",
+    "license": "Open"
+  },
+  "usgs-elevated-volcanoes": {
+    "provider": "USGS HANS",
+    "url": "https://volcanoes.usgs.gov/hans-public/api/volcano/getElevatedVolcanoes",
+    "license": "Public domain"
+  },
+  "pocketworld-space-weather": {
+    "provider": "PocketWorld (NOAA/GFZ/NASA)",
+    "url": "https://pocketworld.org/api/space-weather",
+    "license": "Open"
+  },
+  "kraken-xrp-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=XRPUSD",
+    "license": "Public market data"
+  },
+  "kraken-ada-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=ADAUSD",
+    "license": "Public market data"
+  },
+  "kraken-doge-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=DOGEUSD",
+    "license": "Public market data"
+  },
+  "kraken-dot-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=DOTUSD",
+    "license": "Public market data"
+  },
+  "kraken-link-usd": {
+    "provider": "Kraken",
+    "url": "https://api.kraken.com/0/public/Ticker?pair=LINKUSD",
+    "license": "Public market data"
+  },
+  "defi-fees-aave": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/summary/fees/aave",
+    "license": "Open"
+  },
+  "defi-open-interest-total": {
+    "provider": "DefiLlama",
+    "url": "https://api.llama.fi/overview/open-interest",
+    "license": "Open"
+  },
+  "pypi-daily-requests": {
+    "provider": "pypistats.org",
+    "url": "https://pypistats.org/api/packages/requests/overall",
+    "license": "Open"
+  },
+  "usgs-streamflow-mississippi": {
+    "provider": "USGS NWIS",
+    "url": "https://waterservices.usgs.gov/nwis/dv/?format=json&sites=07010000&parameterCd=00060&period=P7D",
+    "license": "Public domain"
+  },
+  "feodo-c2-count": {
+    "provider": "abuse.ch Feodo Tracker",
+    "url": "https://feodotracker.abuse.ch/downloads/ipblocklist.json",
+    "license": "Free public feed"
+  },
+  "nvd-new-cves-count": {
+    "provider": "NIST NVD",
+    "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=...",
+    "license": "Public domain"
+  },
+  "github-recent-commits": {
+    "provider": "GitHub",
+    "url": "https://api.github.com/search/commits?q=created:>...",
+    "license": "Free public API"
+  },
+  "geocables-incidents": {
+    "provider": "GeoCables",
+    "url": "https://geocables.com/api/v1/incidents",
+    "license": "CC BY 4.0"
+  },
+  "whiskyhunter-lot-count": {
+    "provider": "WhiskyHunter",
+    "url": "https://whiskyhunter.net/api/auctions_data/?format=json",
+    "license": "Free public"
+  },
+  "cheapshark-deal-count": {
+    "provider": "CheapShark",
+    "url": "https://www.cheapshark.com/api/1.0/deals?storeID=1",
+    "license": "Free public"
+  },
+  "espn-nfl-score-count": {
+    "provider": "ESPN",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard",
+    "license": "Public API"
+  },
+  "espn-nba-score-count": {
+    "provider": "ESPN",
+    "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+    "license": "Public API"
+  },
+  "open-meteo-berlin-temp": {
+    "provider": "Open-Meteo",
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m",
+    "license": "CC BY 4.0"
+  },
+  "steam-csgo-players": {
+    "provider": "Valve/Steam",
+    "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=730",
+    "license": "Public API"
+  },
+  "steam-dota2-players": {
+    "provider": "Valve/Steam",
+    "url": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=570",
+    "license": "Public API"
+  },
+  "drug-approvals-latest": {
+    "provider": "openFDA",
+    "url": "https://api.fda.gov/drug/drugsfda.json",
+    "license": "Public domain"
+  },
+  "drug-approvals-total": {
+    "provider": "openFDA",
+    "url": "https://api.fda.gov/drug/drugsfda.json",
+    "license": "Public domain"
+  }
+}

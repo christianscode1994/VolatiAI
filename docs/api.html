@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>API — VolatiAI</title>
+<meta name="description" content="VolatiAI API reference: endpoints, fields, examples. Interactive — every endpoint is tryable directly from this page.">
+<style>
+:root { --fg:#1a1a1a; --muted:#666; --border:#e0e0e0; --accent:#0a6; --code:#f5f5f5; --danger:#a00; }
+* { box-sizing: border-box; }
+body { font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:var(--fg); max-width:820px; margin:0 auto; padding:2rem 1.5rem; }
+h1 { margin:0 0 .25rem; font-size:1.75rem; letter-spacing:-.02em; }
+h2 { margin:2.25rem 0 .75rem; font-size:1.15rem; border-bottom:1px solid var(--border); padding-bottom:.35rem; }
+h3 { margin:1.5rem 0 .35rem; font-size:1rem; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--fg); }
+code { background:var(--code); padding:.1rem .35rem; border-radius:3px; font-size:.92em; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+pre { background:var(--code); padding:.75rem 1rem; border-radius:4px; overflow-x:auto; font-size:.85rem; line-height:1.45; }
+pre code { background:none; padding:0; }
+.endpoint { margin:1.5rem 0; }
+.endpoint .desc { color:var(--muted); margin:.5rem 0; }
+.try { margin:.5rem 0; }
+.try button { background:var(--accent); color:white; border:none; padding:.4rem .9rem; border-radius:4px; cursor:pointer; font-size:.88rem; }
+.try button:hover { background:#085; }
+.try button:disabled { background:#ccc; cursor:wait; }
+.try output { display:block; margin:.5rem 0 0; }
+.method { display:inline-block; background:var(--accent); color:white; padding:.05rem .4rem; border-radius:3px; font-size:.8em; font-family:ui-monospace,monospace; margin-right:.5rem; }
+nav.top { margin:0 0 2rem; font-size:.9rem; }
+nav.top a { color:var(--muted); margin-right:1.25rem; text-decoration:none; }
+nav.top a:hover { color:var(--fg); text-decoration:underline; }
+.note { border-left:3px solid var(--accent); padding:.35rem 0 .35rem 1rem; margin:1rem 0; color:var(--muted); font-style:italic; }
+table { width:100%; border-collapse:collapse; margin:.75rem 0; font-size:.92rem; }
+th, td { text-align:left; padding:.5rem .4rem; border-bottom:1px solid var(--border); vertical-align:top; }
+th { font-weight:600; color:var(--muted); font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; }
+footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); color:var(--muted); font-size:.88rem; }
+footer a { color:var(--fg); }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="./">home</a>
+  <a href="methodology.html">methodology</a>
+  <a href="api.html"><strong>api</strong></a>
+  <a href="summary.html">summary</a>
+  <a href="dashboard.html">dashboard</a>
+  <a href="health.html">health</a>
+  <a href="attribution.json">attribution</a>
+</nav>
+
+<h1>API</h1>
+<p style="color:#666">Every endpoint is public and CORS-enabled. No API key. Try any endpoint directly below.</p>
+
+<div class="note">Base URL: <code>https://sector-slow.fourieranalys.workers.dev</code>. All responses are JSON. All endpoints are read-only except <code>?snapshot=1</code>.</div>
+
+<h2>Correlation endpoints</h2>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/_correlation</h3>
+<p class="desc">All surfaced pairs with full statistical fields. This is the primary endpoint.</p>
+<div class="try">
+<button onclick="tryEndpoint('_correlation')">Try it</button>
+<output id="out-_correlation"></output>
+</div>
+<pre><code>curl -s "https://sector-slow.fourieranalys.workers.dev/_correlation" | jq '.pairs_count, .pairs_evaluated'</code></pre>
+<p class="desc">Fields: <code>a</code>, <code>b</code>, <code>r</code>, <code>n</code>, <code>p_value</code>, <code>p_bh</code>, <code>bh_significant</code>, <code>perm_p</code>, <code>ci_low</code>, <code>ci_high</code>, <code>ci_width</code>, <code>provenance</code>, <code>stale_data</code>, <code>verdict</code>, <code>tier</code>, <code>contradiction</code>. Full definitions in <a href="methodology.html">methodology</a>.</p>
+</div>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/_correlation?days=N</h3>
+<p class="desc">Stability tracking over the last N snapshots. Shows which pairs persist across days.</p>
+<div class="try">
+<button onclick="tryEndpoint('_correlation?days=7')">Try it</button>
+<output id="out-_correlation?days=7"></output>
+</div>
+<p class="desc">Additional fields: <code>days_present</code>, <code>stability_pct</code>, <code>r_mean</code>, <code>r_min</code>, <code>r_max</code>, <code>pareto</code>. Also returns <code>drifts[]</code> (Frobenius distance between consecutive snapshots) and top-level <code>transitivity</code>.</p>
+</div>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/_correlation?snapshot=1</h3>
+<p class="desc">Manually write today's snapshot to <code>_corr_&lt;date&gt;</code>. Idempotent — skips if already written. The cron writes it automatically at 03:57 UTC, so this is only for manual triggers.</p>
+</div>
+
+<h2>Sector endpoints</h2>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/signal/&lt;sector&gt;</h3>
+<p class="desc">Current value and delta for one sector.</p>
+<div class="try">
+<button onclick="tryEndpoint('signal/treasuries')">Try it</button>
+<output id="out-signal/treasuries"></output>
+</div>
+<p class="desc">Returns <code>delta</code> (current, previous, pct_change, actual_window_days), <code>context</code> (history_points), <code>sources</code> (healthy/failed), and a pre-formatted <code>summary</code> string.</p>
+</div>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/history/&lt;sector&gt;</h3>
+<p class="desc">Full time-series for one sector. This is what the correlation engine reads.</p>
+<div class="try">
+<button onclick="tryEndpoint('history/treasuries')">Try it</button>
+<output id="out-history/treasuries"></output>
+</div>
+<p class="desc">Returns <code>metric</code>, <code>points</code>, <code>first</code>, <code>last</code>, and <code>history[]</code> array of <code>{t, v}</code> — Unix-millisecond timestamp and value.</p>
+</div>
+
+<h2>Operational endpoints</h2>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/health</h3>
+<p class="desc">Basic health check. Returns <code>{ok: true}</code> if the worker is up.</p>
+<div class="try">
+<button onclick="tryEndpoint('health')">Try it</button>
+<output id="out-health"></output>
+</div>
+</div>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/health?full=1</h3>
+<p class="desc">Deep health check: cron status, calibration status, shard coverage, audit findings.</p>
+<div class="try">
+<button onclick="tryEndpoint('health?full=1')">Try it</button>
+<output id="out-health?full=1"></output>
+</div>
+<p class="desc">Key fields: <code>checks.cron.shards_today.{seen,expected}</code>, <code>checks.cron.last_run</code>, <code>checks.calibration</code>, <code>checks.sectors.shards_merged</code>.</p>
+</div>
+
+<div class="endpoint">
+<h3><span class="method">GET</span>/metrics</h3>
+<p class="desc">Pipeline health: how many sectors are tracked, healthy, failing.</p>
+<div class="try">
+<button onclick="tryEndpoint('metrics')">Try it</button>
+<output id="out-metrics"></output>
+</div>
+</div>
+
+<h2>Field reference</h2>
+
+<table>
+<tr><th>Field</th><th>Meaning</th></tr>
+<tr><td><code>r</code></td><td>Pearson correlation on detrended residuals</td></tr>
+<tr><td><code>n</code></td><td>Common daily observations (>= 10 required)</td></tr>
+<tr><td><code>p_bh</code></td><td>Benjamini-Hochberg adjusted p-value (q=0.05, m≈5000)</td></tr>
+<tr><td><code>bh_significant</code></td><td>Survives multiple-testing correction</td></tr>
+<tr><td><code>perm_p</code></td><td>Permutation p-value (2000 shuffles, assumption-free)</td></tr>
+<tr><td><code>ci_width</code></td><td>Fisher 95% CI width on r (higher = less confident)</td></tr>
+<tr><td><code>provenance</code></td><td>Two sources of same underlying metric</td></tr>
+<tr><td><code>stale_data</code></td><td>Artifact of batch-update counters</td></tr>
+<tr><td><code>verdict</code></td><td><code>confirm:provenance</code>, <code>surface</code>, <code>suppress:*</code>, <code>dispute:*</code></td></tr>
+<tr><td><code>tier</code></td><td>P (provenance) / A / B / C / D</td></tr>
+<tr><td><code>contradiction</code></td><td>Prior violated (only fires for known priors)</td></tr>
+<tr><td><code>stability_pct</code></td><td>Fraction of available days this pair appeared</td></tr>
+<tr><td><code>r_range</code></td><td>r_max - r_min across snapshots</td></tr>
+<tr><td><code>drifts[]</code></td><td>Frobenius distance between consecutive snapshots</td></tr>
+<tr><td><code>pareto</code></td><td>On frontier of (stability, |r|) — not dominated by any other pair</td></tr>
+</table>
+
+<h2>Rate limits</h2>
+<p>No API key, no explicit rate limit. Please be considerate: this runs on Cloudflare Workers Free tier, which allows ~100k requests/day. A single page load of the dashboard makes ~2 requests. Reasonable for exploration and light automation.</p>
+
+<h2>CORS</h2>
+<p>All endpoints send <code>Access-Control-Allow-Origin: *</code>. You can call them from any origin, including a browser on another domain or a static page like this one.</p>
+
+<h2>Data freshness</h2>
+<p>The cron runs 5 shards between 03:17 and 03:57 UTC daily. Data from <code>/history</code> and <code>/signal</code> refreshes nightly. The <code>/_correlation</code> endpoint computes on-demand from current KV state, so it reflects the most recent history points (typically up to yesterday).</p>
+
+<footer>
+  <p>VolatiAI publishes correlation analysis of public-domain data. Every claim carries its own uncertainty. <a href="methodology.html">How every field is computed →</a></p>
+  <p><a href="./">← back to VolatiAI</a></p>
+</footer>
+
+<script>
+async function tryEndpoint(path) {
+  const out = document.getElementById('out-' + path);
+  const btn = event.target;
+  out.innerHTML = '<em style="color:#666">Loading…</em>';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://sector-slow.fourieranalys.workers.dev/' + path);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const pretty = JSON.stringify(data, null, 2);
+    // Truncate long arrays so page stays readable
+    const truncated = pretty.length > 3000
+      ? pretty.slice(0, 3000) + '\n... (truncated)'
+      : pretty;
+    out.innerHTML = '<pre><code>' + escapeHtml(truncated) + '</code></pre>';
+  } catch (e) {
+    out.innerHTML = '<pre><code style="color:#a00">Error: ' + escapeHtml(String(e.message || e)) + '</code></pre>';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+</script>
+</body>
+</html>

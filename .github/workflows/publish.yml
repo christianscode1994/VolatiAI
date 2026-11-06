@@ -1,0 +1,78 @@
+name: volatiai-publish
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install nostr dependency
+        run: pip install --quiet pynostr websocket-client
+
+      - name: Build message
+        run: |
+          curl -s "https://sector-slow.fourieranalys.workers.dev/latest" \
+            | python3 scripts/build_message.py > /tmp/message.txt
+          cat /tmp/message.txt
+
+      - name: Check if message changed
+        id: check
+        run: |
+          NEW=$(sha256sum /tmp/message.txt | cut -d' ' -f1)
+          CACHED=$(curl -s "https://sector-slow.fourieranalys.workers.dev/status" | jq -r '.last_publish_hash // "none"')
+          echo "new_hash=$NEW"        >> $GITHUB_OUTPUT
+          echo "cached_hash=$CACHED"  >> $GITHUB_OUTPUT
+          echo "new=$NEW"
+          echo "cached=$CACHED"
+          if [ "$NEW" = "$CACHED" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "⏭️  Message unchanged — skipping publish"
+          else
+            echo "changed=true"  >> $GITHUB_OUTPUT
+            echo "📣 Message changed — publishing"
+          fi
+
+      - name: Publish
+        id: publish
+        if: steps.check.outputs.changed == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MASTODON_INSTANCE: ${{ secrets.MASTODON_INSTANCE }}
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}
+          NOSTR_RELAY: ${{ secrets.NOSTR_RELAY }}
+        run: |
+          python3 volatiai_publish.py "$(cat /tmp/message.txt)"
+
+      - name: Record published hash
+        if: steps.check.outputs.changed == 'true' && steps.publish.outcome == 'success'
+        run: |
+          HASH="${{ steps.check.outputs.new_hash }}"
+          echo "Recording hash: [$HASH] (length: ${#HASH})"
+          RESP=$(curl -sS -X POST "https://sector-slow.fourieranalys.workers.dev/publish-hash" \
+            -H "Content-Type: application/json" \
+            -d "{\"hash\":\"$HASH\"}")
+          echo "Response: $RESP"
+          if echo "$RESP" | grep -q '"ok":true'; then
+            echo "✅ Hash stored"
+          else
+            echo "⚠️  Hash storage failed (KV free-tier write limit) — content published, continuing"
+          fi

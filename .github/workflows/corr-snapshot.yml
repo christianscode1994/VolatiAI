@@ -1,0 +1,42 @@
+name: Correlation snapshot
+
+# Runs daily at 04:15 UTC — after all 5 cron shards complete (03:17-03:57).
+# External trigger means the ~5,000-pair correlation computation happens
+# in Cloudflare's standard HTTP path, not the CPU-limited cron path.
+
+on:
+  schedule:
+    - cron: '15 4 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: volatiai-main-writer
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger snapshot write
+        run: |
+          set -euo pipefail
+          DAY=$(date -u +%Y-%m-%d)
+          echo "Triggering snapshot for $DAY"
+
+          RESPONSE=$(curl -sf "https://sector-slow.fourieranalys.workers.dev/_correlation?snapshot=1" \
+            -H "User-Agent: VolatiAI/1.0 (GitHubActions)")
+
+          PAIRS=$(echo "$RESPONSE" | jq -r '.pairs_count // "unknown"')
+          echo "Snapshot written: $PAIRS pairs"
+
+          # Verify the KV key now exists for today
+          CHECK=$(curl -sf "https://sector-slow.fourieranalys.workers.dev/_correlation?days=1")
+          DATES=$(echo "$CHECK" | jq -r '.dates[0] // "none"')
+
+          if [ "$DATES" != "$DAY" ]; then
+            echo "FAIL: KV key _corr_$DAY not present (found: $DATES)"
+            exit 1
+          fi
+
+          echo "✓ Snapshot verified: _corr_$DAY exists with $PAIRS pairs"

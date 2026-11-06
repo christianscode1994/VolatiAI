@@ -1,0 +1,17 @@
+bot:
+  name: "VolatiAI Telegram Bot"
+  enabled: true
+
+targets:
+  daily_channel: "@volatai_daily"
+  alerts_channel: "@volatai_alerts"
+  events_channel: "@volatai_events"
+
+format:
+  use_images: true
+  max_message_length: 4096
+
+schedule:
+  daily: "09:00"
+  hourly: true
+  alerts: true

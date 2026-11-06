@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "description": "Per-sector unit declarations for syntactic normalization",
+    "version": "0.1.0",
+    "coverage": "7 of 496 sectors (1.4%)",
+    "policy": "Add sectors as you encounter them; wrong units are worse than missing units"
+  },
+  "sectors": {
+    "treasuries": {
+      "unit": "percent_yield",
+      "dimension": "rate",
+      "direction": "raw",
+      "note": "US Treasury 10y yield in percent"
+    },
+    "treasuries-gov": {
+      "unit": "percent_yield",
+      "dimension": "rate",
+      "direction": "raw",
+      "note": "US Treasury 10y yield from treasury.gov"
+    },
+    "cisa-kev-count": {
+      "unit": "count",
+      "dimension": "event_count",
+      "direction": "raw"
+    },
+    "cisa-kev-total": {
+      "unit": "count",
+      "dimension": "event_count",
+      "direction": "raw",
+      "note": "Cumulative"
+    },
+    "gleif-leis": {
+      "unit": "count",
+      "dimension": "entity_count",
+      "direction": "raw"
+    },
+    "gleif-total-leis": {
+      "unit": "count",
+      "dimension": "entity_count",
+      "direction": "raw",
+      "note": "Cumulative"
+    },
+    "usgs-earthquakes": {
+      "unit": "count",
+      "dimension": "event_count",
+      "direction": "raw"
+    }
+  }
+}

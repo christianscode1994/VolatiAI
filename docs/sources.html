@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>VolatiAI · Data Sources</title>
+<style>
+body{font-family:-apple-system,system-ui,sans-serif;margin:2em;background:#0b0d10;color:#d5d7db;max-width:960px}
+h1{font-weight:500}
+table{width:100%;border-collapse:collapse;margin-top:1em;font-size:.85em}
+th,td{padding:.5em .7em;text-align:left;border-bottom:1px solid #1c2028}
+th{background:#141820;color:#8a8f96;font-weight:500}
+a{color:#6a9aef}
+.pill{padding:.15em .5em;border-radius:10px;font-size:.75em;background:#2c3140;color:#8a8f96}
+.pill-mit{background:#2e7d32;color:#fff}
+.pill-cc{background:#6a9aef;color:#fff}
+.pill-pd{background:#d4a017;color:#000}
+.pill-open{background:#2c3140;color:#d5d7db}
+</style></head><body>
+<h1>VolatiAI · Data Sources</h1>
+<p style="color:#8a8f96">Every signal in the pipeline traces to one of these sources. All are public, keyless, and redistribution-safe.</p>
+<table id="t"><thead><tr><th>sector</th><th>provider</th><th>license</th><th>source</th></tr></thead>
+<tbody id="rows"><tr><td colspan="4" style="text-align:center;padding:2em;color:#8a8f96">loading…</td></tr></tbody>
+</table>
+<script>
+fetch("provenance.json").then(r => r.json()).then(p => {
+  const rows = Object.entries(p).map(([sector, v]) => {
+    const lic = (v.license || "").toLowerCase();
+    const cls = lic.includes("mit") ? "pill-mit"
+              : lic.includes("cc") ? "pill-cc"
+              : lic.includes("public") ? "pill-pd" : "pill-open";
+    const url = (v.url || "").startsWith("http") ? `<a href="${v.url}" target="_blank">${v.url.replace(/^https?:\/\//,'').slice(0,50)}</a>` : v.url;
+    return `<tr><td>${sector}</td><td>${v.provider||""}</td><td><span class="pill ${cls}">${v.license||"?"}</span></td><td>${url||""}</td></tr>`;
+  });
+  document.getElementById("rows").innerHTML = rows.join("");
+});
+</script></body></html>
