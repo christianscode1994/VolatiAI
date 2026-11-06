@@ -96,7 +96,7 @@ def ask(model, prompt, timeout=300):
         "format": "json",
         "stream": False,
         "keep_alive": "10m",
-        "options": {"temperature": 0, "num_predict": 2048},
+        "options": {"temperature": 0, "num_predict": 4096},
     }, timeout=timeout)
     r.raise_for_status()
     raw_text = r.json()["message"]["content"]
