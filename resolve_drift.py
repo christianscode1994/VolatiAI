@@ -52,7 +52,11 @@ def get_workers():
         idx = w / "src" / "index.js"
         if not idx.exists(): continue
         text = idx.read_text(errors="ignore")
+        # Aggregate pattern: "name": { ... }
         for name in re.findall(r'^  "([a-z][a-z0-9-]+)":\s*\{', text, re.M):
+            out[name].add(w.name)
+        # Dedicated single-sector worker: const SECTOR = "..."
+        for name in re.findall(r'const SECTOR\s*=\s*"([a-z][a-z0-9-]+)"', text):
             out[name].add(w.name)
     return out
 
