@@ -1,8 +1,11 @@
 import { safeDigest } from "../../scripts/safe_digest.mjs";
 // mastodon.js — VolatiAI Mastodon Bot
 import { checkAttribution } from '../../connectors/attribution.js';
+import { fetchActiveText } from './_shared.js';
 
 export async function postToMastodon(message, sectors = []) {
+  const activeText = await fetchActiveText("mastodon");
+  if (activeText) message = activeText;
   const token = process.env.MASTODON_TOKEN;
   const instance = process.env.MASTODON_INSTANCE;
 

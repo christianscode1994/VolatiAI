@@ -1,8 +1,11 @@
 import { safeDigest } from "../../scripts/safe_digest.mjs";
 // telegram.js — VolatiAI Telegram Bot
 import { checkAttribution } from '../../connectors/attribution.js';
+import { fetchActiveText } from './_shared.js';
 
 export async function postToTelegram(message, sectors = []) {
+  const activeText = await fetchActiveText("telegram");
+  if (activeText) message = activeText;
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 

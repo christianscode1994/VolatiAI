@@ -1,8 +1,11 @@
 import { safeDigest } from "../../scripts/safe_digest.mjs";
 // bluesky.js — VolatiAI Bluesky Bot
 import { checkAttribution } from '../../connectors/attribution.js';
+import { fetchActiveText } from './_shared.js';
 
 export async function postToBluesky(message, sectors = []) {
+  const activeText = await fetchActiveText("bluesky");
+  if (activeText) message = activeText;
   const handle = process.env.BLUESKY_HANDLE;
   const password = process.env.BLUESKY_PASSWORD;
 

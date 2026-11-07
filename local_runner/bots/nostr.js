@@ -2,8 +2,11 @@ import { safeDigest } from "../../scripts/safe_digest.mjs";
 // nostr.js — VolatiAI Nostr Bot
 import { finalizeEvent, Relay } from "nostr-tools";
 import { checkAttribution } from '../../connectors/attribution.js';
+import { fetchActiveText } from './_shared.js';
 
 export async function postToNostr(message, sectors = []) {
+  const activeText = await fetchActiveText("nostr");
+  if (activeText) message = activeText;
   const privkey = process.env.NOSTR_PRIVATE_KEY;
   const relays = (process.env.NOSTR_RELAYS || "")
     .split(",")

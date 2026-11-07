@@ -1,8 +1,11 @@
 import { safeDigest } from "../../scripts/safe_digest.mjs";
 // slack.js — VolatiAI Slack Bot
 import { checkAttribution } from '../../connectors/attribution.js';
+import { fetchActiveText } from './_shared.js';
 
 export async function postToSlack(message, sectors = []) {
+  const activeText = await fetchActiveText("slack");
+  if (activeText) message = activeText;
   const webhook = process.env.SLACK_WEBHOOK_URL;
   if (!webhook) return;
 
