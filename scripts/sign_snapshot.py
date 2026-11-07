@@ -38,6 +38,8 @@ def _canon_bytes(obj):
     r = CANON(obj)
     if isinstance(r, bytes):
         return r
+    if isinstance(r, str):
+        return r.encode()  # don't re-JSON a string — it's already canonical
     return json.dumps(r, sort_keys=True, separators=(",", ":")).encode()
 
 
