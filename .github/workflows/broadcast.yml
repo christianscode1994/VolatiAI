@@ -6,8 +6,8 @@ on:
     - cron: "0 */6 * * *"   # every 6 hours
 
 concurrency:
-  group: volatiai-main-writer
-  cancel-in-progress: false
+  group: volatiai-broadcast-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   broadcast:
