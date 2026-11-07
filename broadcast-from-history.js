@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
-// WebSocket fallback for older Node
 if (typeof WebSocket === "undefined") {
   try {
     const { default: WS } = await import("ws");
@@ -14,7 +13,11 @@ if (typeof WebSocket === "undefined") {
 const HISTORY = "reports/signal_history.jsonl";
 const STATE = "reports/.broadcast-sent.json";
 const WINDOW_HOURS = 24;
+const BRIEF_URL = "christianscode1994.github.io/VolatiAI/brief.html";
 const DRY_RUN = process.argv.includes("--dry-run");
+
+// Skip these sectors from every broadcast (edit to add more noise)
+const SKIP_SECTORS = new Set(["sports-fitness"]);
 
 function loadState() {
   try { return JSON.parse(fs.readFileSync(STATE, "utf8")); }
@@ -38,6 +41,8 @@ function loadEvents() {
       if (isNaN(ts) || ts < cutoff) continue;
       if (!e.has_signal) continue;
       if (!e.summary || e.summary.toLowerCase() === "quiet") continue;
+      const sector = (e.sector || e.worker || "").toLowerCase();
+      if (SKIP_SECTORS.has(sector)) continue;
       events.push(e);
     } catch {}
   }
@@ -45,44 +50,103 @@ function loadEvents() {
   return events;
 }
 
-function formatMessage(events) {
-  const n = events.length;
-  const lines = [`VolatiAI — ${n} new signal${n === 1 ? "" : "s"}`, ""];
-  for (const e of events.slice(0, 10)) {
-    lines.push(`• ${e.sector || e.worker}: ${e.summary}`);
-    if (e.link) lines.push(`  ${e.link}`);
+function shortLabel(e) {
+  const s = e.summary || "";
+  const m = s.match(/New 13F:\s*13F-HR\s*-\s*(.+?)\s*\(\d+\)/i);
+  if (m) return m[1].trim();
+  return s.replace(/^New:\s*/i, "").slice(0, 45);
+}
+
+function cleanFull(e) {
+  const s = e.summary || "";
+  const m = s.match(/New 13F:\s*13F-HR\s*-\s*(.+?)\s*\(\d+\)\s*\(Filer\)/i);
+  if (m) return m[1].trim() + " filed 13F";
+  return s.replace(/^New:\s*/i, "");
+}
+
+function groupBySector(events) {
+  const g = {};
+  for (const e of events) {
+    const s = e.sector || e.worker || "other";
+    if (!g[s]) g[s] = [];
+    g[s].push(e);
+  }
+  return g;
+}
+
+// Full format for Telegram / Discord / Slack / Nostr
+function formatFull(events) {
+  const lines = [];
+  lines.push(`VolatiAI — ${events.length} new signal${events.length === 1 ? "" : "s"}`);
+  lines.push("");
+  const groups = groupBySector(events);
+  for (const [sector, items] of Object.entries(groups)) {
+    lines.push(`*${sector}* (${items.length}):`);
+    for (const e of items) {
+      lines.push(`  • ${cleanFull(e)}`);
+      if (e.link) lines.push(`    ${e.link}`);
+    }
     lines.push("");
   }
-  if (n > 10) lines.push(`... and ${n - 10} more`);
+  lines.push(`Full: ${BRIEF_URL}`);
   return lines.join("\n").trim();
 }
 
-async function postSlack(text) {
+// Short format for Bluesky / Mastodon — grouped by sector, no URLs
+function formatShort(events, maxSectors) {
+  const lines = [];
+  lines.push(`VolatiAI — ${events.length} new signal${events.length === 1 ? "" : "s"}`);
+  lines.push("");
+  const groups = groupBySector(events);
+  let shown = 0;
+  let totalShown = 0;
+  for (const [sector, items] of Object.entries(groups)) {
+    if (shown >= maxSectors) break;
+    const labels = items.slice(0, 3).map(shortLabel).join(", ");
+    const extra = items.length > 3 ? ` +${items.length - 3}` : "";
+    lines.push(`• ${sector} (${items.length}): ${labels}${extra}`);
+    totalShown += items.length;
+    shown++;
+  }
+  const hidden = events.length - totalShown;
+  if (hidden > 0) lines.push(`…and ${hidden} more`);
+  lines.push("");
+  lines.push(`Full: ${BRIEF_URL}`);
+  return lines.join("\n");
+}
+
+function truncate(text, max) {
+  if (text.length <= max) return text;
+  return text.slice(0, max - 3) + "...";
+}
+
+async function postSlack(events) {
   const u = process.env.SLACK_WEBHOOK_URL;
   if (!u) return "skipped";
-  await axios.post(u, { text }, { timeout: 10000 });
+  await axios.post(u, { text: truncate(formatFull(events), 2900) }, { timeout: 10000 });
   return "ok";
 }
 
-async function postDiscord(text) {
+async function postDiscord(events) {
   const u = process.env.DISCORD_WEBHOOK_URL;
   if (!u) return "skipped";
-  await axios.post(u, { content: text.slice(0, 1900) }, { timeout: 10000 });
+  await axios.post(u, { content: truncate(formatFull(events), 1900) }, { timeout: 10000 });
   return "ok";
 }
 
-async function postTelegram(text) {
+async function postTelegram(events) {
   const t = process.env.TELEGRAM_BOT_TOKEN;
   const c = process.env.TELEGRAM_CHAT_ID;
   if (!t || !c) return "skipped";
   await axios.post(`https://api.telegram.org/bot${t}/sendMessage`, {
     chat_id: c,
-    text: text.length > 4000 ? text.slice(0, 4000) + "..." : text,
+    text: truncate(formatFull(events), 4000),
+    parse_mode: "Markdown",
   }, { timeout: 10000 });
   return "ok";
 }
 
-async function postBluesky(text) {
+async function postBluesky(events) {
   const h = process.env.BLUESKY_HANDLE;
   const p = process.env.BLUESKY_PASSWORD;
   if (!h || !p) return "skipped";
@@ -97,7 +161,7 @@ async function postBluesky(text) {
       repo: auth.data.did,
       collection: "app.bsky.feed.post",
       record: {
-        text: text.length > 290 ? text.slice(0, 287) + "..." : text,
+        text: truncate(formatShort(events, 3), 295),
         createdAt: new Date().toISOString(),
       },
     },
@@ -106,7 +170,7 @@ async function postBluesky(text) {
   return "ok";
 }
 
-async function postMastodon(text) {
+async function postMastodon(events) {
   let inst = process.env.MASTODON_INSTANCE;
   const t = process.env.MASTODON_ACCESS_TOKEN;
   if (!inst || !t) return "skipped";
@@ -114,13 +178,13 @@ async function postMastodon(text) {
   if (!inst.startsWith("http")) inst = "https://" + inst;
   await axios.post(
     `${inst}/api/v1/statuses`,
-    { status: text.length > 490 ? text.slice(0, 487) + "..." : text, visibility: "public" },
+    { status: truncate(formatShort(events, 5), 490), visibility: "public" },
     { headers: { Authorization: `Bearer ${t}` }, timeout: 20000 }
   );
   return "ok";
 }
 
-async function postNostr(text) {
+async function postNostr(events) {
   const privkey = process.env.NOSTR_PRIVATE_KEY;
   const relaysRaw = process.env.NOSTR_RELAYS || "wss://relay.damus.io,wss://nos.lol,wss://relay.nostr.band";
   if (!privkey) return "skipped";
@@ -140,7 +204,7 @@ async function postNostr(text) {
       kind: 1,
       created_at: Math.floor(Date.now() / 1000),
       tags: [],
-      content: text.slice(0, 1000),
+      content: truncate(formatFull(events), 4000),
     }, sk);
     const relays = relaysRaw.split(",").map(r => r.trim()).filter(Boolean);
     const pool = new SimplePool();
@@ -161,13 +225,19 @@ async function main() {
     console.log("No new events.");
     return;
   }
-  const message = formatMessage(unsent);
+
   if (DRY_RUN) {
-    console.log(message);
-    console.log("\n" + unsent.length + " event(s)");
+    console.log("=== FULL (telegram/discord/slack/nostr) ===");
+    console.log(formatFull(unsent));
+    console.log("\n=== SHORT (bluesky) ===");
+    console.log(formatShort(unsent, 3));
+    console.log("\n=== MEDIUM (mastodon) ===");
+    console.log(formatShort(unsent, 5));
+    console.log(`\n${unsent.length} event(s) would post`);
     return;
   }
-  console.log("Broadcasting " + unsent.length + " event(s)...");
+
+  console.log(`Broadcasting ${unsent.length} event(s)...`);
   const platforms = [
     ["slack", postSlack],
     ["discord", postDiscord],
@@ -176,17 +246,26 @@ async function main() {
     ["mastodon", postMastodon],
     ["nostr", postNostr],
   ];
+  let successCount = 0;
   for (const [name, fn] of platforms) {
     try {
-      const r = await fn(message);
-      console.log(name + ": " + r);
+      const r = await fn(unsent);
+      console.log(`${name}: ${r}`);
+      if (r === "ok" || r.startsWith("ok ")) successCount++;
     } catch (e) {
-      console.log(name + ": failed (" + (e.response?.status || "error") + ")");
+      const status = e.response?.status ?? "error";
+      const msg = String(e.response?.data?.error ?? e.message).slice(0, 100);
+      console.log(`${name}: failed (${status}) — ${msg}`);
     }
   }
-  const now = new Date().toISOString();
-  for (const e of unsent) state.sent[e.signature || (e.worker + ":" + e.summary)] = now;
-  saveState(state);
+  if (successCount > 0) {
+    const now = new Date().toISOString();
+    for (const e of unsent) state.sent[e.signature || (e.worker + ":" + e.summary)] = now;
+    saveState(state);
+    console.log(`\n${unsent.length} event(s) marked sent (${successCount} platforms OK)`);
+  } else {
+    console.log("\nNo platform succeeded — will retry next run.");
+  }
 }
 
 main().catch(e => { console.error("fatal:", e.message); process.exit(1); });
