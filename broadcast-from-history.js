@@ -3,9 +3,18 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
+// WebSocket fallback for older Node
+if (typeof WebSocket === "undefined") {
+  try {
+    const { default: WS } = await import("ws");
+    globalThis.WebSocket = WS;
+  } catch {}
+}
+
 const HISTORY = "reports/signal_history.jsonl";
 const STATE = "reports/.broadcast-sent.json";
 const WINDOW_HOURS = 24;
+const DRY_RUN = process.argv.includes("--dry-run");
 
 function loadState() {
   try { return JSON.parse(fs.readFileSync(STATE, "utf8")); }
@@ -44,6 +53,7 @@ function formatMessage(events) {
     if (e.link) lines.push(`  ${e.link}`);
     lines.push("");
   }
+  if (n > 10) lines.push(`... and ${n - 10} more`);
   return lines.join("\n").trim();
 }
 
@@ -78,7 +88,8 @@ async function postBluesky(text) {
   if (!h || !p) return "skipped";
   const auth = await axios.post(
     "https://bsky.social/xrpc/com.atproto.server.createSession",
-    { identifier: h, password: p }, { timeout: 10000 }
+    { identifier: h, password: p },
+    { timeout: 10000 }
   );
   await axios.post(
     "https://bsky.social/xrpc/com.atproto.repo.createRecord",
@@ -109,42 +120,72 @@ async function postMastodon(text) {
   return "ok";
 }
 
+async function postNostr(text) {
+  const privkey = process.env.NOSTR_PRIVATE_KEY;
+  const relaysRaw = process.env.NOSTR_RELAYS || "wss://relay.damus.io,wss://nos.lol,wss://relay.nostr.band";
+  if (!privkey) return "skipped";
+  if (!/^[0-9a-fA-F]{64}$/.test(privkey)) {
+    return "skipped (key is " + privkey.length + " chars, need 64-char hex)";
+  }
+  try {
+    const { finalizeEvent } = await import("nostr-tools/pure");
+    const { SimplePool } = await import("nostr-tools/pool");
+    const hexToBytes = (hex) => {
+      const b = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) b[i / 2] = parseInt(hex.substr(i, 2), 16);
+      return b;
+    };
+    const sk = hexToBytes(privkey);
+    const event = finalizeEvent({
+      kind: 1,
+      created_at: Math.floor(Date.now() / 1000),
+      tags: [],
+      content: text.slice(0, 1000),
+    }, sk);
+    const relays = relaysRaw.split(",").map(r => r.trim()).filter(Boolean);
+    const pool = new SimplePool();
+    const results = await Promise.allSettled(pool.publish(relays, event));
+    pool.close(relays);
+    const ok = results.filter(r => r.status === "fulfilled").length;
+    return ok > 0 ? ("ok (" + ok + "/" + relays.length + " relays)") : ("failed (0/" + relays.length + " relays)");
+  } catch (e) {
+    return "failed: " + String(e.message || e).slice(0, 100);
+  }
+}
+
 async function main() {
   const state = loadState();
   const all = loadEvents();
-  const unsent = all.filter(e => !state.sent[e.signature || `${e.worker}:${e.summary}`]);
-
+  const unsent = all.filter(e => !state.sent[e.signature || (e.worker + ":" + e.summary)]);
   if (unsent.length === 0) {
     console.log("No new events.");
     return;
   }
-
   const message = formatMessage(unsent);
-
-  if (process.argv.includes("--dry-run")) {
+  if (DRY_RUN) {
     console.log(message);
-    console.log(`\n${unsent.length} event(s)`);
+    console.log("\n" + unsent.length + " event(s)");
     return;
   }
-
-  console.log(`Broadcasting ${unsent.length} event(s)...`);
-  for (const [name, fn] of [
+  console.log("Broadcasting " + unsent.length + " event(s)...");
+  const platforms = [
     ["slack", postSlack],
     ["discord", postDiscord],
     ["telegram", postTelegram],
     ["bluesky", postBluesky],
     ["mastodon", postMastodon],
-  ]) {
+    ["nostr", postNostr],
+  ];
+  for (const [name, fn] of platforms) {
     try {
       const r = await fn(message);
-      console.log(`${name}: ${r}`);
+      console.log(name + ": " + r);
     } catch (e) {
-      console.log(`${name}: failed (${e.response?.status || "error"})`);
+      console.log(name + ": failed (" + (e.response?.status || "error") + ")");
     }
   }
-
   const now = new Date().toISOString();
-  for (const e of unsent) state.sent[e.signature || `${e.worker}:${e.summary}`] = now;
+  for (const e of unsent) state.sent[e.signature || (e.worker + ":" + e.summary)] = now;
   saveState(state);
 }
 
