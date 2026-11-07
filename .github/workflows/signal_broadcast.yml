@@ -57,3 +57,17 @@ jobs:
           MAX_BATCH_SIZE: "20"
 
         run: node broadcast-v2.js
+
+      - name: Commit broadcast state
+        if: always()
+        run: |
+          git config user.name "VolatiAI Bot"
+          git config user.email "bot@volatiai.local"
+          git add reports/.broadcast-sent.json 2>/dev/null || true
+          if ! git diff --staged --quiet 2>/dev/null; then
+            git commit -m "broadcast: state update [skip ci]" || true
+            for i in 1 2 3; do
+              git pull --rebase origin main 2>/dev/null && git push 2>/dev/null && break
+              sleep 2
+            done
+          fi
