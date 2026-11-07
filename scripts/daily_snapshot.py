@@ -121,6 +121,7 @@ def main():
             json.dump({"ts": ts, "total": len(sectors), "ok": ok,
                        "failed": fail, "sectors": results}, f, indent=2)
         print(f"Wrote {out}")
+        subprocess.run(["python3", "scripts/sign_snapshot.py", str(out)], check=False)
 
     prev = load_previous(today)
     if prev is None:
