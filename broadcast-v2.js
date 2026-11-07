@@ -367,13 +367,16 @@ async function postNostr() {
 }
 
 // Run all in parallel, each isolated. One failure never blocks another.
+// Each platform has 30s to complete. Prevents indefinite hangs on
+// axios/fetch calls that never resolve (e.g. server accepted connection
+// but stopped responding). After this, top-level await always settles.
 await Promise.allSettled([
-  postTelegram(),
-  postDiscord(),
-  postSlack(),
-  postMastodon(),
-  postBluesky(),
-  postNostr(),
+  withTimeout(postTelegram(),  30000, "telegram"),
+  withTimeout(postDiscord(),   30000, "discord"),
+  withTimeout(postSlack(),     30000, "slack"),
+  withTimeout(postMastodon(),  30000, "mastodon"),
+  withTimeout(postBluesky(),   30000, "bluesky"),
+  withTimeout(postNostr(),     30000, "nostr"),
 ]);
 
 console.log(`[${new Date().toISOString()}] broadcast complete`);
