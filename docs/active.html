@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VolatiAI — Active Signals</title>
+<style>
+:root {
+  --bg: #0f1218; --panel: #151922; --border: #1f2530;
+  --text: #d4d8de; --muted: #6b7280;
+  --red: #ef4444; --amber: #f59e0b; --gray: #9ca3af;
+  --green: #10b981; --blue: #3b82f6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+header { padding: 32px 24px 24px; border-bottom: 1px solid var(--border); }
+h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.tagline { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+main { max-width: 880px; margin: 0 auto; padding: 24px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: 12px; margin-bottom: 16px; }
+.signals { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.card { position: relative; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px 14px 20px; }
+.card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 8px 0 0 8px; background: var(--gray); }
+.card.sev-warning::before { background: var(--amber); }
+.card.sev-alert::before, .card.sev-critical::before { background: var(--red); }
+.card.sev-notice::before { background: var(--blue); }
+.card.sev-info::before { background: var(--gray); }
+.card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.sector { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 500; color: var(--text); }
+.badges { display: flex; gap: 4px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 2px 7px; border-radius: 999px; background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.badge-sev { text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; color: var(--text); }
+.card.sev-alert .badge-sev, .card.sev-critical .badge-sev { color: var(--red); }
+.card.sev-warning .badge-sev { color: var(--amber); }
+.card.sev-notice .badge-sev { color: var(--blue); }
+.badge-score { color: var(--green); }
+.summary { color: var(--text); font-size: 13px; margin-top: 2px; word-break: break-word; }
+.ts { color: var(--muted); font-size: 11px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.loading, .empty, .error { color: var(--muted); text-align: center; padding: 48px 16px; font-size: 13px; }
+.error { color: var(--red); }
+footer { max-width: 880px; margin: 0 auto; padding: 24px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+footer a { color: var(--muted); text-decoration: underline; }
+footer a:hover { color: var(--text); }
+.disclaimer { margin: 0; font-size: 11px; }
+@media (max-width: 600px) {
+  header { padding: 24px 16px 20px; }
+  main { padding: 16px; }
+  .card-top { flex-direction: column; align-items: flex-start; }
+  .badges { margin-top: 4px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>VolatiAI</h1>
+  <p class="tagline">Active signals — ranked by severity × confidence × magnitude × novelty</p>
+</header>
+<main id="root"><p class="loading">Loading signals…</p></main>
+<footer>
+  <p><a href="attribution.json">Attribution</a> · <a href="graph.html">Graph</a> · <a href="intel.html">Raw intel</a></p>
+  <p class="disclaimer">⚠️ Info only · automated</p>
+</footer>
+<script>
+async function load() {
+  const root = document.getElementById('root');
+  try {
+    const res = await fetch('active.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    render(root, data);
+  } catch (e) {
+    root.innerHTML = '<div class="error">Could not load active.json (' + escape(e.message) + ').<br><small>The file may not be published yet, or there may be a network issue.</small></div>';
+  }
+}
+
+function render(root, data) {
+  if (!data.signals || data.signals.length === 0) {
+    root.innerHTML = '<p class="empty">No active signals in this snapshot. Check back in a few hours.</p>';
+    return;
+  }
+  const generated = data.generated_at ? new Date(data.generated_at).toLocaleString() : 'unknown';
+  const html =
+    '<div class="meta">' +
+      '<span>' + data.count + ' active of ' + data.scanned + ' scanned</span>' +
+      '<span>·</span><span>window ' + escape(data.window || '?') + '</span>' +
+      '<span>·</span><span>generated ' + escape(generated) + '</span>' +
+    '</div>' +
+    '<ol class="signals">' + data.signals.map(card).join('') + '</ol>';
+  root.innerHTML = html;
+}
+
+function card(s) {
+  const sev = escape(s.severity || 'info');
+  const ts = s.timestamp ? '<div class="ts">' + escape(new Date(s.timestamp).toLocaleString()) + '</div>' : '';
+  return '<li class="card sev-' + sev + '">' +
+    '<div class="card-top">' +
+      '<span class="sector">' + escape(s.sector || '?') + '</span>' +
+      '<span class="badges">' +
+        '<span class="badge badge-sev">' + sev + '</span>' +
+        '<span class="badge">mag ' + fmt(s.magnitude) + '</span>' +
+        '<span class="badge">conf ' + fmt(s.confidence) + '</span>' +
+        '<span class="badge badge-score">' + fmt(s.score) + '</span>' +
+      '</span>' +
+    '</div>' +
+    '<div class="summary">' + escape(s.summary || '(no summary)') + '</div>' +
+    ts +
+  '</li>';
+}
+
+function fmt(v) {
+  if (v == null) return '—';
+  if (typeof v !== 'number') return escape(String(v));
+  if (Math.abs(v) >= 1000) return v.toFixed(0);
+  return v.toFixed(2);
+}
+
+function escape(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+load();
+setInterval(load, 6 * 60 * 60 * 1000);
+</script>
+</body>
+</html>
