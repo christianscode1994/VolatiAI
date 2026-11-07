@@ -99,6 +99,10 @@ def sign_file(path):
 
     snap = json.loads(path.read_text())
 
+    # Add signed_at (required by verify_signature.py)
+    from datetime import datetime, timezone
+    snap["signed_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
     # 1. Compute hash from payload WITHOUT hash/prev_hash/sig/pubkey_id
     base_payload = {k: v for k, v in snap.items()
                     if k not in ("hash", "prev_hash", "signature", "pubkey_id")}
