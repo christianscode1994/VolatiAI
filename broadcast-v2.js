@@ -287,7 +287,8 @@ async function postMastodon() {
   }
   await pause("mastodon");
   try {
-    const instance = process.env.MASTODON_INSTANCE.replace(/\/$/, "");
+    let instance = process.env.MASTODON_INSTANCE.replace(/\/$/, "");
+    if (!instance.startsWith("http")) instance = "https://" + instance;
     const text = fitForPlatform(safeDigest(forMastodon, "mastodon"), 490);
     const r = await axios.post(
       `${instance}/api/v1/statuses`,
