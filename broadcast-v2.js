@@ -68,11 +68,18 @@ const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals";
 let coherence = null;
 let correlation = null;
 let cronStatus = null;
+// Hard timeout that MUST settle, regardless of whether fetch honors abort
+const withTimeout = (promise, ms, label) => Promise.race([
+  promise,
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms)
+  ),
+]);
 try {
   const [cohRes, corrRes, cronRes] = await Promise.allSettled([
-    fetch(WORKER + "/_coherence", { signal: AbortSignal.timeout(15000) }),
-    fetch(WORKER + "/_correlation", { signal: AbortSignal.timeout(15000) }),
-    fetch(WORKER + "/_cron_status", { signal: AbortSignal.timeout(15000) }),
+    withTimeout(fetch(WORKER + "/_coherence"),  10000, "coherence"),
+    withTimeout(fetch(WORKER + "/_correlation"), 10000, "correlation"),
+    withTimeout(fetch(WORKER + "/_cron_status"), 10000, "cron_status"),
   ]);
   if (cohRes.status === "fulfilled" && cohRes.value.ok) coherence = await cohRes.value.json();
   if (corrRes.status === "fulfilled" && corrRes.value.ok) correlation = await corrRes.value.json();
