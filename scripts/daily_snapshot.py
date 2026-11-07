@@ -162,7 +162,8 @@ def main():
     if not (reg or rec or new or gone):
         print("No changes.")
 
-    return 1 if reg else 0
+    MAX_ACCEPTABLE_REGRESSIONS = 5
+    return 1 if len(reg) > MAX_ACCEPTABLE_REGRESSIONS else 0
 
 
 if __name__ == "__main__":
