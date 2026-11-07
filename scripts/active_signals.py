@@ -17,6 +17,11 @@ INTEL_HTML_PATH = Path("docs/intel.html")
 HISTORY_PATH = Path("reports/signal_history.jsonl")
 OUTPUT_PATH = Path("docs/active.json")
 
+SEVERITY_OVERRIDES = {
+    "weather": "notice",
+    "7timer-berlin-temp": "notice",
+}
+
 SEVERITY_WEIGHT = {
     "info": 0.1,
     "notice": 1.0,
@@ -25,7 +30,7 @@ SEVERITY_WEIGHT = {
     "critical": 5.0,
 }
 
-ZERO_OK_SUFFIXES = ("_warnings", "_alerts", "_incidents", "_events", "_deals")
+ZERO_OK_SUFFIXES = ("_warnings", "_alerts", "_incidents", "_events", "_deals", "_count", "quakes")
 
 
 def load_sectors() -> list[dict]:
@@ -105,9 +110,15 @@ def novelty_factor(sector: str, history: dict) -> float:
 
 
 def score(d: dict, history: dict) -> float:
-    sev = SEVERITY_WEIGHT.get(d.get("severity", "info"), 1.0)
+    sev_name = SEVERITY_OVERRIDES.get(d.get("sector", ""), d.get("severity", "info"))
+    sev = SEVERITY_WEIGHT.get(sev_name, 1.0)
     conf = d.get("confidence", 0.0) or 0.0
     mag = d.get("magnitude", 0.0) or 0.0
+    if mag == 0:
+        delta = d.get("delta") or {}
+        pct = delta.get("pct_change")
+        if isinstance(pct, (int, float)) and pct != 0:
+            mag = abs(pct) * 0.1
     nov = novelty_factor(d.get("sector", ""), history)
     return sev * conf * math.sqrt(mag + 0.1) * nov
 
@@ -127,7 +138,7 @@ def main() -> None:
             continue
         candidates.append({
             "sector": d.get("sector"),
-            "severity": d.get("severity"),
+            "severity": SEVERITY_OVERRIDES.get(d.get("sector", ""), d.get("severity", "info")),
             "magnitude": d.get("magnitude"),
             "confidence": d.get("confidence"),
             "summary": d.get("summary"),
