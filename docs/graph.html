@@ -176,5 +176,40 @@ async function load() {
 
 load();
 </script>
+
+<script>
+// Filter noise sectors from diff view (runs after diff is rendered)
+(function() {
+  const NOISE = new Set([
+    "hackernews-top-scores","hn-tech-sentiment",
+    "steam-csgo-players","steam-dota2-players",
+    "usgs-earthquake-count","usgs-elevated-volcanoes",
+    "pypi-downloads-requests","pypi-daily-requests","pypi-activity",
+    "kraken-ada-usd","kraken-btc-usd","kraken-doge-usd",
+    "kraken-dot-usd","kraken-eth-usd","kraken-link-usd",
+    "kraken-sol-usd","kraken-xrp-usd",
+    "nbp-gold-spot","frankfurter-eursek","frankfurter-eurusd",
+    "home-assistant","dc-crime","whiskyhunter-lot-count",
+    "defi-total-tvl","defillama-protocol-count",
+    "dex-ethereum-volume","dex-total-volume-24h","dex-uniswap-volume",
+    "open-digger-openrank-vscode","treasuries-gov","fred-fedfunds"
+  ]);
+  function hideNoise() {
+    document.querySelectorAll(".diff-row").forEach(r => {
+      const s = r.querySelector(".diff-sector")?.textContent?.trim();
+      if (s && NOISE.has(s)) r.style.display = "none";
+    });
+  }
+  // Run at load and re-run if DOM changes (dynamic render)
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => { hideNoise(); setTimeout(hideNoise, 200); });
+  } else {
+    hideNoise(); setTimeout(hideNoise, 200);
+  }
+  const observer = new MutationObserver(hideNoise);
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
 </body>
 </html>
