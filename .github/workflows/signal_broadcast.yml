@@ -56,7 +56,7 @@ jobs:
           BATCHING_ENABLED: "true"
           MAX_BATCH_SIZE: "20"
 
-        run: node broadcast-v2.js
+        run: node broadcast-from-history.js
 
       - name: Commit broadcast state
         if: always()
