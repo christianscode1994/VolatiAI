@@ -56,4 +56,4 @@ jobs:
           BATCHING_ENABLED: "true"
           MAX_BATCH_SIZE: "20"
 
-        run: node workflows/signal_broadcast.js
+        run: node broadcast-v2.js
