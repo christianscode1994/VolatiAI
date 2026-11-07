@@ -237,6 +237,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "government-data",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "grid-demand",
       "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -313,11 +318,6 @@
     },
     {
       "sector": "natural-disasters",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -427,6 +427,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -497,12 +502,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "government-data",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -510,7 +510,7 @@
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "cve-feed",
@@ -522,11 +522,11 @@
     },
     {
       "sector": "defi-total-tvl",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "dex-total-volume-24h",
@@ -554,15 +554,15 @@
     },
     {
       "sector": "kraken-ada-usd",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "kraken-dot-usd",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "kraken-sol-usd",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -581,8 +581,12 @@
       "reason": "spam (62%) but no config found in workers"
     },
     {
+      "sector": "stablecoin-usdt-supply",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "steam-csgo-players",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -590,7 +594,7 @@
     },
     {
       "sector": "treasuries-gov",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
@@ -763,6 +767,11 @@
       "avg_conf": 1.0
     },
     {
+      "sector": "librariesio-sourcerank-react",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "met-artworks",
       "runs": 24,
       "avg_conf": 1.0
@@ -851,11 +860,6 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "librariesio-sourcerank-react",
-      "runs": 24,
-      "avg_conf": 0.96
     }
   ]
 }
