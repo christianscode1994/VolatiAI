@@ -1,14 +1,14 @@
 {
-  "timestamp": 1794085125184,
+  "timestamp": 1794086249355,
   "sectors": [
     {
       "sector": "slow",
-      "score": 0.998,
+      "score": 0.992,
       "workers": [
         {
           "url": "https://sector-slow.fourieranalys.workers.dev",
           "status": "OK",
-          "latency_ms": 31,
+          "latency_ms": 110,
           "jsonValid": true,
           "error": null
         }
@@ -16,12 +16,12 @@
     },
     {
       "sector": "dense",
-      "score": 0.998,
+      "score": 0.994,
       "workers": [
         {
           "url": "https://sector-dense.fourieranalys.workers.dev",
           "status": "OK",
-          "latency_ms": 27,
+          "latency_ms": 75,
           "jsonValid": true,
           "error": null
         }
@@ -34,7 +34,7 @@
         {
           "url": "https://sector-sparse.fourieranalys.workers.dev",
           "status": "OK",
-          "latency_ms": 32,
+          "latency_ms": 23,
           "jsonValid": true,
           "error": null
         }
