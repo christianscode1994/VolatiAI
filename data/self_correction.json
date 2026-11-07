@@ -237,11 +237,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "government-data",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "grid-demand",
       "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -318,6 +313,11 @@
     },
     {
       "sector": "natural-disasters",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -427,11 +427,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "theoretical-cs",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -493,7 +488,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 16/24 runs (67%)",
+      "reason": "conf=0 in 15/24 runs (62%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -502,7 +497,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
+      "sector": "government-data",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -510,11 +510,11 @@
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "cve-feed",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -522,7 +522,7 @@
     },
     {
       "sector": "defi-total-tvl",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
@@ -554,15 +554,15 @@
     },
     {
       "sector": "kraken-ada-usd",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "kraken-dot-usd",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "kraken-sol-usd",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -590,11 +590,11 @@
     },
     {
       "sector": "treasuries-gov",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "usgs-earthquake-count",
@@ -763,16 +763,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "kraken-link-usd",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "librariesio-sourcerank-react",
-      "runs": 24,
-      "avg_conf": 0.96
-    },
-    {
       "sector": "met-artworks",
       "runs": 24,
       "avg_conf": 1.0
@@ -861,6 +851,11 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 1.0
+    },
+    {
+      "sector": "librariesio-sourcerank-react",
+      "runs": 24,
+      "avg_conf": 0.96
     }
   ]
 }
