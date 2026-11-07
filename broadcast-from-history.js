@@ -19,6 +19,17 @@ const DRY_RUN = process.argv.includes("--dry-run");
 // Skip these sectors from every broadcast (edit to add more noise)
 const SKIP_SECTORS = new Set(["sports-fitness"]);
 
+// Sectors that need keyword filtering — only pass newsworthy items
+const FILTER_SECTORS = new Set(["news", "events"]);
+
+// Real news keywords — acquisitions, deals, money, regulation, security
+const NEWSWORTHY = /\b(acqui(?:re|red|sition)|merger|IPO|SEC|FTC|DOJ|lawsuit|bankrupt|shutdown|raise[sd]?\s+\$|valuation|deal|billion|million|hack|breach|leak|recall)\b/i;
+
+function isNewsworthy(summary) {
+  if (!summary) return false;
+  return NEWSWORTHY.test(summary);
+}
+
 function loadState() {
   try { return JSON.parse(fs.readFileSync(STATE, "utf8")); }
   catch { return { sent: {} }; }
@@ -43,6 +54,7 @@ function loadEvents() {
       if (!e.summary || e.summary.toLowerCase() === "quiet") continue;
       const sector = (e.sector || e.worker || "").toLowerCase();
       if (SKIP_SECTORS.has(sector)) continue;
+      if (FILTER_SECTORS.has(sector) && !isNewsworthy(e.summary || "")) continue;
       events.push(e);
     } catch {}
   }
