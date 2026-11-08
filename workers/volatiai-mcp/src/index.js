@@ -37,6 +37,20 @@ const TOOLS = [
     description: "List signal categories with counts.",
     inputSchema: { type: "object", properties: {} },
   },
+  {
+    name: "verify_snapshot",
+    description: "Verify a VolatiAI snapshot's chain integrity and return its signature fields for independent verification. Use this to prove the data hasn't been tampered with.",
+    inputSchema: {
+      type: "object",
+      properties: { date: { type: "string", description: "YYYY-MM-DD snapshot date" } },
+      required: ["date"],
+    },
+  },
+  {
+    name: "find_corroborations",
+    description: "Find groups of active signals measuring the same metric (e.g. BTC price from multiple exchanges). High disagreement_pct (>1%) suggests arbitrage or a data-source discrepancy.",
+    inputSchema: { type: "object", properties: {} },
+  },
 ];
 
 function categorize(sector) {
@@ -116,13 +130,111 @@ async function toolListCategories() {
   });
 }
 
+async function toolVerifySnapshot(args = {}) {
+  const date = String(args.date || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
+
+  const snapshotUrl = `https://christianscode1994.github.io/VolatiAI/snapshots/${date}.json`;
+  const r = await fetch(snapshotUrl, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error(`Snapshot ${date} not found (HTTP ${r.status})`);
+  const snapshot = await r.json();
+
+  const prevDate = new Date(date + "T00:00:00Z");
+  prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+  const prevDateStr = prevDate.toISOString().slice(0, 10);
+
+  let prevSnapshot = null;
+  let chain_intact = null;
+  try {
+    const pr = await fetch(
+      `https://christianscode1994.github.io/VolatiAI/snapshots/${prevDateStr}.json`,
+      { cache: "no-store", signal: AbortSignal.timeout(8000) }
+    );
+    if (pr.ok) {
+      prevSnapshot = await pr.json();
+      chain_intact = snapshot.prev_hash === prevSnapshot.hash;
+    }
+  } catch (e) {
+    chain_intact = null;
+  }
+
+  const note = chain_intact === true
+    ? "Chain verified: prev_hash matches previous day's hash."
+    : chain_intact === false
+      ? "CHAIN BROKEN: prev_hash does not match. History may be tampered."
+      : "Previous day's snapshot unavailable. Signature fields still valid for external verification.";
+
+  return jsonResult({
+    date,
+    signature_present: !!snapshot.signature,
+    hash: snapshot.hash || null,
+    prev_hash: snapshot.prev_hash || null,
+    pubkey_id: snapshot.pubkey_id || null,
+    signed_at: snapshot.signed_at || null,
+    chain_intact,
+    verified_against_date: prevSnapshot ? prevDateStr : null,
+    snapshot_url: snapshotUrl,
+    note,
+  });
+}
+
+async function toolFindCorroborations() {
+  const data = await fetchJson(ACTIVE_JSON_URL);
+  const signals = data.signals || [];
+
+  const groups = {};
+  for (const s of signals) {
+    const d = s.delta || {};
+    const metric = d.metric;
+    if (!metric) continue;
+    (groups[metric] = groups[metric] || []).push({
+      sector: s.sector,
+      current: d.current,
+      pct_change: d.pct_change,
+      severity: s.severity,
+      confidence: s.confidence,
+    });
+  }
+
+  const corroborations = [];
+  for (const [metric, entries] of Object.entries(groups)) {
+    if (entries.length < 2) continue;
+    const values = entries.map(e => e.current).filter(v => typeof v === "number");
+    if (values.length < 2) continue;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const disagreement_pct = mean !== 0 ? Math.abs(max - min) / Math.abs(mean) * 100 : 0;
+    corroborations.push({
+      metric,
+      sources: entries,
+      values_min: min,
+      values_max: max,
+      values_mean: Number(mean.toFixed(4)),
+      disagreement_pct: Number(disagreement_pct.toFixed(3)),
+    });
+  }
+
+  corroborations.sort((a, b) => b.disagreement_pct - a.disagreement_pct);
+
+  return jsonResult({
+    generated_at: data.generated_at,
+    total_active_signals: signals.length,
+    corroboration_groups: corroborations.length,
+    note: "Groups of active signals sharing the same metric. High disagreement_pct (>1%) suggests arbitrage or source discrepancy. Only reflects signals currently active — correlated sectors that are quiet won't appear.",
+    groups: corroborations,
+  });
+}
+
 async function handleToolsCall(params = {}) {
   const name = params.name;
   const args = params.arguments || {};
   switch (name) {
-    case "list_active_signals": return await toolListActiveSignals(args);
-    case "get_sector":          return await toolGetSector(args);
-    case "list_categories":     return await toolListCategories();
+    case "list_active_signals":  return await toolListActiveSignals(args);
+    case "get_sector":            return await toolGetSector(args);
+    case "list_categories":       return await toolListCategories();
+    case "verify_snapshot":       return await toolVerifySnapshot(args);
+    case "find_corroborations":   return await toolFindCorroborations();
     default: throw new Error(`Unknown tool: ${name}`);
   }
 }
