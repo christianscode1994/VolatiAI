@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.christianscode1994/volatiai-mcp",
+  "title": "VolatiAI MCP",
+  "description": "Ranked active signals across security, crypto, environment, tech, and more.",
+  "repository": {
+    "url": "https://github.com/christianscode1994/VolatiAI",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://volatiai-mcp.fourieranalys.workers.dev/mcp"
+    }
+  ]
+}
