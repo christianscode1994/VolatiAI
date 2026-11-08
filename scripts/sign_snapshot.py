@@ -55,8 +55,18 @@ def _load_or_create_key():
 
     env = os.environ.get("VOLATIAI_PRIVKEY")
     if env:
+        print(f"🔍 VOLATIAI_PRIVKEY: len={len(env)}, first={env[:1]!r}, last={env[-1:]!r}", file=sys.stderr)
+    else:
+        print("🔍 VOLATIAI_PRIVKEY: NOT SET", file=sys.stderr)
+    if env:
         try:
-            pem = base64.b64decode(env)
+            env = env.strip()
+            try:
+                pem = base64.b64decode(env, validate=True)
+            except Exception as _b64e:
+                print(f"⚠️ base64 decode failed: {type(_b64e).__name__}: {_b64e}", file=sys.stderr)
+                print(f"   after strip: len={len(env)}, first={env[:1]!r}, last={env[-1:]!r}", file=sys.stderr)
+                raise
         except Exception:
             pem = env.encode()
         return load_pem_private_key(pem, password=None)
