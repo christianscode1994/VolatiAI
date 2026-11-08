@@ -121,7 +121,7 @@ def main():
             json.dump({"ts": ts, "total": len(sectors), "ok": ok,
                        "failed": fail, "sectors": results}, f, indent=2)
         print(f"Wrote {out}")
-        subprocess.run(["python3", "scripts/sign_snapshot.py", str(out)], check=False)
+        subprocess.run(["python3", "scripts/sign_snapshot.py", str(out)], check=False, env={**__import__("os").environ})
         # Write current.json — the single canonical "what's true right now" pointer
         try:
             CURRENT_JSON = SNAPSHOT_DIR.parent / "current.json"
