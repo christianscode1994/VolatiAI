@@ -2812,20 +2812,6 @@ const COLLECTORS = {
     },
   },
 
-  "usaspending-new-awards": {
-    config: { metric: "new_awards_24h", threshold_pct: 20, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: ["top_recipients"] },
-    collectAll: async () => ({ sources: { new_awards_24h: await fetchSafe(async () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-      const r = await fetch("https://api.usaspending.gov/api/v2/search/spending_by_award/", {
-        method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ filters: { time_period: [{ start_date: yesterday, end_date: today }], award_type_codes: ["A","B","C","D"] }, fields: ["Award ID","Recipient Name","Award Amount"], page: 1, limit: 1, sort: "Award Amount", order: "desc" }),
-        signal: AbortSignal.timeout(20000),
-      });
-      const j = await r.json();
-      return j?.page_metadata?.total ?? 0;
-    }) } }),
-  },
 
   "ofac-new-designations": {
     config: { metric: "sdn_total", threshold_pct: 0.1, threshold_abs: 5, window: "24h", ttl: 86400, context_keys: [] },
