@@ -158,11 +158,16 @@ async function toolVerifySnapshot(args = {}) {
     chain_intact = null;
   }
 
-  const note = chain_intact === true
-    ? "Chain verified: prev_hash matches previous day's hash."
-    : chain_intact === false
-      ? "CHAIN BROKEN: prev_hash does not match. History may be tampered."
-      : "Previous day's snapshot unavailable. Signature fields still valid for external verification.";
+  let note;
+  if (!snapshot.signature && !snapshot.hash) {
+    note = "UNSIGNED SNAPSHOT: this file has no signature fields. Signing is not yet enabled in the publishing workflow.";
+  } else if (chain_intact === true) {
+    note = "Chain verified: prev_hash matches previous day's hash.";
+  } else if (chain_intact === false) {
+    note = "CHAIN BROKEN: prev_hash does not match. History may be tampered.";
+  } else {
+    note = "Signature present but previous day's snapshot unavailable. Signature can be verified independently against published pubkey.";
+  }
 
   return jsonResult({
     date,
