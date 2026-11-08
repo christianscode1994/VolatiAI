@@ -136,7 +136,6 @@ def main():
                 signed = json.loads(out.read_text())
             except Exception:
                 pass
-            from datetime import datetime, timezone
             current = {
                 "revision": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "snapshot_date": today,
