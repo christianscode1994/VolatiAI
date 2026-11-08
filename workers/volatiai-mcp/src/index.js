@@ -51,6 +51,11 @@ const TOOLS = [
     description: "Find groups of active signals measuring the same metric (e.g. BTC price from multiple exchanges). High disagreement_pct (>1%) suggests arbitrage or a data-source discrepancy.",
     inputSchema: { type: "object", properties: {} },
   },
+  {
+    name: "get_current_revision",
+    description: "Return the single canonical 'what is current' pointer: snapshot date, hash, signed_at, pubkey_id, and previous revision. Use this before querying a specific snapshot date to know what's freshest.",
+    inputSchema: { type: "object", properties: {} },
+  },
 ];
 
 function categorize(sector) {
@@ -235,6 +240,13 @@ async function toolFindCorroborations() {
   });
 }
 
+async function toolGetCurrentRevision() {
+  const r = await fetch("https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/current.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error(`current.json not found (HTTP ${r.status})`);
+  const current = await r.json();
+  return jsonResult(current);
+}
+
 async function handleToolsCall(params = {}) {
   const name = params.name;
   const args = params.arguments || {};
@@ -244,6 +256,7 @@ async function handleToolsCall(params = {}) {
     case "list_categories":       return await toolListCategories();
     case "verify_snapshot":       return await toolVerifySnapshot(args);
     case "find_corroborations":   return await toolFindCorroborations();
+    case "get_current_revision": return await toolGetCurrentRevision();
     default: throw new Error(`Unknown tool: ${name}`);
   }
 }
