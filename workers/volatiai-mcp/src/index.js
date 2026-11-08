@@ -152,7 +152,11 @@ async function toolVerifySnapshot(args = {}) {
     );
     if (pr.ok) {
       prevSnapshot = await pr.json();
-      chain_intact = snapshot.prev_hash === prevSnapshot.hash;
+      // Only compare hashes when BOTH snapshots are signed.
+      // null === null would incorrectly report "intact".
+      chain_intact = (snapshot.hash && prevSnapshot.hash)
+        ? (snapshot.prev_hash === prevSnapshot.hash)
+        : null;
     }
   } catch (e) {
     chain_intact = null;
