@@ -55,10 +55,6 @@ def _load_or_create_key():
 
     env = os.environ.get("VOLATIAI_PRIVKEY")
     if env:
-        print(f"🔍 VOLATIAI_PRIVKEY: len={len(env)}, first={env[:1]!r}, last={env[-1:]!r}", file=sys.stderr)
-    else:
-        print("🔍 VOLATIAI_PRIVKEY: NOT SET", file=sys.stderr)
-    if env:
         try:
             env = env.strip()
             try:

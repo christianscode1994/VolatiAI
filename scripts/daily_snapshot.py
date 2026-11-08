@@ -127,8 +127,8 @@ def main():
         )
         if _sr.stdout:
             print(_sr.stdout.strip())
-        if _sr.returncode != 0 or _sr.stderr.strip():
-            print(f"⚠️ signing output: {_sr.stderr.strip()[:500]}")
+        if _sr.returncode != 0:
+            print(f"⚠️ signing failed: {_sr.stderr.strip()[:500]}")
         # Write current.json — the single canonical "what's true right now" pointer
         try:
             CURRENT_JSON = SNAPSHOT_DIR.parent / "current.json"
