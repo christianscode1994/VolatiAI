@@ -122,6 +122,36 @@ def main():
                        "failed": fail, "sectors": results}, f, indent=2)
         print(f"Wrote {out}")
         subprocess.run(["python3", "scripts/sign_snapshot.py", str(out)], check=False)
+        # Write current.json — the single canonical "what's true right now" pointer
+        try:
+            CURRENT_JSON = SNAPSHOT_DIR.parent / "current.json"
+            prev_rev = None
+            if CURRENT_JSON.exists():
+                try:
+                    prev_rev = json.loads(CURRENT_JSON.read_text()).get("revision")
+                except Exception:
+                    prev_rev = None
+            signed = {}
+            try:
+                signed = json.loads(out.read_text())
+            except Exception:
+                pass
+            from datetime import datetime, timezone
+            current = {
+                "revision": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "snapshot_date": today,
+                "snapshot_url": f"snapshots/{today}.json",
+                "hash": signed.get("hash"),
+                "prev_hash": signed.get("prev_hash"),
+                "pubkey_id": signed.get("pubkey_id"),
+                "signed_at": signed.get("signed_at"),
+                "prev_revision": prev_rev,
+            }
+            CURRENT_JSON.write_text(json.dumps(current, indent=2) + "\n")
+            print(f"✓ wrote current.json (revision {current['revision'][:19]})")
+        except Exception as e:
+            print(f"⚠️ failed to write current.json: {e}")
+
 
     prev = load_previous(today)
     if prev is None:
