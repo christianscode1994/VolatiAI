@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T21:27:22.980146Z",
+  "generated_at": "2026-11-08T21:37:44.940868Z",
   "window": "6h",
   "scanned": 636,
   "candidates": 60,
@@ -20,7 +20,7 @@
         "actual_window_days": 12.2
       },
       "score": 16.064,
-      "timestamp": "2026-11-08T21:04:15.971Z",
+      "timestamp": "2026-11-08T21:17:42.470Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -28,17 +28,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "gco2_per_kwh 274 (+226.2% vs 13.5d ago)",
+      "summary": "gco2_per_kwh 277 (+229.8% vs 13.5d ago)",
       "delta": {
         "metric": "gco2_per_kwh",
-        "current": 274,
+        "current": 277,
         "previous": 84,
-        "pct_change": 226.19047619047618,
+        "pct_change": 229.76190476190476,
         "window": "1d",
         "actual_window_days": 13.5
       },
-      "score": 14.299,
-      "timestamp": "2026-11-08T21:03:39.878Z",
+      "score": 14.411,
+      "timestamp": "2026-11-08T21:17:41.881Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -56,7 +56,7 @@
         "actual_window_days": 15.1
       },
       "score": 13.45,
-      "timestamp": "2026-11-08T21:03:36.212Z",
+      "timestamp": "2026-11-08T21:17:38.278Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -64,17 +64,35 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "new_cves 323 (+144.7% vs 14.1d ago)",
+      "summary": "new_cves 320 (+142.4% vs 14.1d ago)",
       "delta": {
         "metric": "new_cves",
-        "current": 323,
+        "current": 320,
         "previous": 132,
-        "pct_change": 144.6969696969697,
+        "pct_change": 142.42424242424244,
         "window": "1d",
         "actual_window_days": 14.1
       },
-      "score": 11.451,
-      "timestamp": "2026-11-08T21:03:38.683Z",
+      "score": 11.361,
+      "timestamp": "2026-11-08T21:17:40.849Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
+    },
+    {
+      "sector": "hackernews-top-scores",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "top10_score_sum 1551 (+107.4% vs 15.1d ago)",
+      "delta": {
+        "metric": "top10_score_sum",
+        "current": 1551,
+        "previous": 748,
+        "pct_change": 107.35294117647058,
+        "window": "1d",
+        "actual_window_days": 15.1
+      },
+      "score": 9.875,
+      "timestamp": "2026-11-08T21:17:38.216Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -92,7 +110,7 @@
         "actual_window_days": 14.2
       },
       "score": 9.534,
-      "timestamp": "2026-11-08T21:03:38.620Z",
+      "timestamp": "2026-11-08T21:17:40.637Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -110,25 +128,7 @@
         "actual_window_days": 12.2
       },
       "score": 9.534,
-      "timestamp": "2026-11-08T21:04:15.820Z",
-      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
-    },
-    {
-      "sector": "hackernews-top-scores",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "top10_score_sum 1412 (+88.8% vs 15d ago)",
-      "delta": {
-        "metric": "top10_score_sum",
-        "current": 1412,
-        "previous": 748,
-        "pct_change": 88.77005347593582,
-        "window": "1d",
-        "actual_window_days": 15
-      },
-      "score": 8.988,
-      "timestamp": "2026-11-08T21:03:36.000Z",
+      "timestamp": "2026-11-08T21:17:42.244Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -136,17 +136,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "m45_count 11 (-78.0% vs 15d ago)",
+      "summary": "m45_count 11 (-78.0% vs 15.1d ago)",
       "delta": {
         "metric": "m45_count",
         "current": 11,
         "previous": 50,
         "pct_change": -78,
         "window": "1d",
-        "actual_window_days": 15
+        "actual_window_days": 15.1
       },
       "score": 8.432,
-      "timestamp": "2026-11-08T21:03:35.917Z",
+      "timestamp": "2026-11-08T21:17:37.941Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -164,7 +164,7 @@
         "actual_window_days": 16
       },
       "score": 8.353,
-      "timestamp": "2026-11-08T21:03:15.779Z",
+      "timestamp": "2026-11-08T21:17:30.957Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -182,7 +182,7 @@
         "actual_window_days": 13.5
       },
       "score": 7.57,
-      "timestamp": "2026-11-08T21:03:39.937Z",
+      "timestamp": "2026-11-08T21:17:41.368Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -200,7 +200,7 @@
         "actual_window_days": 15.3
       },
       "score": 7.201,
-      "timestamp": "2026-11-08T21:03:34.830Z",
+      "timestamp": "2026-11-08T21:17:37.484Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -218,7 +218,7 @@
         "actual_window_days": 15.1
       },
       "score": 6.429,
-      "timestamp": "2026-11-08T21:03:35.880Z",
+      "timestamp": "2026-11-08T21:17:38.058Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -236,7 +236,7 @@
         "actual_window_days": 15.1
       },
       "score": 6.348,
-      "timestamp": "2026-11-08T21:03:38.429Z",
+      "timestamp": "2026-11-08T21:17:40.222Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -244,17 +244,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "player_count 614377 (-32.8% vs 14d ago)",
+      "summary": "player_count 575545 (-37.1% vs 14d ago)",
       "delta": {
         "metric": "player_count",
-        "current": 614377,
+        "current": 575545,
         "previous": 914909,
-        "pct_change": -32.84829420193702,
+        "pct_change": -37.09265074450027,
         "window": "1d",
         "actual_window_days": 14
       },
-      "score": 5.519,
-      "timestamp": "2026-11-08T21:03:38.567Z",
+      "score": 5.855,
+      "timestamp": "2026-11-08T21:17:40.669Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -272,7 +272,7 @@
         "actual_window_days": 15.1
       },
       "score": 5.347,
-      "timestamp": "2026-11-08T21:03:35.892Z",
+      "timestamp": "2026-11-08T21:17:38.146Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -290,7 +290,7 @@
         "actual_window_days": 13.5
       },
       "score": 4.972,
-      "timestamp": "2026-11-08T21:03:40.140Z",
+      "timestamp": "2026-11-08T21:17:41.918Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -308,7 +308,7 @@
         "actual_window_days": 16.8
       },
       "score": 4.718,
-      "timestamp": "2026-11-08T21:03:15.764Z",
+      "timestamp": "2026-11-08T21:17:30.985Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -316,17 +316,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "active_phishings 999 (-21.8% vs 15d ago)",
+      "summary": "active_phishings 999 (-21.8% vs 15.1d ago)",
       "delta": {
         "metric": "active_phishings",
         "current": 999,
         "previous": 1277,
         "pct_change": -21.769772905246672,
         "window": "7d",
-        "actual_window_days": 15
+        "actual_window_days": 15.1
       },
       "score": 4.527,
-      "timestamp": "2026-11-08T21:03:32.520Z",
+      "timestamp": "2026-11-08T21:17:35.915Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -344,7 +344,7 @@
         "actual_window_days": 14.2
       },
       "score": 3.879,
-      "timestamp": "2026-11-08T21:03:36.871Z",
+      "timestamp": "2026-11-08T21:17:38.900Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -352,35 +352,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "dot_usd 0.8889 (-14.0% vs 14d ago)",
+      "summary": "dot_usd 0.8872 (-14.2% vs 14d ago)",
       "delta": {
         "metric": "dot_usd",
-        "current": 0.8889,
+        "current": 0.8872,
         "previous": 1.034,
-        "pct_change": -14.032882011605416,
+        "pct_change": -14.1972920696325,
         "window": "1d",
         "actual_window_days": 14
       },
-      "score": 3.678,
-      "timestamp": "2026-11-08T21:03:33.834Z",
-      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
-    },
-    {
-      "sector": "kraken-sol-usd",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "sol_usd 89.01 (-12.3% vs 14d ago)",
-      "delta": {
-        "metric": "sol_usd",
-        "current": 89.01,
-        "previous": 101.54,
-        "pct_change": -12.339964545991727,
-        "window": "1d",
-        "actual_window_days": 14
-      },
-      "score": 3.465,
-      "timestamp": "2026-11-08T21:03:32.177Z",
+      "score": 3.698,
+      "timestamp": "2026-11-08T21:17:37.539Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -388,17 +370,35 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "ada_usd 0.179818 (-12.3% vs 14d ago)",
+      "summary": "ada_usd 0.179331 (-12.6% vs 14d ago)",
       "delta": {
         "metric": "ada_usd",
-        "current": 0.179818,
+        "current": 0.179331,
         "previous": 0.20513,
-        "pct_change": -12.339492029444743,
+        "pct_change": -12.576902452103553,
         "window": "1d",
         "actual_window_days": 14
       },
-      "score": 3.465,
-      "timestamp": "2026-11-08T21:03:32.204Z",
+      "score": 3.496,
+      "timestamp": "2026-11-08T21:17:35.779Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
+    },
+    {
+      "sector": "kraken-sol-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "sol_usd 88.9 (-12.4% vs 14d ago)",
+      "delta": {
+        "metric": "sol_usd",
+        "current": 88.9,
+        "previous": 101.54,
+        "pct_change": -12.448296237935788,
+        "window": "1d",
+        "actual_window_days": 14
+      },
+      "score": 3.479,
+      "timestamp": "2026-11-08T21:17:35.711Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -416,7 +416,7 @@
         "actual_window_days": 12.2
       },
       "score": 3.463,
-      "timestamp": "2026-11-08T21:04:15.802Z",
+      "timestamp": "2026-11-08T21:17:42.385Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -424,17 +424,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "xrp_usd 1.15105 (-11.3% vs 14d ago)",
+      "summary": "xrp_usd 1.14418 (-11.8% vs 14d ago)",
       "delta": {
         "metric": "xrp_usd",
-        "current": 1.15105,
+        "current": 1.14418,
         "previous": 1.29744,
-        "pct_change": -11.28298803798249,
+        "pct_change": -11.812492292514488,
         "window": "1d",
         "actual_window_days": 14
       },
-      "score": 3.325,
-      "timestamp": "2026-11-08T21:03:32.220Z",
+      "score": 3.396,
+      "timestamp": "2026-11-08T21:17:35.637Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -442,17 +442,17 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "tvl_usd 80768793897 (-8.7% vs 15d ago)",
+      "summary": "tvl_usd 80768793897 (-8.7% vs 15.1d ago)",
       "delta": {
         "metric": "tvl_usd",
         "current": 80768793897,
         "previous": 88508539703,
         "pct_change": -8.744631684096875,
         "window": "1d",
-        "actual_window_days": 15
+        "actual_window_days": 15.1
       },
       "score": 2.961,
-      "timestamp": "2026-11-08T21:03:33.761Z",
+      "timestamp": "2026-11-08T21:17:37.412Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     }
   ]
