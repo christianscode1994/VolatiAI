@@ -25,6 +25,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: npm audit (fail on high/critical)
+        run: |
+          npm ci --omit=dev || npm install --omit=dev
+          npm audit --audit-level=high
+
       - name: Install crypto
         run: pip install cryptography
 
