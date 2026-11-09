@@ -3684,7 +3684,17 @@ async function runSectorForCron(sectorName, collector, env) {
   }
   const today = new Date().toISOString().slice(0, 10);
   const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
-  const valueChanged = !todayEntry || todayEntry.v !== current;
+  // Only write KV if the value has meaningfully changed (0.5% or more).
+  // Prevents float-noise writes and slow-cadence churn that exhausts free-tier quota.
+  const threshold = 0.005;
+  let valueChanged;
+  if (!todayEntry) {
+    valueChanged = true;  // first write of day
+  } else if (typeof todayEntry.v !== "number" || todayEntry.v === 0) {
+    valueChanged = true;  // need a baseline
+  } else {
+    valueChanged = Math.abs(current - todayEntry.v) / Math.abs(todayEntry.v) > threshold;
+  }
   if (!valueChanged) {
     if (envelope.has_signal) {
       try {
