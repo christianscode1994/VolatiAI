@@ -1,10 +1,13 @@
 {
-  "key_id": "volatiai-42c03bb2",
+  "key_id": "volatiai-b4175311",
   "alg": "Ed25519",
   "publicKeyMultibase": "z6MkgeaU8g7jHjNXDszfn459w2rSzEmbAwP4fWetyvwzP2PY",
   "publicKeyHex": "209d98071d5728823cc8187730fac2667383732b2cbc4fb2a7d988a16474ca3f",
   "use": "sig",
   "created": "2026-11-08T00:00:00Z",
   "supersedes": "volati-2026-01",
-  "note": "Active signing key. Fingerprint-derived key_id prevents silent rotation (see docs/KEY_ROTATION.md)."
+  "alsoKnownAs": [
+    "volatiai-v1"
+  ],
+  "note": "Active signing key. key_id derived as SHA-256(SPKI DER)[:8] \u2014 matches sign_snapshot.py _derive_pubkey_id(). See docs/KEY_ROTATION.md."
 }

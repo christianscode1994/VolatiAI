@@ -10,32 +10,32 @@
       "type": "Ed25519VerificationKey2020",
       "controller": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
       "publicKeyMultibase": "z6MkgN2f8BUnB4QfxL4824VEBoaSC3Q9vfDrkbRRKFWzkp2E",
-      "description": "DEPRECATED \u2014 historical key from 2026-10-24, signed no snapshots in the current chain. Kept for backward compatibility."
+      "description": "DEPRECATED \u2014 created 2026-10-24, signed no snapshots in the current signed chain. Kept for backward compatibility."
     },
     {
-      "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v0",
+      "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-cd49e04e",
       "type": "Ed25519VerificationKey2020",
       "controller": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
       "publicKeyMultibase": "z6Mkjtr3nVfMonwcfuMyQhf6vHsB9r264ZvyMvWfiSx62UUR",
-      "description": "Signed snapshots 2026-11-04 and 2026-11-05. Private key lost during silent rotation 2026-11-08. Fingerprint: volatiai-85eca340"
+      "description": "Signed snapshots 2026-11-04 and 2026-11-05 (historical pubkey_id label was 'volatiai-v1', shared with the current key due to a signer bug fixed 2026-11-09). Fingerprint: volatiai-cd49e04e. Private key lost during rotation 2026-11-08 \u2014 see docs/KEY_ROTATION.md."
     },
     {
-      "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-42c03bb2",
+      "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-b4175311",
       "type": "Ed25519VerificationKey2020",
       "controller": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
       "publicKeyMultibase": "z6MkgeaU8g7jHjNXDszfn459w2rSzEmbAwP4fWetyvwzP2PY",
-      "description": "Active signing key from 2026-11-08 onward. Fingerprint: volatiai-42c03bb2"
+      "description": "Active signing key from 2026-11-08 onward. Historical pubkey_id label was 'volatiai-v1' on 11-08/09; since 2026-11-09 fingerprint-derived. Fingerprint: volatiai-b4175311."
     }
   ],
   "authentication": [
     "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01",
-    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v0",
-    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-42c03bb2"
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-cd49e04e",
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-b4175311"
   ],
   "assertionMethod": [
     "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01",
-    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v0",
-    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-42c03bb2"
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-cd49e04e",
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-b4175311"
   ],
   "service": [
     {
@@ -53,5 +53,8 @@
       "type": "VolatiAIMcpEndpoint",
       "serviceEndpoint": "https://volatiai-mcp.fourieranalys.workers.dev/mcp"
     }
+  ],
+  "alsoKnownAs": [
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v1"
   ]
 }

@@ -1,14 +1,18 @@
 {
-  "key_id": "volatiai-85eca340",
+  "key_id": "volatiai-cd49e04e",
   "alg": "Ed25519",
   "publicKeyMultibase": "z6Mkjtr3nVfMonwcfuMyQhf6vHsB9r264ZvyMvWfiSx62UUR",
   "publicKeyHex": "50d8670e4e1962f1fddded03c4059587cef82bf50512e1feca27fdf313cb409a",
   "use": "sig",
   "created": "2026-11-04T00:00:00Z",
   "retired": "2026-11-08T00:00:00Z",
-  "retirement_reason": "Silent rotation on 2026-11-08 (see docs/KEY_ROTATION.md). Private key lost.",
+  "retirement_reason": "Silent rotation 2026-11-08 (private key lost) \u2014 see docs/KEY_ROTATION.md",
+  "alsoKnownAs": [
+    "volatiai-v1"
+  ],
   "verifies": [
     "2026-11-04",
     "2026-11-05"
-  ]
+  ],
+  "note": "key_id derived as SHA-256(SPKI DER)[:8], matching sign_snapshot.py convention. Historical pubkey_id label on snapshots is 'volatiai-v1' (shared with current key due to pre-fix signer bug)."
 }
