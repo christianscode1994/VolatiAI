@@ -73,6 +73,53 @@ setInterval(load, 60000);
 </script>
 </body></html>`;
 
+// === Multi-source median arbitration ===
+// Resolves a metric from 2+ independent sources. If they disagree by more
+// than the sector's max_disagreement_pct, returns ok:false so has_signal
+// won't fire. Preserves the {ok, data} shape the handler expects.
+function multiSourceMedian(results, config = {}) {
+  const maxDis = config.max_disagreement_pct ?? 20;
+  const vals = results
+    .filter(r => r && r.ok && typeof r.data === "number" && isFinite(r.data))
+    .map(r => r.data);
+
+  if (vals.length === 0) {
+    return { ok: false, error: "no_valid_sources" };
+  }
+
+  if (vals.length === 1) {
+    // Only one source responded — accept, but flag it
+    return { ok: true, data: vals[0], single_source: true };
+  }
+
+  const sorted = [...vals].sort((a, b) => a - b);
+  const median = sorted.length % 2
+    ? sorted[Math.floor(sorted.length / 2)]
+    : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
+
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const dis = mean !== 0 ? Math.abs(max - min) / Math.abs(mean) * 100 : 0;
+
+  if (dis > maxDis) {
+    return {
+      ok: false,
+      error: `disagreement_${dis.toFixed(1)}pct`,
+      rejected_values: vals,
+      disagreement_pct: dis,
+    };
+  }
+
+  return {
+    ok: true,
+    data: median,
+    source_count: vals.length,
+    disagreement_pct: parseFloat(dis.toFixed(3)),
+  };
+}
+
+
 async function fetchSafe(fn) {
   try { return { ok: true, data: await fn() }; }
   catch (e) { return { ok: false, error: String(e).slice(0, 120) }; }
@@ -1064,23 +1111,28 @@ const COLLECTORS = {
     }),
   },
   "kraken-sol-usd": {
-    config: { metric: "sol_usd", threshold_pct: 5.0, window: "1d", window_days: 1, ttl: 3600 },
-    collectAll: async () => ({
-      sources: {
-        sol_usd: await fetchSafe(async () => {
+    config: { metric: "sol_usd", threshold_pct: 5, threshold_abs: 1, window: "24h", ttl: 7200, max_disagreement_pct: 10 },
+    collectAll: async () => {
+      const [kraken, coinbase] = await Promise.all([
+        fetchSafe(async () => {
           const r = await fetch("https://api.kraken.com/0/public/Ticker?pair=SOLUSD",
             { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
-          if (!r.ok) throw new Error("http_" + r.status);
           const j = await r.json();
-          if (Array.isArray(j?.error) && j.error.length) throw new Error("kraken_" + j.error.join(","));
-          const result = j?.result || {};
-          const key = Object.keys(result)[0];
-          const v = parseFloat(result[key]?.c?.[0]);
-          if (!Number.isFinite(v)) throw new Error("no_price");
-          return v;
+          return parseFloat(j.result.SOLUSD.c[0]);
         }),
-      },
-    }),
+        fetchSafe(async () => {
+          const r = await fetch("https://api.exchange.coinbase.com/products/SOL-USD/ticker",
+            { headers: { "user-agent": "VolatiAI/1.0" }, signal: AbortSignal.timeout(15000) });
+          const j = await r.json();
+          return parseFloat(j.price);
+        }),
+      ]);
+      return {
+        sources: {
+          sol_usd: multiSourceMedian([kraken, coinbase], { max_disagreement_pct: 10 }),
+        },
+      };
+    },
   },
 
   "kraken-xrp-usd": {
