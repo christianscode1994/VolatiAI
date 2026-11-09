@@ -6,8 +6,23 @@ const SECTOR_BASES = [
   "https://sector-dense.fourieranalys.workers.dev",
   "https://sector-sparse.fourieranalys.workers.dev",
   "https://sector-slow.fourieranalys.workers.dev",
-];
-const SERVER_INFO = { name: "volatiai-mcp", version: "0.2.0" };
+  {
+    name: "get_anchor",
+    description: "Return anchor-log status for a snapshot date: was an anchor entry recorded, what was the file SHA-256 at anchor time vs now, is a FreeTSA .tsr present. Detects post-hoc rewrites that signature verification alone cannot.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Snapshot date YYYY-MM-DD." },
+      },
+      required: ["date"],
+    },
+  },
+  {
+    name: "get_trust_manifest",
+    description: "One-call discovery: returns all URLs, algorithms, tools, and the 4-step verification chain a consumer needs to independently verify VolatiAI data. No snapshot fetch. Use first to learn where everything lives.",
+    inputSchema: { type: "object", properties: {} },
+  },
+];const SERVER_INFO = { name: "volatiai-mcp", version: "0.2.0" };
 const PROTOCOL_VERSION = "2025-06-18";
 
 const TOOLS = [
@@ -413,6 +428,116 @@ async function toolFindCorroborations() {
   });
 }
 
+async function toolGetAnchor(args = {}) {
+  const date = String(args.date || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
+
+  const base = "https://christianscode1994.github.io/VolatiAI/snapshots/";
+
+  const anchorsRes = await fetch(base + "_anchors.jsonl", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!anchorsRes.ok) throw new Error("_anchors.jsonl fetch failed (HTTP " + anchorsRes.status + ")");
+  const anchorsText = await anchorsRes.text();
+
+  const matches = [];
+  for (const line of anchorsText.split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const e = JSON.parse(line);
+      if (e.date === date) matches.push(e);
+    } catch (err) { /* skip malformed */ }
+  }
+  const anchor = matches[0] || null;
+
+  const snapRes = await fetch(base + date + ".json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!snapRes.ok) throw new Error("Snapshot " + date + " not found (HTTP " + snapRes.status + ")");
+  const snapBytes = new Uint8Array(await snapRes.arrayBuffer());
+  const hashBuf = await crypto.subtle.digest("SHA-256", snapBytes);
+  const fileSha256Now = Array.from(new Uint8Array(hashBuf))
+    .map(b => b.toString(16).padStart(2, "0")).join("");
+
+  let snap = {};
+  try { snap = JSON.parse(new TextDecoder().decode(snapBytes)); } catch (e) { /* leave {} */ }
+
+  let tsaPresent = false;
+  try {
+    const tsrRes = await fetch(base + date + ".json.tsr", { method: "HEAD", cache: "no-store", signal: AbortSignal.timeout(5000) });
+    tsaPresent = tsrRes.ok;
+  } catch (e) { /* leave false */ }
+
+  const anchored = !!anchor;
+  let tampered = null;
+  if (anchor) tampered = (fileSha256Now !== anchor.file_sha256);
+
+  let note;
+  if (!anchored) {
+    note = "No anchor entry for " + date + ".";
+  } else if (tampered) {
+    note = "FILE CHANGED SINCE ANCHOR — investigate. anchored=" +
+           anchor.file_sha256.slice(0, 16) + "…  current=" + fileSha256Now.slice(0, 16) + "…";
+  } else {
+    note = "File matches anchor — unchanged since " + anchor.anchored_at + ".";
+  }
+
+  return jsonResult({
+    date,
+    anchored,
+    file_sha256_at_anchor: anchor ? anchor.file_sha256 : null,
+    file_sha256_now: fileSha256Now,
+    tampered_since_anchor: tampered,
+    anchored_at: anchor ? anchor.anchored_at : null,
+    tsa_file: anchor ? anchor.tsa_file : null,
+    tsa_present: tsaPresent,
+    tsa_source: anchor ? anchor.tsa_source : null,
+    snapshot_hash: snap.hash || null,
+    snapshot_signature_present: !!snap.signature,
+    snapshot_pubkey_id: snap.pubkey_id || null,
+    duplicate_anchor_entries: matches.length > 1 ? matches : undefined,
+    verify_instructions: {
+      signature: "Call verify_snapshot(date=\"" + date + "\") or run scripts/verify_signature.py",
+      timestamp: tsaPresent
+        ? "openssl ts -verify -in " + date + ".json.tsr -data " + date + ".json -CAfile freetsa-cacert.pem -untrusted freetsa-tsa.crt"
+        : "no .tsr file — snapshot was not timestamped",
+      did: "https://christianscode1994.github.io/VolatiAI/.well-known/did.json",
+      full_guide: "https://christianscode1994.github.io/VolatiAI/VERIFICATION.md",
+    },
+    note,
+  });
+}
+
+async function toolGetTrustManifest() {
+  return jsonResult({
+    server: SERVER_INFO,
+    protocol_version: PROTOCOL_VERSION,
+    discoverability: {
+      did: "https://christianscode1994.github.io/VolatiAI/.well-known/did.json",
+      current_pubkey: "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey.pem",
+      v0_historical_pubkey: "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey-v0.pem",
+      current_key_meta: "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-key.json",
+      v0_key_meta: "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-key-v0.json",
+      security_contact: "https://christianscode1994.github.io/VolatiAI/.well-known/security.txt",
+      verification_guide: "https://christianscode1994.github.io/VolatiAI/VERIFICATION.md",
+      key_rotation_history: "https://christianscode1994.github.io/VolatiAI/KEY_ROTATION.md",
+    },
+    snapshot_url_pattern: "https://christianscode1994.github.io/VolatiAI/snapshots/{YYYY-MM-DD}.json",
+    anchor_log_url: "https://christianscode1994.github.io/VolatiAI/snapshots/_anchors.jsonl",
+    timestamp_file_pattern: "https://christianscode1994.github.io/VolatiAI/snapshots/{YYYY-MM-DD}.json.tsr",
+    algorithms: {
+      signature: "Ed25519",
+      hash: "SHA-256",
+      canonicalization: "json.dumps(obj, separators=(',',':'), sort_keys=True, ensure_ascii=False)",
+      timestamp: "RFC 3161 (FreeTSA.org)",
+    },
+    tools: TOOLS.map(t => ({ name: t.name, description: t.description })),
+    verification_chain: [
+      "1. Fetch snapshot JSON from snapshot_url_pattern",
+      "2. Call verify_snapshot(date) — proves signer approval + integrity",
+      "3. Call get_anchor(date) — proves unchanged since anchored (FreeTSA-attested time)",
+      "4. Follow did.json or VERIFICATION.md for full independent reproduction",
+    ],
+    note: "Signature proves origin + integrity, not correctness of underlying data.",
+  });
+}
+
 async function toolGetCurrentRevision() {
   const r = await fetch("https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/current.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
   if (!r.ok) throw new Error(`current.json not found (HTTP ${r.status})`);
@@ -478,6 +603,8 @@ async function handleToolsCall(params = {}) {
     case "get_sector":            return await toolGetSector(args);
     case "list_categories":       return await toolListCategories();
     case "verify_snapshot":       return await toolVerifySnapshot(args);
+    case "get_anchor":           return await toolGetAnchor(args);
+    case "get_trust_manifest":   return await toolGetTrustManifest();
     case "find_corroborations":   return await toolFindCorroborations();
     case "get_current_revision": return await toolGetCurrentRevision();
     case "get_diff":             return await toolGetDiff(args);
