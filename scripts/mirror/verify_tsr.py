@@ -45,10 +45,17 @@ def verify_one(date):
         capture_output=True, text=True)
     if r.returncode == 0 and "Verification: OK" in r.stdout:
         ts = ""
-        for line in r.stdout.splitlines():
-            if "Time stamp:" in line:
-                ts = line.split("Time stamp:", 1)[1].strip(); break
-        print(f"  {date}: ✓ {ts}")
+        try:
+            reply = subprocess.run(
+                ["openssl","ts","-reply","-in",str(tsr),"-text"],
+                capture_output=True, text=True, timeout=5)
+            for line in reply.stdout.splitlines():
+                line = line.strip()
+                if line.startswith("Time stamp:"):
+                    ts = line.split("Time stamp:", 1)[1].strip(); break
+        except Exception:
+            pass
+        print(f"  {date}: ✓ {ts or '(FreeTSA attested)'}")
         return True
     print(f"  {date}: ❌ verify failed")
     for line in (r.stderr or r.stdout).splitlines()[:4]:
