@@ -190,7 +190,7 @@ async function verifySignature(snapshot, pubkeyPem) {
   }
 
   const msg = new TextEncoder().encode(canonical(body));
-  const sig = Uint8Array.from(snapshot.signature.match(/.{1,2}/g).map(h => parseInt(h, 16)));
+  const sig = Uint8Array.from(atob(snapshot.signature), c => c.charCodeAt(0));
 
   return await crypto.subtle.verify("Ed25519", key, sig, msg);
 }
@@ -227,20 +227,48 @@ async function toolVerifySnapshot(args = {}) {
     chain_intact = null;
   }
 
+  // Verify the Ed25519 signature against the published pubkey
+  let signature_valid = null;
+  let signature_error = null;
+  if (snapshot.signature && snapshot.hash) {
+    try {
+      const pkRes = await fetch(
+        "https://christianscode1994.github.io/VolatiAI/pubkey.pem",
+        { cache: "no-store", signal: AbortSignal.timeout(5000) }
+      );
+      if (pkRes.ok) {
+        const pkPem = await pkRes.text();
+        signature_valid = await verifySignature(snapshot, pkPem);
+      } else {
+        signature_error = `pubkey_fetch_${pkRes.status}`;
+      }
+    } catch (e) {
+      signature_error = String(e.message || e).slice(0, 100);
+    }
+  }
+
   let note;
-  if (!snapshot.signature && !snapshot.hash) {
-    note = "UNSIGNED SNAPSHOT: this file has no signature fields. Signing is not yet enabled in the publishing workflow.";
-  } else if (chain_intact === true) {
-    note = "Chain verified: prev_hash matches previous day's hash.";
-  } else if (chain_intact === false) {
-    note = "CHAIN BROKEN: prev_hash does not match. History may be tampered.";
+  if (signature_valid === true) {
+    note = chain_intact === true
+      ? "VERIFIED: Ed25519 signature valid against published pubkey. Chain intact."
+      : chain_intact === false
+        ? "VERIFIED SIGNATURE but CHAIN BROKEN — history may be tampered."
+        : "VERIFIED: Ed25519 signature valid. Chain unverifiable (no prev).";
+  } else if (signature_valid === false) {
+    note = "INVALID SIGNATURE: snapshot tampered or pubkey mismatch.";
+  } else if (!snapshot.signature) {
+    note = "UNSIGNED SNAPSHOT: no signature field present.";
+  } else if (signature_error) {
+    note = `VERIFICATION FAILED: ${signature_error}`;
   } else {
-    note = "Signature present but previous day's snapshot unavailable. Signature can be verified independently against published pubkey.";
+    note = "Verification inconclusive.";
   }
 
   return jsonResult({
     date,
     signature_present: !!snapshot.signature,
+    signature_valid,
+    signature_error,
     hash: snapshot.hash || null,
     prev_hash: snapshot.prev_hash || null,
     pubkey_id: snapshot.pubkey_id || null,
