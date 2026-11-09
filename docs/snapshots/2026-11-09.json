@@ -1,7 +1,7 @@
 {
-  "failed": 197,
-  "hash": "fe58c08c910f5a647f28ec1cebb293ccf6a1a28b21362b64e31ba5d8523cc1b3",
-  "ok": 228,
+  "failed": 196,
+  "hash": "766d39b6321b0f928887b3816365a60d7a9541062077cd8ec9dd3402693b6890",
+  "ok": 229,
   "prev_hash": "ef6057e9329a0b64e4d570dac29e1192e2d3e28916bd9752b7e96849c5a5be7d",
   "pubkey_id": "volatiai-v1",
   "sectors": {
@@ -16,10 +16,8 @@
       "ok": false
     },
     "adsb-lol-aircraft-count": {
-      "current": 0,
-      "failed": [
-        "adsb_lol"
-      ],
+      "current": null,
+      "failed": [],
       "ok": false
     },
     "agent-census": {
@@ -43,7 +41,7 @@
       "ok": true
     },
     "ai-news": {
-      "current": 126,
+      "current": 127,
       "failed": [],
       "ok": true
     },
@@ -68,7 +66,7 @@
       "ok": false
     },
     "arweave-network": {
-      "current": 2038625,
+      "current": 2038634,
       "failed": [],
       "ok": true
     },
@@ -88,7 +86,7 @@
       "ok": true
     },
     "aviation-weather": {
-      "current": 250,
+      "current": 249,
       "failed": [],
       "ok": true
     },
@@ -130,9 +128,11 @@
       "ok": true
     },
     "bgp-prefixes": {
-      "current": 1530817,
-      "failed": [],
-      "ok": true
+      "current": 0,
+      "failed": [
+        "total_prefixes"
+      ],
+      "ok": false
     },
     "bike-share": {
       "current": 815,
@@ -165,7 +165,7 @@
       "ok": false
     },
     "btc-exchange-spread": {
-      "current": 0.007441062261899728,
+      "current": 0.023143071273927972,
       "failed": [],
       "ok": true
     },
@@ -272,11 +272,9 @@
       "ok": true
     },
     "clearlydefined-react-license": {
-      "current": null,
-      "failed": [
-        "license_score"
-      ],
-      "ok": false
+      "current": 93,
+      "failed": [],
+      "ok": true
     },
     "cleveland-artworks": {
       "current": 68810,
@@ -344,7 +342,7 @@
       "ok": false
     },
     "crates-io": {
-      "current": 373138,
+      "current": 373147,
       "failed": [],
       "ok": true
     },
@@ -369,12 +367,12 @@
       "ok": true
     },
     "crossref-works": {
-      "current": 188596347,
+      "current": 188596346,
       "failed": [],
       "ok": true
     },
     "crypto-defi": {
-      "current": 78322718543,
+      "current": 78140175382,
       "failed": [],
       "ok": true
     },
@@ -394,12 +392,12 @@
       "ok": false
     },
     "data-validity": {
-      "current": 6153,
+      "current": 6154,
       "failed": [],
       "ok": true
     },
     "datacite-dois": {
-      "current": 141005660,
+      "current": 141006244,
       "failed": [],
       "ok": true
     },
@@ -444,7 +442,7 @@
       "ok": true
     },
     "defi-total-tvl": {
-      "current": 78119337220,
+      "current": 77936794059,
       "failed": [],
       "ok": true
     },
@@ -559,7 +557,7 @@
       "ok": false
     },
     "doaj-articles": {
-      "current": 13948216,
+      "current": 13948251,
       "failed": [],
       "ok": true
     },
@@ -609,12 +607,12 @@
       "ok": true
     },
     "energinet-dk-carbon-intensity": {
-      "current": 97.5,
+      "current": 84.970001,
       "failed": [],
       "ok": true
     },
     "energy-carbon": {
-      "current": 269,
+      "current": 257,
       "failed": [],
       "ok": true
     },
@@ -684,7 +682,7 @@
       "ok": false
     },
     "eth-exchange-spread": {
-      "current": 0.028741792686868876,
+      "current": 0.016581116003873526,
       "failed": [],
       "ok": true
     },
@@ -694,7 +692,7 @@
       "ok": false
     },
     "eu-legal-acts": {
-      "current": 77697,
+      "current": 77700,
       "failed": [],
       "ok": true
     },
@@ -791,7 +789,7 @@
       "ok": true
     },
     "filecoin-network": {
-      "current": 6530290,
+      "current": 6530325,
       "failed": [],
       "ok": true
     },
@@ -801,7 +799,7 @@
       "ok": true
     },
     "flux-nodes": {
-      "current": 6997,
+      "current": 6995,
       "failed": [],
       "ok": true
     },
@@ -1051,7 +1049,7 @@
       "ok": false
     },
     "github-recent-commits": {
-      "current": 23542300,
+      "current": 23798542,
       "failed": [],
       "ok": true
     },
@@ -1138,7 +1136,7 @@
       "ok": true
     },
     "grid-mix": {
-      "current": 13.91,
+      "current": 18.38,
       "failed": [],
       "ok": true
     },
@@ -1155,12 +1153,12 @@
       "ok": false
     },
     "hackernews-top-scores": {
-      "current": 2747,
+      "current": 2642,
       "failed": [],
       "ok": true
     },
     "hedera-blocks": {
-      "current": 102125628,
+      "current": 102126095,
       "failed": [],
       "ok": true
     },
@@ -1195,7 +1193,7 @@
       "ok": true
     },
     "home-assistant": {
-      "current": 725252,
+      "current": 725277,
       "failed": [],
       "ok": true
     },
@@ -1221,7 +1219,9 @@
     },
     "inaturalist-observation-count": {
       "current": null,
-      "failed": [],
+      "failed": [
+        "inaturalist"
+      ],
       "ok": false
     },
     "inspirehep-higgs-count": {
@@ -1250,7 +1250,7 @@
       "ok": false
     },
     "kaspa-blockdag": {
-      "current": 587947464,
+      "current": 587957720,
       "failed": [],
       "ok": true
     },
@@ -1260,42 +1260,42 @@
       "ok": true
     },
     "kraken-ada-usd": {
-      "current": 0.175363,
+      "current": 0.174946,
       "failed": [],
       "ok": true
     },
     "kraken-btc-usd": {
-      "current": 74570.1,
+      "current": 74155.6,
       "failed": [],
       "ok": true
     },
     "kraken-doge-usd": {
-      "current": 0.0692852,
+      "current": 0.0690425,
       "failed": [],
       "ok": true
     },
     "kraken-dot-usd": {
-      "current": 0.8685,
+      "current": 0.8647,
       "failed": [],
       "ok": true
     },
     "kraken-eth-usd": {
-      "current": 2122.69,
+      "current": 2106.56,
       "failed": [],
       "ok": true
     },
     "kraken-link-usd": {
-      "current": 10.47085,
+      "current": 10.44109,
       "failed": [],
       "ok": true
     },
     "kraken-sol-usd": {
-      "current": 86.99,
+      "current": 86.51,
       "failed": [],
       "ok": true
     },
     "kraken-xrp-usd": {
-      "current": 1.09803,
+      "current": 1.09149,
       "failed": [],
       "ok": true
     },
@@ -1350,17 +1350,17 @@
       "ok": true
     },
     "miso-grid": {
-      "current": 62905,
+      "current": 63101,
       "failed": [],
       "ok": true
     },
     "miso-grid-total-load": {
-      "current": 62905,
+      "current": 63101,
       "failed": [],
       "ok": true
     },
     "monero-network": {
-      "current": 6784684729.766666,
+      "current": 6784534403.766666,
       "failed": [],
       "ok": true
     },
@@ -1385,11 +1385,9 @@
       "ok": true
     },
     "nature-observations": {
-      "current": 0,
-      "failed": [
-        "total_observations"
-      ],
-      "ok": false
+      "current": 399109618,
+      "failed": [],
+      "ok": true
     },
     "nbp-gold-price-pln": {
       "current": null,
@@ -1448,9 +1446,7 @@
     },
     "npm-nextjs-weekly-downloads": {
       "current": null,
-      "failed": [
-        "npm"
-      ],
+      "failed": [],
       "ok": false
     },
     "npm-packages": {
@@ -1460,7 +1456,9 @@
     },
     "npm-react-weekly-downloads": {
       "current": null,
-      "failed": [],
+      "failed": [
+        "npm_react_weekly_downloads"
+      ],
       "ok": false
     },
     "npm-scraper-package-count": {
@@ -1474,7 +1472,7 @@
       "ok": true
     },
     "npm-search": {
-      "current": 195669,
+      "current": 195670,
       "failed": [],
       "ok": true
     },
@@ -1499,17 +1497,17 @@
       "ok": false
     },
     "nvd-cve-count": {
-      "current": 421333,
+      "current": 421341,
       "failed": [],
       "ok": true
     },
     "nvd-new-cves": {
-      "current": 3525,
+      "current": 3532,
       "failed": [],
       "ok": true
     },
     "nvd-new-cves-count": {
-      "current": 237,
+      "current": 245,
       "failed": [],
       "ok": true
     },
@@ -1530,7 +1528,9 @@
     },
     "ofac-new-designations": {
       "current": null,
-      "failed": [],
+      "failed": [
+        "sdn_total"
+      ],
       "ok": false
     },
     "open-digger-openrank-vscode": {
@@ -1649,7 +1649,7 @@
       "ok": true
     },
     "protocols-tvl": {
-      "current": 78322718543,
+      "current": 78140175382,
       "failed": [],
       "ok": true
     },
@@ -1664,9 +1664,11 @@
       "ok": true
     },
     "pubmed-meditation-papers": {
-      "current": 12291,
-      "failed": [],
-      "ok": true
+      "current": null,
+      "failed": [
+        "count"
+      ],
+      "ok": false
     },
     "pursue-uap-files-count": {
       "current": null,
@@ -1704,7 +1706,7 @@
       "ok": false
     },
     "radio-stations": {
-      "current": 52495,
+      "current": 52505,
       "failed": [],
       "ok": true
     },
@@ -1724,7 +1726,7 @@
       "ok": false
     },
     "ripe-atlas-public": {
-      "current": 42319,
+      "current": 41638,
       "failed": [],
       "ok": true
     },
@@ -1739,7 +1741,7 @@
       "ok": false
     },
     "scaling-l2": {
-      "current": 7664266284,
+      "current": 7658478293,
       "failed": [],
       "ok": true
     },
@@ -1749,11 +1751,9 @@
       "ok": false
     },
     "science-news": {
-      "current": 0,
-      "failed": [
-        "papers_7d"
-      ],
-      "ok": false
+      "current": 20423,
+      "failed": [],
+      "ok": true
     },
     "sec-aapl-filings-30d": {
       "current": 12,
@@ -1801,7 +1801,7 @@
       "ok": false
     },
     "shopping": {
-      "current": 89.79,
+      "current": 89.58,
       "failed": [],
       "ok": true
     },
@@ -1831,32 +1831,32 @@
       "ok": true
     },
     "stablecoin-supply": {
-      "current": 296461168443,
+      "current": 296462982954,
       "failed": [],
       "ok": true
     },
     "stablecoin-total-supply": {
-      "current": 294655737796.9157,
+      "current": 294655940035.8508,
       "failed": [],
       "ok": true
     },
     "stablecoin-usdc-supply": {
-      "current": 70477326228.05064,
+      "current": 70480534690.9164,
       "failed": [],
       "ok": true
     },
     "stablecoin-usdt-supply": {
-      "current": 176783752815.05392,
+      "current": 176794373647.30475,
       "failed": [],
       "ok": true
     },
     "steam-csgo-players": {
-      "current": 562516,
+      "current": 569014,
       "failed": [],
       "ok": true
     },
     "steam-dota2-players": {
-      "current": 428997,
+      "current": 432918,
       "failed": [],
       "ok": true
     },
@@ -1891,7 +1891,7 @@
       "ok": true
     },
     "tracking": {
-      "current": 24.07,
+      "current": 24.29,
       "failed": [],
       "ok": true
     },
@@ -1906,7 +1906,7 @@
       "ok": true
     },
     "tweetfeed-c2": {
-      "current": 354,
+      "current": 355,
       "failed": [],
       "ok": true
     },
@@ -1921,7 +1921,7 @@
       "ok": false
     },
     "uk-carbon-intensity-now": {
-      "current": 269,
+      "current": 257,
       "failed": [],
       "ok": true
     },
@@ -1956,7 +1956,7 @@
       "ok": false
     },
     "usgs-earthquake-count": {
-      "current": 14,
+      "current": 13,
       "failed": [],
       "ok": true
     },
@@ -1966,7 +1966,7 @@
       "ok": true
     },
     "usgs-earthquakes-emsc": {
-      "current": 137308,
+      "current": 137314,
       "failed": [],
       "ok": true
     },
@@ -2036,7 +2036,7 @@
       "ok": false
     },
     "weather": {
-      "current": 1.1,
+      "current": 1.2,
       "failed": [],
       "ok": true
     },
@@ -2056,7 +2056,7 @@
       "ok": true
     },
     "wikidata-triples": {
-      "current": 9039651552,
+      "current": 9039669906,
       "failed": [],
       "ok": true
     },
@@ -2066,7 +2066,7 @@
       "ok": false
     },
     "wikipedia-bitcoin-extract-len": {
-      "current": 1300,
+      "current": 1298,
       "failed": [],
       "ok": true
     },
@@ -2141,7 +2141,7 @@
       "ok": false
     },
     "zenodo-records": {
-      "current": 7685708,
+      "current": 7685848,
       "failed": [],
       "ok": true
     },
@@ -2151,8 +2151,8 @@
       "ok": true
     }
   },
-  "signature": "JSEZx2NIJ2FOm6Ow8/HU+4whZI91k6LdJpPrfbysm/bTqnnKJz0tTxVtwTDadouA6eQfUCmUeoqn0xoKlQgYAQ==",
-  "signed_at": "2026-11-09T09:09:41Z",
+  "signature": "zGNxG5GOmxD0o2DnLmiqM8+/Y8MusLnQrsVOclq+yUNklaALKJSXZ8rKemahegeTVjz2tx0hPMH2HQZqT2GxCg==",
+  "signed_at": "2026-11-09T09:26:37Z",
   "total": 425,
-  "ts": "2026-11-09T09:02:35.865947Z"
+  "ts": "2026-11-09T09:19:31.699055Z"
 }
