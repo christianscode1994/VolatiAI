@@ -35,6 +35,11 @@ jobs:
         run: python3 scripts/daily_snapshot.py
         continue-on-error: true
 
+      - name: Publish pubkey to .well-known
+        run: |
+          mkdir -p docs/.well-known
+          cp docs/pubkey.pem docs/.well-known/volatiai-pubkey.pem
+
       - name: Generate active signals
         run: python3 scripts/active_signals.py
 
