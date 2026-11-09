@@ -5,24 +5,7 @@ const ACTIVE_JSON_URL = "https://christianscode1994.github.io/VolatiAI/active.js
 const SECTOR_BASES = [
   "https://sector-dense.fourieranalys.workers.dev",
   "https://sector-sparse.fourieranalys.workers.dev",
-  "https://sector-slow.fourieranalys.workers.dev",
-  {
-    name: "get_anchor",
-    description: "Return anchor-log status for a snapshot date: was an anchor entry recorded, what was the file SHA-256 at anchor time vs now, is a FreeTSA .tsr present. Detects post-hoc rewrites that signature verification alone cannot.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Snapshot date YYYY-MM-DD." },
-      },
-      required: ["date"],
-    },
-  },
-  {
-    name: "get_trust_manifest",
-    description: "One-call discovery: returns all URLs, algorithms, tools, and the 4-step verification chain a consumer needs to independently verify VolatiAI data. No snapshot fetch. Use first to learn where everything lives.",
-    inputSchema: { type: "object", properties: {} },
-  },
-];const SERVER_INFO = { name: "volatiai-mcp", version: "0.2.0" };
+  "https://sector-slow.fourieranalys.workers.dev",];const SERVER_INFO = { name: "volatiai-mcp", version: "0.2.0" };
 const PROTOCOL_VERSION = "2025-06-18";
 
 const TOOLS = [
@@ -80,6 +63,22 @@ const TOOLS = [
   {
     name: "get_current_revision",
     description: "Return the single canonical 'what is current' pointer: snapshot date, hash, signed_at, pubkey_id, and previous revision. Use this before querying a specific snapshot date to know what's freshest.",
+    inputSchema: { type: "object", properties: {} },
+  },
+  {
+    name: "get_anchor",
+    description: "Return anchor-log status for a snapshot date: was an anchor entry recorded, what was the file SHA-256 at anchor time vs now, is a FreeTSA .tsr present. Detects post-hoc rewrites that signature verification alone cannot.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Snapshot date YYYY-MM-DD." },
+      },
+      required: ["date"],
+    },
+  },
+  {
+    name: "get_trust_manifest",
+    description: "One-call discovery: returns all URLs, algorithms, tools, and the 4-step verification chain a consumer needs to independently verify VolatiAI data. No snapshot fetch. Use first to learn where everything lives.",
     inputSchema: { type: "object", properties: {} },
   },
 ];
