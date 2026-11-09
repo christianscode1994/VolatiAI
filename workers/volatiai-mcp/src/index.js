@@ -7,7 +7,7 @@ const SECTOR_BASES = [
   "https://sector-sparse.fourieranalys.workers.dev",
   "https://sector-slow.fourieranalys.workers.dev",
 ];
-const SERVER_INFO = { name: "volatiai-mcp", version: "0.1.0" };
+const SERVER_INFO = { name: "volatiai-mcp", version: "0.2.0" };
 const PROTOCOL_VERSION = "2025-06-18";
 
 const TOOLS = [
@@ -86,11 +86,41 @@ function categorize(sector) {
   return "Other";
 }
 
-async function fetchJson(url, ms = 5000) {
+async function _fetchJsonRaw(url, ms = 5000) {
   const r = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(ms) });
   if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
   return r.json();
 }
+// Deterministic 32-bit revision of active.json payload.
+// Any change to signals[] bumps this. No KV needed, stable across processes.
+function revisionOf(data) {
+  const s = JSON.stringify((data && data.signals) || []);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return "v" + (h >>> 0).toString(16).padStart(8, "0");
+}
+
+// Wrapper: stamp every delta with the baseline_revision it was computed against.
+async function fetchJson(url, ms) {
+  const data = await _fetchJsonRaw(url, ms);
+  if (data && Array.isArray(data.signals)) {
+    const rev = revisionOf(data);
+    data.baseline_revision = rev;
+    for (const s of data.signals) {
+      if (s && typeof s === "object") {
+        s.baseline_revision = rev;
+        if (s.delta && typeof s.delta === "object") {
+          s.delta.baseline_revision = rev;
+        }
+      }
+    }
+  }
+  return data;
+}
+
 
 function jsonRpc(id, result) { return { jsonrpc: "2.0", id, result }; }
 function jsonRpcError(id, code, message) { return { jsonrpc: "2.0", id, error: { code, message } }; }
@@ -120,6 +150,7 @@ async function toolListActiveSignals(args = {}) {
   signals = signals.slice(0, limit);
   return jsonResult({
     generated_at: data.generated_at,
+    baseline_revision: data.baseline_revision,
     window: data.window,
     total_in_window: data.count,
     returned: signals.length,
@@ -129,6 +160,8 @@ async function toolListActiveSignals(args = {}) {
       score: s.score, summary: s.summary,
       category: categorize(s.sector), timestamp: s.timestamp,
       attribution: s.attribution,
+      baseline_revision: s.baseline_revision,
+      delta: s.delta,
     })),
   });
 }
@@ -162,44 +195,53 @@ async function toolListCategories() {
 }
 
 async function verifySignature(snapshot, pubkeyPem) {
-  // Extract raw Ed25519 public key from SPKI PEM
+  // Import Ed25519 public key from SPKI PEM
   const b64 = pubkeyPem
     .replace(/-----BEGIN PUBLIC KEY-----/g, "")
     .replace(/-----END PUBLIC KEY-----/g, "")
     .replace(/\s+/g, "");
   const spki = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-
-  // Import as Ed25519 verify key
   const key = await crypto.subtle.importKey(
     "spki", spki, { name: "Ed25519" }, false, ["verify"]
   );
 
-  // Canonicalize snapshot body (everything except signature fields)
-  const body = { ...snapshot };
-  delete body.hash;
-  delete body.prev_hash;
-  delete body.signature;
-  delete body.pubkey_id;
-  delete body.signed_at;
-
+  // Canonicalize — must byte-match Python's _canon_bytes() in sign_snapshot.py
   function canonical(obj) {
-    if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
+    if (obj === null) return "null";
+    if (typeof obj === "boolean") return obj ? "true" : "false";
+    if (typeof obj === "number") return String(obj);
+    if (typeof obj === "string") return JSON.stringify(obj);
     if (Array.isArray(obj)) return "[" + obj.map(canonical).join(",") + "]";
     const keys = Object.keys(obj).sort();
     return "{" + keys.map(k => JSON.stringify(k) + ":" + canonical(obj[k])).join(",") + "}";
   }
 
-  // Python signs the HASH string, not the body. Verify that.
-  // Still recompute the hash to catch body tampering that leaves hash unchanged.
-  const canonicalBytes = new TextEncoder().encode(canonical(body));
-  const hashBuf = await crypto.subtle.digest("SHA-256", canonicalBytes);
-  const computedHash = "sha256:" + Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  // (a) Hash precheck — if canonicalization diverges from Python, throw
+  // a named error so signature_error carries the exact mismatch.
+  // Hash covers: snapshot minus {hash, prev_hash, signature, pubkey_id}
+  // (includes signed_at).
+  const basePayload = { ...snapshot };
+  delete basePayload.hash;
+  delete basePayload.prev_hash;
+  delete basePayload.signature;
+  delete basePayload.pubkey_id;
+  const bodyBytes = new TextEncoder().encode(canonical(basePayload));
+  const hashBuf = await crypto.subtle.digest("SHA-256", bodyBytes);
+  const computedHash = Array.from(new Uint8Array(hashBuf))
+    .map(b => b.toString(16).padStart(2, "0")).join("");
+  if (computedHash !== snapshot.hash) {
+    throw new Error("canonical_mismatch: got " + computedHash.slice(0, 16) +
+                    " expected " + String(snapshot.hash).slice(0, 16));
+  }
 
-  // TODO: worker-side canonicalization is not yet aligned with Python's
-  // sign_snapshot.py. Until the canonicalization is matched, the worker
-  // honestly reports "cannot verify" instead of guessing true/false.
-  // External verification against pubkey.pem is authoritative.
-  return null;
+  // (b) Ed25519 verify — signature covers snapshot minus {signature, pubkey_id}
+  // (includes hash, prev_hash, signed_at).
+  const signable = { ...snapshot };
+  delete signable.signature;
+  delete signable.pubkey_id;
+  const msg = new TextEncoder().encode(canonical(signable));
+  const sig = Uint8Array.from(atob(snapshot.signature), c => c.charCodeAt(0));
+  return await crypto.subtle.verify("Ed25519", key, sig, msg);
 }
 
 async function toolVerifySnapshot(args = {}) {
@@ -302,6 +344,7 @@ async function toolFindCorroborations() {
       pct_change: d.pct_change,
       severity: s.severity,
       confidence: s.confidence,
+      baseline_revision: s.baseline_revision,
     });
   }
 
@@ -321,6 +364,7 @@ async function toolFindCorroborations() {
       values_max: max,
       values_mean: Number(mean.toFixed(4)),
       disagreement_pct: Number(disagreement_pct.toFixed(3)),
+      source_count: entries.length,
     });
   }
 
@@ -328,6 +372,7 @@ async function toolFindCorroborations() {
 
   return jsonResult({
     generated_at: data.generated_at,
+    baseline_revision: data.baseline_revision,
     total_active_signals: signals.length,
     corroboration_groups: corroborations.length,
     note: "Groups of active signals sharing the same metric. High disagreement_pct (>1%) suggests arbitrage or source discrepancy. Only reflects signals currently active — correlated sectors that are quiet won't appear.",
@@ -491,3 +536,5 @@ export default {
     return new Response("Not found", { status: 404, headers: cors });
   },
 };
+
+// deploy-marker: 20261109T160031Z
