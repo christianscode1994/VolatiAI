@@ -58,6 +58,9 @@ jobs:
       - name: Generate active signals
         run: python3 scripts/active_signals.py
 
+      - name: Verify identity consistency (did.json vs pubkey*.pem vs signed snapshots)
+        run: python3 scripts/mirror/verify_identity_consistency.py
+
       - name: Commit snapshot
         run: |
           git config user.name "github-actions[bot]"
