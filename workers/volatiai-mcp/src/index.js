@@ -161,6 +161,40 @@ async function toolListCategories() {
   });
 }
 
+async function verifySignature(snapshot, pubkeyPem) {
+  // Extract raw Ed25519 public key from SPKI PEM
+  const b64 = pubkeyPem
+    .replace(/-----BEGIN PUBLIC KEY-----/g, "")
+    .replace(/-----END PUBLIC KEY-----/g, "")
+    .replace(/\s+/g, "");
+  const spki = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+
+  // Import as Ed25519 verify key
+  const key = await crypto.subtle.importKey(
+    "spki", spki, { name: "Ed25519" }, false, ["verify"]
+  );
+
+  // Canonicalize snapshot body (everything except signature fields)
+  const body = { ...snapshot };
+  delete body.hash;
+  delete body.prev_hash;
+  delete body.signature;
+  delete body.pubkey_id;
+  delete body.signed_at;
+
+  function canonical(obj) {
+    if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
+    if (Array.isArray(obj)) return "[" + obj.map(canonical).join(",") + "]";
+    const keys = Object.keys(obj).sort();
+    return "{" + keys.map(k => JSON.stringify(k) + ":" + canonical(obj[k])).join(",") + "}";
+  }
+
+  const msg = new TextEncoder().encode(canonical(body));
+  const sig = Uint8Array.from(snapshot.signature.match(/.{1,2}/g).map(h => parseInt(h, 16)));
+
+  return await crypto.subtle.verify("Ed25519", key, sig, msg);
+}
+
 async function toolVerifySnapshot(args = {}) {
   const date = String(args.date || "");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
