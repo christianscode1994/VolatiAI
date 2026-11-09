@@ -80,6 +80,40 @@ jobs:
             exit 1
           fi
 
+      - name: Anchor snapshot (RFC 3161 timestamp + append to _anchors.jsonl)
+        if: steps.snapshot.outcome == 'success'
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          SNAP="docs/snapshots/${DATE}.json"
+          if [ ! -f "$SNAP" ]; then
+            echo "⚠️  no snapshot for $DATE — skipping anchor"
+            exit 0
+          fi
+          python3 scripts/mirror/anchor_snapshot.py "$DATE"
+          # Also mirror pubkey to .well-known if it changed this run
+          cp docs/pubkey.pem docs/.well-known/volatiai-pubkey.pem
+          cp docs/pubkey-v0.pem docs/.well-known/volatiai-pubkey-v0.pem 2>/dev/null || true
+          # Commit anchor artifacts separately (append-only log + .tsr)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/snapshots/_anchors.jsonl "docs/snapshots/${DATE}.json.tsr" docs/.well-known/
+          if git diff --cached --quiet; then
+            echo "No anchor changes to commit"
+          else
+            git commit -m "anchors: ${DATE} [skip ci]"
+            for i in 1 2 3 4 5; do
+              if git push origin main; then
+                echo "Anchor push succeeded (attempt $i)"
+                exit 0
+              fi
+              echo "Anchor push rejected, rebasing (attempt $i)"
+              git pull --rebase origin main
+              sleep $((i * 10))
+            done
+            echo "Anchor push failed after 5 attempts"
+            exit 1
+          fi
+
       - name: Fail on regressions
         if: steps.snapshot.outcome == 'failure'
         run: |

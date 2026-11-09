@@ -9,14 +9,33 @@
       "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01",
       "type": "Ed25519VerificationKey2020",
       "controller": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
-      "publicKeyMultibase": "z6MkgN2f8BUnB4QfxL4824VEBoaSC3Q9vfDrkbRRKFWzkp2E"
+      "publicKeyMultibase": "z6MkgN2f8BUnB4QfxL4824VEBoaSC3Q9vfDrkbRRKFWzkp2E",
+      "description": "DEPRECATED \u2014 historical key from 2026-10-24, signed no snapshots in the current chain. Kept for backward compatibility."
+    },
+    {
+      "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v0",
+      "type": "Ed25519VerificationKey2020",
+      "controller": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
+      "publicKeyMultibase": "z6Mkjtr3nVfMonwcfuMyQhf6vHsB9r264ZvyMvWfiSx62UUR",
+      "description": "Signed snapshots 2026-11-04 and 2026-11-05. Private key lost during silent rotation 2026-11-08. Fingerprint: volatiai-85eca340"
+    },
+    {
+      "id": "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-42c03bb2",
+      "type": "Ed25519VerificationKey2020",
+      "controller": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
+      "publicKeyMultibase": "z6MkgeaU8g7jHjNXDszfn459w2rSzEmbAwP4fWetyvwzP2PY",
+      "description": "Active signing key from 2026-11-08 onward. Fingerprint: volatiai-42c03bb2"
     }
   ],
   "authentication": [
-    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01"
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01",
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v0",
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-42c03bb2"
   ],
   "assertionMethod": [
-    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01"
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volati-2026-01",
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-v0",
+    "did:web:christianscode1994.github.io:VolatiAI:.well-known#volatiai-42c03bb2"
   ],
   "service": [
     {
@@ -28,6 +47,11 @@
       "id": "#dashboard",
       "type": "VolatiAIDashboard",
       "serviceEndpoint": "https://christianscode1994.github.io/VolatiAI/d.html"
+    },
+    {
+      "id": "#mcp",
+      "type": "VolatiAIMcpEndpoint",
+      "serviceEndpoint": "https://volatiai-mcp.fourieranalys.workers.dev/mcp"
     }
   ]
 }
