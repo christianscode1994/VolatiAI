@@ -314,9 +314,15 @@ async function toolVerifySnapshot(args = {}) {
             signature_valid = true;
             signature_key_matched = "v0-historical";
             signature_error = null;
+          } else {
+            signature_error = "v0_signature_invalid";
           }
+        } else {
+          signature_error = "v0_pubkey_fetch_" + v0Res.status;
         }
-      } catch (e) { /* v0 is best-effort */ }
+      } catch (e) {
+        signature_error = "v0_fetch_error: " + String(e.message || e).slice(0, 60);
+      }
     }
   }
 
