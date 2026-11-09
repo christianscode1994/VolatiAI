@@ -63,6 +63,19 @@ function fitForPlatform(text, maxLen) {
 const briefing = JSON.parse(fs.readFileSync("docs/briefing.json", "utf8"));
 const headline = briefing?.briefing?.headline ?? "VolatiAI: no signals";
 
+// Prefer the canonical categorized format from active.txt if available.
+// Falls back to briefing.signals if not.
+let activeTextPrefer = null;
+try {
+  const _raw = fs.readFileSync("docs/active.txt", "utf8").trim();
+  if (_raw && _raw.length > 20) {
+    // Strip the footer (safeDigest will re-add its own)
+    activeTextPrefer = _raw.replace(/\n*— automated[^\n]*$/i, "").trim();
+  }
+} catch (e) {
+  // active.txt missing — use briefing path
+}
+
 // Enrichment: fetch epistemic state from the worker.
 // Non-fatal — if the worker is down or slow, broadcast still proceeds.
 let coherence = null;
@@ -190,7 +203,7 @@ if (cronWarning) {
   fullLines.unshift("⚠️ " + cronWarning);
 }
 
-const fullText = fullLines.join("\n");
+const fullText = activeTextPrefer || fullLines.join("\n");
 
 // Compact message — for Bluesky's 300-char limit
 const compactLines = ["VolatiAI — " + headline];
@@ -200,7 +213,9 @@ if (signals.length > 0) {
   for (const s of signals.slice(0, 3)) compactLines.push(fmtSignal(s));
   if (signals.length > 3) compactLines.push(`+${signals.length - 3} more`);
 }
-const compactText = compactLines.join("\n");
+const compactText = activeTextPrefer
+  ? activeTextPrefer.replace(/^VolatiAI[^\n]*\n+/, "")
+  : compactLines.join("\n");
 
 function truncateGraphemes(text, maxG, maxB = Infinity) {
   if (!text) return "";
