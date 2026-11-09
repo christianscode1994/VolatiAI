@@ -52,6 +52,17 @@ const TOOLS = [
     inputSchema: { type: "object", properties: {} },
   },
   {
+    name: "get_diff",
+    description: "Compare two snapshots. Returns regressions (worked yesterday, broken today), recoveries (broken yesterday, working today), new sectors, and disappeared sectors. Default: compares current day to previous day.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from_date: { type: "string", description: "YYYY-MM-DD (default: yesterday)" },
+        to_date: { type: "string", description: "YYYY-MM-DD (default: today)" },
+      },
+    },
+  },
+  {
     name: "get_current_revision",
     description: "Return the single canonical 'what is current' pointer: snapshot date, hash, signed_at, pubkey_id, and previous revision. Use this before querying a specific snapshot date to know what's freshest.",
     inputSchema: { type: "object", properties: {} },
@@ -83,7 +94,22 @@ async function fetchJson(url, ms = 5000) {
 
 function jsonRpc(id, result) { return { jsonrpc: "2.0", id, result }; }
 function jsonRpcError(id, code, message) { return { jsonrpc: "2.0", id, error: { code, message } }; }
-function jsonResult(obj) { return { content: [{ type: "text", text: JSON.stringify(obj, null, 2) }] }; }
+function jsonResult(obj) {
+  // Every response includes a self-verify hint so agents learn to check authenticity.
+  // The hint doesn't leak data — it tells the agent what to do next.
+  const hint = {
+    verify: {
+      how: "Call get_current_revision to obtain the latest signed revision, then verify_snapshot(date) to cryptographically verify the snapshot this data comes from.",
+      pubkey_url: "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey.pem",
+      algorithm: "Ed25519",
+      note: "Signature proves origin and integrity, not correctness of underlying data.",
+    },
+  };
+  const enriched = (typeof obj === "object" && obj !== null && !Array.isArray(obj))
+    ? { ...obj, _meta: hint }
+    : obj;
+  return { content: [{ type: "text", text: JSON.stringify(enriched, null, 2) }] };
+}
 
 async function toolListActiveSignals(args = {}) {
   const data = await fetchJson(ACTIVE_JSON_URL);
@@ -247,6 +273,56 @@ async function toolGetCurrentRevision() {
   return jsonResult(current);
 }
 
+async function toolGetDiff(args = {}) {
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const fromDate = args.from_date || yesterday;
+  const toDate = args.to_date || today;
+
+  const base = "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/snapshots/";
+  const load = async (d) => {
+    const r = await fetch(base + d + ".json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error(`Snapshot ${d} not found (HTTP ${r.status})`);
+    return r.json();
+  };
+
+  const [prev, curr] = await Promise.all([load(fromDate), load(toDate)]);
+  const prevS = prev.sectors || {};
+  const currS = curr.sectors || {};
+
+  const regressions = [];
+  const recoveries = [];
+  const newSectors = [];
+  const disappeared = [];
+
+  for (const [name, data] of Object.entries(currS)) {
+    if (!prevS[name]) { newSectors.push(name); continue; }
+    const was = prevS[name].ok, now = data.ok;
+    if (was && !now) regressions.push({ sector: name, current: prevS[name].current, failed: data.failed });
+    else if (!was && now) recoveries.push({ sector: name, now: data.current });
+  }
+  for (const name of Object.keys(prevS)) {
+    if (!currS[name]) disappeared.push(name);
+  }
+
+  return jsonResult({
+    from_date: fromDate,
+    to_date: toDate,
+    prev_revision: prev.ts || null,
+    curr_revision: curr.ts || null,
+    summary: {
+      regressions: regressions.length,
+      recoveries: recoveries.length,
+      new: newSectors.length,
+      disappeared: disappeared.length,
+    },
+    regressions,
+    recoveries,
+    new_sectors: newSectors.slice(0, 20),
+    disappeared: disappeared.slice(0, 20),
+  });
+}
+
 async function handleToolsCall(params = {}) {
   const name = params.name;
   const args = params.arguments || {};
@@ -257,6 +333,7 @@ async function handleToolsCall(params = {}) {
     case "verify_snapshot":       return await toolVerifySnapshot(args);
     case "find_corroborations":   return await toolFindCorroborations();
     case "get_current_revision": return await toolGetCurrentRevision();
+    case "get_diff":             return await toolGetDiff(args);
     default: throw new Error(`Unknown tool: ${name}`);
   }
 }
