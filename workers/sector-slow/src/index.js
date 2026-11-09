@@ -4926,7 +4926,17 @@ export default {
         // day (or more only when the value actually moves).
         const today = new Date().toISOString().slice(0, 10);
         const todayEntry = history.find(h => new Date(h.t).toISOString().slice(0, 10) === today);
-        const valueChanged = !todayEntry || todayEntry.v !== current;
+        // Same 0.5% threshold as cron: prevents float-noise writes from GET requests.
+        // A sector only writes to KV when its value meaningfully moved since the last write today.
+        const threshold = 0.005;
+        let valueChanged;
+        if (!todayEntry) {
+          valueChanged = true;
+        } else if (typeof todayEntry.v !== "number" || todayEntry.v === 0) {
+          valueChanged = true;
+        } else {
+          valueChanged = Math.abs(current - todayEntry.v) / Math.abs(todayEntry.v) > threshold;
+        }
         if (!valueChanged) {
           envelope.context = { ...envelope.context, kv_put_skipped: "unchanged_today" };
         } else {
