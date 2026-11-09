@@ -29,4 +29,9 @@ python3 scripts/mirror/anchor_snapshot.py "$DATE"
 echo "→ verifying ${DATE} timestamp locally"
 python3 scripts/mirror/verify_tsr.py "$DATE"
 
+if command -v ots >/dev/null 2>&1; then
+  echo "→ OpenTimestamps stamp of anchor log"
+  ots stamp docs/snapshots/_anchors.jsonl 2>&1 || echo "⚠ OTS stamp failed (non-fatal; FreeTSA .tsr still covers this snapshot)"
+fi
+
 echo "✓ ${DATE} signed, anchored, timestamp-verified"
