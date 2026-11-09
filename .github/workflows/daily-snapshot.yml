@@ -45,6 +45,11 @@ jobs:
           mkdir -p docs/.well-known
           cp docs/pubkey.pem docs/.well-known/volatiai-pubkey.pem
 
+      - name: Publish ops report
+        env:
+          VOLATIAI_PRIVKEY: ${{ secrets.VOLATIAI_SIGNING_KEY }}
+        run: python3 scripts/publish_ops_report.py
+
       - name: Generate active signals
         run: python3 scripts/active_signals.py
 
