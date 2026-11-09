@@ -43,6 +43,14 @@ def _canon_bytes(obj):
     return json.dumps(r, sort_keys=True, separators=(",", ":")).encode()
 
 
+def _derive_pubkey_id(priv):
+    """First 8 hex chars of SHA-256(SPKI pubkey). Two different keys → two different IDs."""
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+    import hashlib
+    spki = priv.public_key().public_bytes(Encoding.DER, PublicFormat.SubjectPublicKeyInfo)
+    return "volatiai-" + hashlib.sha256(spki).hexdigest()[:8]
+
+
 def sign_envelope(envelope: dict) -> dict:
     """Sign the current.json envelope. Adds envelope_signature field.
     
@@ -60,7 +68,7 @@ def sign_envelope(envelope: dict) -> dict:
 
     out = dict(envelope)
     out["envelope_signature"] = sig.hex()
-    out["envelope_pubkey_id"] = PUBKEY_ID
+    out["envelope_pubkey_id"] = _derive_pubkey_id(priv)
     return out
 
 
@@ -147,7 +155,7 @@ def sign_file(path):
     sig = priv.sign(_canon_bytes(signable))
 
     # 4. Attach pubkey_id + signature
-    snap["pubkey_id"] = PUBKEY_ID
+    snap["pubkey_id"] = _derive_pubkey_id(priv)
     snap["signature"] = base64.b64encode(sig).decode()
 
     path.write_text(json.dumps(snap, indent=2, sort_keys=True))
@@ -155,7 +163,7 @@ def sign_file(path):
     print(f"✓ signed {path.name}")
     print(f"  hash:      {h[:16]}...")
     print(f"  prev_hash: {ph[:16] + '...' if ph != 'null' else 'null'}")
-    print(f"  pubkey_id: {PUBKEY_ID}")
+    print(f"  pubkey_id: {snap['pubkey_id']}")
     print(f"  signature: {snap['signature'][:16]}...")
     return 0
 
