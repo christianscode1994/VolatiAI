@@ -43,6 +43,27 @@ def _canon_bytes(obj):
     return json.dumps(r, sort_keys=True, separators=(",", ":")).encode()
 
 
+def sign_envelope(envelope: dict) -> dict:
+    """Sign the current.json envelope. Adds envelope_signature field.
+    
+    The envelope's contents (everything except envelope_signature) are
+    canonicalized and signed with the same key that signs snapshots.
+    Editing any metadata field invalidates the envelope signature.
+    """
+    priv = _load_or_create_key()
+    if not priv:
+        return envelope
+
+    signable = {k: v for k, v in envelope.items() if k != "envelope_signature"}
+    canonical = _canon_bytes(signable)
+    sig = priv.sign(canonical)
+
+    out = dict(envelope)
+    out["envelope_signature"] = sig.hex()
+    out["envelope_pubkey_id"] = PUBKEY_ID
+    return out
+
+
 def _load_or_create_key():
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
     from cryptography.hazmat.primitives.serialization import (

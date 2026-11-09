@@ -147,12 +147,24 @@ def main():
                 "revision": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "snapshot_date": today,
                 "snapshot_url": f"snapshots/{today}.json",
-                "hash": signed.get("hash"),
-                "prev_hash": signed.get("prev_hash"),
-                "pubkey_id": signed.get("pubkey_id"),
-                "signed_at": signed.get("signed_at"),
+                "snapshot_hash": signed.get("hash"),
+                "snapshot_signature": signed.get("signature"),
+                "snapshot_pubkey_id": signed.get("pubkey_id"),
+                "snapshot_signed_at": signed.get("signed_at"),
+                "pubkey_url": ".well-known/volatiai-pubkey.pem",
                 "prev_revision": prev_rev,
             }
+            # Sign the envelope so metadata cannot be edited
+            try:
+                sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
+                from sign_snapshot import sign_envelope
+                current = sign_envelope(current)
+                if current.get("envelope_signature"):
+                    print(f"✓ envelope signed (pubkey {current.get('envelope_pubkey_id')})")
+                else:
+                    print("⚠️ envelope signed without signature (no key)")
+            except Exception as e:
+                print(f"⚠️ envelope signing failed: {e}")
             CURRENT_JSON.write_text(json.dumps(current, indent=2) + "\n")
             print(f"✓ wrote current.json (revision {current['revision'][:19]})")
         except Exception as e:
