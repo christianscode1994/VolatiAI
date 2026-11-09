@@ -45,6 +45,11 @@ jobs:
           mkdir -p docs/.well-known
           cp docs/pubkey.pem docs/.well-known/volatiai-pubkey.pem
 
+      - name: Sync pubkey
+        env:
+          VOLATIAI_PRIVKEY: ${{ secrets.VOLATIAI_SIGNING_KEY }}
+        run: python3 scripts/sync_pubkey.py
+
       - name: Publish ops report
         env:
           VOLATIAI_PRIVKEY: ${{ secrets.VOLATIAI_SIGNING_KEY }}
