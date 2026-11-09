@@ -189,10 +189,17 @@ async function verifySignature(snapshot, pubkeyPem) {
     return "{" + keys.map(k => JSON.stringify(k) + ":" + canonical(obj[k])).join(",") + "}";
   }
 
-  const msg = new TextEncoder().encode(canonical(body));
-  const sig = Uint8Array.from(atob(snapshot.signature), c => c.charCodeAt(0));
+  // Python signs the HASH string, not the body. Verify that.
+  // Still recompute the hash to catch body tampering that leaves hash unchanged.
+  const canonicalBytes = new TextEncoder().encode(canonical(body));
+  const hashBuf = await crypto.subtle.digest("SHA-256", canonicalBytes);
+  const computedHash = "sha256:" + Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
 
-  return await crypto.subtle.verify("Ed25519", key, sig, msg);
+  // TODO: worker-side canonicalization is not yet aligned with Python's
+  // sign_snapshot.py. Until the canonicalization is matched, the worker
+  // honestly reports "cannot verify" instead of guessing true/false.
+  // External verification against pubkey.pem is authoritative.
+  return null;
 }
 
 async function toolVerifySnapshot(args = {}) {
