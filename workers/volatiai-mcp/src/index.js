@@ -360,7 +360,27 @@ async function handleRPC(msg) {
         return jsonRpcError(id, -32601, `Method not found: ${method}`);
     }
   } catch (e) {
-    return jsonRpcError(id, -32000, String(e.message || e));
+    const requestId = crypto.randomUUID().slice(0, 8);
+    console.error(JSON.stringify({
+      request_id: requestId,
+      method: msg.method,
+      params: msg.params ? Object.keys(msg.params) : null,
+      error: String(e.message || e),
+      ts: new Date().toISOString(),
+    }));
+    return {
+      jsonrpc: "2.0",
+      id,
+      error: {
+        code: -32000,
+        message: String(e.message || e),
+        data: {
+          request_id: requestId,
+          ts: new Date().toISOString(),
+          hint: "Check get_current_revision to confirm server is serving fresh data.",
+        },
+      },
+    };
   }
 }
 
