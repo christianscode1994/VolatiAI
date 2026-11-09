@@ -279,7 +279,9 @@ async function toolVerifySnapshot(args = {}) {
   // Verify the Ed25519 signature against the published pubkey
   let signature_valid = null;
   let signature_error = null;
+  let signature_key_matched = null;
   if (snapshot.signature && snapshot.hash) {
+    // Try current key first
     try {
       const pkRes = await fetch(
         "https://christianscode1994.github.io/VolatiAI/pubkey.pem",
@@ -288,18 +290,42 @@ async function toolVerifySnapshot(args = {}) {
       if (pkRes.ok) {
         const pkPem = await pkRes.text();
         signature_valid = await verifySignature(snapshot, pkPem);
+        if (signature_valid === true) signature_key_matched = "current";
       } else {
         signature_error = `pubkey_fetch_${pkRes.status}`;
       }
     } catch (e) {
       signature_error = String(e.message || e).slice(0, 100);
     }
+
+    // Historical fallback: pre-rotation snapshots (before 2026-11-08) were
+    // signed with the original key (v0), now available at pubkey-v0.pem.
+    // The signer's PUBKEY_ID label was never bumped across rotation, so
+    // pubkey_id cannot be trusted to identify the signing key.
+    if (signature_valid === false && date < "2026-11-08") {
+      try {
+        const v0Res = await fetch(
+          "https://christianscode1994.github.io/VolatiAI/pubkey-v0.pem",
+          { cache: "no-store", signal: AbortSignal.timeout(5000) }
+        );
+        if (v0Res.ok) {
+          const v0Pem = await v0Res.text();
+          if (await verifySignature(snapshot, v0Pem) === true) {
+            signature_valid = true;
+            signature_key_matched = "v0-historical";
+            signature_error = null;
+          }
+        }
+      } catch (e) { /* v0 is best-effort */ }
+    }
   }
 
   let note;
   if (signature_valid === true) {
     note = chain_intact === true
-      ? "VERIFIED: Ed25519 signature valid against published pubkey. Chain intact."
+      ? (signature_key_matched === "v0-historical"
+          ? "VERIFIED: signature valid against historical (pre-rotation) pubkey. Chain intact. See README for key rotation history."
+          : "VERIFIED: Ed25519 signature valid against published pubkey. Chain intact.")
       : chain_intact === false
         ? "VERIFIED SIGNATURE but CHAIN BROKEN — history may be tampered."
         : "VERIFIED: Ed25519 signature valid. Chain unverifiable (no prev).";
@@ -318,6 +344,7 @@ async function toolVerifySnapshot(args = {}) {
     signature_present: !!snapshot.signature,
     signature_valid,
     signature_error,
+    signature_key_matched,
     hash: snapshot.hash || null,
     prev_hash: snapshot.prev_hash || null,
     pubkey_id: snapshot.pubkey_id || null,
