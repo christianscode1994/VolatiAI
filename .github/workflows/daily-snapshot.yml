@@ -40,6 +40,22 @@ jobs:
       - name: Install crypto
         run: pip install cryptography
 
+      - name: Guard against manual re-dispatch for existing date
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          if [ -f "docs/snapshots/${DATE}.json" ]; then
+            echo "::error::Snapshot for ${DATE} already exists."
+            echo "Manual re-dispatch for the current date is forbidden —"
+            echo "it regenerates the file, invalidating the anchor entry"
+            echo "and .tsr timestamp. This is the exact failure mode that"
+            echo "caused the 12262e15 incident (see commit ca845c34)."
+            echo "Use git log to inspect past runs. Let the 06:00 UTC cron"
+            echo "generate fresh dates — do not force a re-run."
+            exit 1
+          fi
+          echo "✅ No snapshot for ${DATE} yet — dispatch is safe"
+
       - name: Run snapshot
         id: snapshot
         env:
