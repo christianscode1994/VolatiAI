@@ -52,5 +52,22 @@ if node "$VERIFIER" "$FIX/current.json" "$TMP/bad_snap.json" "$FIX/pub.pem" 2>/d
 fi
 echo "✅ mutated snapshot.hash rejected"
 
+
+echo
+echo "── negative: tampered payload (valid JSON, mutated value) ──"
+# Distinct from the byte-flip case: this keeps JSON syntactically valid,
+# so 2b (canonical payload hash) is the layer that must catch it — not
+# JSON.parse. Fails on 2b, not on the parse step.
+python3 -c "
+import json
+s = json.load(open('$FIX/snapshot.json'))
+s['total'] = s['total'] + 1
+json.dump(s, open('$TMP/tampered_payload.json','w'), indent=2)
+"
+if node "$VERIFIER" "$FIX/current.json" "$TMP/tampered_payload.json" "$FIX/pub.pem" \
+     --anchor "$FIX/_anchors.jsonl" 2>/dev/null; then
+  echo "❌ tampered payload VERIFIED — verifier is broken"; exit 1
+fi
+echo "✅ tampered payload rejected"
 echo
 echo "✅ all offline verifier cases pass"
