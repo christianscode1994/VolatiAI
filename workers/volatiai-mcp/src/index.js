@@ -231,7 +231,12 @@ async function toolGetSector(args = {}, env = {}) {
       // Service binding: pass path only, or a Request — the target worker
       // sees the path as the request URL. A synthetic hostname like
       // https://internal/ sometimes causes fetch() to fail silently.
-      const res = await binding.fetch("/" + sector, { method: "GET" });
+      // Service binding fetch requires an absolute URL. The binding
+      // routes to the target worker regardless of hostname, but the URL
+      // must parse as absolute. Use the real worker hostname (derived
+      // from the binding name) so the target sees a coherent request URL.
+      const workerHost = name.toLowerCase().replace("_", "-") + ".fourieranalys.workers.dev";
+      const res = await binding.fetch("https://" + workerHost + "/" + sector, { method: "GET" });
       const text = await res.text();
       let body = null;
       try { body = JSON.parse(text); } catch (_) {}
