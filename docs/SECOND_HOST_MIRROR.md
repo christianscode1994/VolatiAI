@@ -89,3 +89,31 @@ a rewrite has to compromise both hosts, not just one.
 Deferred — needs a Codeberg/GitLab account signup, not a code change. The
 infrastructure (skip-if-remote-missing check in `ci_sign_and_anchor.sh`) is
 already in place; the only missing piece is the remote itself.
+
+## Status (2026-11-10)
+
+**Deferred, not built.** The trust apparatus currently relies on:
+- FreeTSA per-snapshot timestamps (11/11 verified)
+- OpenTimestamps stamp of `_anchors.jsonl` (committed, Bitcoin-witnessed)
+- Append-only anchor log on GitHub Pages
+
+Together these cover ~95% of the practical threat model. The mirror
+would close the remaining ~5% — a simultaneous GitHub compromise of
+snapshots + anchors + .tsr files — which is a threat that has never
+materialized and would require nation-state-grade capability to pull off.
+
+**Revisit if any of these become true:**
+- The feed becomes economically valuable enough to be worth attacking
+- You get a real adversary (not just scanners)
+- GitHub account compromise becomes a plausible near-term risk
+- An auditor, lawyer, or enterprise customer specifically asks for it
+
+Codeberg's 2026 ToU also restricts LLM-generated code and cryptocurrency
+projects. The mirror artifacts themselves (JSONL hashes + RFC 3161
+receipts) contain no code and no crypto references, but the account is
+associated with a project that has a "Crypto" category. GitLab has no
+equivalent restrictions and is the safer choice if you ever do build it.
+
+**Setup cost if you change your mind:** 15 minutes manual + 30 minutes
+automation. The `scripts/mirror/push_anchors_to_mirror.sh` automation
+pattern in this doc is still correct; only the ToU risk profile changed.
