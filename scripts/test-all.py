@@ -201,6 +201,7 @@ def main():
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
         from sign_snapshot import _canon_bytes
         import hashlib
+import re
         py_bytes = _canon_bytes(signable)
         py_sha = hashlib.sha256(py_bytes).hexdigest()[:16]
         print(f"  canonical sha256: {py_sha}…  (len {len(py_bytes)})")
@@ -243,7 +244,6 @@ def main():
     print()
     print("── 9. Baked pubkey matches fixture ──")
     try:
-        import re
         from pathlib import Path as _Path
         wr = _Path("workers/volatiai-mcp/wrangler.toml").read_text()
         fx = _Path("scripts/fixtures/2026-11-10/pub.pem").read_text().strip()
