@@ -33,6 +33,21 @@ SEVERITY_WEIGHT = {
 ZERO_OK_SUFFIXES = ("_warnings", "_alerts", "_incidents", "_events", "_deals", "_count", "quakes")
 
 
+
+
+# Sector → source URL mapping for attribution fields.
+# Falls back to attribution.json when a sector has no specific source mapping.
+# Edit docs/attribution_sources.json to add sectors; no code change needed.
+_ATTR_SOURCES_PATH = Path(__file__).resolve().parent.parent / "docs" / "attribution_sources.json"
+try:
+    _ATTR_SOURCES = json.load(open(_ATTR_SOURCES_PATH))
+except Exception:
+    _ATTR_SOURCES = {}
+
+def _source_url_for(sector: str, fallback: str) -> str:
+    """Return the actual source URL for a sector, or fallback if unmapped."""
+    return _ATTR_SOURCES.get(sector, fallback)
+
 def load_sectors() -> list[dict]:
     if SNAPSHOT_PATH.exists():
         raw = json.loads(SNAPSHOT_PATH.read_text())
