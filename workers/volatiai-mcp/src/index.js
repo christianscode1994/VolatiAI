@@ -190,7 +190,11 @@ async function toolGetSector(args = {}) {
     const elapsed = () => Date.now() - started;
     try {
       console.log(`[get_sector] trying ${base}/${sector}`);
-      const r = await fetch(`${base}/${sector}`, { cache: "no-store", signal: AbortSignal.timeout(5000) });
+      const r = await fetch(`${base}/${sector}`, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+        headers: { "User-Agent": "volatiai-mcp/0.2.0 (+https://github.com/christianscode1994/VolatiAI)" },
+      });
       const ct = r.headers.get("content-type") || "";
       const text = await r.text();
       let body = null;
