@@ -39,8 +39,15 @@ jobs:
           fi
           echo "✓ anchor for $DATE present"
 
+      - name: Full system verification (verify-all.sh)
+        id: verify
+        continue-on-error: true
+        run: |
+          chmod +x scripts/verify-all.sh
+          ./scripts/verify-all.sh
+
       - name: Open issue on failure
-        if: failure()
+        if: failure() || steps.verify.outcome == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
