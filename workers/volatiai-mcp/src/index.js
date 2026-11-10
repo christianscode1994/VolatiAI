@@ -81,6 +81,27 @@ const TOOLS = [
     description: "One-call discovery: returns all URLs, algorithms, tools, and the 4-step verification chain a consumer needs to independently verify VolatiAI data. No snapshot fetch. Use first to learn where everything lives.",
     inputSchema: { type: "object", properties: {} },
   },
+  {
+    name: "resolve_entity",
+    description: "Resolve a slug, alias, or entity ID to a canonical VolatiAI entity. Returns the entity metadata, all sectors it appears in, external ID mappings (CoinGecko, Wikidata), and evidence links from the entity registry. Warnings flag metric incomparability (e.g. btc-exchange-spread and eth-exchange-spread share metric \"spread_pct\" but measure different assets — do NOT compare their values).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Entity ID (e.g. \"bitcoin\"), alias (e.g. \"BTC\"), or sector slug (e.g. \"btc-exchange-spread\")" },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "list_entities",
+    description: "List all canonical entities in the VolatiAI entity registry. Use to discover what entities are known and which sectors map to them. Optional type filter (e.g. \"asset\", \"organization\", \"product\", \"game\").",
+    inputSchema: {
+      type: "object",
+      properties: {
+        type: { type: "string", description: "Optional filter: asset, organization, product, game, etc." },
+      },
+    },
+  },
 ];
 
 function categorize(sector) {
@@ -572,6 +593,127 @@ async function toolGetTrustManifest() {
   });
 }
 
+async function toolResolveEntity(args = {}) {
+  const query = String(args.query || args.sector || args.entity || "").trim();
+  if (!query) throw new Error("query (entity id, alias, or sector slug) is required");
+
+  const base = "https://christianscode1994.github.io/VolatiAI/";
+
+  // Fetch the entity registry
+  const entRes = await fetch(base + "entities.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!entRes.ok) throw new Error("entities.json fetch failed (HTTP " + entRes.status + ")");
+  const entityData = await entRes.json();
+  const entities = entityData.entities || {};
+
+  // Fetch the link table (best-effort, no failure if missing)
+  let links = [];
+  try {
+    const linksRes = await fetch(base + "entity_links.jsonl", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+    if (linksRes.ok) {
+      const text = await linksRes.text();
+      for (const line of text.split("\n")) {
+        if (!line.trim()) continue;
+        try { links.push(JSON.parse(line)); } catch (e) { /* skip malformed */ }
+      }
+    }
+  } catch (e) { /* links are optional */ }
+
+  // Resolution order: exact entity id → alias → sector slug
+  const q = query.toLowerCase();
+  const resolved = [];
+  for (const [canonId, e] of Object.entries(entities)) {
+    if (canonId.toLowerCase() === q) { resolved.push({ method: "entity_id", entity: canonId, entry: e }); continue; }
+    for (const alias of (e.aliases || [])) {
+      if (alias.toLowerCase() === q) { resolved.push({ method: "alias", entity: canonId, alias, entry: e }); break; }
+    }
+    for (const slug of (e.sectors_expected || [])) {
+      if (slug.toLowerCase() === q) { resolved.push({ method: "sector", entity: canonId, sector: slug, entry: e }); break; }
+    }
+  }
+
+  // Also check entity_links for direct matches on query
+  const linkMatches = links.filter(l =>
+    (l.source || "").toLowerCase() === q || (l.target || "").toLowerCase() === q);
+
+  if (resolved.length === 0 && linkMatches.length === 0) {
+    return jsonResult({
+      query,
+      resolved: false,
+      note: "No entity or link matched '" + query + "'. Check the entity registry for known entities.",
+      known_entity_ids: Object.keys(entities).sort(),
+    });
+  }
+
+  // Metric guards: warn if any resolved entity is in a "not_comparable_across" set
+  const metricGuards = entityData.spread_metrics || {};
+  const warnings = [];
+  const resolvedEntityIds = resolved.map(r => r.entity);
+  for (const [metricKey, guard] of Object.entries(metricGuards)) {
+    if (metricKey.startsWith("_")) continue;
+    const notComparable = guard.not_comparable_across || [];
+    const overlapping = resolvedEntityIds.filter(id => notComparable.includes(id));
+    if (overlapping.length > 0) {
+      warnings.push({
+        metric: metricKey,
+        affected_entities: overlapping,
+        guard: guard.example_of_wrong_grouping || guard.described_as,
+      });
+    }
+  }
+
+  // Indirect links: any link involving a resolved entity as source/target
+  const linkByEntity = links.filter(l =>
+    resolvedEntityIds.includes(l.source) || resolvedEntityIds.includes(l.target));
+
+  return jsonResult({
+    query,
+    resolved: true,
+    matches: resolved.map(r => ({
+      method: r.method,
+      entity_id: r.entity,
+      canonical_name: r.entry.canonical_name,
+      type: r.entry.type,
+      aliases: r.entry.aliases || [],
+      external_ids: r.entry.external_ids || {},
+      sectors_expected: r.entry.sectors_expected || [],
+      matched_via: r.method === "alias" ? r.alias : (r.method === "sector" ? r.sector : r.entity),
+    })),
+    links: linkByEntity,
+    warnings: warnings.length > 0 ? warnings : undefined,
+    _registry: {
+      entities_url: base + "entities.json",
+      entity_links_url: base + "entity_links.jsonl",
+      note: "Resolution is curated, not inferred. Cross-domain identity is deliberate human judgment. See docs/entities.json for how to add entries.",
+    },
+  });
+}
+
+async function toolListEntities(args = {}) {
+  const base = "https://christianscode1994.github.io/VolatiAI/";
+  const res = await fetch(base + "entities.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error("entities.json fetch failed (HTTP " + res.status + ")");
+  const entityData = await res.json();
+  const entities = entityData.entities || {};
+
+  const filterType = args.type ? String(args.type).toLowerCase() : null;
+  const filtered = Object.entries(entities)
+    .filter(([_, e]) => !filterType || (e.type || "").toLowerCase() === filterType)
+    .map(([id, e]) => ({
+      id,
+      type: e.type,
+      canonical_name: e.canonical_name,
+      aliases: e.aliases || [],
+      sectors_expected: e.sectors_expected || [],
+    }));
+
+  return jsonResult({
+    total_entities: Object.keys(entities).length,
+    returned: filtered.length,
+    entities: filtered,
+    _registry: { entities_url: base + "entities.json" },
+  });
+}
+
 async function toolGetCurrentRevision() {
   const r = await fetch("https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/current.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
   if (!r.ok) throw new Error(`current.json not found (HTTP ${r.status})`);
@@ -639,6 +781,8 @@ async function handleToolsCall(params = {}) {
     case "verify_snapshot":       return await toolVerifySnapshot(args);
     case "get_anchor":           return await toolGetAnchor(args);
     case "get_trust_manifest":   return await toolGetTrustManifest();
+    case "resolve_entity":       return await toolResolveEntity(args);
+    case "list_entities":        return await toolListEntities(args);
     case "find_corroborations":   return await toolFindCorroborations();
     case "get_current_revision": return await toolGetCurrentRevision();
     case "get_diff":             return await toolGetDiff(args);
