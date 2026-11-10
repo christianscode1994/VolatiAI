@@ -205,17 +205,35 @@ async function toolGetSector(args = {}, env = {}) {
   const sector = (args.sector || "").trim();
   if (!sector) throw new Error("sector is required");
   const SECTOR_BINDINGS = ["SECTOR_DENSE", "SECTOR_SPARSE", "SECTOR_SLOW"];
+  const attempts = [];
   for (const name of SECTOR_BINDINGS) {
     const binding = env[name];
-    if (!binding) continue;
+    if (!binding) {
+      attempts.push({ binding: name, error: "binding_not_configured" });
+      continue;
+    }
     try {
-      const req = new Request("https://internal/" + sector, { method: "GET" });
-      const res = await binding.fetch(req);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data && data.sector) return jsonResult(data);
-    } catch (e) { /* try next binding */ }
+      // Service binding: pass path only, or a Request — the target worker
+      // sees the path as the request URL. A synthetic hostname like
+      // https://internal/ sometimes causes fetch() to fail silently.
+      const res = await binding.fetch("/" + sector, { method: "GET" });
+      const text = await res.text();
+      let body = null;
+      try { body = JSON.parse(text); } catch (_) {}
+      attempts.push({
+        binding: name,
+        status: res.status,
+        ok: res.ok,
+        content_type: res.headers.get("content-type") || "",
+        body_preview: text.slice(0, 120),
+        has_sector: !!(body && body.sector),
+      });
+      if (res.ok && body && body.sector) return jsonResult(body);
+    } catch (e) {
+      attempts.push({ binding: name, error: String(e.message || e).slice(0, 120) });
+    }
   }
+  console.log("[get_sector] failed. attempts:", JSON.stringify(attempts));
   throw new Error(`Sector '${sector}' not found on any worker`);
 }
 
