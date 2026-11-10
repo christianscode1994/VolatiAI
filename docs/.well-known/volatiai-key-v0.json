@@ -17,5 +17,5 @@
   "note": "key_id derived as SHA-256(SPKI DER)[:8], matching sign_snapshot.py convention. Historical pubkey_id label on snapshots is 'volatiai-v1' (shared with current key due to pre-fix signer bug).",
   "revoked_at": null,
   "revoked_reason": null,
-  "revocation_note": "Set revoked_at to an ISO 8601 date if this key is compromised. verify_snapshot will reject snapshots signed after revoked_at even if the signature verifies. See docs/KEY_ROTATION.md."
+  "revocation_note": "Reserved for future use. Set revoked_at to an ISO 8601 date if this key is compromised \u2014 verify_snapshot will reject snapshots signed after that date. NOTE: implementation is pending; the field is not yet enforced in production code. Track at https://github.com/christianscode1994/VolotiAI/issues"
 }
