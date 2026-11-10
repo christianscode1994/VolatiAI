@@ -34,7 +34,12 @@ const TOOLS = [
   {
     name: "list_categories",
     description: "List signal categories with counts.",
-    inputSchema: { type: "object", properties: {} },
+    inputSchema: { type: "object", properties: {
+        envelope: {
+          type: "object",
+          description: "Optional inline envelope JSON. If provided, verified against the baked-in pubkey with zero network fetch. Response gains _verification.source = \"inline-baked\".",
+        },
+      } },
   },
   {
     name: "verify_snapshot",
@@ -819,6 +824,23 @@ async function toolListEntities(args = {}) {
   });
 }
 
+// Resolves a pubkey ID to its baked PEM, if present. Baked keys let the
+// verifier run with zero network fetch. Only fall back to fetching from a
+// URL if the envelope names an ID we don't ship in [vars].
+function pubkeyForId(id, env) {
+  if (!id || !env) return null;
+  if (id === env.PUBKEY_CURRENT_ID) return env.PUBKEY_CURRENT_PEM || null;
+  if (id === env.PUBKEY_V0_HIST_ID) return env.PUBKEY_V0_HIST_PEM || null;
+  return null;
+}
+
+function pubkeyLabelForId(id, env) {
+  if (!id || !env) return null;
+  if (id === env.PUBKEY_CURRENT_ID) return "current";
+  if (id === env.PUBKEY_V0_HIST_ID) return "v0-historical";
+  return null;
+}
+
 async function verifyEnvelope(envelope, pubkeyPem) {
   // Import Ed25519 key (same SPKI parsing as verifySignature)
   const b64 = pubkeyPem
@@ -831,7 +853,7 @@ async function verifyEnvelope(envelope, pubkeyPem) {
   );
 
   // Canonicalize exactly as sign_envelope does in sign_snapshot.py:
-  // strip envelope_signature only, then canonical() over the rest
+  // strip envelope_signature AND envelope_pubkey_id, then canonical() over the rest
   function canonical(obj) {
     if (obj === null) return "null";
     if (typeof obj === "boolean") return obj ? "true" : "false";
@@ -865,49 +887,111 @@ async function verifyEnvelope(envelope, pubkeyPem) {
   return await crypto.subtle.verify("Ed25519", key, sig, msg);
 }
 
-async function toolGetCurrentRevision() {
-  const r = await fetch("https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/current.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+async function toolGetCurrentRevision(env = {}, args = {}) {
+  // Verification paths, in order of trust independence:
+  //   1. Inline envelope + baked key  — zero network fetch.
+  //      Consumer passes the envelope they hold; we verify against
+  //      the PEM in [vars]. No GitHub, no Pages.
+  //   2. Fetched envelope + baked key — verify against the fetched
+  //      current.json using the shipped PEM. No pubkey fetch.
+  //   3. Fetched envelope + Pages-fetched key — fallback for an
+  //      envelope_pubkey_id we don't ship.
+  // envelope_key_matched is a real identity claim (which baked key
+  // matched), not a hardcoded string.
+
+  const verif = (ok, err, matched, source) => ({
+    envelope_signature_valid: ok,
+    envelope_signature_error: err,
+    envelope_key_matched: matched,
+    source,
+  });
+
+  // Path 1: inline envelope — no network at all.
+  if (args && args.envelope && typeof args.envelope === "object") {
+    const envJson = args.envelope;
+    const bakedPem = pubkeyForId(envJson.envelope_pubkey_id, env);
+    if (!bakedPem) {
+      return jsonResult({
+        ...envJson,
+        _verification: verif(
+          false,
+          "unknown_pubkey_id_not_baked: " + (envJson.envelope_pubkey_id || "<missing>"),
+          null,
+          "inline-baked",
+        ),
+      });
+    }
+    try {
+      const ok = await verifyEnvelope(envJson, bakedPem);
+      return jsonResult({
+        ...envJson,
+        _verification: verif(
+          ok,
+          ok ? null : "sig_verify_false",
+          ok ? pubkeyLabelForId(envJson.envelope_pubkey_id, env) : null,
+          "inline-baked",
+        ),
+      });
+    } catch (e) {
+      return jsonResult({
+        ...envJson,
+        _verification: verif(
+          false,
+          String(e.message || e).slice(0, 100),
+          null,
+          "inline-baked",
+        ),
+      });
+    }
+  }
+
+  // Paths 2 & 3: fetch current.json (raw GitHub) then verify.
+  const r = await fetch(
+    "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/current.json",
+    { cache: "no-store", signal: AbortSignal.timeout(8000) },
+  );
   if (!r.ok) throw new Error(`current.json not found (HTTP ${r.status})`);
   const current = await r.json();
 
-  // Verify envelope signature (Ed25519 over canonical JSON, hex-encoded sig)
-  let envelope_signature_valid = null;
-  let envelope_signature_error = null;
-  let envelope_key_matched = null;
+  let ok = null, err = null, matched = null, source = "none";
+
   if (current.envelope_signature && current.envelope_pubkey_id) {
-    try {
-      const pkRes = await fetch(
-        "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey.pem",
-        { cache: "no-store", signal: AbortSignal.timeout(5000) }
-      );
-      if (pkRes.ok) {
-        const pkPem = await pkRes.text();
-        envelope_signature_valid = await verifyEnvelope(current, pkPem);
-        if (envelope_signature_valid === true) {
-          envelope_key_matched = "current";
-        } else if (envelope_signature_valid === false) {
-          envelope_signature_error = "sig_verify_false";
-        }
-      } else {
-        envelope_signature_error = "pubkey_fetch_" + pkRes.status;
+    const bakedPem = pubkeyForId(current.envelope_pubkey_id, env);
+    if (bakedPem) {
+      try {
+        ok = await verifyEnvelope(current, bakedPem);
+        if (ok === true) matched = pubkeyLabelForId(current.envelope_pubkey_id, env);
+        else if (ok === false) err = "sig_verify_false";
+        source = "fetched-baked";
+      } catch (e) {
+        err = String(e.message || e).slice(0, 100);
+        source = "fetched-baked";
       }
-    } catch (e) {
-      envelope_signature_error = String(e.message || e).slice(0, 100);
+    } else {
+      try {
+        const pkRes = await fetch(
+          "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey.pem",
+          { cache: "no-store", signal: AbortSignal.timeout(5000) },
+        );
+        if (pkRes.ok) {
+          const pkPem = await pkRes.text();
+          ok = await verifyEnvelope(current, pkPem);
+          if (ok === true) matched = "pages-fallback";
+          else if (ok === false) err = "sig_verify_false";
+        } else {
+          err = "pubkey_fetch_" + pkRes.status;
+        }
+        source = "fetched-pages";
+      } catch (e) {
+        err = String(e.message || e).slice(0, 100);
+        source = "fetched-pages";
+      }
     }
   }
 
   return jsonResult({
     ...current,
-    _verification: {
-      envelope_signature_valid,
-      envelope_signature_error,
-      envelope_key_matched,
-      note: envelope_signature_valid === true
-        ? "Envelope signature verified against current pubkey."
-        : envelope_signature_error
-          ? "Verification failed: " + envelope_signature_error
-          : "Verification inconclusive.",
-    },
+    _verification: verif(ok, err, matched, source),
   });
 }
 
@@ -974,7 +1058,7 @@ async function handleToolsCall(params = {}, env = {}) {
     case "resolve_entity":       return await toolResolveEntity(args);
     case "list_entities":        return await toolListEntities(args);
     case "find_corroborations":   return await toolFindCorroborations();
-    case "get_current_revision": return await toolGetCurrentRevision();
+    case "get_current_revision": return await toolGetCurrentRevision(env, args);
     case "get_diff":             return await toolGetDiff(args);
     default: throw new Error(`Unknown tool: ${name}`);
   }

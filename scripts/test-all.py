@@ -236,6 +236,29 @@ def main():
         check("snapshot payload hash reproducible", False)
         print(f"  (error: {e})")
 
+    # ── 9. Baked pubkey matches fixture ──
+    # Confirms PUBKEY_CURRENT_PEM in wrangler.toml matches the pubkey that
+    # verifies the committed fixture. Catches key rotation that forgot to
+    # update wrangler.toml, and drift between deployed verifier and tests.
+    print()
+    print("── 9. Baked pubkey matches fixture ──")
+    try:
+        import re
+        from pathlib import Path as _Path
+        wr = _Path("workers/volatiai-mcp/wrangler.toml").read_text()
+        fx = _Path("scripts/fixtures/2026-11-10/pub.pem").read_text().strip()
+        m = re.search(r'PUBKEY_CURRENT_PEM\s*=\s*\"\"\"([^\"]+)\"\"\"', wr, re.DOTALL)
+        if not m:
+            check("baked PUBKEY_CURRENT_PEM parseable", False)
+        else:
+            baked = m.group(1).strip()
+            check("baked PUBKEY_CURRENT_PEM matches fixture",
+                  baked == fx,
+                  f"baked={baked[:40]}… fixture={fx[:40]}…")
+    except Exception as e:
+        check("baked pubkey matches fixture", False)
+        print(f"  (error: {e})")
+
     # ── Summary ──
     print()
     print("═══════════════════════════════════════════════════════")

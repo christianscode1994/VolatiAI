@@ -22,3 +22,15 @@ service = "sector-sparse"
 [[services]]
 binding = "SECTOR_SLOW"
 service = "sector-slow"
+
+[vars]
+# Baked Ed25519 pubkeys — allows get_current_revision to verify envelopes
+# with zero network fetch. Update on key rotation (docs/KEY_ROTATION.md).
+PUBKEY_CURRENT_ID = "volatiai-b4175311"
+PUBKEY_CURRENT_PEM = """-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAIJ2YBx1XKII8yBh3MPrCZnODcyssvE+yp9mIoWR0yj8=
+-----END PUBLIC KEY-----"""
+PUBKEY_V0_HIST_ID = "volatiai-v0-historical"
+PUBKEY_V0_HIST_PEM = """-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAUNhnDk4ZYvH93e0DxAWVh874K/UFEuH+yif98xPLQJo=
+-----END PUBLIC KEY-----"""
