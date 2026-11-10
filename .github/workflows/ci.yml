@@ -1,0 +1,37 @@
+name: Internal consistency
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install --quiet cryptography certifi
+
+      - name: Internal consistency tests
+        run: python3 scripts/test-all.py
+
+      - name: Report failure
+        if: failure()
+        run: |
+          echo "::error::Internal consistency check failed."
+          echo "This catches regressions in:"
+          echo "  - why_ranked math vs score (helper forgot mag fallback)"
+          echo "  - trust.score vs its weighted components"
+          echo "  - independence vs sector_feeds.json"
+          echo "  - envelope canonical cross-language reproducibility"
+          echo "  - required schema fields"
+          echo
+          echo "See the test-all.py output above for specifics."
