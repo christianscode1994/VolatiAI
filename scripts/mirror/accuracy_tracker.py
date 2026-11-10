@@ -149,6 +149,10 @@ def track_sector(sector, series, snapshots):
         total += 1
         detail.append({"date": snap["date"], "hit": actual_up == predicted_up, "pred_up": predicted_up, "act_up": actual_up})
     if total == 0:
+        # Not a bug — this is expected when no snapshot has aged past its
+        # prediction window yet. The earliest snapshot is 2026-10-26 with
+        # actual_window_days ~16, so first samples land around 2026-11-11.
+        # After that, daily cron will accumulate more samples.
         return None
     hit_rate = hits / total
     baseline = max(ups, total - ups) / total
