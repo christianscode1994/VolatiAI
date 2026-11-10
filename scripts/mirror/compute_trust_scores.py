@@ -42,7 +42,15 @@ def attribution_quality(url):
                                 # Added 2026-11-10 (batch 2, matches expanded mapping):
                                 "pocketworld.org",              # Space weather
                                 "api.tweetfeed.live",           # C2 threat feed
-                                "api.llama.fi")):               # DeFi TVL / DEX volumes
+                                "api.llama.fi",
+                                "api.corona-zahlen.org",
+                                "oss.open-digger.cn",
+                                "services.swpc.noaa.gov",
+                                "phishunt.io",
+                                "wttr.in",
+                                "api.steampowered.com",
+                                "whiskyhunter.net",
+                                "api.obis.org")):               # DeFi TVL / DEX volumes
         return 1.0
 
     # Published dataset with permalink
