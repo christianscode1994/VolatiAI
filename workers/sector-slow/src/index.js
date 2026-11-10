@@ -1265,7 +1265,7 @@ const COLLECTORS = {
     }),
   },
   "btc-exchange-spread": {
-    config: { metric: "spread_pct", threshold_pct: 500, window: "1h", window_days: 1, ttl: 1800 },
+    config: { metric: "btc_spread_pct", threshold_pct: 500, window: "1h", window_days: 1, ttl: 1800 },
     collectAll: async () => ({
       sources: {
         spread_pct: await fetchSafe(async () => {
@@ -1327,7 +1327,7 @@ const COLLECTORS = {
     }),
   },
   "eth-exchange-spread": {
-    config: { metric: "spread_pct", threshold_pct: 300, window: "1h", window_days: 1, ttl: 1800 },
+    config: { metric: "eth_spread_pct", threshold_pct: 300, window: "1h", window_days: 1, ttl: 1800 },
     collectAll: async () => ({
       sources: {
         spread_pct: await fetchSafe(async () => {

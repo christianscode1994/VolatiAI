@@ -166,6 +166,22 @@
       ],
       "correctly_grouped_only_when": "the same (asset, exchange_pair) tuple",
       "example_of_wrong_grouping": "btc-exchange-spread vs eth-exchange-spread \u2014 different assets, different spreads, MUST NOT be compared"
+    },
+    "btc_spread_pct": {
+      "described_as": "percentage spread between bid and ask on a single exchange pair",
+      "not_comparable_across": [
+        "bitcoin"
+      ],
+      "correctly_grouped_only_when": "the same bitcoin exchange_pair",
+      "note": "Asset-specific metric key. Groups containing this metric key already imply the asset; the guard exists for future cases where different sector slugs might collide."
+    },
+    "eth_spread_pct": {
+      "described_as": "percentage spread between bid and ask on a single exchange pair",
+      "not_comparable_across": [
+        "ethereum"
+      ],
+      "correctly_grouped_only_when": "the same ethereum exchange_pair",
+      "note": "Asset-specific metric key. Groups containing this metric key already imply the asset; the guard exists for future cases where different sector slugs might collide."
     }
   }
 }
