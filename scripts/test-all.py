@@ -209,6 +209,33 @@ def main():
         print(f"  (cannot reproduce canonical form: {e})")
         check("envelope canonicalization reproducible", False)
 
+    # ── 8. Snapshot payload hash — mirrors verify.cjs step 2b ──
+    # Runs against committed fixtures. If sign_snapshot.py's strip set or
+    # canonicalizer changes, _canon_bytes produces different bytes and this
+    # check fails on the OLD fixture — catching the drift before any new
+    # artifact ships. Fixtures are immutable; the function is what we test.
+    print()
+    print("── 8. Snapshot payload hash reproducible ──")
+    SNAPSHOT_STRIP = {"hash", "prev_hash", "signature", "pubkey_id"}
+    try:
+        from pathlib import Path as _Path
+        from sign_snapshot import _canon_bytes
+        fx = _Path("scripts/fixtures/2026-11-10")
+        snap = json.loads((fx / "snapshot.json").read_text())
+        env  = json.loads((fx / "current.json").read_text())
+        payload = {k: v for k, v in snap.items() if k not in SNAPSHOT_STRIP}
+        computed = hashlib.sha256(_canon_bytes(payload)).hexdigest()
+        stored = snap.get("hash", "")
+        print(f"  stored:   {stored[:32]}…")
+        print(f"  computed: {computed[:32]}…")
+        check("snapshot payload hash reproducible from fixture",
+              computed == stored)
+        check("envelope.snapshot_hash == snapshot.hash",
+              env.get("snapshot_hash") == stored)
+    except Exception as e:
+        check("snapshot payload hash reproducible", False)
+        print(f"  (error: {e})")
+
     # ── Summary ──
     print()
     print("═══════════════════════════════════════════════════════")
