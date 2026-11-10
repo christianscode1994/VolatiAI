@@ -38,7 +38,11 @@ def attribution_quality(url):
                                 "energinet.dk",                 # DK grid intensity (www.*)
                                 "usgs.gov",                     # USGS FDSN + any future subdomain
                                 "hacker-news.firebaseio.com",   # HN top stories
-                                "pypistats.org")):              # PyPI download stats
+                                "pypistats.org",                # PyPI download stats
+                                # Added 2026-11-10 (batch 2, matches expanded mapping):
+                                "pocketworld.org",              # Space weather
+                                "api.tweetfeed.live",           # C2 threat feed
+                                "api.llama.fi")):               # DeFi TVL / DEX volumes
         return 1.0
 
     # Published dataset with permalink

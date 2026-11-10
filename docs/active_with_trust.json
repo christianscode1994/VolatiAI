@@ -1,0 +1,787 @@
+{
+  "generated_at": "2026-11-10T15:16:28.770562Z",
+  "window": "6h",
+  "scanned": 636,
+  "candidates": 58,
+  "count": 25,
+  "signals": [
+    {
+      "sector": "nvd-new-cves-count",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "new_cves 611 (+362.9% vs 15.8d ago)",
+      "delta": {
+        "metric": "new_cves",
+        "current": 611,
+        "previous": 132,
+        "pct_change": 362.8787878787879,
+        "window": "1d",
+        "actual_window_days": 15.8
+      },
+      "score": 18.097,
+      "timestamp": "2026-11-10T15:11:42.371Z",
+      "attribution": "https://services.nvd.nist.gov/rest/json/cves/2.0",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "pocketworld-space-weather",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "event_count 4 (+300.0% vs 16.8d ago)",
+      "delta": {
+        "metric": "event_count",
+        "current": 4,
+        "previous": 1,
+        "pct_change": 300,
+        "window": "1d",
+        "actual_window_days": 16.8
+      },
+      "score": 16.459,
+      "timestamp": "2026-11-10T15:11:22.445Z",
+      "attribution": "https://pocketworld.org/api/space-weather",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "hackernews-top-scores",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "top10_score_sum 2495 (+233.6% vs 16.8d ago)",
+      "delta": {
+        "metric": "top10_score_sum",
+        "current": 2495,
+        "previous": 748,
+        "pct_change": 233.5561497326203,
+        "window": "1d",
+        "actual_window_days": 16.8
+      },
+      "score": 14.529,
+      "timestamp": "2026-11-10T15:11:22.095Z",
+      "attribution": "https://hacker-news.firebaseio.com/v0/topstories.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "uk-carbon-intensity-now",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "gco2_per_kwh 236 (+181.0% vs 15.2d ago)",
+      "delta": {
+        "metric": "gco2_per_kwh",
+        "current": 236,
+        "previous": 84,
+        "pct_change": 180.95238095238096,
+        "window": "1d",
+        "actual_window_days": 15.2
+      },
+      "score": 12.797,
+      "timestamp": "2026-11-10T15:11:44.607Z",
+      "attribution": "https://api.carbonintensity.org.uk/intensity",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "energinet-dk-carbon-intensity",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "gco2_per_kwh 159.550003 (+172.5% vs 14d ago)",
+      "delta": {
+        "metric": "gco2_per_kwh",
+        "current": 159.550003,
+        "previous": 58.560001,
+        "pct_change": 172.4556015632582,
+        "window": "1d",
+        "actual_window_days": 14
+      },
+      "score": 12.494,
+      "timestamp": "2026-11-10T15:11:46.453Z",
+      "attribution": "https://www.energinet.dk/api/carbon",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.996,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "usgs-significant-quakes",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "quakes 0 (-100.0% vs 15.9d ago)",
+      "delta": {
+        "metric": "quakes",
+        "current": 0,
+        "previous": 1,
+        "pct_change": -100,
+        "window": "1d",
+        "actual_window_days": 15.9
+      },
+      "score": 9.534,
+      "timestamp": "2026-11-10T15:11:42.184Z",
+      "attribution": "https://earthquake.usgs.gov/fdsnws/event/1/query",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "tweetfeed-c2",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "weekly_c2_ips 158 (-89.6% vs 17.8d ago)",
+      "delta": {
+        "metric": "weekly_c2_ips",
+        "current": 158,
+        "previous": 1525,
+        "pct_change": -89.63934426229508,
+        "window": "7d",
+        "actual_window_days": 17.8
+      },
+      "score": 9.032,
+      "timestamp": "2026-11-10T15:11:12.104Z",
+      "attribution": "https://api.tweetfeed.live/v1/week/ip",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "dex-ethereum-volume",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "eth_24h 1895942296.82 (+81.5% vs 17d ago)",
+      "delta": {
+        "metric": "eth_24h",
+        "current": 1895942296.82,
+        "previous": 1044639064.9300001,
+        "pct_change": 81.49257101992875,
+        "window": "1d",
+        "actual_window_days": 17
+      },
+      "score": 8.616,
+      "timestamp": "2026-11-10T15:11:20.039Z",
+      "attribution": "https://api.llama.fi/overview/dexs/ethereum",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "usgs-earthquake-count",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "m45_count 13 (-74.0% vs 16.8d ago)",
+      "delta": {
+        "metric": "m45_count",
+        "current": 13,
+        "previous": 50,
+        "pct_change": -74,
+        "window": "1d",
+        "actual_window_days": 16.8
+      },
+      "score": 8.216,
+      "timestamp": "2026-11-10T15:11:21.957Z",
+      "attribution": "https://earthquake.usgs.gov/fdsnws/event/1/query",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "corona-zahlen-germany-week-incidence",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "per_100k 1.9049573284224077 (+71.9% vs 15.3d ago)",
+      "delta": {
+        "metric": "per_100k",
+        "current": 1.9049573284224077,
+        "previous": 1.1083603622121665,
+        "pct_change": 71.87165775401067,
+        "window": "1d",
+        "actual_window_days": 15.3
+      },
+      "score": 8.098,
+      "timestamp": "2026-11-10T15:11:44.125Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "pypi-daily-requests",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "downloads 52054535 (+51.8% vs 16.5d ago)",
+      "delta": {
+        "metric": "downloads",
+        "current": 52054535,
+        "previous": 34301355,
+        "pct_change": 51.7564976660543,
+        "window": "1d",
+        "actual_window_days": 16.5
+      },
+      "score": 6.891,
+      "timestamp": "2026-11-10T15:11:19.286Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "open-digger-openrank-vscode",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "openrank 611.02 (+43.8% vs 16.9d ago)",
+      "delta": {
+        "metric": "openrank",
+        "current": 611.02,
+        "previous": 424.99,
+        "pct_change": 43.77279465399185,
+        "window": "30d",
+        "actual_window_days": 16.9
+      },
+      "score": 6.348,
+      "timestamp": "2026-11-10T15:11:24.392Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "web3-multichain",
+      "severity": "warning",
+      "magnitude": 6.76,
+      "confidence": 1,
+      "summary": "total_blocks 2097750302 (-3.4%)",
+      "delta": {
+        "metric": "total_blocks",
+        "current": 2097750302,
+        "previous": 2171082483,
+        "pct_change": -3.37767825838978,
+        "window": "24h"
+      },
+      "score": 5.238,
+      "timestamp": "2026-11-10T15:12:22.324Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.996,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "blockchain",
+      "severity": "warning",
+      "magnitude": 6.43,
+      "confidence": 1,
+      "summary": "gas_price 0.64 (+128.6%)",
+      "delta": {
+        "metric": "gas_price",
+        "current": 0.64,
+        "previous": 0.28,
+        "pct_change": 128.57142857142856,
+        "window": "24h"
+      },
+      "score": 5.111,
+      "timestamp": "2026-11-10T15:12:17.018Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.996,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "robonix",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "packages 75 (+27.1% vs 18.5d ago)",
+      "delta": {
+        "metric": "packages",
+        "current": 75,
+        "previous": 59,
+        "pct_change": 27.11864406779661,
+        "window": "7d",
+        "actual_window_days": 18.5
+      },
+      "score": 5.031,
+      "timestamp": "2026-11-10T15:11:12.149Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "noaa-spaceweather-alerts",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "active_alerts 70 (-27.1% vs 17.8d ago)",
+      "delta": {
+        "metric": "active_alerts",
+        "current": 70,
+        "previous": 96,
+        "pct_change": -27.083333333333332,
+        "window": "7d",
+        "actual_window_days": 17.8
+      },
+      "score": 5.027,
+      "timestamp": "2026-11-10T15:11:12.030Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "phishunt-domains",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "active_phishings 958 (-25.0% vs 16.8d ago)",
+      "delta": {
+        "metric": "active_phishings",
+        "current": 958,
+        "previous": 1277,
+        "pct_change": -24.980422866092404,
+        "window": "7d",
+        "actual_window_days": 16.8
+      },
+      "score": 4.836,
+      "timestamp": "2026-11-10T15:11:16.787Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "wttr-dhaka-temp",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "temp_c 26 (-23.5% vs 15.2d ago)",
+      "delta": {
+        "metric": "temp_c",
+        "current": 26,
+        "previous": 34,
+        "pct_change": -23.52941176470588,
+        "window": "1d",
+        "actual_window_days": 15.2
+      },
+      "score": 4.699,
+      "timestamp": "2026-11-10T15:11:44.862Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "steam-dota2-players",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "player_count 712193 (-22.2% vs 15.8d ago)",
+      "delta": {
+        "metric": "player_count",
+        "current": 712193,
+        "previous": 914909,
+        "pct_change": -22.156957686502153,
+        "window": "1d",
+        "actual_window_days": 15.8
+      },
+      "score": 4.565,
+      "timestamp": "2026-11-10T15:11:42.120Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "kraken-xrp-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "xrp_usd 1.0633 (-18.0% vs 15.8d ago)",
+      "delta": {
+        "metric": "xrp_usd",
+        "current": 1.0633,
+        "previous": 1.29744,
+        "pct_change": -18.046306572943646,
+        "window": "24h",
+        "actual_window_days": 15.8
+      },
+      "score": 4.14,
+      "timestamp": "2026-11-10T15:11:16.471Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=XRPUSD",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "kraken-dot-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "dot_usd 0.8618 (-16.7% vs 15.8d ago)",
+      "delta": {
+        "metric": "dot_usd",
+        "current": 0.8618,
+        "previous": 1.034,
+        "pct_change": -16.65377176015474,
+        "window": "24h",
+        "actual_window_days": 15.8
+      },
+      "score": 3.986,
+      "timestamp": "2026-11-10T15:11:18.737Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=DOTUSD",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "kraken-sol-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "sol_usd 84.65 (-16.6% vs 15.8d ago)",
+      "delta": {
+        "metric": "sol_usd",
+        "current": 84.65,
+        "previous": 101.54,
+        "pct_change": -16.63383888122907,
+        "window": "24h",
+        "actual_window_days": 15.8
+      },
+      "score": 3.984,
+      "timestamp": "2026-11-10T15:11:16.503Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=SOLUSD",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "whiskyhunter-lot-count",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "all_auctions_lots_count 54342 (-15.7% vs 16d ago)",
+      "delta": {
+        "metric": "all_auctions_lots_count",
+        "current": 54342,
+        "previous": 64476,
+        "pct_change": -15.717476270240088,
+        "window": "7d",
+        "actual_window_days": 16
+      },
+      "score": 3.879,
+      "timestamp": "2026-11-10T15:11:23.131Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "kraken-ada-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "ada_usd 0.17758649999999998 (-13.4% vs 15.8d ago)",
+      "delta": {
+        "metric": "ada_usd",
+        "current": 0.17758649999999998,
+        "previous": 0.20513,
+        "pct_change": -13.427338760785856,
+        "window": "24h",
+        "actual_window_days": 15.8
+      },
+      "score": 3.603,
+      "timestamp": "2026-11-10T15:11:16.528Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=ADAUSD",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 1.0,
+        "historical": 0.5,
+        "freshness": 0.995,
+        "score": 0.633,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    },
+    {
+      "sector": "obis-marine-occurrences",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "total 258475190 (+12.3% vs 14d ago)",
+      "delta": {
+        "metric": "total",
+        "current": 258475190,
+        "previous": 230095612,
+        "pct_change": 12.333819734032998,
+        "window": "30d",
+        "actual_window_days": 14
+      },
+      "score": 3.464,
+      "timestamp": "2026-11-10T15:11:46.181Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json",
+      "trust": {
+        "independence": 0.333,
+        "attribution": 0.4,
+        "historical": 0.5,
+        "freshness": 0.996,
+        "score": 0.453,
+        "weights": {
+          "w_independence": 0.4,
+          "w_attribution": 0.3,
+          "w_historical": 0.2,
+          "w_freshness": 0.1
+        }
+      }
+    }
+  ],
+  "_trust_model": {
+    "version": 1,
+    "doc": "https://christianscode1994.github.io/VolatiAI/TRUST_MODEL.md",
+    "note": "Trust score \u2260 importance \u2260 correctness. See TRUST_MODEL.md."
+  }
+}
