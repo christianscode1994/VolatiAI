@@ -5,3 +5,20 @@ workers_dev = true
 # Free tier only. No KV, no R2, no D1, no custom domain.
 # 100,000 req/day free — you'll use <1,000/day.
 # Cloudflare free tier is fail-closed: hitting the cap returns 429, never bills.
+
+
+# Service bindings for sector workers.
+# Worker-to-worker fetch() over .workers.dev does not route reliably from
+# inside a Worker (returns 404 text/plain in ~8ms). Service bindings bypass
+# HTTP routing and call the target Worker's fetch handler directly.
+[[services]]
+binding = "SECTOR_DENSE"
+service = "sector-dense"
+
+[[services]]
+binding = "SECTOR_SPARSE"
+service = "sector-sparse"
+
+[[services]]
+binding = "SECTOR_SLOW"
+service = "sector-slow"
