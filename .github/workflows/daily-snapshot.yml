@@ -65,6 +65,9 @@ jobs:
       - name: Generate active signals
         run: python3 scripts/active_signals.py
 
+      - name: Compute trust scores (writes docs/active_with_trust.json)
+        run: python3 scripts/mirror/compute_trust_scores.py
+
       - name: Verify identity consistency (did.json vs pubkey*.pem vs signed snapshots)
         run: python3 scripts/mirror/verify_identity_consistency.py
 
@@ -72,7 +75,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/snapshots/ docs/active.json docs/active.txt docs/current.json
+          git add docs/snapshots/ docs/active.json docs/active.txt docs/active_with_trust.json docs/current.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
