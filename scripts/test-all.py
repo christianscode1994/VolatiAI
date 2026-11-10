@@ -17,6 +17,7 @@ Exit 0 if all checks pass, 1 otherwise.
 """
 import re
 import json
+import os
 import math
 import ssl
 import sys
@@ -30,10 +31,37 @@ try:
 except ImportError:
     _ssl_ctx = ssl.create_default_context()
 
-BASE = "https://christianscode1994.github.io/VolatiAI/"
+BASE = os.environ.get(
+    "TEST_ALL_BASE",
+    "https://christianscode1994.github.io/VolatiAI/",
+)
+
+# Offline-first: signal fixtures are read by default. TEST_ALL_LIVE=1 forces
+# live fetch from BASE. TEST_ALL_BASE=<url> overrides BASE for honest
+# network-failure testing.
+SIGNAL_FIXTURES = Path(__file__).resolve().parent / "fixtures" / "2026-11-10" / "signals"
+USE_FIXTURES = os.environ.get("TEST_ALL_LIVE") != "1" and SIGNAL_FIXTURES.exists()
 
 
-def fetch_json(url, timeout=15):
+def fetch_json(path, timeout=15):
+    """Load JSON. Prefers committed fixture over network when available.
+
+    path may be a bare filename ("active.json") or a full URL. Fixture
+    lookup uses the basename, so fetch_json(BASE + "active.json") still
+    reads the local fixture in fixture mode.
+    """
+    if path.startswith("http://") or path.startswith("https://"):
+        url = path
+        name = path.rstrip("/").split("/")[-1]
+    else:
+        url = BASE + path
+        name = path
+
+    if USE_FIXTURES:
+        local = SIGNAL_FIXTURES / name
+        if local.exists():
+            return json.loads(local.read_text())
+
     req = urllib.request.Request(url, headers={
         "User-Agent": "VolatiAI-TestSuite/1.0 (+https://christianscode1994.github.io/VolatiAI)",
         "Accept": "application/json",
