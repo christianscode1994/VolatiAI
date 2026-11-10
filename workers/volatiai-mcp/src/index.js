@@ -183,15 +183,46 @@ async function toolListActiveSignals(args = {}) {
 async function toolGetSector(args = {}) {
   const sector = (args.sector || "").trim();
   if (!sector) throw new Error("sector is required");
+
+  const attempts = [];
   for (const base of SECTOR_BASES) {
+    const started = Date.now();
+    const elapsed = () => Date.now() - started;
     try {
+      console.log(`[get_sector] trying ${base}/${sector}`);
       const r = await fetch(`${base}/${sector}`, { cache: "no-store", signal: AbortSignal.timeout(5000) });
-      if (!r.ok) continue;
-      const data = await r.json();
-      if (data && data.sector) return jsonResult(data);
-    } catch (e) { /* try next worker */ }
+      const ct = r.headers.get("content-type") || "";
+      const text = await r.text();
+      let body = null;
+      let parseErr = null;
+      try { body = JSON.parse(text); } catch (e) { parseErr = String(e.message || e).slice(0, 80); }
+      const hasSector = body && typeof body === "object" && body.sector;
+      attempts.push({
+        base,
+        status: r.status,
+        ok: r.ok,
+        content_type: ct,
+        body_preview: text.slice(0, 200),
+        parse_error: parseErr,
+        has_sector_field: !!hasSector,
+        sector_value: hasSector ? body.sector : null,
+        elapsed_ms: elapsed(),
+      });
+      console.log(`[get_sector] ${base}: status=${r.status} ok=${r.ok} ct=${ct} hasSector=${!!hasSector} elapsed=${elapsed()}ms`);
+      if (r.ok && hasSector) return jsonResult(body);
+    } catch (e) {
+      attempts.push({
+        base,
+        error: String(e.message || e).slice(0, 120),
+        error_name: e.name || null,
+        elapsed_ms: elapsed(),
+      });
+      console.log(`[get_sector] ${base}: ERROR ${e.name} ${String(e.message || e).slice(0, 100)} elapsed=${elapsed()}ms`);
+    }
   }
-  throw new Error(`Sector '${sector}' not found on any worker`);
+  const err = new Error(`Sector '${sector}' not found on any worker`);
+  err.data = { sector, bases_tried: SECTOR_BASES, attempts };
+  throw err;
 }
 
 async function toolListCategories() {
