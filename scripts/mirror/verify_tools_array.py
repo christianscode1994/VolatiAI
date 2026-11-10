@@ -8,6 +8,7 @@ Usage: python3 scripts/mirror/verify_tools_array.py [MCP_URL]
 Default MCP_URL: https://volatiai-mcp.fourieranalys.workers.dev/mcp
 """
 import json, sys, urllib.request
+import ssl
 
 EXPECTED = {
     "list_active_signals",
@@ -24,6 +25,12 @@ EXPECTED = {
 def main():
     url = sys.argv[1] if len(sys.argv) > 1 else "https://volatiai-mcp.fourieranalys.workers.dev/mcp"
     body = json.dumps({"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}).encode()
+    try:
+        import certifi as _certifi
+        _ssl_ctx = ssl.create_default_context(cafile=_certifi.where())
+    except ImportError:
+        _ssl_ctx = ssl.create_default_context()
+
     req = urllib.request.Request(
         url, data=body,
         headers={
@@ -32,7 +39,7 @@ def main():
             "User-Agent": "VolatiAI-Tools-Verifier/1.0 (+https://christianscode1994.github.io/VolatiAI/VERIFICATION.md)",
         },
     )
-    with urllib.request.urlopen(req, timeout=15) as r:
+    with urllib.request.urlopen(req, timeout=15, context=_ssl_ctx) as r:
         data = json.loads(r.read())
     deployed = {t["name"] for t in data["result"]["tools"]}
     missing = EXPECTED - deployed

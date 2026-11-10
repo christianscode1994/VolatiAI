@@ -246,3 +246,22 @@ All the scripts referenced above are in the repo:
 If any of the above checks fail to reproduce using the shipped scripts,
 that's a bug in the tooling, not a reason to distrust the data. Open an
 issue or run the scripts directly.
+
+## One-command verification
+
+For a comprehensive check of the entire system in one command:
+
+    ./scripts/verify-all.sh
+
+This runs every check described above automatically and exits non-zero if
+anything fails. Useful as:
+
+- A quick health check before deploying
+- A first-pass verification for new consumers
+- A CI gate for future changes
+- A proof-of-correctness anyone can run
+
+The script is pure read-only — it fetches from the MCP endpoint and GitHub
+Pages, verifies signatures, checks anchor integrity, and confirms identity
+consistency. It never modifies state. It works on any machine with `bash`,
+`curl`, `jq`, and `python3`.
