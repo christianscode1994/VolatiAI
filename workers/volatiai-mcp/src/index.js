@@ -2,6 +2,7 @@
 // Reads active.json from GitHub Pages. No KV, no R2, no auth, no card.
 
 const ACTIVE_JSON_URL = "https://christianscode1994.github.io/VolatiAI/active.json";
+const ACTIVE_WITH_TRUST_URL = "https://christianscode1994.github.io/VolatiAI/active_with_trust.json";
 const SECTOR_BASES = [
   "https://sector-dense.fourieranalys.workers.dev",
   "https://sector-sparse.fourieranalys.workers.dev",
@@ -177,7 +178,17 @@ function jsonResult(obj) {
 }
 
 async function toolListActiveSignals(args = {}) {
-  const data = await fetchJson(ACTIVE_JSON_URL);
+  // Prefer active_with_trust.json (has per-signal .trust). Fall back to
+  // active.json if the trust step failed for any reason — this tool must
+  // work even if scoring is broken.
+  let data;
+  let trust_available = false;
+  try {
+    data = await fetchJson(ACTIVE_WITH_TRUST_URL);
+    trust_available = true;
+  } catch (e) {
+    data = await fetchJson(ACTIVE_JSON_URL);
+  }
   let signals = data.signals || [];
   const limit = Math.min(args.limit || 25, 100);
   if (args.severity) signals = signals.filter(s => s.severity === args.severity);
@@ -197,7 +208,14 @@ async function toolListActiveSignals(args = {}) {
       attribution: s.attribution,
       baseline_revision: s.baseline_revision,
       delta: s.delta,
+      why_ranked: s.why_ranked,
+      trust: s.trust,
     })),
+    trust_model: trust_available ? {
+      version: 2,
+      doc: "https://christianscode1994.github.io/VolatiAI/TRUST_MODEL.md",
+      note: "trust.score measures weight-to-give-signal (0-1), not importance or correctness. See TRUST_MODEL.md for weights and limits.",
+    } : undefined,
   });
 }
 
@@ -801,11 +819,96 @@ async function toolListEntities(args = {}) {
   });
 }
 
+async function verifyEnvelope(envelope, pubkeyPem) {
+  // Import Ed25519 key (same SPKI parsing as verifySignature)
+  const b64 = pubkeyPem
+    .replace(/-----BEGIN PUBLIC KEY-----/g, "")
+    .replace(/-----END PUBLIC KEY-----/g, "")
+    .replace(/\s+/g, "");
+  const spki = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey(
+    "spki", spki, { name: "Ed25519" }, false, ["verify"]
+  );
+
+  // Canonicalize exactly as sign_envelope does in sign_snapshot.py:
+  // strip envelope_signature only, then canonical() over the rest
+  function canonical(obj) {
+    if (obj === null) return "null";
+    if (typeof obj === "boolean") return obj ? "true" : "false";
+    if (typeof obj === "number") return String(obj);
+    if (typeof obj === "string") return JSON.stringify(obj);
+    if (Array.isArray(obj)) return "[" + obj.map(canonical).join(",") + "]";
+    const keys = Object.keys(obj).sort();
+    return "{" + keys.map(k => JSON.stringify(k) + ":" + canonical(obj[k])).join(",") + "}";
+  }
+
+  // The signature covers envelope - {envelope_signature, envelope_pubkey_id}.
+  // sign_envelope() adds envelope_pubkey_id AFTER signing, so including it
+  // here produces different bytes than what was signed.
+  const signable = { ...envelope };
+  delete signable.envelope_signature;
+  delete signable.envelope_pubkey_id;
+
+  const msg = new TextEncoder().encode(canonical(signable));
+
+  // envelope_signature is HEX (from sign_envelope: sig.hex()), unlike
+  // snapshot signatures which are base64. Strict 128-char check catches
+  // both wrong-encoding errors and truncated signatures.
+  const hexStr = String(envelope.envelope_signature || "");
+  if (hexStr.length !== 128) {
+    throw new Error("envelope_sig_not_128_hex_chars: " + hexStr.length);
+  }
+  const sig = new Uint8Array(64);
+  for (let i = 0; i < 64; i++) {
+    sig[i] = parseInt(hexStr.substr(i * 2, 2), 16);
+  }
+  return await crypto.subtle.verify("Ed25519", key, sig, msg);
+}
+
 async function toolGetCurrentRevision() {
   const r = await fetch("https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/current.json", { cache: "no-store", signal: AbortSignal.timeout(8000) });
   if (!r.ok) throw new Error(`current.json not found (HTTP ${r.status})`);
   const current = await r.json();
-  return jsonResult(current);
+
+  // Verify envelope signature (Ed25519 over canonical JSON, hex-encoded sig)
+  let envelope_signature_valid = null;
+  let envelope_signature_error = null;
+  let envelope_key_matched = null;
+  if (current.envelope_signature && current.envelope_pubkey_id) {
+    try {
+      const pkRes = await fetch(
+        "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey.pem",
+        { cache: "no-store", signal: AbortSignal.timeout(5000) }
+      );
+      if (pkRes.ok) {
+        const pkPem = await pkRes.text();
+        envelope_signature_valid = await verifyEnvelope(current, pkPem);
+        if (envelope_signature_valid === true) {
+          envelope_key_matched = "current";
+        } else if (envelope_signature_valid === false) {
+          envelope_signature_error = "sig_verify_false";
+        }
+      } else {
+        envelope_signature_error = "pubkey_fetch_" + pkRes.status;
+      }
+    } catch (e) {
+      envelope_signature_error = String(e.message || e).slice(0, 100);
+    }
+  }
+
+  return jsonResult({
+    ...current,
+    _verification: {
+      envelope_signature_valid,
+      envelope_signature_error,
+      envelope_key_matched,
+      note: envelope_signature_valid === true
+        ? "Envelope signature verified against current pubkey."
+        : envelope_signature_error
+          ? "Verification failed: " + envelope_signature_error
+          : "Verification inconclusive.",
+    },
+  });
 }
 
 async function toolGetDiff(args = {}) {
