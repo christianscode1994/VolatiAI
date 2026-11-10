@@ -470,6 +470,28 @@ async function toolFindCorroborations() {
   const data = await fetchJson(ACTIVE_JSON_URL);
   const signals = data.signals || [];
 
+  // Best-effort entities.json fetch for metric guard enforcement.
+  // On failure, guards are silently skipped — the tool returns unfiltered
+  // groups rather than erroring.
+  let entityData = null;
+  try {
+    const entRes = await fetch(
+      "https://christianscode1994.github.io/VolatiAI/entities.json",
+      { cache: "no-store", signal: AbortSignal.timeout(5000) }
+    );
+    if (entRes.ok) entityData = await entRes.json();
+  } catch (e) { /* guard enforcement disabled */ }
+
+  const sectorToEntities = new Map();
+  if (entityData && entityData.entities) {
+    for (const [canonId, ent] of Object.entries(entityData.entities)) {
+      for (const slug of (ent.sectors_expected || [])) {
+        if (!sectorToEntities.has(slug)) sectorToEntities.set(slug, new Set());
+        sectorToEntities.get(slug).add(canonId);
+      }
+    }
+  }
+
   const groups = {};
   for (const s of signals) {
     const d = s.delta || {};
@@ -485,9 +507,38 @@ async function toolFindCorroborations() {
     });
   }
 
+  const metricGuards = (entityData && entityData.spread_metrics) || {};
   const corroborations = [];
+  const suppressedGroups = [];
+
   for (const [metric, entries] of Object.entries(groups)) {
     if (entries.length < 2) continue;
+    const guard = metricGuards[metric];
+    if (guard && Array.isArray(guard.not_comparable_across)) {
+      const entryEntities = entries.map(e => sectorToEntities.get(e.sector) || new Set());
+      let suppressed = false;
+      for (let i = 0; i < entries.length && !suppressed; i++) {
+        for (let j = i + 1; j < entries.length && !suppressed; j++) {
+          const ei = entryEntities[i], ej = entryEntities[j];
+          let shared = false;
+          for (const a of ei) if (ej.has(a)) { shared = true; break; }
+          if (shared) continue;
+          const eiGuarded = [...ei].some(a => guard.not_comparable_across.includes(a));
+          const ejGuarded = [...ej].some(b => guard.not_comparable_across.includes(b));
+          if (eiGuarded && ejGuarded) {
+            suppressed = true;
+            suppressedGroups.push({
+              metric,
+              reason: "not_comparable_across",
+              sectors: entries.map(e => e.sector),
+              example_pair: [entries[i].sector, entries[j].sector],
+              guard_note: guard.example_of_wrong_grouping || guard.described_as,
+            });
+          }
+        }
+      }
+      if (suppressed) continue;
+    }
     const values = entries.map(e => e.current).filter(v => typeof v === "number");
     if (values.length < 2) continue;
     const min = Math.min(...values);
@@ -512,7 +563,9 @@ async function toolFindCorroborations() {
     baseline_revision: data.baseline_revision,
     total_active_signals: signals.length,
     corroboration_groups: corroborations.length,
-    note: "Groups of active signals sharing the same metric. High disagreement_pct (>1%) suggests arbitrage or source discrepancy. Only reflects signals currently active — correlated sectors that are quiet won't appear.",
+    suppressed_groups: suppressedGroups.length > 0 ? suppressedGroups : undefined,
+    metric_guards_enforced: entityData !== null,
+    note: "Groups of active signals sharing the same metric. Metric guards from entities.json are enforced — groups spanning incomparable entities are suppressed and listed in suppressed_groups.",
     groups: corroborations,
   });
 }
