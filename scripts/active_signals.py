@@ -275,7 +275,7 @@ def main() -> None:
             "delta": d.get("delta"),
             "score": round(sc, 3),
             "timestamp": d.get("timestamp"),
-            "attribution": _source_url_for(sig.get("sector", ""), "https://christianscode1994.github.io/VolatiAI/attribution.json"),
+            "attribution": _source_url_for(d.get("sector", ""), "https://christianscode1994.github.io/VolatiAI/attribution.json"),
         })
     candidates.sort(key=lambda c: c["score"], reverse=True)
     top = candidates[:TOP_N]
