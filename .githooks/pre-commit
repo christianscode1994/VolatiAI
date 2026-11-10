@@ -58,4 +58,49 @@ for yaml_file in .github/workflows/*.yml; do
   }
 done
 
+# ─── TEST SUITES ───
+# Runs the test files themselves, not just the code they test. Closes the
+# class where a test file ships broken while every other check reports
+# green: ec6f1826 had a SyntaxError in test-all.py, and 'All pre-commit
+# checks passed' was truthful about its own scope and misleading about
+# the file.
+echo "→ Test suites..."
+
+# test-all.py — AST parse + execution.
+if [ -f scripts/test-all.py ]; then
+  python3 -c "import ast; ast.parse(open('scripts/test-all.py').read())" || {
+    echo "✗ test-all.py syntax error — refusing commit" >&2
+    python3 -c "import ast; ast.parse(open('scripts/test-all.py').read())" 2>&1 | tail -3 >&2
+    exit 1
+  }
+  if ! python3 scripts/test-all.py >/tmp/test-all.out 2>&1; then
+    echo "✗ test-all.py failing — refusing commit" >&2
+    tail -25 /tmp/test-all.out >&2
+    exit 1
+  fi
+  n=$(grep -c '✅' /tmp/test-all.out || echo '?')
+  echo "  ✓ test-all.py ($n assertions)"
+fi
+
+# verify.cjs — parse gate. Catches broken .cjs before push.
+if [ -f scripts/verify.cjs ]; then
+  node --check scripts/verify.cjs || {
+    echo "✗ verify.cjs syntax error — refusing commit" >&2
+    exit 1
+  }
+  echo "  ✓ verify.cjs parses"
+fi
+
+# test-verify-offline.sh — full verifier smoke, all layered negatives.
+# If verify.cjs stops rejecting a tampered payload at the right layer,
+# this fires before commit.
+if [ -f scripts/test-verify-offline.sh ]; then
+  if ! bash scripts/test-verify-offline.sh >/tmp/verifier-test.out 2>&1; then
+    echo "✗ test-verify-offline.sh failing — refusing commit" >&2
+    tail -30 /tmp/verifier-test.out >&2
+    exit 1
+  fi
+  echo "  ✓ test-verify-offline.sh (layered negatives)"
+fi
+
 echo "✓ All pre-commit checks passed"
