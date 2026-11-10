@@ -819,7 +819,7 @@ async function handleRPC(msg, env = {}) {
       case "tools/list":
         return jsonRpc(id, { tools: TOOLS });
       case "tools/call":
-        return jsonRpc(id, await handleToolsCall(params));
+        return jsonRpc(id, await handleToolsCall(params, env));
       case "ping":
         return jsonRpc(id, {});
       default:
@@ -851,7 +851,7 @@ async function handleRPC(msg, env = {}) {
 }
 
 export default {
-  async fetch(req) {
+  async fetch(req, env, ctx) {
     const url = new URL(req.url);
     const cors = {
       "Access-Control-Allow-Origin": "*",
@@ -878,7 +878,7 @@ export default {
       const messages = Array.isArray(body) ? body : [body];
       const responses = [];
       for (const msg of messages) {
-        const resp = await handleRPC(msg);
+        const resp = await handleRPC(msg, env);
         if (resp !== null) responses.push(resp);
       }
       const out = responses.length === 1 ? responses[0] : responses;
