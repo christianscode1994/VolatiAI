@@ -204,6 +204,21 @@ async function toolListActiveSignals(args = {}) {
 async function toolGetSector(args = {}, env = {}) {
   const sector = (args.sector || "").trim();
   if (!sector) throw new Error("sector is required");
+  // Debug sentinel: returns env diagnostics as a normal result (not an error,
+  // so jsonRpcError doesn't strip the fields). Used to verify whether CF's
+  // runtime is actually populating env.SECTOR_* bindings at fetch time.
+  if (sector === "__debug_env__") {
+    return jsonResult({
+      sector: "__debug_env__",
+      env_keys: Object.keys(env || {}),
+      env_key_count: Object.keys(env || {}).length,
+      has_sector_dense: "SECTOR_DENSE" in (env || {}),
+      has_sector_sparse: "SECTOR_SPARSE" in (env || {}),
+      has_sector_slow: "SECTOR_SLOW" in (env || {}),
+      sector_dense_type: typeof (env || {}).SECTOR_DENSE,
+      sector_dense_has_fetch: !!(env && env.SECTOR_DENSE && typeof env.SECTOR_DENSE.fetch === "function"),
+    });
+  }
   const SECTOR_BINDINGS = ["SECTOR_DENSE", "SECTOR_SPARSE", "SECTOR_SLOW"];
   const attempts = [];
   for (const name of SECTOR_BINDINGS) {
