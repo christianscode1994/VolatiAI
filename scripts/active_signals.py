@@ -124,6 +124,28 @@ def novelty_factor(sector: str, history: dict) -> float:
     return 1.0
 
 
+def _why_ranked(d: dict, final_score: float, history: dict) -> str:
+    """Human-readable breakdown of how a signal's rank score was computed.
+    Mirrors score()'s computation EXACTLY so the audit numbers line up with
+    the actual score field. Any change to score() must be reflected here."""
+    sev_name = SEVERITY_OVERRIDES.get(d.get("sector", ""), d.get("severity", "info"))
+    sev_w = SEVERITY_WEIGHT.get(sev_name, 1.0)
+    conf = d.get("confidence", 0.0) or 0.0
+    mag = d.get("magnitude", 0.0) or 0.0
+    if mag == 0:
+        delta = d.get("delta") or {}
+        pct = delta.get("pct_change")
+        if isinstance(pct, (int, float)) and pct != 0:
+            mag = abs(pct) * 0.1
+    nov = novelty_factor(d.get("sector", ""), history)
+    inner = math.sqrt(mag + 0.1)
+    return (
+        f"severity={sev_name}({sev_w}) × confidence={conf} × "
+        f"sqrt(mag+0.1)={round(inner, 3)} (mag={round(float(mag), 2)}) "
+        f"× novelty={round(nov, 3)} = {round(final_score, 2)}"
+    )
+
+
 def score(d: dict, history: dict) -> float:
     sev_name = SEVERITY_OVERRIDES.get(d.get("sector", ""), d.get("severity", "info"))
     sev = SEVERITY_WEIGHT.get(sev_name, 1.0)
@@ -274,6 +296,7 @@ def main() -> None:
             "summary": d.get("summary"),
             "delta": d.get("delta"),
             "score": round(sc, 3),
+            "why_ranked": _why_ranked(d, sc, history),
             "timestamp": d.get("timestamp"),
             "attribution": _source_url_for(d.get("sector", ""), "https://christianscode1994.github.io/VolatiAI/attribution.json"),
         })
