@@ -23,6 +23,9 @@ jobs:
       - name: Internal consistency tests
         run: python3 scripts/test-all.py
 
+      - name: Envelope integrity gate (cross-language)
+        run: python3 scripts/test-envelope.py
+
       - name: Report failure
         if: failure()
         run: |
