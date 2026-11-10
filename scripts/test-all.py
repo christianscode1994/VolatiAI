@@ -220,18 +220,24 @@ def main():
     try:
         from pathlib import Path as _Path
         from sign_snapshot import _canon_bytes
-        fx = _Path("scripts/fixtures/2026-11-10")
-        snap = json.loads((fx / "snapshot.json").read_text())
-        env  = json.loads((fx / "current.json").read_text())
-        payload = {k: v for k, v in snap.items() if k not in SNAPSHOT_STRIP}
-        computed = hashlib.sha256(_canon_bytes(payload)).hexdigest()
-        stored = snap.get("hash", "")
-        print(f"  stored:   {stored[:32]}…")
-        print(f"  computed: {computed[:32]}…")
-        check("snapshot payload hash reproducible from fixture",
-              computed == stored)
-        check("envelope.snapshot_hash == snapshot.hash",
-              env.get("snapshot_hash") == stored)
+        fx_root = _Path(__file__).resolve().parent / "fixtures"
+        fixtures = sorted(fx_root.glob("*/snapshot.json"))
+        if not fixtures:
+            check("any snapshot fixtures present", False,
+                  f"searched {fx_root}")
+        for snap_path in fixtures:
+            fx_dir = snap_path.parent
+            tag = fx_dir.name
+            snap = json.loads(snap_path.read_text())
+            env  = json.loads((fx_dir / "current.json").read_text())
+            payload = {k: v for k, v in snap.items() if k not in SNAPSHOT_STRIP}
+            computed = hashlib.sha256(_canon_bytes(payload)).hexdigest()
+            stored = snap.get("hash", "")
+            print(f"  [{tag}] stored={stored[:16]}… computed={computed[:16]}…")
+            check(f"[{tag}] snapshot payload hash reproducible",
+                  computed == stored)
+            check(f"[{tag}] envelope.snapshot_hash == snapshot.hash",
+                  env.get("snapshot_hash") == stored)
     except Exception as e:
         check("snapshot payload hash reproducible", False)
         print(f"  (error: {e})")
@@ -245,15 +251,33 @@ def main():
     try:
         from pathlib import Path as _Path
         wr = _Path("workers/volatiai-mcp/wrangler.toml").read_text()
-        fx = _Path("scripts/fixtures/2026-11-10/pub.pem").read_text().strip()
-        m = re.search(r'PUBKEY_CURRENT_PEM\s*=\s*\"\"\"([^\"]+)\"\"\"', wr, re.DOTALL)
-        if not m:
-            check("baked PUBKEY_CURRENT_PEM parseable", False)
+
+        # Parse baked key ID + PEM from wrangler.toml
+        id_m = re.search(r'PUBKEY_CURRENT_ID\s*=\s*"([^"]+)"', wr)
+        pem_m = re.search(r'PUBKEY_CURRENT_PEM\s*=\s*"""([^"]+)"""', wr, re.DOTALL)
+        if not id_m or not pem_m:
+            check("baked PUBKEY_CURRENT_ID + PEM parseable", False)
         else:
-            baked = m.group(1).strip()
-            check("baked PUBKEY_CURRENT_PEM matches fixture",
-                  baked == fx,
-                  f"baked={baked[:40]}… fixture={fx[:40]}…")
+            baked_id = id_m.group(1)
+            baked_pem = pem_m.group(1).strip()
+            check(f"baked PUBKEY_CURRENT_ID = {baked_id}", True)
+
+            # Find the fixture whose envelope names this key
+            fx_root = _Path(__file__).resolve().parent / "fixtures"
+            matched = None
+            for cur in sorted(fx_root.glob("*/current.json")):
+                data = json.loads(cur.read_text())
+                if data.get("envelope_pubkey_id") == baked_id:
+                    matched = cur.parent
+                    break
+            if matched is None:
+                check(f"fixture for pubkey_id {baked_id} exists", False,
+                      f"searched {fx_root}")
+            else:
+                fx_pem = (matched / "pub.pem").read_text().strip()
+                check(f"[{matched.name}] baked PUBKEY_CURRENT_PEM matches fixture",
+                      baked_pem == fx_pem,
+                      f"baked={baked_pem[:40]}… fixture={fx_pem[:40]}…")
     except Exception as e:
         check("baked pubkey matches fixture", False)
         print(f"  (error: {e})")
