@@ -15,9 +15,9 @@ Catches the class of bug we hit on 2026-11-10:
 
 Exit 0 if all checks pass, 1 otherwise.
 """
+import re
 import json
 import math
-import re
 import ssl
 import sys
 import urllib.request
@@ -201,7 +201,6 @@ def main():
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
         from sign_snapshot import _canon_bytes
         import hashlib
-import re
         py_bytes = _canon_bytes(signable)
         py_sha = hashlib.sha256(py_bytes).hexdigest()[:16]
         print(f"  canonical sha256: {py_sha}…  (len {len(py_bytes)})")
