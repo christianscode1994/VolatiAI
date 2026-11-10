@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "publisher": {
+    "did": "did:web:christianscode1994.github.io:VolatiAI:.well-known",
+    "name": "VolatiAI",
+    "contact": "https://github.com/christianscode1994/VolatiAI/issues"
+  },
+  "discoverability": {
+    "did_document": "https://christianscode1994.github.io/VolatiAI/.well-known/did.json",
+    "current_pubkey_pem": "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey.pem",
+    "v0_historical_pubkey_pem": "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-pubkey-v0.pem",
+    "current_key_meta": "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-key.json",
+    "v0_key_meta": "https://christianscode1994.github.io/VolatiAI/.well-known/volatiai-key-v0.json",
+    "security_txt": "https://christianscode1994.github.io/VolatiAI/.well-known/security.txt",
+    "verification_guide": "https://christianscode1994.github.io/VolatiAI/VERIFICATION.md",
+    "key_rotation_history": "https://christianscode1994.github.io/VolatiAI/KEY_ROTATION.md"
+  },
+  "data": {
+    "snapshot_pattern": "https://christianscode1994.github.io/VolatiAI/snapshots/{YYYY-MM-DD}.json",
+    "anchor_log": "https://christianscode1994.github.io/VolatiAI/snapshots/_anchors.jsonl",
+    "anchor_log_ots": "https://christianscode1994.github.io/VolotiAI/snapshots/_anchors.jsonl.ots",
+    "timestamp_pattern": "https://christianscode1994.github.io/VolatiAI/snapshots/{YYYY-MM-DD}.json.tsr",
+    "current_signals": "https://christianscode1994.github.io/VolatiAI/active.json"
+  },
+  "algorithms": {
+    "signature": "Ed25519",
+    "hash": "SHA-256",
+    "canonicalization": "json.dumps(obj, separators=(',',':'), sort_keys=True, ensure_ascii=False)",
+    "timestamp": "RFC 3161 (FreeTSA.org)",
+    "anchor_log_witness": "OpenTimestamps (Bitcoin via OTS calendar aggregation)"
+  },
+  "mcp_server": {
+    "url": "https://volatiai-mcp.fourieranalys.workers.dev/mcp",
+    "protocol": "MCP (Model Context Protocol) 2025-06-18",
+    "tools": [
+      "list_active_signals",
+      "get_sector",
+      "list_categories",
+      "verify_snapshot",
+      "find_corroborations",
+      "get_diff",
+      "get_current_revision",
+      "get_anchor",
+      "get_trust_manifest"
+    ]
+  },
+  "verification_chain": [
+    "1. Fetch snapshot JSON from snapshot_pattern",
+    "2. Call verify_snapshot(date) or reproduce offline per VERIFICATION.md",
+    "3. Call get_anchor(date) or fetch _anchors.jsonl \u2014 post-hoc rewrite detection",
+    "4. Verify .tsr with openssl ts -verify \u2014 FreeTSA witness",
+    "5. Verify did.json keys match pubkey PEMs \u2014 trust root"
+  ],
+  "signed_snapshot_history": {
+    "first_signed": "2026-11-04",
+    "keys_used": [
+      {
+        "fingerprint": "volatiai-cd49e04e",
+        "dates": [
+          "2026-11-04",
+          "2026-11-05"
+        ]
+      },
+      {
+        "fingerprint": "volatiai-b4175311",
+        "dates": [
+          "2026-11-08",
+          "onwards"
+        ]
+      }
+    ],
+    "gap": "2026-11-06 (no snapshot), 2026-11-07 (unsigned snapshot exists)"
+  },
+  "note": "Signature proves origin and integrity, not correctness of underlying data. For correctness, cross-reference each signal against its attribution URL."
+}
