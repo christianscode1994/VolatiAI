@@ -120,6 +120,42 @@ and declared upstream feeds.
 5. ⏳ Build accuracy tracker — `docs/ACCURACY.md`. This is the input the
    trust model most needs and doesn't have.
 
+
+## Version 2 (2026-11-10)
+
+**Change:** `independence_score()` replaced from a corroboration-based
+placeholder (hardcoded 0.333) to a resilience-based formula.
+
+**Why:** The documented v1 formula (`min(1.0, corroborators/3)`) requires
+multiple sectors observing the same metric. Empirically, only 1 of 25 top
+signals has any corroborator at all — the top-25 rotates daily and
+cross-metric corroboration is rare. Applying v1 literally would assign
+0.0 to 96% of signals, dropping every trust score by ~0.25 and destroying
+the model's ability to discriminate.
+
+**New formula:**
+
+    independence = min(1.0, feed_count / 3)
+
+where `feed_count` is the number of independent upstream feeds the sector
+draws from, declared in `docs/sector_feeds.json`.
+
+    1 feed  → 0.333  (single point of failure)
+    2 feeds → 0.667  (defense in depth)
+    3+ feeds → 1.0  (robust)
+
+This rewards source architecture rather than cross-observer agreement.
+It's the property you can actually measure today. Corroboration-based
+scoring is deferred until: (a) the accuracy tracker proves signals
+predict anything, AND (b) at least 3 metrics have 2+ corroborators
+consistently.
+
+**Unmapped sectors:** default to 0.333 (treated as single-source). Add
+to `docs/sector_feeds.json` to differentiate.
+
+**Weights unchanged** (independence 0.4 / attribution 0.3 / historical 0.2
+/ freshness 0.1). Only the independence *input* is computed differently.
+
 ## Versioning
 
     version: 1
