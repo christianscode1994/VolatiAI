@@ -95,3 +95,26 @@ Before touching `~/.volatiai/signing.key` or `docs/pubkey.pem`:
         -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"verify_snapshot\",\"arguments\":{\"date\":\"$d\"}}}" \
         | jq -r '.result.content[0].text | fromjson | "\(.date): \(.signature_valid) (\(.signature_key_matched))"'
     done
+
+## Revocation: empirical test status (2026-11-10)
+
+The revocation check in `verify_snapshot` fetches `volatiai-key.json` /
+`volatiai-key-v0.json` on each call and marks snapshots invalid if their
+`signature_valid` came back true but `signed_at > revoked_at`.
+
+**What has been verified empirically:**
+- The check runs on every `verify_snapshot` call (verified via `wrangler tail` on canary)
+- When `revoked_at` is `null`, it silently no-ops (verified: 5/5 snapshots still return `signature_valid: true`)
+- The `verify_snapshot` response shape is unchanged when revocation is not active
+
+**What has NOT been verified empirically:**
+- The firing path (when `revoked_at` is set to a past date). Testing this
+  requires either mutating the public `volatiai-key.json` (bad — it's the
+  trust root) or adding a `--test-key-url` argument (deferred, small change).
+
+**When the firing path will be tested:**
+- First real revocation event, OR
+- A dedicated session adds `--test-key-url` support for safe testing
+
+The revocation code has been reviewed against the documented behavior
+in the key metadata. The unverified path is narrow and well-understood.
