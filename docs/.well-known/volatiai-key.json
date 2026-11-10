@@ -9,5 +9,8 @@
   "alsoKnownAs": [
     "volatiai-v1"
   ],
-  "note": "Active signing key. key_id derived as SHA-256(SPKI DER)[:8] \u2014 matches sign_snapshot.py _derive_pubkey_id(). See docs/KEY_ROTATION.md."
+  "note": "Active signing key. key_id derived as SHA-256(SPKI DER)[:8] \u2014 matches sign_snapshot.py _derive_pubkey_id(). See docs/KEY_ROTATION.md.",
+  "revoked_at": null,
+  "revoked_reason": null,
+  "revocation_note": "Set revoked_at to an ISO 8601 date if this key is compromised. verify_snapshot will reject snapshots signed after revoked_at even if the signature verifies. See docs/KEY_ROTATION.md."
 }
