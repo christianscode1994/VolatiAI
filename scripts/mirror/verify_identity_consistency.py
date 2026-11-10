@@ -40,6 +40,10 @@ def main():
         errs.append(f"volatiai-key.json key_id {key.get('key_id')!r} != volatiai-{cur_fp}")
     if key.get("publicKeyHex") != cur_hex:
         errs.append(f"volatiai-key.json publicKeyHex != pubkey.pem raw32")
+    if "revoked_at" not in key:
+        errs.append(f"volatiai-key.json missing revoked_at field")
+    if "revoked_reason" not in key:
+        errs.append(f"volatiai-key.json missing revoked_reason field")
 
     # ── volatiai-key-v0.json ──
     key0 = json.loads((WELL / "volatiai-key-v0.json").read_text())
@@ -47,6 +51,10 @@ def main():
         errs.append(f"volatiai-key-v0.json key_id {key0.get('key_id')!r} != volatiai-{v0_fp}")
     if key0.get("publicKeyHex") != v0_hex:
         errs.append(f"volatiai-key-v0.json publicKeyHex != pubkey-v0.pem raw32")
+    if "revoked_at" not in key0:
+        errs.append(f"volatiai-key-v0.json missing revoked_at field")
+    if "revoked_reason" not in key0:
+        errs.append(f"volatiai-key-v0.json missing revoked_reason field")
 
     # ── did.json ──
     did = json.loads((WELL / "did.json").read_text())

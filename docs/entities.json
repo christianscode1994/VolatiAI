@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-09",
+  "note": "Canonical entities appearing across multiple VolatiAI sectors. Each entry maps a stable canonical_id to every slug, ticker, or name that appears in VolatiAI signals. Adding a row here is how you say 'these are the same thing'. Curated, not inferred.",
+  "entities": {
+    "bitcoin": {
+      "type": "asset",
+      "canonical_name": "Bitcoin",
+      "aliases": [
+        "BTC",
+        "btc",
+        "XBT"
+      ],
+      "external_ids": {
+        "coingecko": "bitcoin",
+        "coinmarketcap": "bitcoin",
+        "wikidata": "Q131723",
+        "ticker_coingecko": "bitcoin"
+      },
+      "sectors_expected": [
+        "kraken-btc",
+        "coinbase-btc",
+        "gemini-btc",
+        "btc-exchange-spread",
+        "protocols-tvl",
+        "sector-blockchain"
+      ],
+      "entity_class": "crypto"
+    },
+    "ethereum": {
+      "type": "asset",
+      "canonical_name": "Ethereum",
+      "aliases": [
+        "ETH",
+        "eth",
+        "ether"
+      ],
+      "external_ids": {
+        "coingecko": "ethereum",
+        "wikidata": "Q16783566"
+      },
+      "sectors_expected": [
+        "kraken-eth",
+        "coinbase-eth",
+        "eth-exchange-spread",
+        "protocols-tvl",
+        "web3-identity",
+        "scaling-l2"
+      ],
+      "entity_class": "crypto"
+    },
+    "solana": {
+      "type": "asset",
+      "canonical_name": "Solana",
+      "aliases": [
+        "SOL",
+        "sol"
+      ],
+      "external_ids": {
+        "coingecko": "solana",
+        "wikidata": "Q114839820"
+      },
+      "sectors_expected": [
+        "sol_usd",
+        "sector-blockchain"
+      ],
+      "entity_class": "crypto"
+    },
+    "nws": {
+      "type": "organization",
+      "canonical_name": "National Weather Service",
+      "aliases": [
+        "NWS",
+        "nws",
+        "weather.gov"
+      ],
+      "external_ids": {
+        "wikidata": "Q1601545"
+      },
+      "sectors_expected": [
+        "nws-active-severe-alerts",
+        "sector-weather",
+        "sector-dense"
+      ],
+      "entity_class": "government"
+    },
+    "nvd": {
+      "type": "organization",
+      "canonical_name": "National Vulnerability Database",
+      "aliases": [
+        "NVD",
+        "nvd",
+        "nvd.nist.gov"
+      ],
+      "external_ids": {
+        "wikidata": "Q6978657"
+      },
+      "sectors_expected": [
+        "sector-security",
+        "nvd-"
+      ],
+      "entity_class": "government"
+    },
+    "steam": {
+      "type": "organization",
+      "canonical_name": "Steam",
+      "aliases": [
+        "Steam",
+        "steampowered"
+      ],
+      "external_ids": {
+        "wikidata": "Q188806"
+      },
+      "sectors_expected": [
+        "steam-dota2-players",
+        "steam-csgo-players",
+        "sector-sports-fitness"
+      ],
+      "entity_class": "platform"
+    },
+    "dota2": {
+      "type": "product",
+      "canonical_name": "Dota 2",
+      "aliases": [
+        "Dota2",
+        "dota2",
+        "Dota 2"
+      ],
+      "external_ids": {
+        "wikidata": "Q171867"
+      },
+      "sectors_expected": [
+        "steam-dota2-players"
+      ],
+      "entity_class": "game"
+    },
+    "cs2": {
+      "type": "product",
+      "canonical_name": "Counter-Strike 2",
+      "aliases": [
+        "CS:GO",
+        "CSGO",
+        "csgo",
+        "CS2",
+        "Counter-Strike 2",
+        "Counter-Strike"
+      ],
+      "external_ids": {
+        "wikidata": "Q15736678"
+      },
+      "sectors_expected": [
+        "steam-csgo-players"
+      ],
+      "entity_class": "game",
+      "note": "Valve renamed CS:GO to Counter-Strike 2 in 2023; both slugs appear in VolatiAI data"
+    }
+  },
+  "spread_metrics": {
+    "_note": "Metrics that MUST NOT be grouped together \u2014 they measure different things. If two signals share a metric key but their underlying entities differ, corroboration is a false positive.",
+    "spread_pct": {
+      "described_as": "percentage spread between bid and ask on a single exchange pair",
+      "not_comparable_across": [
+        "bitcoin",
+        "ethereum",
+        "solana"
+      ],
+      "correctly_grouped_only_when": "the same (asset, exchange_pair) tuple",
+      "example_of_wrong_grouping": "btc-exchange-spread vs eth-exchange-spread \u2014 different assets, different spreads, MUST NOT be compared"
+    }
+  }
+}
