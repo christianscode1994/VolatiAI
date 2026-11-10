@@ -127,3 +127,39 @@ and declared upstream feeds.
 
 Every weight change bumps the version and adds a note here explaining why.
 Without version history, a bad score 6 months from now is untraceable.
+
+## Independence: current state (2026-11-10)
+
+The `independence_score()` function is currently a hardcoded placeholder
+(0.333) because empirical corroboration density is very low.
+
+**The finding:** In the top-25 active signals on 2026-11-10, only ONE
+metric had multiple signals (`gco2_per_kwh`, from `uk-carbon-intensity-now`
+and `energinet-dk-carbon-intensity`). The other 24 signals had no
+corroborators. Implementing the documented formula literally
+(`min(1.0, corroborators/3)`) would assign 0.0 independence to 96% of
+signals, dropping every trust score by ~0.25.
+
+**Why this isn't implemented:**
+
+1. **Corroboration is a data problem, not a code problem.** No code change
+   makes single-source signals corroborated.
+2. **Alternative models exist** — resilience-based (`feed_count/3` where
+   a sector draws from N independent upstream APIs) is defensible but
+   requires declaring `upstream_feeds` per sector, which is real work
+   (425 sectors × ~5 minutes each ≈ 35 hours).
+3. **Accuracy data isn't mature yet.** If tomorrow's `skill` numbers are
+   near zero, independence weights don't matter — the signals don't predict
+   anything regardless of corroboration.
+
+**Trigger for revisiting:**
+
+- If `docs/accuracy.json` shows `skill > 0` for tracked sectors, the
+  trust model is worth investing in → build `sector_feeds.json` +
+  resilience scoring.
+- If any top-25 metric has ≥2 corroborators for 3+ consecutive days, the
+  corroboration density has improved enough to justify the literal formula.
+
+**Until then:** the placeholder `0.333` is documented and honest. Every
+signal trusts with the same independence assumption because the system
+cannot yet distinguish them.
