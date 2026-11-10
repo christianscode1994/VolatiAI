@@ -32,7 +32,13 @@ def attribution_quality(url):
     # Direct API to primary source
     if any(h in host for h in ("api.kraken.com", "api.coinbase.com", "api.binance.com",
                                 "api.coingecko.com", "api.github.com", "api.npmjs.org",
-                                "services.nvd.nist.gov", "api.weather.gov")):
+                                "services.nvd.nist.gov", "api.weather.gov",
+                                # Added 2026-11-10 to match docs/attribution_sources.json:
+                                "api.carbonintensity.org.uk",   # UK grid intensity
+                                "energinet.dk",                 # DK grid intensity (www.*)
+                                "usgs.gov",                     # USGS FDSN + any future subdomain
+                                "hacker-news.firebaseio.com",   # HN top stories
+                                "pypistats.org")):              # PyPI download stats
         return 1.0
 
     # Published dataset with permalink
