@@ -26,6 +26,9 @@ jobs:
       - name: Envelope integrity gate (cross-language)
         run: python3 scripts/test-envelope.py
 
+      - name: Standalone verifier — offline smoke test
+        run: bash scripts/test-verify-offline.sh
+
       - name: Report failure
         if: failure()
         run: |
