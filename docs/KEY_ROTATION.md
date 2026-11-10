@@ -56,6 +56,57 @@ All four signed snapshots now verify:
 | 2026-11-08 | current | `"current"` |
 | 2026-11-09 | current | `"current"` |
 
+## Rotation checklist (forward)
+
+Historical rotation happened silently and broke verification without warning.
+Any deliberate rotation must follow this order — **wrangler.toml first,
+signing second.** Check 9 in `scripts/test-all.py` catches skipped steps,
+but the checklist is what prevents the mistake in the first place.
+
+1. **Generate the new key** — `~/.volatiai/signing.key`. Do not overwrite
+   the old one until step 6. Back up both.
+
+2. **Derive the new public key + `pubkey_id`.** Use
+   `_derive_pubkey_id` from `scripts/sign_snapshot.py`.
+
+3. **Update `workers/volatiai-mcp/wrangler.toml` [vars] BEFORE signing
+   anything with the new key.** Set `PUBKEY_CURRENT_ID` and
+   `PUBKEY_CURRENT_PEM` to the new values, and demote the old current
+   values to `PUBKEY_V0_HIST_ID` / `PUBKEY_V0_HIST_PEM`.
+
+   Retention rule: keep every historical key that signed a
+   still-verifiable snapshot. Removing one breaks
+   `verify_snapshot(date)` for those dates.
+
+4. **Update `docs/.well-known/volatiai-pubkey.pem`** to the new public
+   key. Old key stays at `volatiai-pubkey-v0.pem` for historical
+   verification. The `fetched-pages` path in the Worker depends on this
+   file.
+
+5. **Update `scripts/fixtures/<new-date>/pub.pem`** to the new public
+   key when committing the first signed artifact under the new key.
+   Check 9 in `test-all.py` finds this fixture by ID and compares — a
+   stale fixture here fails CI on the next commit.
+
+6. **Sign the first snapshot** with the new key. It carries
+   `envelope_pubkey_id = volatiai-NEWHASH8`.
+
+7. **Deploy the Worker** — `wdeploy` — so the new key is live before
+   any consumer tries to verify the new artifact.
+
+8. **Verify end-to-end:** run `python3 scripts/test-all.py` (check 9
+   should pass), `node scripts/verify.cjs <new current.json> <new
+   snapshot.json> <new pub.pem>`, and POST the inline envelope to the
+   Worker via smoke-test A. Expected: `source: "inline-baked",
+   valid: true, matched: "current"`.
+
+The old private key can be destroyed only after all older snapshots
+stop being referenced (i.e. after they fall off the retention window
+and the `_anchors.jsonl` chain doesn't need re-verification). Until
+then, keep it backed up — even if no new artifact will ever be signed
+with it again, its absence breaks forensic verification of the
+artifacts it did sign.
+
 ## Prevention — `pubkey_id` = key fingerprint
 
 `sign_snapshot.py` now derives `pubkey_id` from the signing key's SPKI fingerprint:
