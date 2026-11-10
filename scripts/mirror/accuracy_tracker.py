@@ -19,7 +19,7 @@ Reported per sector:
 
 Output: docs/accuracy.json
 """
-import json, sys, time, urllib.request
+import json, sys, time, urllib.request, ssl
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -30,9 +30,20 @@ OUTPUT = ROOT / "docs" / "accuracy.json"
 UA = "VolatiAI-AccuracyTracker/1.0 (+https://christianscode1994.github.io/VolatiAI)"
 
 
+# SSL context backed by certifi. macOS system Python 3.11 does not ship
+# a CA bundle by default, so without this every HTTPS call fails with
+# CERTIFICATE_VERIFY_FAILED. certifi also works in CI (Ubuntu runner has
+# system certs but certifi is a portable fallback).
+try:
+    import certifi as _certifi
+    _SSL_CTX = ssl.create_default_context(cafile=_certifi.where())
+except ImportError:
+    _SSL_CTX = ssl.create_default_context()
+
+
 def fetch_json(url, timeout=25):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as r:
         return json.loads(r.read())
 
 
