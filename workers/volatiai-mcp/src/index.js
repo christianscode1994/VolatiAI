@@ -396,6 +396,33 @@ async function toolVerifySnapshot(args = {}) {
     }
   }
 
+  // Revocation check: reject snapshots signed after their key was revoked.
+  // Reads volatiai-key.json (current) or volatiai-key-v0.json (historical)
+  // based on signature_key_matched. Fail-open: metadata fetch failure does
+  // NOT block verification. If revoked_at is set AND signed_at > revoked_at,
+  // snapshot is marked invalid regardless of signature correctness.
+  if (signature_valid === true && snapshot.signed_at && signature_key_matched) {
+    try {
+      const keyFile = signature_key_matched === "v0-historical" ? "volatiai-key-v0.json" : "volatiai-key.json";
+      const keyMetaUrl = "https://christianscode1994.github.io/VolatiAI/.well-known/" + keyFile;
+      const keyMetaRes = await fetch(keyMetaUrl, { cache: "no-store", signal: AbortSignal.timeout(5000) });
+      if (keyMetaRes.ok) {
+        const keyMeta = await keyMetaRes.json();
+        if (keyMeta.revoked_at) {
+          const signedMs = new Date(snapshot.signed_at).getTime();
+          const revokedMs = new Date(keyMeta.revoked_at).getTime();
+          if (Number.isFinite(signedMs) && Number.isFinite(revokedMs) && signedMs > revokedMs) {
+            signature_valid = false;
+            signature_error = "key_revoked_at_" + keyMeta.revoked_at;
+            signature_key_matched = null;
+          }
+        }
+      }
+    } catch (e) {
+      // fail-open: transient metadata fetch failure should not invalidate all snapshots
+    }
+  }
+
   let note;
   if (signature_valid === true) {
     note = chain_intact === true
