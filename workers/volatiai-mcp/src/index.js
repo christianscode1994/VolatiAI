@@ -1286,20 +1286,6 @@ export default {
         const accepts = [
           {
             scheme: "exact",
-            network: "eip155:5042",
-            maxAmountRequired: "100000",
-            amount: "100000",
-            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
-            mimeType: "application/json",
-            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
-            maxTimeoutSeconds: 60,
-            asset: "0x3600000000000000000000000000000000000000",
-            extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
-          },
-          {
-            scheme: "exact",
             network: "eip155:8453",
             maxAmountRequired: "100000",
             amount: "100000",
@@ -1311,17 +1297,32 @@ export default {
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
             extra: { name: "USD Coin", version: "2" },
           extensions: { bazaar: BAZAAR_EXT }
+          },
+        {
+            scheme: "exact",
+            network: "eip155:5042",
+            maxAmountRequired: "100000",
+            amount: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x3600000000000000000000000000000000000000",
+            extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
           }
         ];
         const requirement = {
           x402Version: 2,
           error: "Payment required",
           resource: {
-            url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals",
-            mimeType: "application/json"
+            url: RESOURCE_URL,
+            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            mimeType: "application/json",
           },
-          accepts
+          accepts,
+          extensions: { bazaar: BAZAAR_EXT },
         };
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
         return new Response(JSON.stringify(requirement), {
@@ -1344,20 +1345,6 @@ export default {
         const accepts = [
           {
             scheme: "exact",
-            network: "eip155:5042",
-            maxAmountRequired: "100000",
-            amount: "100000",
-            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
-            mimeType: "application/json",
-            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
-            maxTimeoutSeconds: 60,
-            asset: "0x3600000000000000000000000000000000000000",
-            extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
-          },
-          {
-            scheme: "exact",
             network: "eip155:8453",
             maxAmountRequired: "100000",
             amount: "100000",
@@ -1369,17 +1356,32 @@ export default {
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
             extra: { name: "USD Coin", version: "2" },
           extensions: { bazaar: BAZAAR_EXT }
+          },
+        {
+            scheme: "exact",
+            network: "eip155:5042",
+            maxAmountRequired: "100000",
+            amount: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x3600000000000000000000000000000000000000",
+            extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
           }
         ];
         const requirement = {
           x402Version: 2,
           error: "Payment required",
           resource: {
-            url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals",
-            mimeType: "application/json"
+            url: RESOURCE_URL,
+            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            mimeType: "application/json",
           },
-          accepts
+          accepts,
+          extensions: { bazaar: BAZAAR_EXT },
         };
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
         return new Response(JSON.stringify(requirement), {
@@ -1411,33 +1413,6 @@ export default {
 
             scheme: "exact",
 
-            network: "eip155:5042",
-
-            maxAmountRequired: "100000",
-
-            amount: "100000",
-
-            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-
-            description: "VolatiAI premium signals — $0.10 per request, USDC on Arc",
-
-            mimeType: "application/json",
-
-            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
-
-            maxTimeoutSeconds: 60,
-
-            asset: "0x3600000000000000000000000000000000000000",
-
-            extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
-
-          },
-
-          {
-
-            scheme: "exact",
-
             network: "eip155:8453",
 
             maxAmountRequired: "100000",
@@ -1459,11 +1434,47 @@ export default {
             extra: { name: "USD Coin", version: "2" },
           extensions: { bazaar: BAZAAR_EXT }
 
+          },
+        {
+
+            scheme: "exact",
+
+            network: "eip155:5042",
+
+            maxAmountRequired: "100000",
+
+            amount: "100000",
+
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+
+            description: "VolatiAI premium signals — $0.10 per request, USDC on Arc",
+
+            mimeType: "application/json",
+
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+
+            maxTimeoutSeconds: 60,
+
+            asset: "0x3600000000000000000000000000000000000000",
+
+            extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
+
           }
 
         ];
 
-        const requirement = { x402Version: 2, error: "Payment required", accepts };
+        const requirement = {
+          x402Version: 2,
+          error: "Payment required",
+          resource: {
+            url: RESOURCE_URL,
+            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            mimeType: "application/json",
+          },
+          accepts,
+          extensions: { bazaar: BAZAAR_EXT },
+        };
 
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
 
