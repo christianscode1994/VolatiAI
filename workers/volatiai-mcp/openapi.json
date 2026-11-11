@@ -66,7 +66,8 @@
           "200": {
             "description": "JSON-RPC result"
           }
-        }
+        },
+        "security": []
       }
     },
     "/premium/mcp": {
@@ -93,9 +94,14 @@
             {
               "scheme": "exact",
               "network": "eip155:5042",
-              "asset": "0x3600000000000000000000000000000000000000",
+              "maxAmountRequired": "100000",
+              "amount": "100000",
+              "resource": "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+              "description": "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+              "mimeType": "application/json",
               "payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47",
               "maxTimeoutSeconds": 60,
+              "asset": "0x3600000000000000000000000000000000000000",
               "extra": {
                 "name": "USDC",
                 "version": "2"
@@ -104,11 +110,16 @@
             {
               "scheme": "exact",
               "network": "eip155:8453",
-              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "maxAmountRequired": "100000",
+              "amount": "100000",
+              "resource": "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+              "description": "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+              "mimeType": "application/json",
               "payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47",
               "maxTimeoutSeconds": 60,
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
               "extra": {
-                "name": "USDC",
+                "name": "USD Coin",
                 "version": "2"
               }
             }
@@ -161,7 +172,22 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "x402": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "x402": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-PAYMENT",
+        "description": "x402 payment payload (base64-encoded PaymentPayload)"
       }
     }
   }
