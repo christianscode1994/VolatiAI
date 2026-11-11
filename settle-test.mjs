@@ -78,6 +78,7 @@ const payload = {
   },
 };
 const xPayment = Buffer.from(JSON.stringify(payload)).toString("base64");
+console.log("XPAY=" + xPayment);
 
 console.log("Submitting payment to Worker...\n");
 const res = await fetch(ENDPOINT, {

@@ -1620,12 +1620,12 @@ export default {
         }
 
         // Replay protection
-        const sig = decoded.payload && decoded.payload.signature;
-        const nonce = decoded.payload && decoded.payload.authorization && decoded.payload.authorization.nonce;
-        const validBefore = Number(
+        var sig = decoded.payload && decoded.payload.signature;
+        var nonce = decoded.payload && decoded.payload.authorization && decoded.payload.authorization.nonce;
+        var validBefore = Number(
           (decoded.payload && decoded.payload.authorization && decoded.payload.authorization.validBefore) || 0
         );
-        const replayTtl = Math.max(60, validBefore - Math.floor(Date.now() / 1000) + 60);
+        var replayTtl = Math.max(60, validBefore - Math.floor(Date.now() / 1000) + 60);
 
         if (env.PAYMENT_REPLAY && sig) {
           const sigKey = "sig:" + sig.toLowerCase();
@@ -1676,10 +1676,15 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
 
 
       if (settleResult.success === true) {
-          if (env.PAYMENT_REPLAY && sig) {
-            const putOps = [env.PAYMENT_REPLAY.put("sig:" + sig.toLowerCase(), "1", { expirationTtl: replayTtl })];
-            if (nonce) putOps.push(env.PAYMENT_REPLAY.put("nonce:" + nonce.toLowerCase(), "1", { expirationTtl: replayTtl }));
-            ctx.waitUntil(Promise.all(putOps));
+          // Non-fatal: replay cache write failures must NOT block the premium response.
+          try {
+            if (env.PAYMENT_REPLAY && sig) {
+              const putOps = [env.PAYMENT_REPLAY.put("sig:" + sig.toLowerCase(), "1", { expirationTtl: replayTtl })];
+              if (nonce) putOps.push(env.PAYMENT_REPLAY.put("nonce:" + nonce.toLowerCase(), "1", { expirationTtl: replayTtl }));
+              ctx.waitUntil(Promise.all(putOps));
+            }
+          } catch (e) {
+            console.error("REPLAY_CACHE_WRITE_FAILED:", (e && e.message) || e);
           }
 
 
