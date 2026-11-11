@@ -1174,6 +1174,22 @@ async function cdpJwt(env, method, path) {
 }
 
 
+async function fetchWithRetry(url, opts, maxAttempts = 2) {
+  let lastRes;
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const res = await fetch(url, opts);
+      lastRes = res;
+      if (res.status < 500 && res.status !== 429 && res.status !== 408) return res;
+      if (i === maxAttempts - 1) return res;
+    } catch (err) {
+      if (i === maxAttempts - 1) throw err;
+    }
+    await new Promise((r) => setTimeout(r, 1000 * (2 * i + 1)));
+  }
+  return lastRes;
+}
+
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -1590,19 +1606,59 @@ export default {
 
       try {
 
-        const settleResp = await fetch(FACILITATOR_URL, {
+                // Network pinning: reject buyers who claim a network we don't serve.
+        // The buyer's EIP-712 signature is bound to a specific chainId, so
+        // coercing the network here would silently break settlement.
+        const SUPPORTED_NETWORKS = new Set(["base"]);  // add "base-sepolia" to test on testnet
+        const claimedNetwork = decoded.network || "base";
+        if (!SUPPORTED_NETWORKS.has(claimedNetwork)) {
+          return new Response(JSON.stringify({
+            x402Version: 1,
+            error: "unsupported_network",
+            detail: `This facilitator supports: ${[...SUPPORTED_NETWORKS].join(", ")}`,
+          }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+        }
+
+        // Replay protection
+        const sig = decoded.payload && decoded.payload.signature;
+        const nonce = decoded.payload && decoded.payload.authorization && decoded.payload.authorization.nonce;
+        const validBefore = Number(
+          (decoded.payload && decoded.payload.authorization && decoded.payload.authorization.validBefore) || 0
+        );
+        const replayTtl = Math.max(60, validBefore - Math.floor(Date.now() / 1000) + 60);
+
+        if (env.PAYMENT_REPLAY && sig) {
+          const sigKey = "sig:" + sig.toLowerCase();
+          const seen = await env.PAYMENT_REPLAY.get(sigKey);
+          if (seen) {
+            return new Response(JSON.stringify({
+              x402Version: 1,
+              error: "payment_already_used",
+              detail: "This payment signature has already been submitted.",
+            }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+          }
+        }
+
+const settleResp = await fetchWithRetry(FACILITATOR_URL, {
 
           method: "POST",
 
           headers: settleHeaders,
 
-          body: JSON.stringify({x402Version: 1, paymentPayload: {x402Version: 1, scheme: decoded.scheme || "exact", network: "base", payload: decoded.payload}, paymentRequirements: {...paymentReq, network: "base"}}),
+          body: JSON.stringify({x402Version: 1, paymentPayload: {x402Version: 1, scheme: decoded.scheme || "exact", network: claimedNetwork, payload: decoded.payload}, paymentRequirements: {...paymentReq, network: claimedNetwork}}),
 
           signal: AbortSignal.timeout(30000)
 
         });
 
         settleResult = await settleResp.json();
+        console.log("SETTLE_RESULT:", JSON.stringify({
+          httpStatus: settleResp.status,
+          success: !!settleResult.success,
+          transaction: settleResult.transaction || null,
+          network: settleResult.network || null,
+          errorReason: settleResult.errorReason || null,
+        }));
 
       } catch (e) {
 
@@ -1620,6 +1676,12 @@ export default {
 
 
       if (settleResult.success === true) {
+          if (env.PAYMENT_REPLAY && sig) {
+            const putOps = [env.PAYMENT_REPLAY.put("sig:" + sig.toLowerCase(), "1", { expirationTtl: replayTtl })];
+            if (nonce) putOps.push(env.PAYMENT_REPLAY.put("nonce:" + nonce.toLowerCase(), "1", { expirationTtl: replayTtl }));
+            ctx.waitUntil(Promise.all(putOps));
+          }
+
 
         premiumPaid = true;
 
@@ -1650,7 +1712,7 @@ export default {
 
           resource: paymentReq
 
-        }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+        }), { status: 402, headers: { "Content-Type": "application/json", "Retry-After": "5", ...cors } });
 
       }
 
