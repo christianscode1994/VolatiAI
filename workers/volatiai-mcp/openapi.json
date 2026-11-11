@@ -1,0 +1,139 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "VolatiAI MCP",
+    "version": "1.0.0",
+    "description": "Signed, verifiable signals from 421 sectors. Every response carries an Ed25519 attestation verifiable offline.",
+    "x-guidance": "VolatiAI returns signals about 421 sectors (crypto, finance, weather, science, security) with an Ed25519 signature. Each result includes the payload, the signature, and the pubkey ID needed to verify it. To verify offline: fetch the pubkey at /.well-known/volatiai-pubkey.pem, canonicalize the payload (sorted keys, no whitespace), and check the signature with Ed25519. Do not trust the data without verification. Free tier is unauthenticated.",
+    "contact": {
+      "email": "contact@fourieranalys.se",
+      "url": "https://christianscode1994.github.io/VolatiAI/"
+    }
+  },
+  "externalDocs": {
+    "url": "https://christianscode1994.github.io/VolatiAI/",
+    "description": "Verification guide, key rotation history, and public key registry"
+  },
+  "servers": [
+    {
+      "url": "https://volatiai-mcp.fourieranalys.workers.dev"
+    }
+  ],
+  "paths": {
+    "/mcp": {
+      "post": {
+        "summary": "Call a VolatiAI MCP tool (free tier)",
+        "description": "JSON-RPC 2.0 endpoint exposing 11 tools. Free, unauthenticated.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "jsonrpc",
+                  "method"
+                ],
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "const": "2.0"
+                  },
+                  "id": {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "tools/list",
+                      "tools/call"
+                    ],
+                    "description": "MCP method to invoke"
+                  },
+                  "params": {
+                    "type": "object",
+                    "description": "For tools/call: { name, arguments }"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON-RPC result"
+          }
+        }
+      }
+    },
+    "/premium/mcp": {
+      "post": {
+        "summary": "Call a VolatiAI MCP tool (premium, x402)",
+        "description": "PREMIUM TIER \u2014 PLANNED, not yet available. Same tools as /mcp, priced per request via x402. Endpoint under construction; will return 402 when live.",
+        "x-payment-info": {
+          "protocol": "x402",
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.10"
+          },
+          "networks": [
+            "eip155:8453"
+          ],
+          "description": "$0.10 per request, settled in USDC on Base"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "jsonrpc",
+                  "method"
+                ],
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "const": "2.0"
+                  },
+                  "id": {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  },
+                  "method": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON-RPC result, payment settled"
+          },
+          "402": {
+            "description": "Payment required",
+            "headers": {
+              "PAYMENT-REQUIRED": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Base64-encoded x402 PaymentRequired object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
