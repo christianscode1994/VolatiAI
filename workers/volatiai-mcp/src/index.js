@@ -1131,6 +1131,64 @@ export default {
       }), { headers: { "Content-Type": "application/json", ...cors } });
     }
 
+    if (url.pathname === "/.well-known/x402" || url.pathname === "/.well-known/x402.json") {
+      // x402 discovery document — what x402scan and other indexes probe.
+      // Shape per x402 v2 spec: { x402Version, resources: [{resource, mimeType, accepts}] }
+      const discoveryAccepts = [
+        {
+          scheme: "exact",
+          network: "eip155:5042",
+          maxAmountRequired: "100000",
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+          mimeType: "application/json",
+          payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+          maxTimeoutSeconds: 60,
+          asset: "0x3600000000000000000000000000000000000000",
+          extra: { name: "USDC", version: "2" }
+        },
+        {
+          scheme: "exact",
+          network: "eip155:8453",
+          maxAmountRequired: "100000",
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+          mimeType: "application/json",
+          payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+          maxTimeoutSeconds: 60,
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          extra: { name: "USD Coin", version: "2" }
+        }
+      ];
+      return new Response(JSON.stringify({
+        x402Version: 2,
+        resources: [
+          {
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            mimeType: "application/json",
+            description: "VolatiAI premium signals \u2014 signed, verifiable, $0.10 per call",
+            accepts: discoveryAccepts
+          }
+        ]
+      }, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=300"
+        }
+      });
+    }
+
+    if (url.pathname === "/.well-known/402index-verify.txt") {
+      // Domain ownership proof for 402index.io claim flow.
+      return new Response("77bc52035cd4b496d484b5a1122e267bdc504a69ffa3ff16fa28d9e14aba05f1", {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "public, max-age=300"
+        }
+      });
+    }
+
     if (url.pathname === "/openapi.json") {
       return new Response(JSON.stringify(openapiSpec, null, 2), {
         headers: {
@@ -1139,6 +1197,114 @@ export default {
           "Cache-Control": "public, max-age=300",
         },
       });
+    }
+
+    if ((req.method === "GET" || req.method === "HEAD") && url.pathname === "/premium/mcp") {
+      // Probes from x402scan/x402dash/PayAI send GET or HEAD, not POST.
+      // Return the same 402 challenge; facilitator only settles on 2xx,
+      // so this is safe and makes us probe-compatible.
+      return await (async () => {
+        const accepts = [
+          {
+            scheme: "exact",
+            network: "eip155:5042",
+            maxAmountRequired: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x3600000000000000000000000000000000000000",
+            extra: { name: "USDC", version: "2" }
+          },
+          {
+            scheme: "exact",
+            network: "eip155:8453",
+            maxAmountRequired: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            extra: { name: "USD Coin", version: "2" }
+          }
+        ];
+        const requirement = {
+          x402Version: 2,
+          error: "Payment required",
+          resource: {
+            url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals",
+            mimeType: "application/json"
+          },
+          accepts
+        };
+        const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
+        return new Response(JSON.stringify(requirement), {
+          status: 402,
+          headers: {
+            "Content-Type": "application/json",
+            "PAYMENT-REQUIRED": header,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "PAYMENT-REQUIRED"
+          }
+        });
+      })();
+    }
+
+    if ((req.method === "GET" || req.method === "HEAD") && url.pathname === "/premium/mcp") {
+      // Probes from x402scan/x402dash/PayAI send GET or HEAD, not POST.
+      // Return the same 402 challenge; facilitator only settles on 2xx,
+      // so this is safe and makes us probe-compatible.
+      return await (async () => {
+        const accepts = [
+          {
+            scheme: "exact",
+            network: "eip155:5042",
+            maxAmountRequired: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x3600000000000000000000000000000000000000",
+            extra: { name: "USDC", version: "2" }
+          },
+          {
+            scheme: "exact",
+            network: "eip155:8453",
+            maxAmountRequired: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            extra: { name: "USD Coin", version: "2" }
+          }
+        ];
+        const requirement = {
+          x402Version: 2,
+          error: "Payment required",
+          resource: {
+            url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals",
+            mimeType: "application/json"
+          },
+          accepts
+        };
+        const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
+        return new Response(JSON.stringify(requirement), {
+          status: 402,
+          headers: {
+            "Content-Type": "application/json",
+            "PAYMENT-REQUIRED": header,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "PAYMENT-REQUIRED"
+          }
+        });
+      })();
     }
 
     if (url.pathname === "/premium/mcp") {
