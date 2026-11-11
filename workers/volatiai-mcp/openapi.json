@@ -74,16 +74,45 @@
         "summary": "Call a VolatiAI MCP tool (premium, x402)",
         "description": "PREMIUM TIER \u2014 PLANNED, not yet available. Same tools as /mcp, priced per request via x402. Endpoint under construction; will return 402 when live.",
         "x-payment-info": {
-          "protocol": "x402",
           "price": {
             "mode": "fixed",
             "currency": "USD",
             "amount": "0.10"
           },
           "networks": [
+            "eip155:5042",
             "eip155:8453"
           ],
-          "description": "$0.10 per request, settled in USDC on Base"
+          "description": "$0.10 per request, settled in USDC on Arc or Base",
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "accepts": [
+            {
+              "scheme": "exact",
+              "network": "eip155:5042",
+              "asset": "0x3600000000000000000000000000000000000000",
+              "payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47",
+              "maxTimeoutSeconds": 60,
+              "extra": {
+                "name": "USDC",
+                "version": "2"
+              }
+            },
+            {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47",
+              "maxTimeoutSeconds": 60,
+              "extra": {
+                "name": "USDC",
+                "version": "2"
+              }
+            }
+          ]
         },
         "requestBody": {
           "required": true,
