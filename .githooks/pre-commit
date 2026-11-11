@@ -47,8 +47,14 @@ echo "✓ Safety gate passed"
 
 # ─── DOMAIN AUDITS ───
 echo "→ Domain audits..."
-python3 scripts/audit_sectors.py
-python3 scripts/audit_licenses.py
+python3 scripts/audit_sectors.py || {
+  echo "✗ audit_sectors.py failed — refusing commit" >&2
+  exit 1
+}
+python3 scripts/audit_licenses.py || {
+  echo "✗ audit_licenses.py failed — refusing commit" >&2
+  exit 1
+}
 
 for yaml_file in .github/workflows/*.yml; do
   python3 -c "import yaml; yaml.safe_load(open('$yaml_file'))" 2>/dev/null || {
