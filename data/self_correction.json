@@ -82,6 +82,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "climate-datasets",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "cloud-components",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -317,6 +322,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "noaa-ndbc",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -358,6 +368,11 @@
     },
     {
       "sector": "pypi-activity",
+      "reason": "conf=0 in 23/24 runs (96%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "radio-stations",
       "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -473,27 +488,12 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 17/24 runs (71%)",
+      "reason": "conf=0 in 18/24 runs (75%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "yc-companies",
       "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "climate-datasets",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "radio-stations",
-      "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
@@ -512,7 +512,7 @@
     },
     {
       "sector": "defillama-protocol-count",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
@@ -520,11 +520,11 @@
     },
     {
       "sector": "dex-total-volume-24h",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "dex-uniswap-volume",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
@@ -532,11 +532,11 @@
     },
     {
       "sector": "fred-fedfunds",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -551,6 +551,14 @@
       "reason": "spam (96%) but no config found in workers"
     },
     {
+      "sector": "kraken-btc-usd",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
+      "sector": "kraken-doge-usd",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "kraken-dot-usd",
       "reason": "spam (100%) but no config found in workers"
     },
@@ -559,8 +567,12 @@
       "reason": "spam (96%) but no config found in workers"
     },
     {
-      "sector": "nbp-gold-spot",
+      "sector": "kraken-xrp-usd",
       "reason": "spam (50%) but no config found in workers"
+    },
+    {
+      "sector": "nbp-gold-spot",
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -568,7 +580,7 @@
     },
     {
       "sector": "open-digger-openrank-vscode",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -580,19 +592,23 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
+      "reason": "spam (54%) but no config found in workers"
+    },
+    {
+      "sector": "stablecoin-usdc-supply",
       "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "stablecoin-usdt-supply",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -612,11 +628,11 @@
     },
     {
       "sector": "usgs-elevated-volcanoes",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
