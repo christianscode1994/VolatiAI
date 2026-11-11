@@ -1627,9 +1627,9 @@ export default {
         );
         var replayTtl = Math.max(60, validBefore - Math.floor(Date.now() / 1000) + 60);
 
-        if (env.PAYMENT_REPLAY && sig) {
-          const sigKey = "sig:" + sig.toLowerCase();
-          const seen = await env.PAYMENT_REPLAY.get(sigKey);
+        if (env.PAYMENT_REPLAY && nonce) {
+          const nonceKey = "nonce:" + nonce.toLowerCase();
+          const seen = await env.PAYMENT_REPLAY.get(nonceKey);
           if (seen) {
             return new Response(JSON.stringify({
               x402Version: 1,
@@ -1678,10 +1678,10 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
       if (settleResult.success === true) {
           // Non-fatal: replay cache write failures must NOT block the premium response.
           try {
-            if (env.PAYMENT_REPLAY && sig) {
-              const putOps = [env.PAYMENT_REPLAY.put("sig:" + sig.toLowerCase(), "1", { expirationTtl: replayTtl })];
-              if (nonce) putOps.push(env.PAYMENT_REPLAY.put("nonce:" + nonce.toLowerCase(), "1", { expirationTtl: replayTtl }));
-              ctx.waitUntil(Promise.all(putOps));
+            if (env.PAYMENT_REPLAY && nonce) {
+              ctx.waitUntil(
+                env.PAYMENT_REPLAY.put("nonce:" + nonce.toLowerCase(), "1", { expirationTtl: replayTtl })
+              );
             }
           } catch (e) {
             console.error("REPLAY_CACHE_WRITE_FAILED:", (e && e.message) || e);
