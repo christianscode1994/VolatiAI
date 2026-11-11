@@ -1269,11 +1269,27 @@ export default {
         });
       }
 
-      // Fall through to /mcp handling — same logic
-      if (req.method !== "POST") {
-        return new Response("Premium MCP expects POST", { status: 405, headers: cors });
-      }
-      // ... reuse /mcp body by falling through (see below)
+      // EIP-3009 signature verification + on-chain settlement NOT YET
+      // IMPLEMENTED. Reject any X-PAYMENT — however well-shaped — with
+      // another 402 to prevent serving premium content without verified
+      // payment. Honest position: we advertise the protocol but cannot
+      // yet settle. Agents should not retry until this message changes.
+      return new Response(JSON.stringify({
+        x402Version: 2,
+        error: "payment_verification_not_implemented",
+        detail: "Endpoint accepts x402 protocol but cannot verify EIP-3009 signatures yet. No payment was settled. Contact contact@fourieranalys.se.",
+        resource: {
+          url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          description: "VolatiAI premium signals (verification in progress)",
+          mimeType: "application/json"
+        }
+      }), {
+        status: 402,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        }
+      });
     }
 
 
