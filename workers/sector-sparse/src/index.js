@@ -1270,22 +1270,6 @@ const COLLECTORS = {
   },
 
 
-  jobs: {
-    event_source: "remoteok_latest",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        remoteok_latest: await fetchSafe(async () => {
-          const r = await fetch('https://remoteok.com/api', { headers: { 'user-agent': 'VolatiAI/1.0' } });
-          if (!r.ok) throw new Error('status ' + r.status);
-          const jobs = await r.json();
-          if (!Array.isArray(jobs) || jobs.length < 2) throw new Error('no jobs');
-          const job = jobs[1];
-          return { id: job.id, title: (job.position || 'job') + ' @ ' + (job.company || '?') };
-        }),
-      },
-    }),
-  },
 
   "open-source": {
     event_source: "vscode_release",
@@ -1422,25 +1406,6 @@ const COLLECTORS = {
     }),
   },
 
-  music: {
-    event_source: "deezer_chart",
-    ttl: 3600,
-    collectAll: async (env) => ({
-      sources: {
-        deezer_chart: await fetchSafe(async () => {
-          const r = await fetch('https://api.deezer.com/chart/0/tracks?limit=1');
-          if (!r.ok) throw new Error('status ' + r.status);
-          const j = await r.json();
-          if (!j.data?.length) throw new Error('no tracks');
-          const t = j.data[0];
-          return {
-            id: String(t.id),
-            title: (t.title || 'unknown') + ' — ' + (t.artist ? t.artist.name : 'unknown'),
-          };
-        }),
-      },
-    }),
-  },
   science: {
     event_source: "arxiv_physics",
     ttl: 3600,

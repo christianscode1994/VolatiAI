@@ -510,83 +510,8 @@ const COLLECTORS = {
     }),
   },
 
-  tracking: {
-    config: { metric: "vix", threshold_pct: 10.0, threshold_abs: 1.5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        vix: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d", {
-            headers: { 'user-agent': 'Mozilla/5.0' }
-          });
-          const j = await r.json();
-          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
-          if (!price) throw new Error("no price");
-          return Math.round(price * 100) / 100;
-        }),
-      },
-    }),
-  },
 
-  shopping: {
-    config: { metric: "wti", threshold_pct: 3.0, threshold_abs: 1.5, window: "24h", ttl: 7200, context_keys: [] },
-    collectAll: async (env) => ({
-      sources: {
-        wti: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d", {
-            headers: { 'user-agent': 'Mozilla/5.0' }
-          });
-          const j = await r.json();
-          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
-          if (!price) throw new Error("no price");
-          return Math.round(price * 100) / 100;
-        }),
-      },
-    }),
-  },
-  stocks: {
-    config: { metric: "sp500", threshold_pct: 1.0, threshold_abs: 20, window: "24h", ttl: 7200, context_keys: ["nasdaq"] },
-    collectAll: async (env) => ({
-      sources: {
-        sp500: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
-          if (!price) throw new Error("no price");
-          return Math.round(price * 100) / 100;
-        }),
-        nasdaq: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
-        }),
-      },
-    }),
-  },
 
-  energy: {
-    config: { metric: "wti", threshold_pct: 3.0, threshold_abs: 1.5, window: "24h", ttl: 7200, context_keys: ["brent", "natgas"] },
-    collectAll: async (env) => ({
-      sources: {
-        wti: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
-          if (!price) throw new Error("no price");
-          return Math.round(price * 100) / 100;
-        }),
-        brent: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/BZ%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
-        }),
-        natgas: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/NG%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
-        }),
-      },
-    }),
-  },
 
   "crypto-defi": {
     config: { metric: "defi_tvl", threshold_pct: 5.0, threshold_abs: 2000000000, window: "24h", ttl: 7200, context_keys: [] },
@@ -603,25 +528,6 @@ const COLLECTORS = {
     }),
   },
 
-  metals: {
-    config: { metric: "gold", threshold_pct: 1.5, threshold_abs: 30, window: "24h", ttl: 7200, context_keys: ["silver"] },
-    collectAll: async (env) => ({
-      sources: {
-        gold: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
-          if (!price) throw new Error("no price");
-          return Math.round(price * 100) / 100;
-        }),
-        silver: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/SI%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
-        }),
-      },
-    }),
-  },
 
 
   "fed-rate": {
@@ -645,30 +551,6 @@ const COLLECTORS = {
     }),
   },
 
-  commodities: {
-    config: { metric: "copper", threshold_pct: 3.0, threshold_abs: 0.1, window: "24h", ttl: 7200, context_keys: ["coffee", "corn"] },
-    collectAll: async (env) => ({
-      sources: {
-        copper: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/HG%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          const price = j.chart?.result?.[0]?.meta?.regularMarketPrice;
-          if (!price) throw new Error("no price");
-          return Math.round(price * 1000) / 1000;
-        }),
-        coffee: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/KC%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
-        }),
-        corn: await fetchSafe(async () => {
-          const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/ZC%3DF?interval=1d&range=1d", { headers: { 'user-agent': 'Mozilla/5.0' } });
-          const j = await r.json();
-          return j.chart?.result?.[0]?.meta?.regularMarketPrice ? Math.round(j.chart.result[0].meta.regularMarketPrice * 100) / 100 : null;
-        }),
-      },
-    }),
-  },
 
 
 
@@ -1872,7 +1754,7 @@ Object.assign(COLLECTORS, {
           const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=8-K&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
           const r = await fetch(url, {
             headers: {
-              "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "user-agent": "VolatiAI/1.0 (contact@fourieranalys.se)",
               "accept": "application/json",
             },
             signal: AbortSignal.timeout(20000),
@@ -2760,7 +2642,7 @@ Object.assign(COLLECTORS, {
           const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=NPORT-P&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
           const r = await fetch(url, {
             headers: {
-              "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "user-agent": "VolatiAI/1.0 (contact@fourieranalys.se)",
               "accept": "application/json",
             },
             signal: AbortSignal.timeout(20000),
@@ -2788,7 +2670,7 @@ Object.assign(COLLECTORS, {
           const period = "CY" + y + "Q" + q + "I";
           const url = "https://data.sec.gov/api/xbrl/frames/us-gaap/Assets/USD/" + period + ".json";
           const r = await fetch(url, {
-            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" },
+            headers: { "user-agent": "VolatiAI/1.0 (contact@fourieranalys.se)" },
             signal: AbortSignal.timeout(20000),
           });
           if (!r.ok) throw new Error("http_" + r.status);
@@ -2813,7 +2695,7 @@ Object.assign(COLLECTORS, {
           const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
           const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=13F-HR&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
           const r = await fetch(url, {
-            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "accept": "application/json" },
+            headers: { "user-agent": "VolatiAI/1.0 (contact@fourieranalys.se)", "accept": "application/json" },
             signal: AbortSignal.timeout(20000),
           });
           if (!r.ok) throw new Error("http_" + r.status);
@@ -2942,7 +2824,7 @@ Object.assign(COLLECTORS, {
           const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
           const url = "https://efts.sec.gov/LATEST/search-index?q=&forms=D&dateRange=custom&startdt=" + yesterday + "&enddt=" + today;
           const r = await fetch(url, {
-            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "accept": "application/json" },
+            headers: { "user-agent": "VolatiAI/1.0 (contact@fourieranalys.se)", "accept": "application/json" },
             signal: AbortSignal.timeout(20000),
           });
           if (!r.ok) throw new Error("http_" + r.status);
