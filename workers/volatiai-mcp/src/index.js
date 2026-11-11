@@ -1111,6 +1111,84 @@ async function handleRPC(msg, env = {}) {
   }
 }
 
+// CDP API key auth: Ed25519 JWT with method+path bound so the token can't
+// be replayed against a different endpoint. The secret is a 64-byte
+// base64-encoded Ed25519 private key (seed || pubkey); we wrap the 32-byte
+// seed in PKCS8 for WebCrypto.
+const RESOURCE_URL = "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp";
+
+// Bazaar discovery metadata. CDP indexer reads paymentPayload.extensions.bazaar
+// on the settle request; if absent, the route is treated as an ordinary 402
+// and never indexed. Hardcoded shape so we don't depend on @x402/extensions/bazaar.
+const BAZAAR_EXT = {
+  info: {
+    input: {
+      type: "http",
+      method: "POST",
+      bodyType: "json",
+      body: { jsonrpc: "2.0", id: 1, method: "tools/list" },
+    },
+    output: {
+      type: "json",
+      example: { jsonrpc: "2.0", id: 1, result: { tools: [] } },
+    },
+  },
+  schema: {
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    type: "object",
+    properties: {
+      input: {
+        type: "object",
+        required: ["type", "method", "bodyType", "body"],
+        properties: {
+          type: { type: "string", const: "http" },
+          method: { type: "string" },
+          bodyType: { type: "string" },
+          body: { type: "object" },
+        },
+      },
+      output: {
+        type: "object",
+        properties: { type: { type: "string" }, example: {} },
+      },
+    },
+    required: ["input"],
+  },
+};
+
+async function cdpJwt(env, method, path) {
+  const raw = Uint8Array.from(atob(env.CDP_API_KEY_SECRET), c => c.charCodeAt(0));
+  const seed = raw.slice(0, 32);
+  const pkcs8 = new Uint8Array([
+    0x30, 0x2e, 0x02, 0x01, 0x00,
+    0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70,
+    0x04, 0x22, 0x04, 0x20, ...seed,
+  ]);
+  const key = await crypto.subtle.importKey(
+    "pkcs8", pkcs8, { name: "Ed25519" }, false, ["sign"]
+  );
+  const now = Math.floor(Date.now() / 1000);
+  const b64url = (obj) => btoa(JSON.stringify(obj))
+    .replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+  const header = { alg: "EdDSA", typ: "JWT", kid: env.CDP_API_KEY_ID };
+  const payload = {
+    sub: env.CDP_API_KEY_ID,
+    iss: "cdp",
+    aud: ["cdp_service"],
+    nbf: now,
+    exp: now + 120,
+    uri: method + " api.cdp.coinbase.com" + path,
+  };
+  const signingInput = b64url(header) + "." + b64url(payload);
+  const sigBytes = await crypto.subtle.sign(
+    "Ed25519", key, new TextEncoder().encode(signingInput)
+  );
+  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sigBytes)))
+    .replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+  return signingInput + "." + sigB64;
+}
+
+
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -1150,7 +1228,8 @@ export default {
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
           asset: "0x3600000000000000000000000000000000000000",
-          extra: { name: "USDC", version: "2" }
+          extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
         },
         {
           scheme: "exact",
@@ -1163,7 +1242,8 @@ export default {
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
           asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-          extra: { name: "USD Coin", version: "2" }
+          extra: { name: "USD Coin", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
         }
       ];
       return new Response(JSON.stringify({
@@ -1215,7 +1295,8 @@ export default {
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
             asset: "0x3600000000000000000000000000000000000000",
-            extra: { name: "USDC", version: "2" }
+            extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
           },
           {
             scheme: "exact",
@@ -1228,7 +1309,8 @@ export default {
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-            extra: { name: "USD Coin", version: "2" }
+            extra: { name: "USD Coin", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
           }
         ];
         const requirement = {
@@ -1271,7 +1353,8 @@ export default {
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
             asset: "0x3600000000000000000000000000000000000000",
-            extra: { name: "USDC", version: "2" }
+            extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
           },
           {
             scheme: "exact",
@@ -1284,7 +1367,8 @@ export default {
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-            extra: { name: "USD Coin", version: "2" }
+            extra: { name: "USD Coin", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
           }
         ];
         const requirement = {
@@ -1345,7 +1429,8 @@ export default {
 
             asset: "0x3600000000000000000000000000000000000000",
 
-            extra: { name: "USDC", version: "2" }
+            extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
 
           },
 
@@ -1371,7 +1456,8 @@ export default {
 
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
 
-            extra: { name: "USD Coin", version: "2" }
+            extra: { name: "USD Coin", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
 
           }
 
@@ -1444,7 +1530,8 @@ export default {
 
           asset: "0x3600000000000000000000000000000000000000",
 
-          extra: { name: "USDC", version: "2" }
+          extra: { name: "USDC", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
 
         },
 
@@ -1466,7 +1553,8 @@ export default {
 
           asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
 
-          extra: { name: "USD Coin", version: "2" }
+          extra: { name: "USD Coin", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT }
 
         }
 
@@ -1490,12 +1578,13 @@ export default {
       }
 
 
-      const FACILITATOR_URL = env.FACILITATOR_URL || "https://facilitator.xpay.sh/settle";
+      const FACILITATOR_URL = env.FACILITATOR_URL || "https://api.cdp.coinbase.com/platform/v2/x402/settle";
 
       const settleHeaders = {
         "Content-Type": "application/json",
         "User-Agent": "VolatiAI/1.0 (+https://volatiai-mcp.fourieranalys.workers.dev)",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Authorization": "Bearer " + (await cdpJwt(env, "POST", "/platform/v2/x402/settle")),
       };
 
       /* XPay requires no auth */
@@ -1511,7 +1600,9 @@ export default {
 
           headers: settleHeaders,
 
-          body: JSON.stringify({ paymentPayload: decoded, paymentRequirements: paymentReq }),
+          body: JSON.stringify({
+          paymentPayload: { ...decoded, resource: RESOURCE_URL, extensions: { bazaar: BAZAAR_EXT } },
+          paymentRequirements: paymentReq }),
 
           signal: AbortSignal.timeout(30000)
 
