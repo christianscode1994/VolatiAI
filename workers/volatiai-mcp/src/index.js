@@ -1310,206 +1310,263 @@ export default {
       })();
     }
 
+    let premiumPaid = false;
+
     if (url.pathname === "/premium/mcp") {
+
       const payment = req.headers.get("X-PAYMENT");
 
-      // ── No payment → 402 with PaymentRequired challenge ──
+
+      // ── No payment: 402 challenge ──
+
       if (!payment) {
+
         const accepts = [
+
           {
+
             scheme: "exact",
+
             network: "eip155:5042",
+
             maxAmountRequired: "100000",
+
             amount: "100000",
+
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+
             description: "VolatiAI premium signals — $0.10 per request, USDC on Arc",
+
             mimeType: "application/json",
+
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+
             maxTimeoutSeconds: 60,
+
             asset: "0x3600000000000000000000000000000000000000",
-            schema: {
-                type: "object",
-                required: ["signature", "authorization"],
-                properties: {
-                  signature: { type: "string", description: "EIP-712 signature of EIP-3009 TransferWithAuthorization" },
-                  authorization: {
-                    type: "object",
-                    required: ["from", "to", "value", "validAfter", "validBefore", "nonce"],
-                    properties: {
-                      from: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
-                      to: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
-                      value: { type: "string", pattern: "^[0-9]+$" },
-                      validAfter: { type: "string", pattern: "^[0-9]+$" },
-                      validBefore: { type: "string", pattern: "^[0-9]+$" },
-                      nonce: { type: "string", pattern: "^0x[a-fA-F0-9]{64}$" }
-                    }
-                  }
-                }
-              },
-            extra: {
-              name: "USDC",
-              version: "2"
-            }
+
+            extra: { name: "USDC", version: "2" }
+
           },
+
           {
+
             scheme: "exact",
+
             network: "eip155:8453",
+
             maxAmountRequired: "100000",
+
             amount: "100000",
+
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+
             description: "VolatiAI premium signals — $0.10 per request, USDC on Base",
+
             mimeType: "application/json",
+
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+
             maxTimeoutSeconds: 60,
+
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-            schema: {
-                type: "object",
-                required: ["signature", "authorization"],
-                properties: {
-                  signature: { type: "string", description: "EIP-712 signature of EIP-3009 TransferWithAuthorization" },
-                  authorization: {
-                    type: "object",
-                    required: ["from", "to", "value", "validAfter", "validBefore", "nonce"],
-                    properties: {
-                      from: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
-                      to: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
-                      value: { type: "string", pattern: "^[0-9]+$" },
-                      validAfter: { type: "string", pattern: "^[0-9]+$" },
-                      validBefore: { type: "string", pattern: "^[0-9]+$" },
-                      nonce: { type: "string", pattern: "^0x[a-fA-F0-9]{64}$" }
-                    }
-                  }
-                }
-              },
-            extra: {
-              name: "USD Coin",
-              version: "2"
-            }
+
+            extra: { name: "USD Coin", version: "2" }
+
           }
+
         ];
 
-        const requirement = {
-          x402Version: 2,
-          error: "Payment required",
-          resource: {
-            url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
-            mimeType: "application/json"
-          },
-          accepts,
-          extensions: {
-            bazaar: {
-              info: {
-                input: {
-                  type: "http",
-                  method: "POST",
-                  bodyType: "json",
-                  body: {
-                    jsonrpc: "2.0",
-                    id: 1,
-                    method: "tools/list"
-                  }
-                },
-                output: {
-                  type: "json",
-                  example: { jsonrpc: "2.0", id: 1, result: { tools: [] } }
-                }
-              },
-              schema: {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                type: "object",
-                properties: {
-                  input: {
-                    type: "object",
-                    required: ["type", "method", "bodyType", "body"],
-                    properties: {
-                      type: { type: "string", const: "http" },
-                      method: { type: "string" },
-                      bodyType: { type: "string" },
-                      body: { type: "object" }
-                    }
-                  },
-                  output: {
-                    type: "object",
-                    required: ["type"],
-                    properties: {
-                      type: { type: "string" },
-                      example: {}
-                    }
-                  }
-                },
-                required: ["input"]
-              }
-            }
-          }
-        };
+        const requirement = { x402Version: 2, error: "Payment required", accepts };
 
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
+
         return new Response(JSON.stringify(requirement), {
+
           status: 402,
-          headers: {
-            "Content-Type": "application/json",
-            "PAYMENT-REQUIRED": header,
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Expose-Headers": "PAYMENT-REQUIRED"
-          }
+
+          headers: { "Content-Type": "application/json", "PAYMENT-REQUIRED": header, ...cors }
+
         });
+
       }
 
-      // ── Payment present → validate shape, then serve ──
+
+      // ── Payment present: parse and settle via Circle ──
+
+      let decoded;
+
       try {
-        const decoded = JSON.parse(atob(payment));
-        if (!decoded.authorization || !decoded.signature) {
-          return new Response(JSON.stringify({ error: "invalid_payment_payload" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...cors }
-          });
-        }
-        const to = (decoded.authorization.to || "").toLowerCase();
-        const expected = "0x3EE508f75342315164301B2282f302DF3d3beD47".toLowerCase();
-        if (to !== expected) {
-          return new Response(JSON.stringify({ error: "wrong_recipient" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...cors }
-          });
-        }
-        // NOTE: full on-chain settlement via Circle facilitator is TODO.
-        // For now, shape + recipient checks pass; serve the MCP response.
-        // An agent that sends a signed payload for the right amount to the
-        // right address gets the result. Real facilitators add signature
-        // verification + on-chain settlement.
+
+        decoded = JSON.parse(atob(payment));
+
       } catch (e) {
-        return new Response(JSON.stringify({ error: "payment_parse_failed", detail: String(e).slice(0, 100) }), {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...cors }
+
+        return new Response(JSON.stringify({ error: "invalid_payment_base64" }), {
+
+          status: 400, headers: { "Content-Type": "application/json", ...cors }
+
         });
+
       }
 
-      // EIP-3009 signature verification + on-chain settlement NOT YET
-      // IMPLEMENTED. Reject any X-PAYMENT — however well-shaped — with
-      // another 402 to prevent serving premium content without verified
-      // payment. Honest position: we advertise the protocol but cannot
-      // yet settle. Agents should not retry until this message changes.
-      return new Response(JSON.stringify({
-        x402Version: 2,
-        error: "payment_verification_not_implemented",
-        detail: "Endpoint accepts x402 protocol but cannot verify EIP-3009 signatures yet. No payment was settled. Contact contact@fourieranalys.se.",
-        resource: {
-          url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-          description: "VolatiAI premium signals (verification in progress)",
-          mimeType: "application/json"
+
+      if (!decoded.authorization && !decoded.payload?.authorization) {
+
+        return new Response(JSON.stringify({ error: "missing_authorization" }), {
+
+          status: 400, headers: { "Content-Type": "application/json", ...cors }
+
+        });
+
+      }
+
+
+      const network = decoded.network || "eip155:8453";
+
+      const ACCEPTS_MAP = {
+
+        "eip155:5042": {
+
+          scheme: "exact", network: "eip155:5042",
+
+          maxAmountRequired: "100000", amount: "100000",
+
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+
+          description: "VolatiAI premium signals — USDC on Arc",
+
+          mimeType: "application/json",
+
+          payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+
+          maxTimeoutSeconds: 60,
+
+          asset: "0x3600000000000000000000000000000000000000",
+
+          extra: { name: "USDC", version: "2" }
+
+        },
+
+        "eip155:8453": {
+
+          scheme: "exact", network: "eip155:8453",
+
+          maxAmountRequired: "100000", amount: "100000",
+
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+
+          description: "VolatiAI premium signals — USDC on Base",
+
+          mimeType: "application/json",
+
+          payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+
+          maxTimeoutSeconds: 60,
+
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+
+          extra: { name: "USD Coin", version: "2" }
+
         }
-      }), {
-        status: 402,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      });
+
+      };
+
+
+      const paymentReq = ACCEPTS_MAP[network];
+
+      if (!paymentReq) {
+
+        return new Response(JSON.stringify({
+
+          x402Version: 2, error: "unsupported_network",
+
+          detail: "Network " + network + " not supported",
+
+          accepts: Object.values(ACCEPTS_MAP)
+
+        }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+
+      }
+
+
+      const FACILITATOR_URL = env.CIRCLE_FACILITATOR_URL || "https://api.circle.com/v1/facilitator/x402/settle";
+
+      const settleHeaders = { "Content-Type": "application/json" };
+
+      if (env.CIRCLE_API_KEY) settleHeaders["Authorization"] = "Bearer " + env.CIRCLE_API_KEY;
+
+
+      let settleResult;
+
+      try {
+
+        const settleResp = await fetch(FACILITATOR_URL, {
+
+          method: "POST",
+
+          headers: settleHeaders,
+
+          body: JSON.stringify({ paymentPayload: decoded, paymentRequirements: paymentReq }),
+
+          signal: AbortSignal.timeout(30000)
+
+        });
+
+        settleResult = await settleResp.json();
+
+      } catch (e) {
+
+        return new Response(JSON.stringify({
+
+          x402Version: 2, error: "facilitator_unreachable",
+
+          detail: "Settlement service unavailable. No payment settled. Try again.",
+
+          resource: paymentReq
+
+        }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+
+      }
+
+
+      if (settleResult.success === true) {
+
+        premiumPaid = true;
+
+      } else if (settleResult.errorReason === "settlement_pending") {
+
+        return new Response(JSON.stringify({
+
+          x402Version: 2, error: "settlement_pending",
+
+          detail: "Settlement pending (not on-chain). Do not retry with same X-PAYMENT.",
+
+          resource: paymentReq
+
+        }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+
+      } else {
+
+        const reason = settleResult.errorReason || "settlement_failed";
+
+        return new Response(JSON.stringify({
+
+          x402Version: 2, error: reason,
+
+          detail: "Payment settlement failed: " + reason,
+
+          resource: paymentReq
+
+        }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
+
+      }
+
     }
 
 
-    if (url.pathname === "/mcp") {
+
+    if (url.pathname === "/mcp" || premiumPaid) {
       if (req.method !== "POST") return new Response("MCP expects POST", { status: 405, headers: cors });
       let body;
       try { body = await req.json(); }
