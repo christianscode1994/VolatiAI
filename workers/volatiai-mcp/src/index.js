@@ -1120,7 +1120,11 @@ export default {
       "Access-Control-Allow-Headers": "Content-Type, Accept",
     };
 
-    if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+    // OPTIONS on /premium/mcp must reach the 402 probe below (x402scan probes it).
+    // All other OPTIONS get the fast CORS preflight 204.
+    if (req.method === "OPTIONS" && url.pathname !== "/premium/mcp") {
+      return new Response(null, { status: 204, headers: cors });
+    }
 
     if (url.pathname === "/" || url.pathname === "/health") {
       return new Response(JSON.stringify({
@@ -1161,15 +1165,8 @@ export default {
         }
       ];
       return new Response(JSON.stringify({
-        x402Version: 2,
-        resources: [
-          {
-            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            mimeType: "application/json",
-            description: "VolatiAI premium signals \u2014 signed, verifiable, $0.10 per call",
-            accepts: discoveryAccepts
-          }
-        ]
+        version: 1,
+        resources: ["https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp"]
       }, null, 2), {
         headers: {
           "Content-Type": "application/json",
@@ -1391,7 +1388,52 @@ export default {
             description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
             mimeType: "application/json"
           },
-          accepts
+          accepts,
+          extensions: {
+            bazaar: {
+              info: {
+                input: {
+                  type: "http",
+                  method: "POST",
+                  bodyType: "json",
+                  body: {
+                    jsonrpc: "2.0",
+                    id: 1,
+                    method: "tools/list"
+                  }
+                },
+                output: {
+                  type: "json",
+                  example: { jsonrpc: "2.0", id: 1, result: { tools: [] } }
+                }
+              },
+              schema: {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                type: "object",
+                properties: {
+                  input: {
+                    type: "object",
+                    required: ["type", "method", "bodyType", "body"],
+                    properties: {
+                      type: { type: "string", const: "http" },
+                      method: { type: "string" },
+                      bodyType: { type: "string" },
+                      body: { type: "object" }
+                    }
+                  },
+                  output: {
+                    type: "object",
+                    required: ["type"],
+                    properties: {
+                      type: { type: "string" },
+                      example: {}
+                    }
+                  }
+                },
+                required: ["input"]
+              }
+            }
+          }
         };
 
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
