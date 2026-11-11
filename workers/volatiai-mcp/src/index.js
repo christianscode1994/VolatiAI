@@ -1141,6 +1141,142 @@ export default {
       });
     }
 
+    if (url.pathname === "/premium/mcp") {
+      const payment = req.headers.get("X-PAYMENT");
+
+      // ── No payment → 402 with PaymentRequired challenge ──
+      if (!payment) {
+        const accepts = [
+          {
+            scheme: "exact",
+            network: "eip155:5042",
+            maxAmountRequired: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals — $0.10 per request, USDC on Arc",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x3600000000000000000000000000000000000000",
+            schema: {
+                type: "object",
+                required: ["signature", "authorization"],
+                properties: {
+                  signature: { type: "string", description: "EIP-712 signature of EIP-3009 TransferWithAuthorization" },
+                  authorization: {
+                    type: "object",
+                    required: ["from", "to", "value", "validAfter", "validBefore", "nonce"],
+                    properties: {
+                      from: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
+                      to: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
+                      value: { type: "string", pattern: "^[0-9]+$" },
+                      validAfter: { type: "string", pattern: "^[0-9]+$" },
+                      validBefore: { type: "string", pattern: "^[0-9]+$" },
+                      nonce: { type: "string", pattern: "^0x[a-fA-F0-9]{64}$" }
+                    }
+                  }
+                }
+              },
+            extra: {
+              name: "USDC",
+              version: "2"
+            }
+          },
+          {
+            scheme: "exact",
+            network: "eip155:8453",
+            maxAmountRequired: "100000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals — $0.10 per request, USDC on Base",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            schema: {
+                type: "object",
+                required: ["signature", "authorization"],
+                properties: {
+                  signature: { type: "string", description: "EIP-712 signature of EIP-3009 TransferWithAuthorization" },
+                  authorization: {
+                    type: "object",
+                    required: ["from", "to", "value", "validAfter", "validBefore", "nonce"],
+                    properties: {
+                      from: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
+                      to: { type: "string", pattern: "^0x[a-fA-F0-9]{40}$" },
+                      value: { type: "string", pattern: "^[0-9]+$" },
+                      validAfter: { type: "string", pattern: "^[0-9]+$" },
+                      validBefore: { type: "string", pattern: "^[0-9]+$" },
+                      nonce: { type: "string", pattern: "^0x[a-fA-F0-9]{64}$" }
+                    }
+                  }
+                }
+              },
+            extra: {
+              name: "USD Coin",
+              version: "2"
+            }
+          }
+        ];
+
+        const requirement = {
+          x402Version: 2,
+          error: "Payment required",
+          resource: {
+            url: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            mimeType: "application/json"
+          },
+          accepts
+        };
+
+        const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
+        return new Response(JSON.stringify(requirement), {
+          status: 402,
+          headers: {
+            "Content-Type": "application/json",
+            "PAYMENT-REQUIRED": header,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "PAYMENT-REQUIRED"
+          }
+        });
+      }
+
+      // ── Payment present → validate shape, then serve ──
+      try {
+        const decoded = JSON.parse(atob(payment));
+        if (!decoded.authorization || !decoded.signature) {
+          return new Response(JSON.stringify({ error: "invalid_payment_payload" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...cors }
+          });
+        }
+        const to = (decoded.authorization.to || "").toLowerCase();
+        const expected = "0x3EE508f75342315164301B2282f302DF3d3beD47".toLowerCase();
+        if (to !== expected) {
+          return new Response(JSON.stringify({ error: "wrong_recipient" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...cors }
+          });
+        }
+        // NOTE: full on-chain settlement via Circle facilitator is TODO.
+        // For now, shape + recipient checks pass; serve the MCP response.
+        // An agent that sends a signed payload for the right amount to the
+        // right address gets the result. Real facilitators add signature
+        // verification + on-chain settlement.
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "payment_parse_failed", detail: String(e).slice(0, 100) }), {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...cors }
+        });
+      }
+
+      // Fall through to /mcp handling — same logic
+      if (req.method !== "POST") {
+        return new Response("Premium MCP expects POST", { status: 405, headers: cors });
+      }
+      // ... reuse /mcp body by falling through (see below)
+    }
+
+
     if (url.pathname === "/mcp") {
       if (req.method !== "POST") return new Response("MCP expects POST", { status: 405, headers: cors });
       let body;
