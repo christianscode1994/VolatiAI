@@ -1,13 +1,9 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.christianscode1994/volatiai-mcp",
-  "title": "VolatiAI MCP",
-  "description": "Ranked active signals with snapshot chain verification and cross-source arbitration.",
-  "repository": {
-    "url": "https://github.com/christianscode1994/VolatiAI",
-    "source": "github"
-  },
-  "version": "1.1.0",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.christianscode1994/volatiai",
+  "description": "Signed signals from 425 sectors. Every output carries an Ed25519 attestation verifiable offline.",
+  "version": "1.0.0",
+  "protocolVersion": "2025-06-18",
   "remotes": [
     {
       "type": "streamable-http",
