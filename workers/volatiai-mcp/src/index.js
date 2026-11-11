@@ -1,6 +1,7 @@
 // VolatiAI MCP server — read-only, stateless, $0 forever.
 // Reads active.json from GitHub Pages. No KV, no R2, no auth, no card.
 
+import openapiSpec from "../openapi.json";
 const ACTIVE_JSON_URL = "https://christianscode1994.github.io/VolatiAI/active.json";
 const ACTIVE_WITH_TRUST_URL = "https://christianscode1994.github.io/VolatiAI/active_with_trust.json";
 const SECTOR_BASES = [
@@ -1128,6 +1129,16 @@ export default {
         tools: TOOLS.map(t => t.name),
         docs: "https://christianscode1994.github.io/VolatiAI/",
       }), { headers: { "Content-Type": "application/json", ...cors } });
+    }
+
+    if (url.pathname === "/openapi.json") {
+      return new Response(JSON.stringify(openapiSpec, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=300",
+        },
+      });
     }
 
     if (url.pathname === "/mcp") {
