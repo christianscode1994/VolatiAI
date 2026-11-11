@@ -1490,11 +1490,15 @@ export default {
       }
 
 
-      const FACILITATOR_URL = env.CIRCLE_FACILITATOR_URL || "https://api.circle.com/v1/facilitator/x402/settle";
+      const FACILITATOR_URL = env.FACILITATOR_URL || "https://facilitator.xpay.sh/settle";
 
-      const settleHeaders = { "Content-Type": "application/json" };
+      const settleHeaders = {
+        "Content-Type": "application/json",
+        "User-Agent": "VolatiAI/1.0 (+https://volatiai-mcp.fourieranalys.workers.dev)",
+        "Accept": "application/json"
+      };
 
-      if (env.CIRCLE_API_KEY) settleHeaders["Authorization"] = "Bearer " + env.CIRCLE_API_KEY;
+      /* XPay requires no auth */
 
 
       let settleResult;
