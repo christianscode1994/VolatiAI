@@ -178,7 +178,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 18/24 runs (75%)",
+      "reason": "conf=0 in 19/24 runs (79%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -317,11 +317,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "noaa-ndbc",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -367,11 +362,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "radio-stations",
-      "reason": "conf=0 in 23/24 runs (96%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "renewable-energy",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -383,11 +373,6 @@
     },
     {
       "sector": "science-news",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "shopping",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -433,11 +418,6 @@
     },
     {
       "sector": "tobacco-reports",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "tracking",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -505,6 +485,16 @@
       "sector": "climate-datasets",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "radio-stations",
+      "reason": "conf=0 in 23/24 runs (96%)",
+      "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
@@ -522,7 +512,7 @@
     },
     {
       "sector": "defillama-protocol-count",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
@@ -530,11 +520,11 @@
     },
     {
       "sector": "dex-total-volume-24h",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "dex-uniswap-volume",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
@@ -542,11 +532,11 @@
     },
     {
       "sector": "fred-fedfunds",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -569,12 +559,16 @@
       "reason": "spam (96%) but no config found in workers"
     },
     {
+      "sector": "nbp-gold-spot",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "nvd-new-cves-count",
       "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "open-digger-openrank-vscode",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -586,15 +580,19 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "stablecoin-total-supply",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "stablecoin-usdt-supply",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -614,11 +612,11 @@
     },
     {
       "sector": "usgs-elevated-volcanoes",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -820,17 +818,12 @@
     {
       "sector": "openfda-drug-recalls",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "openfda-food-recalls",
       "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "ossf-scorecard-linux",
-      "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "osv-lodash-vuln-count",
