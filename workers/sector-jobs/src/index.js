@@ -79,19 +79,11 @@ export default {
 };
 
 async function collectAll(env) {
+  // RemoteOK retired 2026-11-11: API ToS does not clearly permit commercial
+  // redistribution. Sector will be removed from the registry tomorrow.
   return {
     sources: {
-      remoteok_latest: await fetchSafe(async () => {
-        const r = await fetch('https://remoteok.com/api', {
-          headers: { 'user-agent': 'VolatiAI/1.0' }
-        });
-        if (!r.ok) throw new Error('status ' + r.status);
-        const jobs = await r.json();
-        if (!Array.isArray(jobs) || jobs.length < 2) throw new Error('no jobs');
-        const job = jobs[1];
-        if (!job || !job.id) throw new Error('no job id');
-        return { id: job.id, title: (job.position || 'job') + ' @ ' + (job.company || '?') };
-      })
+      remoteok_latest: { ok: false, error: "source_retired" },
     },
   };
 }

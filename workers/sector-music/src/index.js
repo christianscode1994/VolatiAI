@@ -79,19 +79,11 @@ export default {
 };
 
 async function collectAll(env) {
+  // Deezer retired 2026-11-11: API ToS restricts commercial redistribution
+  // of chart data. Sector will be removed from the registry tomorrow.
   return {
     sources: {
-      deezer_chart: await fetchSafe(async () => {
-        const r = await fetch('https://api.deezer.com/chart/0/tracks?limit=1');
-        if (!r.ok) throw new Error('status ' + r.status);
-        const j = await r.json();
-        if (!j.data || !j.data.length) throw new Error('no tracks');
-        const t = j.data[0];
-        return {
-          id: String(t.id),
-          title: (t.title || 'unknown') + ' — ' + (t.artist ? t.artist.name : 'unknown')
-        };
-      })
+      deezer_chart: { ok: false, error: "source_retired" },
     },
   };
 }

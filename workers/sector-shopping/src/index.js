@@ -93,14 +93,15 @@ async function collectAll(env) {
   return {
     sources: {
       wti: await fetchSafe(async () => {
-        const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/CL%3DF?interval=1d&range=1d', {
-          headers: { 'user-agent': 'Mozilla/5.0' }
-        });
+        const r = await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILWTICO&cosd=2026-01-01');
         if (!r.ok) throw new Error('status ' + r.status);
-        const j = await r.json();
-        const result = j.chart && j.chart.result && j.chart.result[0];
-        if (!result || !result.meta || !result.meta.regularMarketPrice) throw new Error('no price');
-        return Math.round(result.meta.regularMarketPrice * 100) / 100;
+        const csv = await r.text();
+        const lines = csv.trim().split('\n').slice(1).filter(l => !l.endsWith(','));
+        if (!lines.length) throw new Error('no data');
+        const last = lines[lines.length - 1].split(',');
+        const price = parseFloat(last[1]);
+        if (isNaN(price)) throw new Error('invalid');
+        return Math.round(price * 100) / 100;
       })
     },
   };
