@@ -2,6 +2,7 @@ name = "volatiai-mcp"
 main = "src/index.js"
 compatibility_date = "2025-06-01"
 workers_dev = true
+compatibility_flags = [ "nodejs_compat" ]
 # Free tier only. No KV, no R2, no D1, no custom domain.
 # 100,000 req/day free — you'll use <1,000/day.
 # Cloudflare free tier is fail-closed: hitting the cap returns 429, never bills.
@@ -34,3 +35,4 @@ PUBKEY_V0_HIST_ID = "volatiai-v0-historical"
 PUBKEY_V0_HIST_PEM = """-----BEGIN PUBLIC KEY-----
 MCowBQYDK2VwAyEAUNhnDk4ZYvH93e0DxAWVh874K/UFEuH+yif98xPLQJo=
 -----END PUBLIC KEY-----"""
+

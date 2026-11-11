@@ -1,7 +1,10 @@
+import { generateJwt } from '@coinbase/cdp-sdk/auth';
 // VolatiAI MCP server — read-only, stateless, $0 forever.
 // Reads active.json from GitHub Pages. No KV, no R2, no auth, no card.
 
 import openapiSpec from "../openapi.json";
+
+
 const ACTIVE_JSON_URL = "https://christianscode1994.github.io/VolatiAI/active.json";
 const ACTIVE_WITH_TRUST_URL = "https://christianscode1994.github.io/VolatiAI/active_with_trust.json";
 const SECTOR_BASES = [
@@ -1157,35 +1160,17 @@ const BAZAAR_EXT = {
 };
 
 async function cdpJwt(env, method, path) {
-  const raw = Uint8Array.from(atob(env.CDP_API_KEY_SECRET), c => c.charCodeAt(0));
-  const seed = raw.slice(0, 32);
-  const pkcs8 = new Uint8Array([
-    0x30, 0x2e, 0x02, 0x01, 0x00,
-    0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70,
-    0x04, 0x22, 0x04, 0x20, ...seed,
-  ]);
-  const key = await crypto.subtle.importKey(
-    "pkcs8", pkcs8, { name: "Ed25519" }, false, ["sign"]
-  );
-  const now = Math.floor(Date.now() / 1000);
-  const b64url = (obj) => btoa(JSON.stringify(obj))
-    .replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
-  const header = { alg: "EdDSA", typ: "JWT", kid: env.CDP_API_KEY_ID };
-  const payload = {
-    sub: env.CDP_API_KEY_ID,
-    iss: "cdp",
-    aud: ["cdp_service"],
-    nbf: now,
-    exp: now + 120,
-    uri: method + " api.cdp.coinbase.com" + path,
-  };
-  const signingInput = b64url(header) + "." + b64url(payload);
-  const sigBytes = await crypto.subtle.sign(
-    "Ed25519", key, new TextEncoder().encode(signingInput)
-  );
-  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sigBytes)))
-    .replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
-  return signingInput + "." + sigB64;
+  // CDP requires Ed25519 (EdDSA) or ES256 JWTs, bound to the request URI.
+  // The SDK auto-detects the key type and signs correctly.
+  return await generateJwt({
+    apiKeyId: env.CDP_API_KEY_ID,
+    apiKeySecret: env.CDP_API_KEY_SECRET,
+    requestMethod: method,
+    requestHost: "api.cdp.coinbase.com",
+    requestPath: path,
+    expiresIn: 120,
+  });
+
 }
 
 
@@ -1233,7 +1218,7 @@ export default {
         },
         {
           scheme: "exact",
-          network: "eip155:8453",
+          network: "base",
           maxAmountRequired: "100000",
           amount: "100000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -1286,7 +1271,7 @@ export default {
         const accepts = [
           {
             scheme: "exact",
-            network: "eip155:8453",
+            network: "base",
             maxAmountRequired: "100000",
             amount: "100000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -1345,7 +1330,7 @@ export default {
         const accepts = [
           {
             scheme: "exact",
-            network: "eip155:8453",
+            network: "base",
             maxAmountRequired: "100000",
             amount: "100000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -1413,7 +1398,7 @@ export default {
 
             scheme: "exact",
 
-            network: "eip155:8453",
+            network: "base",
 
             maxAmountRequired: "100000",
 
@@ -1519,7 +1504,7 @@ export default {
       }
 
 
-      const network = decoded.network || "eip155:8453";
+      const network = decoded.network || "base";
 
       const ACCEPTS_MAP = {
 
@@ -1546,9 +1531,9 @@ export default {
 
         },
 
-        "eip155:8453": {
+        "base": {
 
-          scheme: "exact", network: "eip155:8453",
+          scheme: "exact", network: "base",
 
           maxAmountRequired: "100000", amount: "100000",
 
@@ -1611,9 +1596,7 @@ export default {
 
           headers: settleHeaders,
 
-          body: JSON.stringify({
-          paymentPayload: { ...decoded, resource: RESOURCE_URL, extensions: { bazaar: BAZAAR_EXT } },
-          paymentRequirements: paymentReq }),
+          body: JSON.stringify({x402Version: 1, paymentPayload: {x402Version: 1, scheme: decoded.scheme || "exact", network: "base", payload: decoded.payload}, paymentRequirements: {...paymentReq, network: "base"}}),
 
           signal: AbortSignal.timeout(30000)
 
@@ -1627,7 +1610,7 @@ export default {
 
           x402Version: 2, error: "facilitator_unreachable",
 
-          detail: "Settlement service unavailable. No payment settled. Try again.",
+          detail: (err && err.message) ? ("Settlement failed: " + err.message) : "Settlement service unavailable. No payment settled. Try again.",
 
           resource: paymentReq
 
@@ -1653,8 +1636,11 @@ export default {
         }), { status: 402, headers: { "Content-Type": "application/json", ...cors } });
 
       } else {
-
-        const reason = settleResult.errorReason || "settlement_failed";
+        const reason = settleResult.errorReason
+                     || settleResult.errorMessage
+                     || settleResult.error
+                     || settleResult.message
+                     || "settlement_failed";
 
         return new Response(JSON.stringify({
 
