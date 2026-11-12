@@ -1640,7 +1640,14 @@ export default {
           maxTimeoutSeconds: 60,
           asset: "0x3600000000000000000000000000000000000000",
           extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
         },
         {
           scheme: "exact",
@@ -1654,7 +1661,14 @@ export default {
           maxTimeoutSeconds: 60,
           asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           extra: { name: "USD Coin", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
         }
       ];
       return new Response(JSON.stringify({
@@ -1805,7 +1819,14 @@ export default {
             maxTimeoutSeconds: 60,
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
             extra: { name: "USD Coin", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
           },
         {
             scheme: "exact",
@@ -1819,7 +1840,14 @@ export default {
             maxTimeoutSeconds: 60,
             asset: "0x3600000000000000000000000000000000000000",
             extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
           }
         ];
         const requirement = {
@@ -1831,7 +1859,14 @@ export default {
             mimeType: "application/json",
           },
           accepts,
-          extensions: { bazaar: BAZAAR_EXT },
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        },
         };
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
         return new Response(JSON.stringify(requirement), {
@@ -1864,7 +1899,14 @@ export default {
             maxTimeoutSeconds: 60,
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
             extra: { name: "USD Coin", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
           },
         {
             scheme: "exact",
@@ -1878,7 +1920,14 @@ export default {
             maxTimeoutSeconds: 60,
             asset: "0x3600000000000000000000000000000000000000",
             extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
           }
         ];
         const requirement = {
@@ -1890,7 +1939,14 @@ export default {
             mimeType: "application/json",
           },
           accepts,
-          extensions: { bazaar: BAZAAR_EXT },
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        },
         };
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
         return new Response(JSON.stringify(requirement), {
@@ -2019,7 +2075,14 @@ export default {
             asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
 
             extra: { name: "USD Coin", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
 
           },
         {
@@ -2045,7 +2108,14 @@ export default {
             asset: "0x3600000000000000000000000000000000000000",
 
             extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
 
           }
 
@@ -2060,7 +2130,14 @@ export default {
             mimeType: "application/json",
           },
           accepts,
-          extensions: { bazaar: BAZAAR_EXT },
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        },
         };
 
         const header = btoa(unescape(encodeURIComponent(JSON.stringify(requirement))));
@@ -2129,7 +2206,14 @@ export default {
           asset: "0x3600000000000000000000000000000000000000",
 
           extra: { name: "USDC", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
 
         },
 
@@ -2152,7 +2236,14 @@ export default {
           asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
 
           extra: { name: "USD Coin", version: "2" },
-          extensions: { bazaar: BAZAAR_EXT }
+          extensions: {
+          bazaar: BAZAAR_EXT,
+          ...declareSIWxExtension({
+            statement: "Sign in with your wallet to access previously purchased content",
+            network: ["eip155:8453", "eip155:5042"],
+            expirationSeconds: 3600,
+          })
+        }
 
         }
 
@@ -2295,26 +2386,31 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
 
 
       if (settleResult.success === true) {
+        // SINGLE-LINE diagnostic — always shows in wrangler tail
         try {
+          const __dbg = {
+            dt: typeof decoded,
+            dk: decoded ? Object.keys(decoded).join(",") : "null",
+            pk: decoded && decoded.payload ? Object.keys(decoded.payload).join(",") : "null",
+            ak: decoded && decoded.payload && decoded.payload.authorization ? Object.keys(decoded.payload.authorization).join(",") : "null",
+            kv: !!env.PAYMENT_REPLAY,
+            ctx: typeof ctx,
+          };
           const siwxPayerAddr = decoded && decoded.payload && decoded.payload.authorization && decoded.payload.authorization.from;
+          __dbg.payer = siwxPayerAddr || null;
           if (siwxPayerAddr && env.PAYMENT_REPLAY) {
             const siwxRecStore = new KVSIWxStorage(env.PAYMENT_REPLAY);
-            ctx.waitUntil(siwxRecStore.recordPayment("/premium/mcp", siwxPayerAddr));
+            await siwxRecStore.recordPayment("/premium/mcp", siwxPayerAddr);
+            __dbg.wrote = true;
           }
+          console.log("SIWX_DIAG|" + JSON.stringify(__dbg));
         } catch (e) {
-          console.error("SIWX_RECORD_FAILED:", e && e.message ? e.message : String(e));
+          console.log("SIWX_DIAG_ERR|" + String(e && e.message || e));
         }
 
-          // Non-fatal: replay cache write failures must NOT block the premium response.
-          try {
-            if (env.PAYMENT_REPLAY && nonce) {
-              ctx.waitUntil(
-                env.PAYMENT_REPLAY.put("nonce:" + nonce.toLowerCase(), "1", { expirationTtl: replayTtl })
-              );
-            }
-          } catch (e) {
-            console.error("REPLAY_CACHE_WRITE_FAILED:", (e && e.message) || e);
-          }
+          // NOTE: nonce KV write removed — on-chain USDC contracts reject replay natively.
+          // If a buyer replays a nonce, CDP's settle endpoint returns nonce_already_used.
+          // Removing this saves ~1 KV write per paid call, avoiding quota exhaustion.
 
 
         premiumPaid = true;
