@@ -1794,6 +1794,46 @@ export default {
       }
     }
 
+    // /llms.txt — AI crawler discovery (https://llmstxt.org)
+    if (url.pathname === "/llms.txt") {
+      const llmsContent = `# VolatiAI MCP
+
+> Signed, verifiable signals from 421 sectors. Every response carries an Ed25519 attestation verifiable offline. Paid via x402 (USDC on Base, Arc, and Solana).
+
+## MCP Endpoint
+- Free tier: https://volatiai-mcp.fourieranalys.workers.dev/mcp
+- Paid tier: https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp (21 tools, $0.01 USDC per call)
+
+## Discovery
+- x402 manifest: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402
+- Sign-in-with-x: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/sign-in-with-x
+- OAuth discovery: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/oauth-protected-resource
+- OpenAPI spec: https://volatiai-mcp.fourieranalys.workers.dev/openapi.json
+- Server card: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/mcp/server-card.json
+
+## Tools
+Chain reads: get_eth_balance, get_token_balance, get_block_number, get_gas_price, get_wallet_nonce, get_wallet_summary
+Signals: list_active_signals, get_sector, list_categories, verify_snapshot, get_diff, get_anchor, get_trust_manifest, resolve_entity, list_entities, find_corroborations, get_current_revision, get_snapshot
+Utility: page_to_markdown, purchase, explain_pricing (FREE)
+
+## Payment
+Protocol: x402 (HTTP 402 Payment Required)
+Networks: Base mainnet, Arc (eip155:5042), Solana (in discovery)
+Asset: USDC
+How to pay: POST /premium/mcp with X-PAYMENT header containing base64-encoded EIP-712 TransferWithAuthorization
+
+## Contact
+contact@fourieranalys.se
+`;
+      return new Response(llmsContent, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "public, max-age=3600",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
     if (url.pathname === "/.well-known/402index-verify.txt") {
       // Domain ownership proof for 402index.io claim flow.
       return new Response("77bc52035cd4b496d484b5a1122e267bdc504a69ffa3ff16fa28d9e14aba05f1", {
@@ -2453,7 +2493,7 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
             await siwxRecStore.recordPayment("/premium/mcp", siwxPayerAddr);
             __dbg.wrote = true;
           }
-          console.log("SIWX_DIAG|" + JSON.stringify(__dbg));
+          // Silent on success; log only errors below.
         } catch (e) {
           console.log("SIWX_DIAG_ERR|" + String(e && e.message || e));
         }
