@@ -1841,6 +1841,93 @@ contact@fourieranalys.se
       });
     }
 
+    // A2A Agent Card — discovery per https://a2a-protocol.org
+    if (url.pathname === "/.well-known/agent-card.json" ||
+        url.pathname === "/.well-known/agent.json") {
+      const agentCard = {
+        name: "VolatiAI MCP",
+        description: "Signed, verifiable signals from 421 sectors. Every response carries an Ed25519 attestation verifiable offline. 21 tools including chain reads, composites, and web-to-Markdown. USDC on Base, Arc, and Solana at $0.005 per call via x402.",
+        version: "1.0.0",
+        protocolVersion: "0.3.0",
+        url: "https://volatiai-mcp.fourieranalys.workers.dev/mcp",
+        preferredTransport: "JSONRPC",
+        defaultInputModes: ["application/json"],
+        defaultOutputModes: ["application/json"],
+        capabilities: {
+          streaming: false,
+          pushNotifications: false,
+          stateTransitionHistory: false,
+        },
+        provider: {
+          organization: "VolatiAI",
+          url: "https://christianscode1994.github.io/VolatiAI/",
+        },
+        documentationUrl: "https://volatiai-mcp.fourieranalys.workers.dev/llms.txt",
+        securitySchemes: {
+          x402: {
+            type: "x402",
+            description: "Pay-per-call via x402 (USDC on Base, Arc, or Solana)",
+            paymentEndpoint: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          },
+        },
+        security: [{ x402: [] }],
+        skills: [
+          {
+            id: "list_active_signals",
+            name: "List Active Signals",
+            description: "Ranked signals across 421 sectors, filtered by severity or category. Every signal carries attribution, delta, and trust score.",
+            tags: ["signals", "data", "research"],
+            examples: ["List top 10 warning-severity signals in Crypto"],
+            inputModes: ["application/json"],
+            outputModes: ["application/json"],
+          },
+          {
+            id: "get_wallet_summary",
+            name: "Wallet Summary",
+            description: "ETH balance, USDC balance, nonce, latest block, and gas price in one call (5 RPC reads in parallel).",
+            tags: ["chain-reads", "wallet", "data"],
+            examples: ["Summarize wallet 0x5060f8A0d4ebbe6c46011690e2d4761F35c75d48 on Base"],
+            inputModes: ["application/json"],
+            outputModes: ["application/json"],
+          },
+          {
+            id: "verify_snapshot",
+            name: "Verify Snapshot",
+            description: "Cryptographically verify a VolatiAI snapshot's Ed25519 signature and chain integrity.",
+            tags: ["verification", "data", "trust"],
+            examples: ["Verify the snapshot dated 2026-11-12"],
+            inputModes: ["application/json"],
+            outputModes: ["application/json"],
+          },
+          {
+            id: "page_to_markdown",
+            name: "Page to Markdown",
+            description: "Fetch any URL and return clean Markdown, stripped of scripts and styles.",
+            tags: ["web", "extraction", "data"],
+            examples: ["Convert https://example.com/article to markdown"],
+            inputModes: ["application/json"],
+            outputModes: ["application/json"],
+          },
+          {
+            id: "explain_pricing",
+            name: "Explain Pricing (Free)",
+            description: "Free catalog + prices + how to pay. No payment required.",
+            tags: ["discovery", "pricing", "free"],
+            examples: ["What tools are available and what do they cost?"],
+            inputModes: ["application/json"],
+            outputModes: ["application/json"],
+          },
+        ],
+      };
+      return new Response(JSON.stringify(agentCard, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, max-age=3600",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
     if (url.pathname === "/.well-known/402index-verify.txt") {
       // Domain ownership proof for 402index.io claim flow.
       return new Response("77bc52035cd4b496d484b5a1122e267bdc504a69ffa3ff16fa28d9e14aba05f1", {
