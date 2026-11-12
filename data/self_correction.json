@@ -488,7 +488,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 18/24 runs (75%)",
+      "reason": "conf=0 in 19/24 runs (79%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -512,7 +512,7 @@
     },
     {
       "sector": "defillama-protocol-count",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
@@ -520,11 +520,11 @@
     },
     {
       "sector": "dex-total-volume-24h",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "dex-uniswap-volume",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
@@ -532,11 +532,11 @@
     },
     {
       "sector": "fred-fedfunds",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -552,15 +552,19 @@
     },
     {
       "sector": "kraken-btc-usd",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "kraken-doge-usd",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "kraken-dot-usd",
       "reason": "spam (100%) but no config found in workers"
+    },
+    {
+      "sector": "kraken-link-usd",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "kraken-sol-usd",
@@ -568,11 +572,11 @@
     },
     {
       "sector": "kraken-xrp-usd",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "nbp-gold-spot",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -580,7 +584,7 @@
     },
     {
       "sector": "open-digger-openrank-vscode",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -592,23 +596,23 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "stablecoin-usdc-supply",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "stablecoin-usdt-supply",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -616,7 +620,7 @@
     },
     {
       "sector": "treasuries-gov",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "tweetfeed-c2",
@@ -628,11 +632,11 @@
     },
     {
       "sector": "usgs-elevated-volcanoes",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -680,11 +684,6 @@
       "sector": "cisa-kev-total",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "clearlydefined-react-license",
-      "runs": 24,
-      "avg_conf": 0.88
     },
     {
       "sector": "cleveland-artworks",
@@ -743,8 +742,8 @@
     },
     {
       "sector": "education",
-      "runs": 22,
-      "avg_conf": 0.91
+      "runs": 21,
+      "avg_conf": 0.9
     },
     {
       "sector": "epss-log4shell",
@@ -905,6 +904,11 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 1.0
+    },
+    {
+      "sector": "clearlydefined-react-license",
+      "runs": 24,
+      "avg_conf": 0.88
     }
   ]
 }
