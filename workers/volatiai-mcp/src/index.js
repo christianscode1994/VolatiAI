@@ -1274,28 +1274,47 @@ async function toolGetWalletSummary(args) {
   if (!isValidAddr(address)) throw new Error("Invalid address: expected 0x-prefixed 40-char hex");
   const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
   const usdcData = "0x70a08231" + address.slice(2).padStart(64, "0");
-  const [ethHex, nonceHex, usdcHex, blockHex, gasHex] = await Promise.all([
+  const [ethRes, nonceRes, usdcRes, blockRes, gasRes] = await Promise.allSettled([
     baseRpcCall("eth_getBalance", [address, "latest"]),
     baseRpcCall("eth_getTransactionCount", [address, "latest"]),
     baseRpcCall("eth_call", [{ to: USDC_BASE, data: usdcData }, "latest"], 5000),
     baseRpcCall("eth_blockNumber", [], 2000),
     baseRpcCall("eth_gasPrice", [], 5000),
   ]);
-  const ethWei = BigInt(ethHex);
-  const usdcRaw = BigInt(usdcHex);
-  const gasWei = BigInt(gasHex);
+  const ethHex = ethRes.status === "fulfilled" ? ethRes.value : null;
+  const nonceHex = nonceRes.status === "fulfilled" ? nonceRes.value : null;
+  const usdcHex = usdcRes.status === "fulfilled" ? usdcRes.value : null;
+  const blockHex = blockRes.status === "fulfilled" ? blockRes.value : null;
+  const gasHex = gasRes.status === "fulfilled" ? gasRes.value : null;
+  if (ethHex === null && nonceHex === null && usdcHex === null && blockHex === null && gasHex === null) {
+    throw new Error("All 5 RPC reads failed (endpoints rate-limited or unreachable)");
+  }
+  const ethWei = ethHex !== null ? BigInt(ethHex) : null;
+  const usdcRaw = usdcHex !== null ? BigInt(usdcHex) : null;
+  const gasWei = gasHex !== null ? BigInt(gasHex) : null;
+  const failures = [
+    ethHex === null ? "eth_balance" : null,
+    nonceHex === null ? "nonce" : null,
+    usdcHex === null ? "usdc_balance" : null,
+    blockHex === null ? "latest_block" : null,
+    gasHex === null ? "gas_price" : null,
+  ].filter(Boolean);
   return {
     address,
-    eth_balance_wei: ethWei.toString(),
-    eth_balance: (Number(ethWei) / 1e18).toFixed(18),
-    nonce: parseInt(nonceHex, 16),
-    usdc_balance_raw: usdcRaw.toString(),
-    usdc_balance: (Number(usdcRaw) / 1e6).toFixed(6),
-    latest_block: parseInt(blockHex, 16),
-    gas_price_wei: gasWei.toString(),
-    gas_price_gwei: (Number(gasWei) / 1e9).toFixed(4),
+    eth_balance_wei: ethWei !== null ? ethWei.toString() : null,
+    eth_balance: ethWei !== null ? (Number(ethWei) / 1e18).toFixed(18) : null,
+    nonce: nonceHex !== null ? parseInt(nonceHex, 16) : null,
+    usdc_balance_raw: usdcRaw !== null ? usdcRaw.toString() : null,
+    usdc_balance: usdcRaw !== null ? (Number(usdcRaw) / 1e6).toFixed(6) : null,
+    latest_block: blockHex !== null ? parseInt(blockHex, 16) : null,
+    gas_price_wei: gasWei !== null ? gasWei.toString() : null,
+    gas_price_gwei: gasWei !== null ? (Number(gasWei) / 1e9).toFixed(4) : null,
     fetched_at: new Date().toISOString(),
-    note: "5 RPC reads executed in parallel — 1 round-trip latency instead of 5 sequential",
+    partial: failures.length > 0,
+    failed_fields: failures.length > 0 ? failures : undefined,
+    note: failures.length > 0
+      ? "Partial composite — " + failures.length + " of 5 RPC reads failed; returned available fields only"
+      : "5 RPC reads executed in parallel — 1 round-trip latency instead of 5 sequential",
   };
 }
 
@@ -1563,6 +1582,67 @@ export default {
           "Access-Control-Allow-Origin": "*",
           "Cache-Control": "public, max-age=300"
         }
+      });
+    }
+
+    // ─── OAuth Discovery: redirect agents to x402 ────────────────────────
+    // Agents (Claude Desktop, Cursor, LangChain) probe these endpoints when
+    // they need to authenticate. We respond with "no OAuth — use x402."
+    // RFC 9728 (Protected Resource Metadata), RFC 8414 (Auth Server), OIDC.
+    if (url.pathname === "/.well-known/oauth-protected-resource" ||
+        url.pathname === "/.well-known/oauth-protected-resource/mcp") {
+      return new Response(JSON.stringify({
+        resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+        authorization_servers: [],
+        bearer_methods_supported: [],
+        resource_documentation: "https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402",
+        x402_payment_required: true,
+        x402_network: "base",
+        x402_asset: "USDC",
+        x402_asset_address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        x402_price_usdc: "0.01",
+        x402_pay_to: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+        free_discovery_methods: ["tools/list", "explain_pricing", "initialize", "notifications/*", "ping"],
+        paid_endpoint: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+        how_to_pay: "POST /premium/mcp with X-PAYMENT header containing EIP-712 TransferWithAuthorization",
+        message: "This is an x402-paid MCP server, not an OAuth-protected one. Discovery endpoints are free. All tool calls require payment in USDC on Base.",
+      }, null, 2), {
+        headers: { "Content-Type": "application/json", ...cors },
+      });
+    }
+
+    if (url.pathname === "/.well-known/oauth-authorization-server") {
+      return new Response(JSON.stringify({
+        issuer: "https://volatiai-mcp.fourieranalys.workers.dev",
+        authorization_endpoint: null,
+        token_endpoint: null,
+        jwks_uri: null,
+        response_types_supported: [],
+        grant_types_supported: [],
+        x402_payment_required: true,
+        x402_discovery: "https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402",
+        message: "No OAuth authorization server. This MCP endpoint uses x402 payment (USDC on Base mainnet). See x402_discovery for details.",
+      }, null, 2), {
+        headers: { "Content-Type": "application/json", ...cors },
+      });
+    }
+
+    if (url.pathname === "/.well-known/openid-configuration") {
+      return new Response(JSON.stringify({
+        issuer: "https://volatiai-mcp.fourieranalys.workers.dev",
+        authorization_endpoint: null,
+        token_endpoint: null,
+        userinfo_endpoint: null,
+        jwks_uri: null,
+        scopes_supported: [],
+        response_types_supported: [],
+        subject_types_supported: [],
+        id_token_signing_alg_values_supported: [],
+        x402_payment_required: true,
+        x402_discovery: "https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402",
+        message: "No OIDC. This MCP endpoint uses x402 payment (USDC on Base mainnet). See x402_discovery for details.",
+      }, null, 2), {
+        headers: { "Content-Type": "application/json", ...cors },
       });
     }
 
