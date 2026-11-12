@@ -1451,8 +1451,13 @@ export default {
         }
       ];
       return new Response(JSON.stringify({
+        x402Version: 1,
         version: 1,
-        resources: ["https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp"]
+        resources: [{
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          mimeType: "application/json",
+          accepts: discoveryAccepts
+        }]
       }, null, 2), {
         headers: {
           "Content-Type": "application/json",
