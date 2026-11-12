@@ -78,7 +78,7 @@ const payload = {
   },
 };
 const xPayment = Buffer.from(JSON.stringify(payload)).toString("base64");
-console.log("XPAY=" + xPayment);
+
 
 
 
