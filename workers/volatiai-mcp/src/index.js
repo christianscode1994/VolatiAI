@@ -1680,6 +1680,7 @@ export default {
           );
         }
 
+
         var sig = decoded.payload && decoded.payload.signature;
         var nonce = decoded.payload && decoded.payload.authorization && decoded.payload.authorization.nonce;
         var validBefore = Number(
@@ -1718,6 +1719,9 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
           transaction: settleResult.transaction || null,
           network: settleResult.network || null,
           errorReason: settleResult.errorReason || null,
+          tool: (rpc && rpc.params && rpc.params.name) || null,
+          payer: (decoded && decoded.payload && decoded.payload.authorization && decoded.payload.authorization.from) || null,
+          ts: new Date().toISOString(),
         }));
 
       } catch (e) {
