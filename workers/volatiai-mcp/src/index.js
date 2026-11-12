@@ -1710,6 +1710,20 @@ export default {
       });
     }
 
+    // agent-tools.cloud domain ownership verification
+    if (url.pathname === "/.well-known/agent-tools-verify.txt") {
+      if (!env.ATC_VERIFY_TOKEN) {
+        return new Response("not configured", { status: 404, headers: { "Content-Type": "text/plain" } });
+      }
+      return new Response(env.ATC_VERIFY_TOKEN, {
+        headers: {
+          "Content-Type": "text/plain",
+          "Cache-Control": "no-store",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
     if (url.pathname === "/.well-known/402index-verify.txt") {
       // Domain ownership proof for 402index.io claim flow.
       return new Response("77bc52035cd4b496d484b5a1122e267bdc504a69ffa3ff16fa28d9e14aba05f1", {
