@@ -103,6 +103,30 @@ const TOOLS = [
     },
   },
   {
+    name: "get_snapshot",
+    description: "Fetch a historical snapshot by date (YYYY-MM-DD). Returns signed snapshot, hash, and publication metadata. Use verify_snapshot to cryptographically verify integrity.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Snapshot date (YYYY-MM-DD)" },
+      },
+      required: ["date"],
+    },
+  },
+  {
+    name: "purchase",
+    description: "Execute a paid tool by providing a valid x402 payment header. Returns the tool result and a signed receipt with transaction hash. Use this to purchase any paid tool in one atomic call.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tool_name: { type: "string", description: "Name of the paid tool to execute" },
+        arguments: { type: "object", description: "Arguments for the tool" },
+        x_payment: { type: "string", description: "Base64-encoded x402 payment header (X-PAYMENT)" },
+      },
+      required: ["tool_name", "arguments", "x_payment"],
+    },
+  },
+  {
     name: "list_entities",
     description: "List all canonical entities in the VolatiAI entity registry. Use to discover what entities are known and which sectors map to them. Optional type filter (e.g. \"asset\", \"organization\", \"product\", \"game\").",
     inputSchema: {
@@ -307,6 +331,44 @@ async function toolListActiveSignals(args = {}) {
       note: "trust.score measures weight-to-give-signal (0-1), not importance or correctness. See TRUST_MODEL.md for weights and limits.",
     } : undefined,
   });
+}
+
+async function toolGetSnapshot(args) {
+  const { date } = args || {};
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
+  const url = `https://christianscode1994.github.io/VolatiAI/snapshots/${date}.json`;
+  const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+  if (!res.ok) throw new Error(`Snapshot ${date} not found (HTTP ${res.status})`);
+  return await res.json();
+}
+
+async function toolPurchase(args, env) {
+  const { tool_name, arguments: toolArgs, x_payment } = args || {};
+  if (!tool_name || !x_payment) throw new Error("tool_name and x_payment required");
+  const decoded = JSON.parse(Buffer.from(x_payment, "base64").toString("utf-8"));
+  const sig = decoded.payload && decoded.payload.signature;
+  if (!sig) throw new Error("Invalid payment payload: missing signature");
+  const settleResp = await fetchWithRetry("https://api.cdp.coinbase.com/platform/v2/x402/settle", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      x402Version: 1,
+      paymentPayload: { x402Version: 1, scheme: "exact", network: "base", payload: decoded.payload },
+      paymentRequirements: {
+        scheme: "exact", network: "base", maxAmountRequired: "10000",
+        resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+        description: "VolatiAI premium tool", mimeType: "application/json",
+        payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+        maxTimeoutSeconds: 60, asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        extra: { name: "USD Coin", version: "2" },
+      },
+    }),
+    signal: AbortSignal.timeout(30000),
+  });
+  const settleResult = await settleResp.json();
+  if (!settleResult.success) throw new Error("Payment failed: " + (settleResult.errorReason || "unknown"));
+  const result = await handleToolsCall({ name: tool_name, arguments: toolArgs }, env);
+  return { success: true, transaction: settleResult.transaction, tool: tool_name, result };
 }
 
 async function toolGetSector(args = {}, env = {}) {
@@ -1385,6 +1447,8 @@ async function handleToolsCall(params = {}, env = {}) {
     case "get_wallet_nonce":     return await toolGetWalletNonce(args);
     case "get_wallet_summary":     return await toolGetWalletSummary(args);
     case "page_to_markdown":       return await toolPageToMarkdown(args);
+    case "get_snapshot":        return await toolGetSnapshot(args);
+    case "purchase":            return await toolPurchase(args, env);
 default: throw new Error(`Unknown tool: ${name}`);
   }
 }
