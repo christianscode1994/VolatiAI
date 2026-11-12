@@ -1651,6 +1651,35 @@ export default {
         }
 
         // Replay protection
+        // Rate limit: 20 calls/min per payer. Blocks runaway agents before CDP is called.
+        // Trade-off: 1 KV get + 1 put per request. On free tier (1,000 writes/day)
+        // that caps throughput at ~250 calls/day. Raise limit or move to Durable
+        // Objects when on Workers Paid.
+        const payerAddr = decoded && decoded.payload && decoded.payload.authorization && decoded.payload.authorization.from;
+        if (env.PAYMENT_REPLAY && payerAddr) {
+          const minuteBucket = Math.floor(Date.now() / 60000);
+          const rlKey = "rl:" + payerAddr.toLowerCase() + ":" + minuteBucket;
+          const currentCount = parseInt((await env.PAYMENT_REPLAY.get(rlKey)) || "0", 10);
+          if (currentCount >= 20) {
+            const secsLeft = 60 - Math.floor(Date.now() / 1000) % 60;
+            return new Response(JSON.stringify({
+              x402Version: 1,
+              error: "rate_limited",
+              detail: "Max 20 calls/minute per payer. Retry in " + secsLeft + "s.",
+            }), {
+              status: 429,
+              headers: {
+                "Content-Type": "application/json",
+                "Retry-After": String(secsLeft),
+                ...cors,
+              },
+            });
+          }
+          ctx.waitUntil(
+            env.PAYMENT_REPLAY.put(rlKey, String(currentCount + 1), { expirationTtl: 120 })
+          );
+        }
+
         var sig = decoded.payload && decoded.payload.signature;
         var nonce = decoded.payload && decoded.payload.authorization && decoded.payload.authorization.nonce;
         var validBefore = Number(
