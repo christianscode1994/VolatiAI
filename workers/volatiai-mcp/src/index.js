@@ -3,6 +3,12 @@ import { generateJwt } from '@coinbase/cdp-sdk/auth';
 // Reads active.json from GitHub Pages. No KV, no R2, no auth, no card.
 
 import openapiSpec from "../openapi.json";
+import {
+  declareSIWxExtension,
+  parseSIWxHeader,
+  validateSIWxMessage,
+  verifySIWxSignature,
+} from '@x402/extensions/sign-in-with-x';
 
 
 const ACTIVE_JSON_URL = "https://christianscode1994.github.io/VolatiAI/active.json";
@@ -271,6 +277,25 @@ async function fetchJson(url, ms) {
   return data;
 }
 
+
+// SIWX storage backed by the PAYMENT_REPLAY KV namespace.
+// TTL 30 days. Implements SIWxStorage: { hasPaid, recordPayment }.
+class KVSIWxStorage {
+  constructor(kv) { this.kv = kv; }
+  async hasPaid(resource, address) {
+    if (!this.kv) return false;
+    const v = await this.kv.get(`siwx:${resource}:${String(address).toLowerCase()}`);
+    return !!v;
+  }
+  async recordPayment(resource, address) {
+    if (!this.kv) return;
+    await this.kv.put(
+      `siwx:${resource}:${String(address).toLowerCase()}`,
+      "1",
+      { expirationTtl: 60 * 60 * 24 * 30 }
+    );
+  }
+}
 
 function jsonRpc(id, result) { return { jsonrpc: "2.0", id, result }; }
 function jsonRpcError(id, code, message) { return { jsonrpc: "2.0", id, error: { code, message } }; }
@@ -1724,6 +1749,24 @@ export default {
       });
     }
 
+    // SIWX discovery — returns the sign-in-with-x extension for agents
+    if (url.pathname === "/.well-known/sign-in-with-x") {
+      try {
+        const siwxExt = declareSIWxExtension({
+          statement: "Sign in with your wallet to access previously purchased content",
+          network: ["eip155:8453", "eip155:5042"],
+          expirationSeconds: 3600,
+        });
+        return new Response(JSON.stringify(siwxExt), {
+          headers: { "Content-Type": "application/json", ...cors },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "siwx_unavailable", message: String(e && e.message || e) }), {
+          status: 500, headers: { "Content-Type": "application/json", ...cors },
+        });
+      }
+    }
+
     if (url.pathname === "/.well-known/402index-verify.txt") {
       // Domain ownership proof for 402index.io claim flow.
       return new Response("77bc52035cd4b496d484b5a1122e267bdc504a69ffa3ff16fa28d9e14aba05f1", {
@@ -1879,6 +1922,29 @@ export default {
     }
 
     let premiumPaid = false;
+
+    // SIWX: grant access if client presents a valid SIGN-IN-WITH-X header
+    // from a wallet that has already paid. No new payment required.
+    if (req.headers.get("SIGN-IN-WITH-X") && env.PAYMENT_REPLAY) {
+      try {
+        const siwxHeader = req.headers.get("SIGN-IN-WITH-X");
+        const siwxPayload = parseSIWxHeader(siwxHeader);
+        const siwxValidation = await validateSIWxMessage(siwxPayload, new URL(req.url));
+        const siwxValid = siwxValidation.isValid !== false && !siwxValidation.invalidMessage;
+        if (siwxValid) {
+          const siwxVerify = await verifySIWxSignature(siwxPayload);
+          if (siwxVerify.isValid && siwxVerify.payer) {
+            const siwxStore = new KVSIWxStorage(env.PAYMENT_REPLAY);
+            const siwxPaid = await siwxStore.hasPaid("/premium/mcp", siwxVerify.payer);
+            if (siwxPaid) {
+              premiumPaid = true;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("SIWX_VERIFY_FAILED:", e && e.message ? e.message : String(e));
+      }
+    }
 
     if (url.pathname === "/premium/mcp") {
 
@@ -2229,6 +2295,16 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
 
 
       if (settleResult.success === true) {
+        try {
+          const siwxPayerAddr = decoded && decoded.payload && decoded.payload.authorization && decoded.payload.authorization.from;
+          if (siwxPayerAddr && env.PAYMENT_REPLAY) {
+            const siwxRecStore = new KVSIWxStorage(env.PAYMENT_REPLAY);
+            ctx.waitUntil(siwxRecStore.recordPayment("/premium/mcp", siwxPayerAddr));
+          }
+        } catch (e) {
+          console.error("SIWX_RECORD_FAILED:", e && e.message ? e.message : String(e));
+        }
+
           // Non-fatal: replay cache write failures must NOT block the premium response.
           try {
             if (env.PAYMENT_REPLAY && nonce) {
