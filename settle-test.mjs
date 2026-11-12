@@ -79,13 +79,22 @@ const payload = {
 };
 const xPayment = Buffer.from(JSON.stringify(payload)).toString("base64");
 console.log("XPAY=" + xPayment);
-console.log("XPAY=" + xPayment);
+
+
 
 console.log("Submitting payment to Worker...\n");
 const res = await fetch(ENDPOINT, {
   method: "POST",
   headers: { "Content-Type": "application/json", "X-PAYMENT": xPayment },
-  body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+  body: JSON.stringify({
+    jsonrpc: "2.0",
+    id: 1,
+    method: "tools/call",
+    params: {
+      name: "get_current_revision",
+      arguments: {}
+    }
+  }),
 });
 const resText = await res.text();
 console.log("HTTP " + res.status + "\n");
