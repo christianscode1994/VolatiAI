@@ -1418,7 +1418,7 @@ export default {
                 pricing: {
                   scheme: "exact",
                   network: "base",
-                  asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02953",
+                  asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
                   amount: "100000",
                   payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
                   maxTimeoutSeconds: 60,
