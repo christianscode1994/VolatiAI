@@ -1221,8 +1221,8 @@ export default {
         {
           scheme: "exact",
           network: "eip155:5042",
-          maxAmountRequired: "100000",
-          amount: "100000",
+          maxAmountRequired: "10000",
+          amount: "10000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
           description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
           mimeType: "application/json",
@@ -1235,8 +1235,8 @@ export default {
         {
           scheme: "exact",
           network: "base",
-          maxAmountRequired: "100000",
-          amount: "100000",
+          maxAmountRequired: "10000",
+          amount: "10000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
           description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
           mimeType: "application/json",
@@ -1288,8 +1288,8 @@ export default {
           {
             scheme: "exact",
             network: "base",
-            maxAmountRequired: "100000",
-            amount: "100000",
+            maxAmountRequired: "10000",
+            amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
             mimeType: "application/json",
@@ -1302,8 +1302,8 @@ export default {
         {
             scheme: "exact",
             network: "eip155:5042",
-            maxAmountRequired: "100000",
-            amount: "100000",
+            maxAmountRequired: "10000",
+            amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
             mimeType: "application/json",
@@ -1347,8 +1347,8 @@ export default {
           {
             scheme: "exact",
             network: "base",
-            maxAmountRequired: "100000",
-            amount: "100000",
+            maxAmountRequired: "10000",
+            amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
             mimeType: "application/json",
@@ -1361,8 +1361,8 @@ export default {
         {
             scheme: "exact",
             network: "eip155:5042",
-            maxAmountRequired: "100000",
-            amount: "100000",
+            maxAmountRequired: "10000",
+            amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
             mimeType: "application/json",
@@ -1419,7 +1419,7 @@ export default {
                   scheme: "exact",
                   network: "base",
                   asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-                  amount: "100000",
+                  amount: "10000",
                   payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
                   maxTimeoutSeconds: 60,
                 },
@@ -1447,9 +1447,9 @@ export default {
 
             network: "base",
 
-            maxAmountRequired: "100000",
+            maxAmountRequired: "10000",
 
-            amount: "100000",
+            amount: "10000",
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
@@ -1473,9 +1473,9 @@ export default {
 
             network: "eip155:5042",
 
-            maxAmountRequired: "100000",
+            maxAmountRequired: "10000",
 
-            amount: "100000",
+            amount: "10000",
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
@@ -1559,7 +1559,7 @@ export default {
 
           scheme: "exact", network: "eip155:5042",
 
-          maxAmountRequired: "100000", amount: "100000",
+          maxAmountRequired: "10000", amount: "10000",
 
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
@@ -1582,7 +1582,7 @@ export default {
 
           scheme: "exact", network: "base",
 
-          maxAmountRequired: "100000", amount: "100000",
+          maxAmountRequired: "10000", amount: "10000",
 
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
