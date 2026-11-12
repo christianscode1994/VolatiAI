@@ -1636,7 +1636,7 @@ export default {
           maxAmountRequired: "5000",
           amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-          description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+          description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Solana",
           mimeType: "application/json",
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
@@ -1649,7 +1649,7 @@ export default {
           maxAmountRequired: "5000",
           amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-          description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
+          description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Arc",
           mimeType: "application/json",
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
@@ -1670,7 +1670,7 @@ export default {
           maxAmountRequired: "5000",
           amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-          description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
+          description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Base",
           mimeType: "application/json",
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
@@ -1804,7 +1804,7 @@ export default {
 
 ## MCP Endpoint
 - Free tier: https://volatiai-mcp.fourieranalys.workers.dev/mcp
-- Paid tier: https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp (21 tools, $0.01 USDC per call)
+- Paid tier: https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp (21 tools, $0.005 USDC per call)
 
 ## Discovery
 - x402 manifest: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402
@@ -1868,7 +1868,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Base",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1889,7 +1889,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Solana",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1902,7 +1902,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Arc",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1923,7 +1923,7 @@ contact@fourieranalys.se
           error: "Payment required",
           resource: {
             url: RESOURCE_URL,
-            description: "VolatiAI premium signals — signed, verifiable, $0.01 per call",
+            description: "VolatiAI premium signals — signed, verifiable, $0.005 per call",
             mimeType: "application/json",
           },
           accepts,
@@ -1961,7 +1961,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Base",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1982,7 +1982,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Solana",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1995,7 +1995,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Arc",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -2016,7 +2016,7 @@ contact@fourieranalys.se
           error: "Payment required",
           resource: {
             url: RESOURCE_URL,
-            description: "VolatiAI premium signals — signed, verifiable, $0.01 per call",
+            description: "VolatiAI premium signals — signed, verifiable, $0.005 per call",
             mimeType: "application/json",
           },
           accepts,
@@ -2145,7 +2145,7 @@ contact@fourieranalys.se
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
-            description: "VolatiAI premium signals — $0.01 per request, USDC on Base",
+            description: "VolatiAI premium signals — $0.005 per request, USDC on Base",
 
             mimeType: "application/json",
 
@@ -2178,7 +2178,7 @@ contact@fourieranalys.se
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
-            description: "VolatiAI premium signals — $0.01 per request, USDC on Arc",
+            description: "VolatiAI premium signals — $0.005 per request, USDC on Arc",
 
             mimeType: "application/json",
 
@@ -2205,7 +2205,7 @@ contact@fourieranalys.se
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+            description: "VolatiAI premium signals \u2014 $0.005 per request, USDC on Solana",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -2220,7 +2220,7 @@ contact@fourieranalys.se
           error: "Payment required",
           resource: {
             url: RESOURCE_URL,
-            description: "VolatiAI premium signals — signed, verifiable, $0.01 per call",
+            description: "VolatiAI premium signals — signed, verifiable, $0.005 per call",
             mimeType: "application/json",
           },
           accepts,
