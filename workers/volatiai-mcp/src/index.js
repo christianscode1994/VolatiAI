@@ -19,6 +19,8 @@ const SECTOR_BASES = [
   "https://sector-slow.fourieranalys.workers.dev",];const SERVER_INFO = { name: "volatiai-mcp", version: "0.2.0" };
 const PROTOCOL_VERSION = "2025-06-18";
 
+const __rlCache = new Map();  // In-memory rate limit cache; resets on isolate restart
+
 const TOOLS = [
   {
     name: "list_active_signals",
@@ -2408,7 +2410,7 @@ contact@fourieranalys.se
         if (env.PAYMENT_REPLAY && payerAddr) {
           const minuteBucket = Math.floor(Date.now() / 60000);
           const rlKey = "rl:" + payerAddr.toLowerCase() + ":" + minuteBucket;
-          const currentCount = parseInt((await env.PAYMENT_REPLAY.get(rlKey)) || "0", 10);
+          const currentCount = __rlCache.get(rlKey) || 0;
           if (currentCount >= 20) {
             const secsLeft = 60 - Math.floor(Date.now() / 1000) % 60;
             return new Response(JSON.stringify({
@@ -2424,9 +2426,15 @@ contact@fourieranalys.se
               },
             });
           }
-          ctx.waitUntil(
-            env.PAYMENT_REPLAY.put(rlKey, String(currentCount + 1), { expirationTtl: 120 })
-          );
+          __rlCache.set(rlKey, currentCount + 1);
+          // Periodic cleanup: prune entries older than 5 minutes
+          if (__rlCache.size > 500) {
+            const cutoff = minuteBucket - 5;
+            for (const k of __rlCache.keys()) {
+              const parts = k.split(":");
+              if (parts.length >= 3 && parseInt(parts[2]) < cutoff) __rlCache.delete(k);
+            }
+          }
         }
 
 
