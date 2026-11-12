@@ -91,8 +91,8 @@ const res = await fetch(ENDPOINT, {
     id: 1,
     method: "tools/call",
     params: {
-      name: "get_block_number",
-      arguments: {}
+      name: "get_wallet_summary",
+      arguments: { address: "0x5060f8A0d4ebbe6c46011690e2d4761F35c75d48" }
     }
   }),
 });
@@ -119,6 +119,7 @@ if (!parsed.result) {
 }
 
 console.log("✅ Settlement succeeded:");
+  console.log("   Result:", JSON.stringify(parsed.result, null, 2));
 if (parsed && parsed.result && parsed.result.tools) {
   console.log("   " + parsed.result.tools.length + " tools returned");
 }

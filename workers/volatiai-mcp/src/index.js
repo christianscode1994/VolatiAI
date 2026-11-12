@@ -170,6 +170,29 @@ const TOOLS = [
       required: ["address"],
     },
   },
+  {
+    name: "get_wallet_summary",
+    description: "Composite read: returns ETH balance, USDC balance, nonce, latest block, and gas price for any wallet in ONE call (5 RPC reads executed in parallel). Replaces 5 separate tool calls — 5x faster, 5x cheaper than calling individual tools.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: { type: "string", description: "0x-prefixed 40-char hex wallet address" },
+      },
+      required: ["address"],
+    },
+  },
+  {
+    name: "page_to_markdown",
+    description: "Fetch any URL and return clean Markdown. Strips scripts, styles, and HTML tags; preserves headings, links, bold/italic, lists. Useful for reading docs, news, or competitor pages into an LLM context. Deterministic and stateless — no LLM, no API key. 15s timeout, 50KB default output cap.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "http:// or https:// URL to fetch" },
+        max_length: { type: "integer", minimum: 1000, maximum: 200000, default: 50000, description: "Max characters to return (content truncated beyond this)" },
+      },
+      required: ["url"],
+    },
+  },
 ];
 
 function categorize(sector) {
@@ -1246,6 +1269,80 @@ async function toolGetWalletNonce(args) {
   return { address, nonce: parseInt(hex, 16), hex };
 }
 
+async function toolGetWalletSummary(args) {
+  const { address } = args || {};
+  if (!isValidAddr(address)) throw new Error("Invalid address: expected 0x-prefixed 40-char hex");
+  const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+  const usdcData = "0x70a08231" + address.slice(2).padStart(64, "0");
+  const [ethHex, nonceHex, usdcHex, blockHex, gasHex] = await Promise.all([
+    baseRpcCall("eth_getBalance", [address, "latest"]),
+    baseRpcCall("eth_getTransactionCount", [address, "latest"]),
+    baseRpcCall("eth_call", [{ to: USDC_BASE, data: usdcData }, "latest"], 5000),
+    baseRpcCall("eth_blockNumber", [], 2000),
+    baseRpcCall("eth_gasPrice", [], 5000),
+  ]);
+  const ethWei = BigInt(ethHex);
+  const usdcRaw = BigInt(usdcHex);
+  const gasWei = BigInt(gasHex);
+  return {
+    address,
+    eth_balance_wei: ethWei.toString(),
+    eth_balance: (Number(ethWei) / 1e18).toFixed(18),
+    nonce: parseInt(nonceHex, 16),
+    usdc_balance_raw: usdcRaw.toString(),
+    usdc_balance: (Number(usdcRaw) / 1e6).toFixed(6),
+    latest_block: parseInt(blockHex, 16),
+    gas_price_wei: gasWei.toString(),
+    gas_price_gwei: (Number(gasWei) / 1e9).toFixed(4),
+    fetched_at: new Date().toISOString(),
+    note: "5 RPC reads executed in parallel — 1 round-trip latency instead of 5 sequential",
+  };
+}
+
+async function toolPageToMarkdown(args) {
+  const { url, max_length = 50000 } = args || {};
+  if (typeof url !== "string" || !/^https?:\/\//i.test(url)) {
+    throw new Error("Invalid URL: must start with http:// or https://");
+  }
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "VolatiAI-MCP/1.0 (+https://volatiai-mcp.fourieranalys.workers.dev)",
+      "Accept": "text/html,application/xhtml+xml,text/plain,*/*",
+    },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status + " from " + url);
+  const contentType = res.headers.get("content-type") || "";
+  const raw = await res.text();
+  if (!contentType.includes("html") && !contentType.includes("xml")) {
+    return { url, content_type: contentType, markdown: raw.slice(0, max_length), length: raw.length, truncated: raw.length > max_length, fetched_at: new Date().toISOString() };
+  }
+  let html = raw
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "");
+  html = html
+    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, "# $1\n\n")
+    .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, "## $1\n\n")
+    .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, "### $1\n\n")
+    .replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, "#### $1\n\n")
+    .replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, "**$1**")
+    .replace(/<b[^>]*>([\s\S]*?)<\/b>/gi, "**$1**")
+    .replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, "*$1*")
+    .replace(/<i[^>]*>([\s\S]*?)<\/i>/gi, "*$1*")
+    .replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, "`$1`")
+    .replace(/<a[^>]*href=["']([^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)")
+    .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, "- $1\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "");
+  html = html
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ");
+  html = html.replace(/\n{3,}/g, "\n\n").trim();
+  return { url, content_type: contentType, markdown: html.slice(0, max_length), length: html.length, truncated: html.length > max_length, fetched_at: new Date().toISOString() };
+}
+
 async function handleToolsCall(params = {}, env = {}) {
   const name = params.name;
   const args = params.arguments || {};
@@ -1267,6 +1364,8 @@ async function handleToolsCall(params = {}, env = {}) {
     case "get_block_number":     return await toolGetBlockNumber();
     case "get_gas_price":        return await toolGetGasPrice();
     case "get_wallet_nonce":     return await toolGetWalletNonce(args);
+    case "get_wallet_summary":     return await toolGetWalletSummary(args);
+    case "page_to_markdown":       return await toolPageToMarkdown(args);
 default: throw new Error(`Unknown tool: ${name}`);
   }
 }
