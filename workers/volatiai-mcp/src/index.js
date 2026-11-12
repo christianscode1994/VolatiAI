@@ -1109,16 +1109,60 @@ async function toolGetDiff(args = {}) {
 
 const BASE_RPC_URL = "https://mainnet.base.org";
 
-async function baseRpcCall(method, params) {
-  const res = await fetch(BASE_RPC_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-  });
-  if (!res.ok) throw new Error("Base RPC HTTP " + res.status);
-  const json = await res.json();
-  if (json.error) throw new Error("Base RPC: " + (json.error.message || "unknown"));
-  return json.result;
+const RPC_ENDPOINTS = [
+  "https://base-mainnet.public.blastapi.io",   // fastest, works from CF Workers
+  "https://1rpc.io/base",
+  "https://base.drpc.org",
+  "https://base.gateway.tenderly.co",
+  "https://mainnet.base.org",                   // rate-limited from CF IPs, last resort
+  "https://base.llamarpc.com",                  // returns HTML sometimes, last
+];
+
+// Per-isolate in-memory cache. Free, no KV writes. Resets on cold start.
+const __rpcCache = new Map();
+function rpcCacheKey(method, params) {
+  return method + ":" + JSON.stringify(params || []);
+}
+
+async function baseRpcCall(method, params, cacheMs = 0) {
+  const cacheKey = rpcCacheKey(method, params);
+  if (cacheMs > 0) {
+    const hit = __rpcCache.get(cacheKey);
+    if (hit && Date.now() - hit.ts < cacheMs) {
+      return hit.val;
+    }
+  }
+  let lastErr = null;
+  for (const url of RPC_ENDPOINTS) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+      });
+      if (res.status === 429) {
+        lastErr = new Error("RPC 429 at " + url);
+        continue;
+      }
+      if (!res.ok) {
+        lastErr = new Error("RPC HTTP " + res.status + " at " + url);
+        continue;
+      }
+      const json = await res.json();
+      if (json.error) {
+        lastErr = new Error("RPC " + (json.error.message || "error") + " at " + url);
+        continue;
+      }
+      if (cacheMs > 0) {
+        __rpcCache.set(cacheKey, { val: json.result, ts: Date.now() });
+      }
+      return json.result;
+    } catch (e) {
+      lastErr = new Error("RPC fetch failed at " + url + ": " + (e.message || e));
+      continue;
+    }
+  }
+  throw lastErr || new Error("All " + RPC_ENDPOINTS.length + " RPC endpoints failed");
 }
 
 function isValidAddr(a) {
@@ -1185,12 +1229,12 @@ async function toolGetTokenBalance(args) {
 }
 
 async function toolGetBlockNumber() {
-  const hex = await baseRpcCall("eth_blockNumber", []);
+  const hex = await baseRpcCall("eth_blockNumber", [], 2000);
   return { block_number: parseInt(hex, 16), hex };
 }
 
 async function toolGetGasPrice() {
-  const hex = await baseRpcCall("eth_gasPrice", []);
+  const hex = await baseRpcCall("eth_gasPrice", [], 5000);
   const wei = BigInt(hex);
   return { gas_price_wei: wei.toString(), gas_price_gwei: (Number(wei) / 1e9).toFixed(4) };
 }
@@ -1383,7 +1427,7 @@ export default {
           maxAmountRequired: "10000",
           amount: "10000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-          description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+          description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
           mimeType: "application/json",
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
@@ -1397,7 +1441,7 @@ export default {
           maxAmountRequired: "10000",
           amount: "10000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-          description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+          description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
           mimeType: "application/json",
           payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
           maxTimeoutSeconds: 60,
@@ -1450,7 +1494,7 @@ export default {
             maxAmountRequired: "10000",
             amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1464,7 +1508,7 @@ export default {
             maxAmountRequired: "10000",
             amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1478,7 +1522,7 @@ export default {
           error: "Payment required",
           resource: {
             url: RESOURCE_URL,
-            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            description: "VolatiAI premium signals — signed, verifiable, $0.01 per call",
             mimeType: "application/json",
           },
           accepts,
@@ -1509,7 +1553,7 @@ export default {
             maxAmountRequired: "10000",
             amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Base",
+            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1523,7 +1567,7 @@ export default {
             maxAmountRequired: "10000",
             amount: "10000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-            description: "VolatiAI premium signals \u2014 $0.10 per request, USDC on Arc",
+            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
             mimeType: "application/json",
             payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
             maxTimeoutSeconds: 60,
@@ -1537,7 +1581,7 @@ export default {
           error: "Payment required",
           resource: {
             url: RESOURCE_URL,
-            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            description: "VolatiAI premium signals — signed, verifiable, $0.01 per call",
             mimeType: "application/json",
           },
           accepts,
@@ -1620,7 +1664,7 @@ export default {
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
-            description: "VolatiAI premium signals — $0.10 per request, USDC on Base",
+            description: "VolatiAI premium signals — $0.01 per request, USDC on Base",
 
             mimeType: "application/json",
 
@@ -1646,7 +1690,7 @@ export default {
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
-            description: "VolatiAI premium signals — $0.10 per request, USDC on Arc",
+            description: "VolatiAI premium signals — $0.01 per request, USDC on Arc",
 
             mimeType: "application/json",
 
@@ -1668,7 +1712,7 @@ export default {
           error: "Payment required",
           resource: {
             url: RESOURCE_URL,
-            description: "VolatiAI premium signals — signed, verifiable, $0.10 per call",
+            description: "VolatiAI premium signals — signed, verifiable, $0.01 per call",
             mimeType: "application/json",
           },
           accepts,
@@ -1886,7 +1930,7 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
           transaction: settleResult.transaction || null,
           network: settleResult.network || null,
           errorReason: settleResult.errorReason || null,
-          tool: (rpc && rpc.params && rpc.params.name) || null,
+          tool: (typeof rpc !== "undefined" && rpc && rpc.params && rpc.params.name) || null,
           payer: (decoded && decoded.payload && decoded.payload.authorization && decoded.payload.authorization.from) || null,
           ts: new Date().toISOString(),
         }));
