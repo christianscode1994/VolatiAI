@@ -78,13 +78,13 @@
           "price": {
             "mode": "fixed",
             "currency": "USD",
-            "amount": "0.01"
+            "amount": "0.005"
           },
           "networks": [
             "eip155:5042",
             "eip155:8453"
           ],
-          "description": "$0.01 per request, settled in USDC on Arc or Base",
+          "description": "$0.005 per request, settled in USDC on Arc or Base",
           "protocols": [
             {
               "x402": {}
@@ -94,10 +94,10 @@
             {
               "scheme": "exact",
               "network": "eip155:5042",
-              "maxAmountRequired": "10000",
-              "amount": "10000",
+              "maxAmountRequired": "5000",
+              "amount": "5000",
               "resource": "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-              "description": "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
+              "description": "VolatiAI premium signals \u2014 $0.005 per request, USDC on Arc",
               "mimeType": "application/json",
               "payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47",
               "maxTimeoutSeconds": 60,
@@ -110,10 +110,10 @@
             {
               "scheme": "exact",
               "network": "eip155:8453",
-              "maxAmountRequired": "10000",
-              "amount": "10000",
+              "maxAmountRequired": "5000",
+              "amount": "5000",
               "resource": "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
-              "description": "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
+              "description": "VolatiAI premium signals \u2014 $0.005 per request, USDC on Base",
               "mimeType": "application/json",
               "payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47",
               "maxTimeoutSeconds": 60,
