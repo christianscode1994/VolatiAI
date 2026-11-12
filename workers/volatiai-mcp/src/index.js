@@ -1401,6 +1401,37 @@ export default {
 
     if (url.pathname === "/premium/mcp") {
 
+    // ─── FREE PREVIEW: tools/list without payment ────────────────────────
+    // Agents must see what they're buying before they pay.
+    if (url.pathname === "/premium/mcp" && req.method === "POST") {
+      const previewBody = await req.clone().text();
+      try {
+        const rpc = JSON.parse(previewBody);
+        if (rpc.method === "tools/list") {
+          return new Response(JSON.stringify({
+            jsonrpc: "2.0",
+            id: rpc.id ?? null,
+            result: {
+              tools: TOOLS,
+              _preview: {
+                note: "Free catalog preview. Calling any tool costs 0.10 USDC on Base.",
+                pricing: {
+                  scheme: "exact",
+                  network: "base",
+                  asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02953",
+                  amount: "100000",
+                  payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+                  maxTimeoutSeconds: 60,
+                },
+                how_to_pay: "POST /premium/mcp with X-PAYMENT header (EIP-712 TransferWithAuthorization)",
+              },
+            },
+          }, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+        }
+      } catch {}
+    }
+
+
       const payment = req.headers.get("X-PAYMENT");
 
 
