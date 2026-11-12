@@ -1630,6 +1630,19 @@ export default {
       const discoveryAccepts = [
         {
           scheme: "exact",
+          network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          maxAmountRequired: "10000",
+          amount: "10000",
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+          mimeType: "application/json",
+          payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+          maxTimeoutSeconds: 60,
+          asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          extra: { name: "USDC", version: "2" },
+        },
+        {
+          scheme: "exact",
           network: "eip155:5042",
           maxAmountRequired: "10000",
           amount: "10000",
@@ -1644,7 +1657,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -1665,7 +1678,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -1768,7 +1781,7 @@ export default {
       try {
         const siwxExt = declareSIWxExtension({
           statement: "Sign in with your wallet to access previously purchased content",
-          network: ["eip155:8453", "eip155:5042"],
+          network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
           expirationSeconds: 3600,
         });
         return new Response(JSON.stringify(siwxExt), {
@@ -1823,11 +1836,24 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
           },
+        {
+            scheme: "exact",
+            network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            maxAmountRequired: "10000",
+            amount: "10000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            extra: { name: "USDC", version: "2" },
+        },
         {
             scheme: "exact",
             network: "eip155:5042",
@@ -1844,7 +1870,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -1863,7 +1889,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         },
@@ -1903,11 +1929,24 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
           },
+        {
+            scheme: "exact",
+            network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+            maxAmountRequired: "10000",
+            amount: "10000",
+            resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
+            mimeType: "application/json",
+            payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            maxTimeoutSeconds: 60,
+            asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            extra: { name: "USDC", version: "2" },
+        },
         {
             scheme: "exact",
             network: "eip155:5042",
@@ -1924,7 +1963,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -1943,7 +1982,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         },
@@ -2079,7 +2118,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -2112,7 +2151,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -2134,7 +2173,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         },
@@ -2210,7 +2249,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
@@ -2240,7 +2279,7 @@ export default {
           bazaar: BAZAAR_EXT,
           ...declareSIWxExtension({
             statement: "Sign in with your wallet to access previously purchased content",
-            network: ["eip155:8453", "eip155:5042"],
+            network: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
             expirationSeconds: 3600,
           })
         }
