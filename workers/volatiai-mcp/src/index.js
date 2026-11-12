@@ -2121,6 +2121,33 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
 
 
     if (url.pathname === "/mcp" || premiumPaid) {
+    // ─── PAYMENT GATE for /mcp ─────────────────────────────────────────
+    // tools/list, initialize, notifications/*, and explain_pricing are free.
+    // Everything else (tools/call with a real tool) requires X-PAYMENT via /premium/mcp.
+    if (url.pathname === "/mcp" && req.method === "POST") {
+      const gateBody = await req.clone().text();
+      try {
+        const gateRpc = JSON.parse(gateBody);
+        const freeMethods = ["initialize", "notifications/initialized", "notifications/cancelled", "ping", "tools/list"];
+        const isFreeMethod = freeMethods.includes(gateRpc.method);
+        const isFreeTool = gateRpc.method === "tools/call"
+          && gateRpc.params
+          && gateRpc.params.name === "explain_pricing";
+        if (!isFreeMethod && !isFreeTool) {
+          return new Response(JSON.stringify({
+            x402Version: 1,
+            error: "Payment required",
+            detail: "Free tier: initialize, notifications/*, tools/list, explain_pricing. Paid tier: all tools/call. Use POST /premium/mcp with X-PAYMENT header for paid tools.",
+            payment_endpoint: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+            discovery: "https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402",
+          }, null, 2), {
+            status: 402,
+            headers: { "Content-Type": "application/json", ...cors },
+          });
+        }
+      } catch {}
+    }
+
       if (req.method !== "POST") return new Response("MCP expects POST", { status: 405, headers: cors });
       let body;
       try { body = await req.json(); }
