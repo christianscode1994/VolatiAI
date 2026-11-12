@@ -1600,6 +1600,22 @@ export default {
       })();
     }
 
+    // Glama connector claim — serves exact JSON at /.well-known/glama.json
+    if (url.pathname === "/.well-known/glama.json") {
+      if (!env.GLAMA_CLAIM) {
+        return new Response(JSON.stringify({ error: "glama_claim_not_configured" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...cors },
+        });
+      }
+      return new Response(JSON.stringify({
+        "$schema": "https://glama.ai/mcp/schemas/connector.json",
+        "claim": env.GLAMA_CLAIM,
+      }, null, 2), {
+        headers: { "Content-Type": "application/json", ...cors },
+      });
+    }
+
     let premiumPaid = false;
 
     if (url.pathname === "/premium/mcp") {
