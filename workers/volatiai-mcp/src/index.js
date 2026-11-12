@@ -289,11 +289,11 @@ class KVSIWxStorage {
   }
   async recordPayment(resource, address) {
     if (!this.kv) return;
-    await this.kv.put(
-      `siwx:${resource}:${String(address).toLowerCase()}`,
-      "1",
-      { expirationTtl: 60 * 60 * 24 * 30 }
-    );
+    const key = `siwx:${resource}:${String(address).toLowerCase()}`;
+    // Skip write if record already exists — reads are free, writes count toward quota
+    const existing = await this.kv.get(key);
+    if (existing) return;
+    await this.kv.put(key, "1", { expirationTtl: 60 * 60 * 24 * 30 });
   }
 }
 
