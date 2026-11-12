@@ -1605,6 +1605,11 @@ async function fetchWithRetry(url, opts, maxAttempts = 2) {
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
+    // Normalize trailing slash — probes from PayAPI, x402scan, and others
+    // hit `/premium/mcp/` (with slash) which must return 402, not 404.
+    if (url.pathname.length > 1 && url.pathname.endsWith("/")) {
+      url.pathname = url.pathname.slice(0, -1);
+    }
     const cors = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
