@@ -382,7 +382,7 @@ async function toolPurchase(args, env) {
       x402Version: 1,
       paymentPayload: { x402Version: 1, scheme: "exact", network: "base", payload: decoded.payload },
       paymentRequirements: {
-        scheme: "exact", network: "base", maxAmountRequired: "10000",
+        scheme: "exact", network: "base", maxAmountRequired: "5000",
         resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
         description: "VolatiAI premium tool", mimeType: "application/json",
         payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
@@ -1633,8 +1633,8 @@ export default {
         {
           scheme: "exact",
           network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-          maxAmountRequired: "10000",
-          amount: "10000",
+          maxAmountRequired: "5000",
+          amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
           description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
           mimeType: "application/json",
@@ -1646,8 +1646,8 @@ export default {
         {
           scheme: "exact",
           network: "eip155:5042",
-          maxAmountRequired: "10000",
-          amount: "10000",
+          maxAmountRequired: "5000",
+          amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
           description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
           mimeType: "application/json",
@@ -1667,8 +1667,8 @@ export default {
         {
           scheme: "exact",
           network: "base",
-          maxAmountRequired: "10000",
-          amount: "10000",
+          maxAmountRequired: "5000",
+          amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
           description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
           mimeType: "application/json",
@@ -1865,8 +1865,8 @@ contact@fourieranalys.se
           {
             scheme: "exact",
             network: "base",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
             mimeType: "application/json",
@@ -1886,8 +1886,8 @@ contact@fourieranalys.se
         {
             scheme: "exact",
             network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
             mimeType: "application/json",
@@ -1899,8 +1899,8 @@ contact@fourieranalys.se
         {
             scheme: "exact",
             network: "eip155:5042",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
             mimeType: "application/json",
@@ -1958,8 +1958,8 @@ contact@fourieranalys.se
           {
             scheme: "exact",
             network: "base",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Base",
             mimeType: "application/json",
@@ -1979,8 +1979,8 @@ contact@fourieranalys.se
         {
             scheme: "exact",
             network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
             mimeType: "application/json",
@@ -1992,8 +1992,8 @@ contact@fourieranalys.se
         {
             scheme: "exact",
             network: "eip155:5042",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Arc",
             mimeType: "application/json",
@@ -2111,7 +2111,7 @@ contact@fourieranalys.se
                   scheme: "exact",
                   network: "base",
                   asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-                  amount: "10000",
+                  amount: "5000",
                   payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
                   maxTimeoutSeconds: 60,
                 },
@@ -2139,9 +2139,9 @@ contact@fourieranalys.se
 
             network: "base",
 
-            maxAmountRequired: "10000",
+            maxAmountRequired: "5000",
 
-            amount: "10000",
+            amount: "5000",
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
@@ -2172,9 +2172,9 @@ contact@fourieranalys.se
 
             network: "eip155:5042",
 
-            maxAmountRequired: "10000",
+            maxAmountRequired: "5000",
 
-            amount: "10000",
+            amount: "5000",
 
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
@@ -2202,8 +2202,8 @@ contact@fourieranalys.se
           {
             scheme: "exact",
             network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-            maxAmountRequired: "10000",
-            amount: "10000",
+            maxAmountRequired: "5000",
+            amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
             description: "VolatiAI premium signals \u2014 $0.01 per request, USDC on Solana",
             mimeType: "application/json",
@@ -2283,7 +2283,7 @@ contact@fourieranalys.se
 
         "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": {
           scheme: "exact", network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-          maxAmountRequired: "10000", amount: "10000",
+          maxAmountRequired: "5000", amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
           description: "VolatiAI premium signals — USDC on Solana",
           mimeType: "application/json",
@@ -2296,7 +2296,7 @@ contact@fourieranalys.se
 
           scheme: "exact", network: "eip155:5042",
 
-          maxAmountRequired: "10000", amount: "10000",
+          maxAmountRequired: "5000", amount: "5000",
 
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
@@ -2326,7 +2326,7 @@ contact@fourieranalys.se
 
           scheme: "exact", network: "base",
 
-          maxAmountRequired: "10000", amount: "10000",
+          maxAmountRequired: "5000", amount: "5000",
 
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
 
