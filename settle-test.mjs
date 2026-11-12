@@ -91,7 +91,7 @@ const res = await fetch(ENDPOINT, {
     id: 1,
     method: "tools/call",
     params: {
-      name: "get_current_revision",
+      name: "get_block_number",
       arguments: {}
     }
   }),

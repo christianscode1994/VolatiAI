@@ -112,6 +112,64 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: "explain_pricing",
+    description: "Free. Returns full tool catalog with prices, network details (asset, payTo), and how to pay. Use before making any payment.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "get_eth_balance",
+    description: "Get ETH balance for a Base mainnet address. Returns balance_wei (string) and balance_eth (formatted).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: { type: "string", description: "0x-prefixed 40-char hex address" },
+      },
+      required: ["address"],
+    },
+  },
+  {
+    name: "get_token_balance",
+    description: "Get ERC-20 token balance on Base. decimals_assumed=6 (USDC-style). Use balance_raw for exact integer.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: { type: "string", description: "Wallet address" },
+        token: { type: "string", description: "Token contract (USDC: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)" },
+      },
+      required: ["address", "token"],
+    },
+  },
+  {
+    name: "get_block_number",
+    description: "Latest Base mainnet block number.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "get_gas_price",
+    description: "Current Base mainnet gas price in Gwei.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
+    name: "get_wallet_nonce",
+    description: "Transaction count (nonce) for a wallet address on Base mainnet.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        address: { type: "string", description: "0x-prefixed 40-char hex address" },
+      },
+      required: ["address"],
+    },
+  },
 ];
 
 function categorize(sector) {
@@ -1049,6 +1107,101 @@ async function toolGetDiff(args = {}) {
   });
 }
 
+const BASE_RPC_URL = "https://mainnet.base.org";
+
+async function baseRpcCall(method, params) {
+  const res = await fetch(BASE_RPC_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+  if (!res.ok) throw new Error("Base RPC HTTP " + res.status);
+  const json = await res.json();
+  if (json.error) throw new Error("Base RPC: " + (json.error.message || "unknown"));
+  return json.result;
+}
+
+function isValidAddr(a) {
+  return typeof a === "string" && /^0x[0-9a-fA-F]{40}$/.test(a);
+}
+
+async function toolExplainPricing(env = {}) {
+  return {
+    network: "base",
+    asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+    scheme: "exact",
+    price_usdc_flat: 0.01,
+    maxTimeoutSeconds: 60,
+    how_to_pay: "Sign EIP-712 TransferWithAuthorization; send base64 JSON as X-PAYMENT header",
+    free_tools: ["explain_pricing", "tools/list"],
+    paid_tools: [
+      { name: "get_eth_balance",     args: ["address"],               what: "ETH balance on Base" },
+      { name: "get_token_balance",   args: ["address", "token"],      what: "ERC-20 balance (decimals 6)" },
+      { name: "get_block_number",    args: [],                        what: "Latest Base block" },
+      { name: "get_gas_price",       args: [],                        what: "Current Base gas in Gwei" },
+      { name: "get_wallet_nonce",    args: ["address"],               what: "Transaction count for wallet" },
+      { name: "list_active_signals", args: ["limit?", "severity?", "category?"], what: "Ranked signals" },
+      { name: "get_sector",          args: ["sector"],                what: "Sector data" },
+      { name: "list_categories",     args: [],                        what: "Signal categories" },
+      { name: "verify_snapshot",     args: ["date"],                  what: "Snapshot integrity" },
+      { name: "find_corroborations", args: [],                        what: "Cross-source corroboration" },
+      { name: "get_diff",            args: ["from_date?", "to_date?"], what: "Snapshot diff" },
+      { name: "get_current_revision",args: [],                        what: "Current revision pointer" },
+      { name: "get_anchor",          args: ["date"],                  what: "Anchor log status" },
+      { name: "get_trust_manifest",  args: [],                        what: "Verification chain" },
+      { name: "resolve_entity",      args: ["query"],                 what: "Entity lookup" },
+      { name: "list_entities",       args: ["type?"],                 what: "Entity registry" },
+    ],
+    note: "All paid tools are 0.01 USDC flat. Chain reads will be repriced to 0.001 in a future release.",
+  };
+}
+
+async function toolGetEthBalance(args) {
+  const { address } = args || {};
+  if (!isValidAddr(address)) throw new Error("Invalid address: expected 0x-prefixed 40-char hex");
+  const weiHex = await baseRpcCall("eth_getBalance", [address, "latest"]);
+  const wei = BigInt(weiHex);
+  const eth = Number(wei) / 1e18;
+  return { address, balance_wei: wei.toString(), balance_eth: eth.toFixed(18) };
+}
+
+async function toolGetTokenBalance(args) {
+  const { address, token } = args || {};
+  if (!isValidAddr(address)) throw new Error("Invalid address");
+  if (!isValidAddr(token)) throw new Error("Invalid token address");
+  const data = "0x70a08231" + address.slice(2).padStart(64, "0");
+  const rawHex = await baseRpcCall("eth_call", [{ to: token, data }, "latest"]);
+  const raw = BigInt(rawHex);
+  const decimals = 6;
+  const amount = Number(raw) / Math.pow(10, decimals);
+  return {
+    address, token,
+    balance_raw: raw.toString(),
+    balance: amount.toFixed(decimals),
+    decimals_assumed: decimals,
+    hint: "For non-USDC tokens, divide balance_raw by 10^actual_decimals",
+  };
+}
+
+async function toolGetBlockNumber() {
+  const hex = await baseRpcCall("eth_blockNumber", []);
+  return { block_number: parseInt(hex, 16), hex };
+}
+
+async function toolGetGasPrice() {
+  const hex = await baseRpcCall("eth_gasPrice", []);
+  const wei = BigInt(hex);
+  return { gas_price_wei: wei.toString(), gas_price_gwei: (Number(wei) / 1e9).toFixed(4) };
+}
+
+async function toolGetWalletNonce(args) {
+  const { address } = args || {};
+  if (!isValidAddr(address)) throw new Error("Invalid address: expected 0x-prefixed 40-char hex");
+  const hex = await baseRpcCall("eth_getTransactionCount", [address, "latest"]);
+  return { address, nonce: parseInt(hex, 16), hex };
+}
+
 async function handleToolsCall(params = {}, env = {}) {
   const name = params.name;
   const args = params.arguments || {};
@@ -1064,7 +1217,13 @@ async function handleToolsCall(params = {}, env = {}) {
     case "find_corroborations":   return await toolFindCorroborations();
     case "get_current_revision": return await toolGetCurrentRevision(env, args);
     case "get_diff":             return await toolGetDiff(args);
-    default: throw new Error(`Unknown tool: ${name}`);
+        case "explain_pricing":      return await toolExplainPricing(env);
+    case "get_eth_balance":      return await toolGetEthBalance(args);
+    case "get_token_balance":    return await toolGetTokenBalance(args);
+    case "get_block_number":     return await toolGetBlockNumber();
+    case "get_gas_price":        return await toolGetGasPrice();
+    case "get_wallet_nonce":     return await toolGetWalletNonce(args);
+default: throw new Error(`Unknown tool: ${name}`);
   }
 }
 
@@ -1407,6 +1566,14 @@ export default {
       const previewBody = await req.clone().text();
       try {
         const rpc = JSON.parse(previewBody);
+        // Free: explain_pricing is always free
+        if (rpc.method === "tools/call" && rpc.params && rpc.params.name === "explain_pricing") {
+          return new Response(JSON.stringify({
+            jsonrpc: "2.0",
+            id: rpc.id ?? null,
+            result: await toolExplainPricing(env),
+          }), { headers: { "Content-Type": "application/json", ...cors } });
+        }
         if (rpc.method === "tools/list") {
           return new Response(JSON.stringify({
             jsonrpc: "2.0",
@@ -1414,7 +1581,7 @@ export default {
             result: {
               tools: TOOLS,
               _preview: {
-                note: "Free catalog preview. Calling any tool costs 0.10 USDC on Base.",
+                note: "Free catalog preview. Calling any tool costs 0.01 USDC on Base.",
                 pricing: {
                   scheme: "exact",
                   network: "base",
