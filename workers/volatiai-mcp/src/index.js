@@ -1640,7 +1640,7 @@ export default {
                 // Network pinning: reject buyers who claim a network we don't serve.
         // The buyer's EIP-712 signature is bound to a specific chainId, so
         // coercing the network here would silently break settlement.
-        const SUPPORTED_NETWORKS = new Set(["base"]);  // add "base-sepolia" to test on testnet
+        const SUPPORTED_NETWORKS = new Set(["base", "base-sepolia"]);  // add "base-sepolia" to test on testnet
         const claimedNetwork = decoded.network || "base";
         if (!SUPPORTED_NETWORKS.has(claimedNetwork)) {
           return new Response(JSON.stringify({
