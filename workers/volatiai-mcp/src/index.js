@@ -1505,6 +1505,99 @@ async function fetchWithRetry(url, opts, maxAttempts = 2) {
   return lastRes;
 }
 
+// ─── x402 endpoint diagnostic ──────────────────────────────────────
+async function diagnoseEndpoint(endpoint) {
+  const out = { endpoint, checked_at: new Date().toISOString(), checks: {}, likely_blocker: null, recommended_action: null };
+
+  let probe;
+  try {
+    probe = await fetch(endpoint, { method: "GET", signal: AbortSignal.timeout(10000) });
+  } catch (e) {
+    out.likely_blocker = "endpoint_unreachable";
+    out.checks.error = e.message;
+    return out;
+  }
+
+  out.checks.status_code = probe.status;
+  out.checks.returns_402 = probe.status === 402;
+  if (!out.checks.returns_402) {
+    out.likely_blocker = "not_x402";
+    out.recommended_action = "Endpoint must return HTTP 402 for unpaid requests";
+    return out;
+  }
+
+  let challenge;
+  try { challenge = await probe.json(); }
+  catch {
+    out.likely_blocker = "invalid_json_challenge";
+    out.recommended_action = "402 body must be valid JSON";
+    return out;
+  }
+
+  const accepts = challenge.accepts || [];
+  out.checks.x402_version = challenge.x402Version ?? null;
+  out.checks.accepts_count = accepts.length;
+  out.checks.networks = accepts.map(a => a.network);
+  out.checks.pay_to = accepts[0]?.payTo ?? null;
+  out.checks.amount = accepts[0]?.amount ?? null;
+  out.checks.asset = accepts[0]?.asset ?? null;
+  out.checks.payment_required_header = probe.headers.get("PAYMENT-REQUIRED") ? "present" : "absent";
+
+  const legacyNetworks = accepts.map(a => a.network).filter(n => n === "base" || n === "polygon" || n === "solana");
+  if (legacyNetworks.length) {
+    out.checks.network_format_warning = "Networks [" + legacyNetworks.join(", ") + "] use legacy names. x402 v2 requires CAIP-2 (e.g. eip155:8453).";
+  }
+
+  try {
+    const v = await fetch("https://api.cdp.coinbase.com/platform/v2/x402/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resource: endpoint, method: "POST" }),
+      signal: AbortSignal.timeout(15000),
+    });
+    const validate = await v.json();
+    out.checks.validates_via_cdp = validate.valid === true;
+    out.checks.validation_outcome = validate.simulation?.outcome ?? null;
+    out.checks.validation_reason = validate.simulation?.rejectionReason ?? null;
+    out.checks.failed_preflight = (validate.preflight || []).filter(p => !p.passed).map(p => ({ check: p.check, detail: p.detail, severity: p.severity }));
+  } catch (e) {
+    out.checks.validates_via_cdp = false;
+    out.checks.validation_error = e.message;
+  }
+
+  if (out.checks.pay_to) {
+    try {
+      const b = await fetch("https://api.cdp.coinbase.com/platform/v2/x402/discovery/merchant?payTo=" + out.checks.pay_to, { signal: AbortSignal.timeout(10000) });
+      const bazaar = await b.json();
+      out.checks.indexed_in_bazaar = (bazaar.pagination?.total || 0) > 0;
+      out.checks.bazaar_listing_count = bazaar.pagination?.total || 0;
+    } catch (e) {
+      out.checks.indexed_in_bazaar = null;
+      out.checks.bazaar_error = e.message;
+    }
+  }
+
+  if (legacyNetworks.length) {
+    out.likely_blocker = "legacy_network_names";
+    out.recommended_action = "Change accepts[].network to CAIP-2 format. 'base' -> 'eip155:8453'. See x402-foundation/x402#4251.";
+  } else if (out.checks.validates_via_cdp === false) {
+    out.likely_blocker = "invalid_402_challenge";
+    const failed = (out.checks.failed_preflight || []).map(f => f.check).join(", ");
+    out.recommended_action = "Fix failed preflight checks: " + (failed || "see failed_preflight array");
+  } else if (out.checks.indexed_in_bazaar === false) {
+    out.likely_blocker = "not_indexed_in_bazaar";
+    out.recommended_action = "402 challenge is valid, but payTo isn't indexed. Bazaar indexes on settled payment. If you've settled and still see 0, the v2 settle envelope is undocumented. See x402-foundation/x402#4251.";
+  } else if (out.checks.indexed_in_bazaar === true) {
+    out.likely_blocker = null;
+    out.recommended_action = "Endpoint is valid and indexed. Ready for buyers.";
+  } else {
+    out.likely_blocker = "bazaar_check_failed";
+    out.recommended_action = "Bazaar API unreachable — retry in a few minutes.";
+  }
+
+  return out;
+}
+
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -1523,6 +1616,45 @@ export default {
       "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Accept",
     };
+
+    // ─── /premium/diagnose — free x402 endpoint health check ────────
+    if (url.pathname === "/premium/diagnose" && req.method === "GET") {
+      return new Response(JSON.stringify({
+        description: "x402 endpoint diagnostic — POST {endpoint: 'https://...'} to analyze any x402 endpoint",
+        method: "POST",
+        body_example: { endpoint: "https://example.com/premium" },
+        returns: "structured JSON with checks, likely_blocker, recommended_action",
+        free: true,
+        based_on: "x402-foundation/x402#4251"
+      }, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+    }
+
+    if (url.pathname === "/premium/diagnose" && req.method === "POST") {
+      const body = await req.json().catch(() => ({}));
+      if (!body.endpoint || typeof body.endpoint !== "string") {
+        return new Response(JSON.stringify({ error: "missing 'endpoint' field in JSON body" }), {
+          status: 400, headers: { "Content-Type": "application/json", ...cors },
+        });
+      }
+      let target;
+      try {
+        target = new URL(body.endpoint);
+        if (!["http:", "https:"].includes(target.protocol)) throw new Error("protocol must be http or https");
+        const h = target.hostname;
+        if (h === "localhost" || h.startsWith("127.") || h.startsWith("10.") || h.startsWith("192.168.") || h === "0.0.0.0" || h.endsWith(".local")) {
+          throw new Error("private or local hosts not allowed");
+        }
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "invalid endpoint: " + e.message }), {
+          status: 400, headers: { "Content-Type": "application/json", ...cors },
+        });
+      }
+      const result = await diagnoseEndpoint(body.endpoint);
+      return new Response(JSON.stringify(result, null, 2), {
+        headers: { "Content-Type": "application/json", ...cors },
+      });
+    }
+
 
     // OPTIONS on /premium/mcp must reach the 402 probe below (x402scan probes it).
     // All other OPTIONS get the fast CORS preflight 204.
