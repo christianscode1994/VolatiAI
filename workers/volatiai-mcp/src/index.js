@@ -1644,6 +1644,16 @@ export default {
         if (h === "localhost" || h.startsWith("127.") || h.startsWith("10.") || h.startsWith("192.168.") || h === "0.0.0.0" || h.endsWith(".local")) {
           throw new Error("private or local hosts not allowed");
         }
+        // Cloudflare Workers can't reliably self-fetch their own hostname.
+        const selfHost = url.hostname;
+        if (h === selfHost) {
+          return new Response(JSON.stringify({
+            endpoint: body.endpoint,
+            error: "self_host_not_diagnosable",
+            reason: "Cloudflare Workers cannot fetch their own hostname — /premium/diagnose on " + selfHost + " cannot test " + selfHost + " paths. Run this tool against OTHER endpoints to see the real behavior.",
+            workaround: "curl " + body.endpoint + " from your terminal, or use a different deployment of this tool."
+          }, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+        }
       } catch (e) {
         return new Response(JSON.stringify({ error: "invalid endpoint: " + e.message }), {
           status: 400, headers: { "Content-Type": "application/json", ...cors },
