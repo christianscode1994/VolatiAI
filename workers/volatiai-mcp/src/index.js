@@ -24,7 +24,7 @@ const __rlCache = new Map();  // In-memory rate limit cache; resets on isolate r
 const TOOLS = [
   {
     name: "list_active_signals",
-    description: "List ranked active signals from VolatiAI (severity x confidence x magnitude x novelty). Filter by severity or category.",
+    description: "Top-volatility crypto assets ranked by 1h/24h/7d change. Returns up to 10 assets.",
     inputSchema: {
       type: "object",
       properties: {
@@ -32,93 +32,6 @@ const TOOLS = [
         severity: { type: "string", enum: ["info", "notice", "warning", "alert", "critical"] },
         category: { type: "string", description: "Security, Crypto, Environment, Tech, Markets, Health, Governance, or Other" },
       },
-    },
-  },
-  {
-    name: "get_sector",
-    description: "Get current data for one sector. Sector slugs from list_active_signals output.",
-    inputSchema: {
-      type: "object",
-      properties: { sector: { type: "string", description: "e.g. nvd-new-cves-count, kraken-btc-usd" } },
-      required: ["sector"],
-    },
-  },
-  {
-    name: "list_categories",
-    description: "List signal categories with counts.",
-    inputSchema: { type: "object", properties: {
-        envelope: {
-          type: "object",
-          description: "Optional inline envelope JSON. If provided, verified against the baked-in pubkey with zero network fetch. Response gains _verification.source = \"inline-baked\".",
-        },
-      } },
-  },
-  {
-    name: "verify_snapshot",
-    description: "Verify a VolatiAI snapshot's chain integrity and return its signature fields for independent verification. Use this to prove the data hasn't been tampered with.",
-    inputSchema: {
-      type: "object",
-      properties: { date: { type: "string", description: "YYYY-MM-DD snapshot date" } },
-      required: ["date"],
-    },
-  },
-  {
-    name: "find_corroborations",
-    description: "Find groups of active signals measuring the same metric (e.g. BTC price from multiple exchanges). High disagreement_pct (>1%) suggests arbitrage or a data-source discrepancy.",
-    inputSchema: { type: "object", properties: {} },
-  },
-  {
-    name: "get_diff",
-    description: "Compare two snapshots. Returns regressions (worked yesterday, broken today), recoveries (broken yesterday, working today), new sectors, and disappeared sectors. Default: compares current day to previous day.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        from_date: { type: "string", description: "YYYY-MM-DD (default: yesterday)" },
-        to_date: { type: "string", description: "YYYY-MM-DD (default: today)" },
-      },
-    },
-  },
-  {
-    name: "get_current_revision",
-    description: "Return the single canonical 'what is current' pointer: snapshot date, hash, signed_at, pubkey_id, and previous revision. Use this before querying a specific snapshot date to know what's freshest.",
-    inputSchema: { type: "object", properties: {} },
-  },
-  {
-    name: "get_anchor",
-    description: "Return anchor-log status for a snapshot date: was an anchor entry recorded, what was the file SHA-256 at anchor time vs now, is a FreeTSA .tsr present. Detects post-hoc rewrites that signature verification alone cannot.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Snapshot date YYYY-MM-DD." },
-      },
-      required: ["date"],
-    },
-  },
-  {
-    name: "get_trust_manifest",
-    description: "One-call discovery: returns all URLs, algorithms, tools, and the 4-step verification chain a consumer needs to independently verify VolatiAI data. No snapshot fetch. Use first to learn where everything lives.",
-    inputSchema: { type: "object", properties: {} },
-  },
-  {
-    name: "resolve_entity",
-    description: "Resolve a slug, alias, or entity ID to a canonical VolatiAI entity. Returns the entity metadata, all sectors it appears in, external ID mappings (CoinGecko, Wikidata), and evidence links from the entity registry. Warnings flag metric incomparability (e.g. btc-exchange-spread and eth-exchange-spread share metric \"spread_pct\" but measure different assets — do NOT compare their values).",
-    inputSchema: {
-      type: "object",
-      properties: {
-        query: { type: "string", description: "Entity ID (e.g. \"bitcoin\"), alias (e.g. \"BTC\"), or sector slug (e.g. \"btc-exchange-spread\")" },
-      },
-      required: ["query"],
-    },
-  },
-  {
-    name: "get_snapshot",
-    description: "Fetch a historical snapshot by date (YYYY-MM-DD). Returns signed snapshot, hash, and publication metadata. Use verify_snapshot to cryptographically verify integrity.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Snapshot date (YYYY-MM-DD)" },
-      },
-      required: ["date"],
     },
   },
   {
@@ -132,16 +45,6 @@ const TOOLS = [
         x_payment: { type: "string", description: "Base64-encoded x402 payment header (X-PAYMENT)" },
       },
       required: ["tool_name", "arguments", "x_payment"],
-    },
-  },
-  {
-    name: "list_entities",
-    description: "List all canonical entities in the VolatiAI entity registry. Use to discover what entities are known and which sectors map to them. Optional type filter (e.g. \"asset\", \"organization\", \"product\", \"game\").",
-    inputSchema: {
-      type: "object",
-      properties: {
-        type: { type: "string", description: "Optional filter: asset, organization, product, game, etc." },
-      },
     },
   },
   {
@@ -224,7 +127,7 @@ const TOOLS = [
       },
       required: ["url"],
     },
-  },
+  }
 ];
 
 function categorize(sector) {
@@ -380,9 +283,9 @@ async function toolPurchase(args, env) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       x402Version: 1,
-      paymentPayload: { x402Version: 1, scheme: "exact", network: "base", payload: decoded.payload },
+      paymentPayload: { x402Version: 1, scheme: "exact", network: "eip155:8453", payload: decoded.payload },
       paymentRequirements: {
-        scheme: "exact", network: "base", maxAmountRequired: "5000",
+        scheme: "exact", network: "eip155:8453", maxAmountRequired: "5000",
         resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
         description: "VolatiAI premium tool", mimeType: "application/json",
         payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
@@ -1283,7 +1186,7 @@ function isValidAddr(a) {
 
 async function toolExplainPricing(env = {}) {
   return {
-    network: "base",
+    network: "eip155:8453",
     asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
     scheme: "exact",
@@ -1610,6 +1513,11 @@ export default {
     if (url.pathname.length > 1 && url.pathname.endsWith("/")) {
       url.pathname = url.pathname.slice(0, -1);
     }
+    if (url.pathname === "/.well-known/mcp.json") {
+      return new Response("{}", {
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
     const cors = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
@@ -1671,7 +1579,7 @@ export default {
         },
         {
           scheme: "exact",
-          network: "base",
+          network: "eip155:8453",
           maxAmountRequired: "5000",
           amount: "5000",
           resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -1720,7 +1628,7 @@ export default {
         bearer_methods_supported: [],
         resource_documentation: "https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402",
         x402_payment_required: true,
-        x402_network: "base",
+        x402_network: "eip155:8453",
         x402_asset: "USDC",
         x402_asset_address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         x402_price_usdc: "0.01",
@@ -1956,7 +1864,7 @@ contact@fourieranalys.se
         const accepts = [
           {
             scheme: "exact",
-            network: "base",
+            network: "eip155:8453",
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -2049,7 +1957,7 @@ contact@fourieranalys.se
         const accepts = [
           {
             scheme: "exact",
-            network: "base",
+            network: "eip155:8453",
             maxAmountRequired: "5000",
             amount: "5000",
             resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -2201,7 +2109,7 @@ contact@fourieranalys.se
                 note: "Free catalog preview. Calling any tool costs 0.01 USDC on Base.",
                 pricing: {
                   scheme: "exact",
-                  network: "base",
+                  network: "eip155:8453",
                   asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
                   amount: "5000",
                   payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
@@ -2229,7 +2137,7 @@ contact@fourieranalys.se
 
             scheme: "exact",
 
-            network: "base",
+            network: "eip155:8453",
 
             maxAmountRequired: "5000",
 
@@ -2416,7 +2324,7 @@ contact@fourieranalys.se
 
         "base": {
 
-          scheme: "exact", network: "base",
+          scheme: "exact", network: "eip155:8453",
 
           maxAmountRequired: "5000", amount: "5000",
 
