@@ -130,6 +130,30 @@ const TOOLS = [
   }
 ];
 
+// Append primitive tools after the base array — safe, cannot corrupt the literal.
+TOOLS.push(
+  {
+    name: "signals_delta",
+    description: "Delta feed: returns assets changed after a caller-supplied Unix timestamp. Caller holds the cursor; server is stateless. Advance `since` from `next_cursor`.",
+    inputSchema: { type: "object", properties: { since: { type: "integer", description: "Unix seconds; 0 for initial call" } } },
+  },
+  {
+    name: "signals_evaluate",
+    description: "Pure-function alert evaluator. Caller passes snapshot + thresholds; returns {alert, matched, reason}. Same inputs -> same outputs. policy_version=evaluate-v1.",
+    inputSchema: { type: "object", properties: {
+      assets: { type: "array", description: "Array of asset objects (from signals_delta)" },
+      min_volatility: { type: "number", description: "Default 5" },
+      max_change_24h: { type: "number", description: "Default -3 (percent)" },
+    } },
+  },
+  {
+    name: "signals_rank",
+    description: "Deterministic ranking with published formula. risk_adjusted: abs(7d)/max(volatility,0.01). momentum: 0.5*1h+0.3*24h+0.2*7d. formula_version=rank-v1.",
+    inputSchema: { type: "object", properties: { mode: { type: "string", enum: ["risk_adjusted", "momentum"] } } },
+  }
+);
+
+
 function categorize(sector) {
   const s = (sector || "").toLowerCase();
   const map = [
@@ -1377,6 +1401,9 @@ async function handleToolsCall(params = {}, env = {}) {
     case "get_wallet_nonce":     return await toolGetWalletNonce(args);
     case "get_wallet_summary":     return await toolGetWalletSummary(args);
     case "page_to_markdown":       return await toolPageToMarkdown(args);
+    case "signals_delta":     return await signalsDelta(args);
+    case "signals_evaluate":  return await signalsEvaluate(args);
+    case "signals_rank":      return await signalsRank(args);
     case "get_snapshot":        return await toolGetSnapshot(args);
     case "purchase":            return await toolPurchase(args, env);
 default: throw new Error(`Unknown tool: ${name}`);
@@ -1598,6 +1625,65 @@ async function diagnoseEndpoint(endpoint) {
   return out;
 }
 
+// ─── VolatiAI Primitives v1 ─────────────────────────────────────
+const UPSTREAM = "https://christianscode1994.github.io/VolatiAI/latest.json";
+
+async function fetchUpstreamAssets() {
+  const r = await fetch(UPSTREAM, { signal: AbortSignal.timeout(10000) });
+  if (!r.ok) throw new Error("upstream " + r.status);
+  const data = await r.json();
+  const assets = data?.payload?.top_by_volatility || [];
+  const ts = data?.payload?.timestamp;
+  const tsEpoch = ts ? Math.floor(Date.parse(ts) / 1000) : 0;
+  return { assets, tsEpoch };
+}
+
+async function signalsDelta(args = {}) {
+  const since = Number(args.since) || 0;
+  const { assets, tsEpoch } = await fetchUpstreamAssets();
+  const changed = since < tsEpoch ? assets : [];
+  return {
+    since, next_cursor: tsEpoch,
+    generated_at: new Date(tsEpoch * 1000).toISOString(),
+    changed_count: changed.length, changed,
+  };
+}
+
+async function signalsEvaluate(args = {}) {
+  const assets = Array.isArray(args.assets) ? args.assets : [];
+  const minVol = Number.isFinite(args.min_volatility) ? args.min_volatility : 5;
+  const maxChg = Number.isFinite(args.max_change_24h) ? args.max_change_24h : -3;
+  const matched = assets.filter(a =>
+    Number(a.volatility) > minVol && Number(a.price_change_24h) < maxChg
+  );
+  return {
+    alert: matched.length > 0,
+    matched: matched.map(a => a.symbol),
+    reason: matched.length
+      ? matched.length + " asset(s) matched: volatility > " + minVol + " and 24h < " + maxChg + "%"
+      : "no match",
+    policy_version: "evaluate-v1",
+  };
+}
+
+async function signalsRank(args = {}) {
+  const mode = args.mode === "momentum" ? "momentum" : "risk_adjusted";
+  const { assets } = await fetchUpstreamAssets();
+  const scoreFn = mode === "risk_adjusted"
+    ? a => Math.abs(a.price_change_7d) / Math.max(a.volatility, 0.01)
+    : a => 0.5 * a.price_change_1h + 0.3 * a.price_change_24h + 0.2 * a.price_change_7d;
+  const ranked = assets
+    .map(a => ({ symbol: a.symbol, name: a.name, score: +scoreFn(a).toFixed(4) }))
+    .sort((x, y) => y.score - x.score);
+  return {
+    mode, formula_version: "rank-v1",
+    formula: mode === "risk_adjusted"
+      ? "abs(price_change_7d) / max(volatility, 0.01)"
+      : "0.5*1h + 0.3*24h + 0.2*7d",
+    ranked,
+  };
+}
+
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -1616,6 +1702,34 @@ export default {
       "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Accept",
     };
+
+    // ─── VolatiAI Primitives v1 (HTTP) ─────────────────────────────
+    if (url.pathname === "/premium/signals/delta" && req.method === "POST") {
+      const body = await req.json().catch(() => ({}));
+      try {
+        return new Response(JSON.stringify(await signalsDelta(body), null, 2),
+          { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }),
+          { status: 502, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+    if (url.pathname === "/premium/signals/evaluate" && req.method === "POST") {
+      const body = await req.json().catch(() => ({}));
+      return new Response(JSON.stringify(await signalsEvaluate(body), null, 2),
+        { headers: { "Content-Type": "application/json", ...cors } });
+    }
+    if (url.pathname === "/premium/signals/rank" && req.method === "POST") {
+      const body = await req.json().catch(() => ({}));
+      try {
+        return new Response(JSON.stringify(await signalsRank(body), null, 2),
+          { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }),
+          { status: 502, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+
 
     // ─── /premium/diagnose — free x402 endpoint health check ────────
     if (url.pathname === "/premium/diagnose" && req.method === "GET") {
