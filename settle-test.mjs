@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 const PAYTO     = "0x3EE508f75342315164301B2282f302DF3d3beD47";
 const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 const ENDPOINT  = "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp";
-const VALUE     = "10000";
+const VALUE     = "5000";
 const CHAIN_ID  = 8453;
 
 let pk = readFileSync(process.env.HOME + "/.volatiai/test-buyer.key", "utf8").trim();
@@ -19,7 +19,7 @@ if (account.address.toLowerCase() === PAYTO.toLowerCase()) {
 
 console.log("Buyer:   " + account.address);
 console.log("PayTo:   " + PAYTO);
-console.log("Amount:  0.01 USDC on Base\n");
+console.log("Amount:  0.005 USDC on Base\n");
 
 async function checkBalance() {
   const res = await fetch("https://mainnet.base.org", {
