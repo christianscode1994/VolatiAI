@@ -252,3 +252,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_once(write_snaps=not args.no_snaps, show_dashboard=args.dashboard)
+# trigger smoke test 2026-11-14T14:56:43Z
