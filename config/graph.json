@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-11-13T03:00:32.001226Z",
+  "computed_at": "2026-11-14T03:00:13.029606Z",
   "threshold": 0.8,
   "min_points": 10,
   "nodes": [
@@ -151,52 +151,58 @@
   ],
   "edges": [
     {
+      "a": "7timer-berlin-temp",
+      "b": "github-recent-commits",
+      "corr": 0.806,
+      "n": 20
+    },
+    {
       "a": "avoindata-fi-dataset-count",
       "b": "langpop-python-composite-score",
-      "corr": 0.902,
-      "n": 18
+      "corr": 0.903,
+      "n": 19
     },
     {
       "a": "baltic-wave-height",
       "b": "cleveland-artworks",
       "corr": 0.803,
-      "n": 18
+      "n": 19
     },
     {
       "a": "baltic-wave-height",
       "b": "datafirst-african-surveys",
       "corr": 0.848,
-      "n": 18
+      "n": 19
     },
     {
       "a": "bts-containership-capacity",
       "b": "espn-nfl-score-count",
       "corr": -0.985,
-      "n": 18
+      "n": 19
     },
     {
       "a": "cisa-kev-count",
       "b": "cisa-kev-total",
       "corr": 1.0,
-      "n": 21
+      "n": 22
     },
     {
       "a": "cleveland-artworks",
       "b": "datafirst-african-surveys",
       "corr": 0.947,
-      "n": 18
-    },
-    {
-      "a": "clinicaltrials-total-studies",
-      "b": "spaceflight-news-count",
-      "corr": 0.817,
       "n": 19
     },
     {
       "a": "clinicaltrials-total-studies",
+      "b": "spaceflight-news-count",
+      "corr": 0.816,
+      "n": 20
+    },
+    {
+      "a": "clinicaltrials-total-studies",
       "b": "wttr-dhaka-temp",
-      "corr": -0.83,
-      "n": 18
+      "corr": -0.838,
+      "n": 19
     },
     {
       "a": "coinbase-btc-usd",
@@ -213,116 +219,86 @@
     {
       "a": "crossref-deep-learning",
       "b": "crossref-works",
-      "corr": 0.921,
-      "n": 19
+      "corr": 0.918,
+      "n": 20
     },
     {
       "a": "crossref-deep-learning",
       "b": "usgs-earthquakes",
       "corr": 0.884,
-      "n": 19
+      "n": 20
     },
     {
       "a": "crossref-deep-learning",
       "b": "usgs-earthquakes-emsc",
       "corr": 0.813,
-      "n": 19
+      "n": 20
     },
     {
       "a": "datacite-dois",
       "b": "dex-ethereum-volume",
-      "corr": 0.843,
-      "n": 21
+      "corr": 0.839,
+      "n": 22
     },
     {
       "a": "defi-open-interest-total",
       "b": "defi-total-tvl",
-      "corr": 0.817,
-      "n": 19
-    },
-    {
-      "a": "defi-open-interest-total",
-      "b": "gutendex-english-ebooks",
-      "corr": -0.812,
-      "n": 16
-    },
-    {
-      "a": "defi-open-interest-total",
-      "b": "kraken-btc-usd",
-      "corr": 0.817,
-      "n": 19
+      "corr": 0.827,
+      "n": 20
     },
     {
       "a": "defi-open-interest-total",
       "b": "kraken-eth-usd",
-      "corr": 0.843,
-      "n": 19
+      "corr": 0.854,
+      "n": 20
     },
     {
       "a": "defi-open-interest-total",
       "b": "kraken-sol-usd",
-      "corr": 0.844,
-      "n": 19
-    },
-    {
-      "a": "defi-total-tvl",
-      "b": "kraken-ada-usd",
-      "corr": 0.817,
+      "corr": 0.853,
       "n": 20
     },
     {
       "a": "defi-total-tvl",
       "b": "kraken-btc-usd",
-      "corr": 0.836,
-      "n": 20
+      "corr": 0.853,
+      "n": 21
     },
     {
       "a": "defi-total-tvl",
       "b": "kraken-doge-usd",
-      "corr": 0.819,
-      "n": 20
+      "corr": 0.806,
+      "n": 21
     },
     {
       "a": "defi-total-tvl",
       "b": "kraken-eth-usd",
-      "corr": 0.858,
-      "n": 20
-    },
-    {
-      "a": "defi-total-tvl",
-      "b": "kraken-link-usd",
-      "corr": 0.813,
-      "n": 20
+      "corr": 0.867,
+      "n": 21
     },
     {
       "a": "defi-total-tvl",
       "b": "kraken-sol-usd",
-      "corr": 0.845,
-      "n": 20
-    },
-    {
-      "a": "defi-total-tvl",
-      "b": "kraken-xrp-usd",
-      "corr": 0.804,
-      "n": 20
+      "corr": 0.809,
+      "n": 21
     },
     {
       "a": "dex-ethereum-volume",
       "b": "dex-total-volume-24h",
       "corr": 0.926,
-      "n": 21
+      "n": 22
     },
     {
       "a": "dex-ethereum-volume",
       "b": "dex-uniswap-volume",
       "corr": 0.959,
-      "n": 21
+      "n": 22
     },
     {
       "a": "dex-total-volume-24h",
       "b": "dex-uniswap-volume",
-      "corr": 0.961,
-      "n": 21
+      "corr": 0.959,
+      "n": 22
     },
     {
       "a": "eth-exchange-spread",
@@ -331,196 +307,172 @@
       "n": 18
     },
     {
-      "a": "eurostat-eu-unemployment",
-      "b": "hn-tech-sentiment",
-      "corr": 0.997,
-      "n": 21
-    },
-    {
       "a": "frankfurter-eur-usd",
       "b": "frankfurter-eurusd",
       "corr": -1.0,
-      "n": 19
+      "n": 20
     },
     {
       "a": "fred-dgs10",
       "b": "treasuries",
       "corr": 1.0,
-      "n": 21
+      "n": 22
     },
     {
       "a": "fred-fedfunds",
       "b": "open-digger-openrank-vscode",
       "corr": 1.0,
-      "n": 21
+      "n": 22
     },
     {
       "a": "fred-fedfunds",
       "b": "openfda-device-recalls",
       "corr": 0.806,
-      "n": 21
+      "n": 22
     },
     {
       "a": "fred-fedfunds",
       "b": "openfda-food-recalls",
       "corr": 0.983,
-      "n": 21
+      "n": 22
     },
     {
       "a": "fred-fedfunds",
       "b": "usgs-elevated-volcanoes",
       "corr": -1.0,
-      "n": 21
+      "n": 22
     },
     {
       "a": "gleif-leis",
       "b": "gleif-total-leis",
       "corr": 0.98,
-      "n": 18
-    },
-    {
-      "a": "gutendex-english-ebooks",
-      "b": "kraken-xrp-usd",
-      "corr": -0.826,
-      "n": 16
-    },
-    {
-      "a": "kraken-ada-usd",
-      "b": "kraken-btc-usd",
-      "corr": 0.851,
-      "n": 20
+      "n": 19
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-doge-usd",
-      "corr": 0.926,
-      "n": 20
+      "corr": 0.929,
+      "n": 21
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-dot-usd",
-      "corr": 0.804,
-      "n": 20
+      "corr": 0.803,
+      "n": 21
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-eth-usd",
-      "corr": 0.862,
-      "n": 20
+      "corr": 0.841,
+      "n": 21
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-link-usd",
-      "corr": 0.841,
-      "n": 20
+      "corr": 0.844,
+      "n": 21
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.839,
-      "n": 20
+      "corr": 0.842,
+      "n": 21
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.814,
-      "n": 20
+      "corr": 0.82,
+      "n": 21
     },
     {
       "a": "kraken-btc-usd",
       "b": "kraken-doge-usd",
-      "corr": 0.895,
-      "n": 20
+      "corr": 0.86,
+      "n": 21
     },
     {
       "a": "kraken-btc-usd",
       "b": "kraken-eth-usd",
-      "corr": 0.921,
-      "n": 20
+      "corr": 0.917,
+      "n": 21
     },
     {
       "a": "kraken-btc-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.934,
-      "n": 20
-    },
-    {
-      "a": "kraken-btc-usd",
-      "b": "kraken-xrp-usd",
-      "corr": 0.839,
-      "n": 20
+      "corr": 0.884,
+      "n": 21
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-eth-usd",
-      "corr": 0.897,
-      "n": 20
+      "corr": 0.893,
+      "n": 21
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-link-usd",
-      "corr": 0.82,
-      "n": 20
+      "corr": 0.821,
+      "n": 21
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.897,
-      "n": 20
+      "corr": 0.896,
+      "n": 21
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.864,
-      "n": 20
+      "corr": 0.861,
+      "n": 21
     },
     {
       "a": "kraken-dot-usd",
       "b": "kraken-link-usd",
       "corr": 0.805,
-      "n": 20
+      "n": 21
     },
     {
       "a": "kraken-eth-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.912,
-      "n": 20
+      "corr": 0.892,
+      "n": 21
     },
     {
       "a": "kraken-eth-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.911,
-      "n": 20
+      "corr": 0.895,
+      "n": 21
     },
     {
       "a": "kraken-sol-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.866,
-      "n": 20
+      "corr": 0.846,
+      "n": 21
     },
     {
       "a": "mattercatalog",
       "b": "ossf-scorecard-linux",
       "corr": 0.991,
-      "n": 21
+      "n": 22
     },
     {
       "a": "open-digger-openrank-vscode",
       "b": "openfda-device-recalls",
       "corr": 0.806,
-      "n": 21
+      "n": 22
     },
     {
       "a": "open-digger-openrank-vscode",
       "b": "openfda-food-recalls",
       "corr": 0.983,
-      "n": 21
+      "n": 22
     },
     {
       "a": "open-digger-openrank-vscode",
       "b": "usgs-elevated-volcanoes",
       "corr": -1.0,
-      "n": 21
+      "n": 22
     },
     {
       "a": "openfda-device-recalls",
@@ -532,55 +484,62 @@
       "a": "openfda-device-recalls",
       "b": "usgs-elevated-volcanoes",
       "corr": -0.806,
-      "n": 21
+      "n": 22
     },
     {
       "a": "openfda-food-recalls",
       "b": "usgs-elevated-volcanoes",
       "corr": -0.983,
-      "n": 21
+      "n": 22
     },
     {
       "a": "pubmed-acupuncture-papers",
       "b": "pubmed-covid-papers",
       "corr": 0.831,
-      "n": 19
+      "n": 20
     },
     {
       "a": "pypi-daily-requests",
       "b": "pypi-downloads-requests",
       "corr": 1.0,
-      "n": 20
+      "n": 21
     },
     {
       "a": "saos",
       "b": "spaceflight-news-count",
-      "corr": 0.841,
-      "n": 21
+      "corr": 0.839,
+      "n": 22
     },
     {
       "a": "stablecoin-total-supply",
       "b": "stablecoin-usdt-supply",
       "corr": 0.818,
-      "n": 21
+      "n": 22
     },
     {
       "a": "steam-csgo-players",
       "b": "steam-dota2-players",
-      "corr": 0.968,
-      "n": 20
+      "corr": 0.974,
+      "n": 21
     }
   ],
   "clusters": [
     {
       "id": "cluster_0",
       "members": [
+        "7timer-berlin-temp",
+        "github-recent-commits"
+      ]
+    },
+    {
+      "id": "cluster_1",
+      "members": [
         "avoindata-fi-dataset-count",
         "langpop-python-composite-score"
       ]
     },
     {
-      "id": "cluster_1",
+      "id": "cluster_2",
       "members": [
         "baltic-wave-height",
         "cleveland-artworks",
@@ -588,21 +547,21 @@
       ]
     },
     {
-      "id": "cluster_2",
+      "id": "cluster_3",
       "members": [
         "bts-containership-capacity",
         "espn-nfl-score-count"
       ]
     },
     {
-      "id": "cluster_3",
+      "id": "cluster_4",
       "members": [
         "cisa-kev-count",
         "cisa-kev-total"
       ]
     },
     {
-      "id": "cluster_4",
+      "id": "cluster_5",
       "members": [
         "clinicaltrials-total-studies",
         "saos",
@@ -611,7 +570,7 @@
       ]
     },
     {
-      "id": "cluster_5",
+      "id": "cluster_6",
       "members": [
         "coinbase-btc-usd",
         "coinbase-eth-usd",
@@ -622,7 +581,7 @@
       ]
     },
     {
-      "id": "cluster_6",
+      "id": "cluster_7",
       "members": [
         "crossref-deep-learning",
         "crossref-works",
@@ -631,11 +590,10 @@
       ]
     },
     {
-      "id": "cluster_7",
+      "id": "cluster_8",
       "members": [
         "defi-open-interest-total",
         "defi-total-tvl",
-        "gutendex-english-ebooks",
         "kraken-ada-usd",
         "kraken-btc-usd",
         "kraken-doge-usd",
@@ -647,18 +605,11 @@
       ]
     },
     {
-      "id": "cluster_8",
+      "id": "cluster_9",
       "members": [
         "eth-exchange-spread",
         "mattercatalog",
         "ossf-scorecard-linux"
-      ]
-    },
-    {
-      "id": "cluster_9",
-      "members": [
-        "eurostat-eu-unemployment",
-        "hn-tech-sentiment"
       ]
     },
     {
@@ -722,45 +673,44 @@
     }
   ],
   "sector_to_cluster": {
-    "avoindata-fi-dataset-count": "cluster_0",
-    "langpop-python-composite-score": "cluster_0",
-    "baltic-wave-height": "cluster_1",
-    "cleveland-artworks": "cluster_1",
-    "datafirst-african-surveys": "cluster_1",
-    "bts-containership-capacity": "cluster_2",
-    "espn-nfl-score-count": "cluster_2",
-    "cisa-kev-count": "cluster_3",
-    "cisa-kev-total": "cluster_3",
-    "clinicaltrials-total-studies": "cluster_4",
-    "saos": "cluster_4",
-    "spaceflight-news-count": "cluster_4",
-    "wttr-dhaka-temp": "cluster_4",
-    "coinbase-btc-usd": "cluster_5",
-    "coinbase-eth-usd": "cluster_5",
-    "datacite-dois": "cluster_5",
-    "dex-ethereum-volume": "cluster_5",
-    "dex-total-volume-24h": "cluster_5",
-    "dex-uniswap-volume": "cluster_5",
-    "crossref-deep-learning": "cluster_6",
-    "crossref-works": "cluster_6",
-    "usgs-earthquakes": "cluster_6",
-    "usgs-earthquakes-emsc": "cluster_6",
-    "defi-open-interest-total": "cluster_7",
-    "defi-total-tvl": "cluster_7",
-    "gutendex-english-ebooks": "cluster_7",
-    "kraken-ada-usd": "cluster_7",
-    "kraken-btc-usd": "cluster_7",
-    "kraken-doge-usd": "cluster_7",
-    "kraken-dot-usd": "cluster_7",
-    "kraken-eth-usd": "cluster_7",
-    "kraken-link-usd": "cluster_7",
-    "kraken-sol-usd": "cluster_7",
-    "kraken-xrp-usd": "cluster_7",
-    "eth-exchange-spread": "cluster_8",
-    "mattercatalog": "cluster_8",
-    "ossf-scorecard-linux": "cluster_8",
-    "eurostat-eu-unemployment": "cluster_9",
-    "hn-tech-sentiment": "cluster_9",
+    "7timer-berlin-temp": "cluster_0",
+    "github-recent-commits": "cluster_0",
+    "avoindata-fi-dataset-count": "cluster_1",
+    "langpop-python-composite-score": "cluster_1",
+    "baltic-wave-height": "cluster_2",
+    "cleveland-artworks": "cluster_2",
+    "datafirst-african-surveys": "cluster_2",
+    "bts-containership-capacity": "cluster_3",
+    "espn-nfl-score-count": "cluster_3",
+    "cisa-kev-count": "cluster_4",
+    "cisa-kev-total": "cluster_4",
+    "clinicaltrials-total-studies": "cluster_5",
+    "saos": "cluster_5",
+    "spaceflight-news-count": "cluster_5",
+    "wttr-dhaka-temp": "cluster_5",
+    "coinbase-btc-usd": "cluster_6",
+    "coinbase-eth-usd": "cluster_6",
+    "datacite-dois": "cluster_6",
+    "dex-ethereum-volume": "cluster_6",
+    "dex-total-volume-24h": "cluster_6",
+    "dex-uniswap-volume": "cluster_6",
+    "crossref-deep-learning": "cluster_7",
+    "crossref-works": "cluster_7",
+    "usgs-earthquakes": "cluster_7",
+    "usgs-earthquakes-emsc": "cluster_7",
+    "defi-open-interest-total": "cluster_8",
+    "defi-total-tvl": "cluster_8",
+    "kraken-ada-usd": "cluster_8",
+    "kraken-btc-usd": "cluster_8",
+    "kraken-doge-usd": "cluster_8",
+    "kraken-dot-usd": "cluster_8",
+    "kraken-eth-usd": "cluster_8",
+    "kraken-link-usd": "cluster_8",
+    "kraken-sol-usd": "cluster_8",
+    "kraken-xrp-usd": "cluster_8",
+    "eth-exchange-spread": "cluster_9",
+    "mattercatalog": "cluster_9",
+    "ossf-scorecard-linux": "cluster_9",
     "frankfurter-eur-usd": "cluster_10",
     "frankfurter-eurusd": "cluster_10",
     "fred-dgs10": "cluster_11",
