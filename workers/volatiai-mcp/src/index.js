@@ -1644,7 +1644,7 @@ async function diagnoseEndpoint(endpoint) {
 }
 
 // ─── VolatiAI Primitives v1 ─────────────────────────────────────
-const UPSTREAM = "https://christianscode1994.github.io/VolatiAI/latest.json";
+const UPSTREAM = "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/public/latest.json";
 
 async function fetchUpstreamAssets() {
   // Primary: Pages URL
