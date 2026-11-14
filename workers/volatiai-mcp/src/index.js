@@ -1647,13 +1647,57 @@ async function diagnoseEndpoint(endpoint) {
 const UPSTREAM = "https://christianscode1994.github.io/VolatiAI/latest.json";
 
 async function fetchUpstreamAssets() {
-  const r = await fetch(UPSTREAM, { signal: AbortSignal.timeout(10000) });
-  if (!r.ok) throw new Error("upstream " + r.status);
-  const data = await r.json();
-  const assets = data?.payload?.top_by_volatility || [];
-  const ts = data?.payload?.timestamp;
-  const tsEpoch = ts ? Math.floor(Date.parse(ts) / 1000) : 0;
-  return { assets, tsEpoch };
+  // Primary: Pages URL
+  try {
+    const r = await fetch(UPSTREAM, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) {
+      const data = await r.json();
+      const assets = data?.payload?.top_by_volatility || [];
+      if (assets.length > 0) {
+        const ts = data?.payload?.timestamp;
+        const tsEpoch = ts ? Math.floor(Date.parse(ts) / 1000) : 0;
+        return { assets, tsEpoch };
+      }
+    }
+  } catch (_) { /* fall through */ }
+
+  // Fallback: newest history snapshot via GitHub raw
+  // List the directory via GitHub API, pick newest .json.gz, decompress.
+  try {
+    const listRes = await fetch(
+      "https://api.github.com/repos/christianscode1994/VolatiAI/contents/history/volatility",
+      { headers: { "Accept": "application/vnd.github+json", "User-Agent": "volatiai-worker" },
+        signal: AbortSignal.timeout(10000) }
+    );
+    if (listRes.ok) {
+      const files = await listRes.json();
+      const latest = (files || [])
+        .filter(f => f.name && f.name.endsWith(".json.gz"))
+        .sort((a, b) => b.name.localeCompare(a.name))[0];
+      if (latest) {
+        const snapRes = await fetch(latest.download_url,
+          { signal: AbortSignal.timeout(10000) });
+        if (snapRes.ok) {
+          const ds = new DecompressionStream("gzip");
+          const stream = snapRes.body.pipeThrough(ds);
+          const buf = await new Response(stream).text();
+          const assets = JSON.parse(buf);
+          if (Array.isArray(assets) && assets.length > 0) {
+            // Use the file name to derive a timestamp
+            const m = latest.name.match(/(\d{4}-\d{2}-\d{2}T\d{2})-(\d{2})/);
+            const tsEpoch = m ? Math.floor(Date.parse(`${m[1]}:${m[2]}:00Z`) / 1000) : Math.floor(Date.now() / 1000);
+            console.log("ANALYTICS fallback: using " + latest.name + " (" + assets.length + " items)");
+            return { assets, tsEpoch };
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.log("ANALYTICS fallback failed: " + e.message);
+  }
+
+  // Last resort: empty
+  return { assets: [], tsEpoch: 0 };
 }
 
 async function signalsDelta(args = {}) {
