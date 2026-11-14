@@ -16,3 +16,10 @@ Pure function. Same inputs, same outputs.
 POST /premium/signals/rank {"mode": "risk_adjusted" | "momentum"}
 → {"mode", "formula_version": "rank-v1", "formula": str, "ranked": [...]}
 Formula is in the response. Reproducible by the caller.
+
+## Install and run the conformance suite
+
+```bash
+deno install -A -g --min-dep-age 0 -n volatiai-conformance jsr:@volatiai/conformance
+volatiai-conformance https://volatiai-mcp.fourieranalys.workers.dev
+```
