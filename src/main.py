@@ -166,6 +166,20 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         logger.warning("Dev activity failed: %s", e)
 
     # ---- Unified payload ----
+    # Fallback: if volatility fetch returned empty, reuse the last published snapshot
+    if not volatility:
+        try:
+            with open("docs/latest.json") as _f:
+                _prev = json.load(_f).get("payload", {}).get("top_by_volatility", [])
+            if _prev:
+                logger.warning(
+                    "compute_volatility_summary returned empty; reusing %d assets from previous snapshot",
+                    len(_prev),
+                )
+                volatility = _prev
+        except Exception as _e:
+            logger.warning("fallback snapshot load failed: %s", _e)
+
     payload = build_payload(
         volatility,
         sentiment_hn,
