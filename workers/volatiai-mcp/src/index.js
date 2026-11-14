@@ -1703,10 +1703,15 @@ async function fetchUpstreamAssets() {
 async function signalsDelta(args = {}) {
   const since = Number(args.since) || 0;
   const { assets, tsEpoch } = await fetchUpstreamAssets();
-  const changed = since < tsEpoch ? assets : [];
+  // If we have assets and since is 0 (initial call), always return them.
+  // tsEpoch can be 0 when the fallback path failed; don't let that swallow data.
+  const changed = assets.length > 0 && (since === 0 || since < tsEpoch)
+    ? assets
+    : [];
+  const effectiveTs = tsEpoch || Math.floor(Date.now() / 1000);
   return {
-    since, next_cursor: tsEpoch,
-    generated_at: new Date(tsEpoch * 1000).toISOString(),
+    since, next_cursor: effectiveTs,
+    generated_at: new Date(effectiveTs * 1000).toISOString(),
     changed_count: changed.length, changed,
   };
 }
