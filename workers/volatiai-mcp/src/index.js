@@ -1873,6 +1873,37 @@ export default {
     }
 
 
+    // ─── Generic /premium/<tool_name> dispatcher ──────────────────────
+    // Adds HTTP routes for the remaining 10 MCP tools so Agent402 can index
+    // each as a separate route. Matches the free-tier behavior of the 3
+    // explicit /premium/signals/* handlers above (200, no payment check).
+    const PREMIUM_TOOLS = {
+      "list_active_signals": () => signalsRank({}),  // top-vol ranked, closest match
+      "get_eth_balance":     (b) => toolGetEthBalance(b),
+      "get_token_balance":   (b) => toolGetTokenBalance(b),
+      "get_block_number":    (b) => toolGetBlockNumber(b),
+      "get_gas_price":       (b) => toolGetGasPrice(b),
+      "get_wallet_nonce":    (b) => toolGetWalletNonce(b),
+      "get_wallet_summary":  (b) => toolGetWalletSummary(b),
+      "page_to_markdown":    (b) => toolPageToMarkdown(b),
+      "signals_delta":       (b) => signalsDelta(b),
+      "signals_evaluate":    (b) => signalsEvaluate(b),
+      "signals_rank":        (b) => signalsRank(b),
+    };
+    const _m = url.pathname.match(/^\/premium\/([a-z_]+)$/);
+    if (_m && PREMIUM_TOOLS[_m[1]] && req.method === "POST") {
+      const body = await req.json().catch(() => ({}));
+      try {
+        const result = await PREMIUM_TOOLS[_m[1]](body);
+        return new Response(JSON.stringify(result, null, 2),
+          { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }),
+          { status: 502, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+
+
     // ─── /premium/diagnose — free x402 endpoint health check ────────
     if (url.pathname === "/premium/diagnose" && req.method === "GET") {
       return new Response(JSON.stringify({
