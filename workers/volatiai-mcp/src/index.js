@@ -1878,7 +1878,7 @@ export default {
     // each as a separate route. Matches the free-tier behavior of the 3
     // explicit /premium/signals/* handlers above (200, no payment check).
     const PREMIUM_TOOLS = {
-      "list_active_signals": () => signalsRank({}),  // top-vol ranked, closest match
+      "list_active_signals": (b) => toolListActiveSignals(b),
       "get_eth_balance":     (b) => toolGetEthBalance(b),
       "get_token_balance":   (b) => toolGetTokenBalance(b),
       "get_block_number":    (b) => toolGetBlockNumber(b),
