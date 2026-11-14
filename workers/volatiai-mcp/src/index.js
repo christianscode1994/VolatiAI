@@ -1795,8 +1795,27 @@ const FORMULA_REGISTRY = {
   ]
 };
 
+
+function logEvent(env, request, response, extra = {}) {
+  try {
+    const url = new URL(request.url);
+    console.log("ANALYTICS", JSON.stringify({
+      path: url.pathname,
+      ua: request.headers.get("user-agent") || "unknown",
+      country: request.headers.get("cf-ipcountry") || "unknown",
+      tool: extra.tool || "",
+      status: response?.status || 0,
+    }));
+  } catch (_) { /* analytics must never break the request */ }
+}
+
 export default {
   async fetch(req, env, ctx) {
+    const resp = await this.handle(req, env, ctx);
+    logEvent(env, req, resp);
+    return resp;
+  },
+  async handle(req, env, ctx) {
     const url = new URL(req.url);
     // Normalize trailing slash — probes from PayAPI, x402scan, and others
     // hit `/premium/mcp/` (with slash) which must return 402, not 404.
