@@ -193,6 +193,14 @@ def run_once(write_snaps: bool = True, show_dashboard: bool = False):
         nft_activity=nft_activity,
     )
 
+    # Belt-and-braces: ensure payload.top_by_volatility matches the final volatility
+    if not payload.get("top_by_volatility") and volatility:
+        logger.warning(
+            "build_payload returned empty top_by_volatility; forcing from volatility (%d items)",
+            len(volatility) if hasattr(volatility, "__len__") else -1,
+        )
+        payload["top_by_volatility"] = volatility
+
     # ---- Metrics (from snapshots) ----
     snapshot_reader = SnapshotReader()
     metrics = aggregate_all_metrics(snapshot_reader)
