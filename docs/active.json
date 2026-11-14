@@ -1,46 +1,83 @@
 {
-  "generated_at": "2026-11-13T13:44:28.039596Z",
+  "generated_at": "2026-11-14T12:48:09.537109Z",
   "window": "6h",
   "scanned": 636,
-  "candidates": 63,
+  "candidates": 55,
   "count": 25,
   "signals": [
+    {
+      "sector": "web3-multichain",
+      "severity": "critical",
+      "magnitude": 66.66,
+      "confidence": 1,
+      "summary": "total_blocks 2178347257 (+33.3%)",
+      "delta": {
+        "metric": "total_blocks",
+        "current": 2178347257,
+        "previous": 1633782037,
+        "pct_change": 33.33157102155114,
+        "window": "24h"
+      },
+      "score": 40.853,
+      "why_ranked": "severity=critical(5.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=8.171 (mag=66.66) \u00d7 novelty=1.0 = 40.85",
+      "timestamp": "2026-11-14T10:44:16.470Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
+    },
     {
       "sector": "hackernews-top-scores",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "top10_score_sum 3874 (+417.9% vs 19d ago)",
+      "summary": "top10_score_sum 3627 (+384.9% vs 20.6d ago)",
       "delta": {
         "metric": "top10_score_sum",
-        "current": 3874,
+        "current": 3627,
         "previous": 748,
-        "pct_change": 417.91443850267376,
+        "pct_change": 384.8930481283423,
         "window": "1d",
-        "actual_window_days": 19
+        "actual_window_days": 20.6
       },
-      "score": 19.417,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=6.472 (mag=41.79) \u00d7 novelty=1.0 = 19.42",
-      "timestamp": "2026-11-12T21:00:29.774Z",
+      "score": 18.636,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=6.212 (mag=38.49) \u00d7 novelty=1.0 = 18.64",
+      "timestamp": "2026-11-14T10:43:52.103Z",
       "attribution": "https://hacker-news.firebaseio.com/v0/topstories.json"
+    },
+    {
+      "sector": "nws-active-severe-alerts",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "count 66 (+214.3% vs 17.8d ago)",
+      "delta": {
+        "metric": "count",
+        "current": 66,
+        "previous": 21,
+        "pct_change": 214.28571428571428,
+        "window": "1d",
+        "actual_window_days": 17.8
+      },
+      "score": 13.92,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=4.64 (mag=21.43) \u00d7 novelty=1.0 = 13.92",
+      "timestamp": "2026-11-14T10:44:01.894Z",
+      "attribution": "https://api.weather.gov/alerts/active"
     },
     {
       "sector": "pocketworld-space-weather",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "event_count 5 (+400.0% vs 19.1d ago)",
+      "summary": "event_count 3 (+200.0% vs 20.6d ago)",
       "delta": {
         "metric": "event_count",
-        "current": 5,
+        "current": 3,
         "previous": 1,
-        "pct_change": 400,
+        "pct_change": 200,
         "window": "1d",
-        "actual_window_days": 19.1
+        "actual_window_days": 20.6
       },
-      "score": 18.997,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=6.332 (mag=40.0) \u00d7 novelty=1.0 = 19.0",
-      "timestamp": "2026-11-12T21:00:29.500Z",
+      "score": 13.45,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=4.483 (mag=20.0) \u00d7 novelty=1.0 = 13.45",
+      "timestamp": "2026-11-14T10:43:52.150Z",
       "attribution": "https://pocketworld.org/api/space-weather"
     },
     {
@@ -48,189 +85,189 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "new_cves 575 (+335.6% vs 18d ago)",
+      "summary": "new_cves 363 (+175.0% vs 19.6d ago)",
       "delta": {
         "metric": "new_cves",
-        "current": 575,
+        "current": 363,
         "previous": 132,
-        "pct_change": 335.6060606060606,
+        "pct_change": 175,
         "window": "1d",
-        "actual_window_days": 18
+        "actual_window_days": 19.6
       },
-      "score": 17.405,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=5.802 (mag=33.56) \u00d7 novelty=1.0 = 17.41",
-      "timestamp": "2026-11-12T21:00:45.480Z",
+      "score": 12.586,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=4.195 (mag=17.5) \u00d7 novelty=1.0 = 12.59",
+      "timestamp": "2026-11-14T10:43:56.794Z",
       "attribution": "https://services.nvd.nist.gov/rest/json/cves/2.0"
-    },
-    {
-      "sector": "nws-active-severe-alerts",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "count 53 (+152.4% vs 16.2d ago)",
-      "delta": {
-        "metric": "count",
-        "current": 53,
-        "previous": 21,
-        "pct_change": 152.38095238095238,
-        "window": "1d",
-        "actual_window_days": 16.2
-      },
-      "score": 11.749,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.916 (mag=15.24) \u00d7 novelty=1.0 = 11.75",
-      "timestamp": "2026-11-12T21:01:15.438Z",
-      "attribution": "https://api.weather.gov/alerts/active"
-    },
-    {
-      "sector": "usgs-significant-quakes",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "quakes 0 (-100.0% vs 18.2d ago)",
-      "delta": {
-        "metric": "quakes",
-        "current": 0,
-        "previous": 1,
-        "pct_change": -100,
-        "window": "1d",
-        "actual_window_days": 18.2
-      },
-      "score": 9.534,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.178 (mag=10.0) \u00d7 novelty=1.0 = 9.53",
-      "timestamp": "2026-11-12T21:00:42.858Z",
-      "attribution": "https://earthquake.usgs.gov/fdsnws/event/1/query"
     },
     {
       "sector": "corona-zahlen-germany-week-incidence",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "per_100k 2.213164487968037 (+99.7% vs 17.5d ago)",
+      "summary": "per_100k 2.5616756606850175 (+131.1% vs 19.1d ago)",
       "delta": {
         "metric": "per_100k",
-        "current": 2.213164487968037,
+        "current": 2.5616756606850175,
         "previous": 1.1083603622121665,
-        "pct_change": 99.67914438502672,
+        "pct_change": 131.1229946524064,
         "window": "1d",
-        "actual_window_days": 17.5
+        "actual_window_days": 19.1
       },
-      "score": 9.519,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.173 (mag=9.97) \u00d7 novelty=1.0 = 9.52",
-      "timestamp": "2026-11-12T21:00:45.669Z",
+      "score": 10.905,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.635 (mag=13.11) \u00d7 novelty=1.0 = 10.9",
+      "timestamp": "2026-11-14T10:43:56.999Z",
       "attribution": "https://api.corona-zahlen.org/germany"
+    },
+    {
+      "sector": "dex-ethereum-volume",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "eth_24h 2319306184.38 (+122.0% vs 20.9d ago)",
+      "delta": {
+        "metric": "eth_24h",
+        "current": 2319306184.38,
+        "previous": 1044639064.9300001,
+        "pct_change": 122.01985951343049,
+        "window": "1d",
+        "actual_window_days": 20.9
+      },
+      "score": 10.522,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.507 (mag=12.2) \u00d7 novelty=1.0 = 10.52",
+      "timestamp": "2026-11-14T10:43:50.526Z",
+      "attribution": "https://api.llama.fi/overview/dexs/ethereum"
+    },
+    {
+      "sector": "usgs-significant-quakes",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "quakes 0 (-100.0% vs 19.8d ago)",
+      "delta": {
+        "metric": "quakes",
+        "current": 0,
+        "previous": 1,
+        "pct_change": -100,
+        "window": "1d",
+        "actual_window_days": 19.8
+      },
+      "score": 9.534,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.178 (mag=10.0) \u00d7 novelty=1.0 = 9.53",
+      "timestamp": "2026-11-14T10:43:54.039Z",
+      "attribution": "https://earthquake.usgs.gov/fdsnws/event/1/query"
     },
     {
       "sector": "tweetfeed-c2",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "weekly_c2_ips 100 (-93.4% vs 20d ago)",
+      "summary": "weekly_c2_ips 64 (-95.8% vs 21.6d ago)",
       "delta": {
         "metric": "weekly_c2_ips",
-        "current": 100,
+        "current": 64,
         "previous": 1525,
-        "pct_change": -93.44262295081968,
+        "pct_change": -95.80327868852459,
         "window": "7d",
-        "actual_window_days": 20
+        "actual_window_days": 21.6
       },
-      "score": 9.219,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.073 (mag=9.34) \u00d7 novelty=1.0 = 9.22",
-      "timestamp": "2026-11-12T21:00:15.152Z",
+      "score": 9.334,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=3.111 (mag=9.58) \u00d7 novelty=1.0 = 9.33",
+      "timestamp": "2026-11-14T10:43:22.789Z",
       "attribution": "https://api.tweetfeed.live/v1/week/ip"
     },
     {
-      "sector": "usgs-earthquake-count",
+      "sector": "defi-fees-aave",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "m45_count 9 (-82.0% vs 19d ago)",
+      "summary": "fees_24h_usd 2192958 (+84.9% vs 20.3d ago)",
       "delta": {
-        "metric": "m45_count",
-        "current": 9,
-        "previous": 50,
-        "pct_change": -82,
+        "metric": "fees_24h_usd",
+        "current": 2192958,
+        "previous": 1186033,
+        "pct_change": 84.89856521698806,
         "window": "1d",
-        "actual_window_days": 19
+        "actual_window_days": 20.3
       },
-      "score": 8.643,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.881 (mag=8.2) \u00d7 novelty=1.0 = 8.64",
-      "timestamp": "2026-11-12T21:00:29.253Z",
-      "attribution": "https://earthquake.usgs.gov/fdsnws/event/1/query"
+      "score": 8.793,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.931 (mag=8.49) \u00d7 novelty=1.0 = 8.79",
+      "timestamp": "2026-11-14T10:43:49.983Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
       "sector": "mattercatalog",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "certified_products 4738 (+64.8% vs 20.8d ago)",
+      "summary": "certified_products 4757 (+65.5% vs 22.3d ago)",
       "delta": {
         "metric": "certified_products",
-        "current": 4738,
+        "current": 4757,
         "previous": 2875,
-        "pct_change": 64.8,
+        "pct_change": 65.4608695652174,
         "window": "30d",
-        "actual_window_days": 20.8
+        "actual_window_days": 22.3
       },
-      "score": 7.695,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.565 (mag=6.48) \u00d7 novelty=1.0 = 7.7",
-      "timestamp": "2026-11-12T21:00:15.144Z",
+      "score": 7.734,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.578 (mag=6.55) \u00d7 novelty=1.0 = 7.73",
+      "timestamp": "2026-11-14T10:43:22.697Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
-    },
-    {
-      "sector": "uk-carbon-intensity-now",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "gco2_per_kwh 135 (+60.7% vs 17.4d ago)",
-      "delta": {
-        "metric": "gco2_per_kwh",
-        "current": 135,
-        "previous": 84,
-        "pct_change": 60.71428571428571,
-        "window": "1d",
-        "actual_window_days": 17.4
-      },
-      "score": 7.453,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.484 (mag=6.07) \u00d7 novelty=1.0 = 7.45",
-      "timestamp": "2026-11-12T21:00:46.398Z",
-      "attribution": "https://api.carbonintensity.org.uk/intensity"
     },
     {
       "sector": "pypi-daily-requests",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "downloads 53167728 (+55.0% vs 18.8d ago)",
+      "summary": "downloads 53147899 (+54.9% vs 20.3d ago)",
       "delta": {
         "metric": "downloads",
-        "current": 53167728,
+        "current": 53147899,
         "previous": 34301355,
-        "pct_change": 55.00183010263006,
+        "pct_change": 54.94402189068042,
         "window": "1d",
-        "actual_window_days": 18.8
+        "actual_window_days": 20.3
       },
-      "score": 7.099,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.366 (mag=5.5) \u00d7 novelty=1.0 = 7.1",
-      "timestamp": "2026-11-12T21:00:25.948Z",
+      "score": 7.096,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.365 (mag=5.49) \u00d7 novelty=1.0 = 7.1",
+      "timestamp": "2026-11-14T10:43:49.022Z",
       "attribution": "https://pypistats.org/api/packages/requests/overall"
+    },
+    {
+      "sector": "phishunt-domains",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "active_phishings 698 (-45.3% vs 20.6d ago)",
+      "delta": {
+        "metric": "active_phishings",
+        "current": 698,
+        "previous": 1277,
+        "pct_change": -45.34064212999217,
+        "window": "7d",
+        "actual_window_days": 20.6
+      },
+      "score": 6.458,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.153 (mag=4.53) \u00d7 novelty=1.0 = 6.46",
+      "timestamp": "2026-11-14T10:43:26.913Z",
+      "attribution": "https://phishunt.io/api/v1/domains?limit=1"
     },
     {
       "sector": "open-digger-openrank-vscode",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "openrank 611.02 (+43.8% vs 19.1d ago)",
+      "summary": "openrank 611.02 (+43.8% vs 20.7d ago)",
       "delta": {
         "metric": "openrank",
         "current": 611.02,
         "previous": 424.99,
         "pct_change": 43.77279465399185,
         "window": "30d",
-        "actual_window_days": 19.1
+        "actual_window_days": 20.7
       },
       "score": 6.348,
       "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.116 (mag=4.38) \u00d7 novelty=1.0 = 6.35",
-      "timestamp": "2026-11-12T21:00:30.442Z",
+      "timestamp": "2026-11-14T10:43:53.870Z",
       "attribution": "https://oss.open-digger.cn/github/microsoft/vscode/openrank.json"
     },
     {
@@ -238,56 +275,37 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "player_count 528230 (-42.3% vs 18d ago)",
+      "summary": "player_count 617104 (-32.6% vs 19.6d ago)",
       "delta": {
         "metric": "player_count",
-        "current": 528230,
+        "current": 617104,
         "previous": 914909,
-        "pct_change": -42.26420332513944,
+        "pct_change": -32.550231771684395,
         "window": "1d",
-        "actual_window_days": 18
+        "actual_window_days": 19.6
       },
-      "score": 6.24,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=2.08 (mag=4.23) \u00d7 novelty=1.0 = 6.24",
-      "timestamp": "2026-11-12T21:00:42.765Z",
+      "score": 5.495,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.832 (mag=3.26) \u00d7 novelty=1.0 = 5.5",
+      "timestamp": "2026-11-14T10:43:54.073Z",
       "attribution": "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=570"
-    },
-    {
-      "sector": "wttr-dhaka-temp",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "temp_c 22 (-35.3% vs 17.5d ago)",
-      "delta": {
-        "metric": "temp_c",
-        "current": 22,
-        "previous": 34,
-        "pct_change": -35.294117647058826,
-        "window": "1d",
-        "actual_window_days": 17.5
-      },
-      "score": 5.715,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.905 (mag=3.53) \u00d7 novelty=1.0 = 5.72",
-      "timestamp": "2026-11-12T21:00:46.835Z",
-      "attribution": "https://wttr.in/Dhaka?format=j1"
     },
     {
       "sector": "robonix",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "packages 78 (+32.2% vs 20.8d ago)",
+      "summary": "packages 78 (+32.2% vs 22.3d ago)",
       "delta": {
         "metric": "packages",
         "current": 78,
         "previous": 59,
         "pct_change": 32.20338983050847,
         "window": "7d",
-        "actual_window_days": 20.8
+        "actual_window_days": 22.3
       },
       "score": 5.467,
       "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.822 (mag=3.22) \u00d7 novelty=1.0 = 5.47",
-      "timestamp": "2026-11-12T21:00:15.235Z",
+      "timestamp": "2026-11-14T10:43:22.838Z",
       "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     },
     {
@@ -295,190 +313,171 @@
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "active_alerts 67 (-30.2% vs 20d ago)",
+      "summary": "active_alerts 69 (-28.1% vs 21.6d ago)",
       "delta": {
         "metric": "active_alerts",
-        "current": 67,
+        "current": 69,
         "previous": 96,
-        "pct_change": -30.208333333333332,
+        "pct_change": -28.125,
         "window": "7d",
-        "actual_window_days": 20
+        "actual_window_days": 21.6
       },
-      "score": 5.3,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.767 (mag=3.02) \u00d7 novelty=1.0 = 5.3",
-      "timestamp": "2026-11-12T21:00:15.162Z",
+      "score": 5.12,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.707 (mag=2.81) \u00d7 novelty=1.0 = 5.12",
+      "timestamp": "2026-11-14T10:43:22.841Z",
       "attribution": "https://services.swpc.noaa.gov/products/alerts.json"
-    },
-    {
-      "sector": "phishunt-domains",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "active_phishings 946 (-25.9% vs 19d ago)",
-      "delta": {
-        "metric": "active_phishings",
-        "current": 946,
-        "previous": 1277,
-        "pct_change": -25.92012529365701,
-        "window": "7d",
-        "actual_window_days": 19
-      },
-      "score": 4.922,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.641 (mag=2.59) \u00d7 novelty=1.0 = 4.92",
-      "timestamp": "2026-11-12T21:00:22.141Z",
-      "attribution": "https://phishunt.io/api/v1/domains?limit=1"
-    },
-    {
-      "sector": "kraken-xrp-usd",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "xrp_usd 1.0352 (-20.2% vs 18d ago)",
-      "delta": {
-        "metric": "xrp_usd",
-        "current": 1.0352,
-        "previous": 1.29744,
-        "pct_change": -20.212110001233203,
-        "window": "24h",
-        "actual_window_days": 18
-      },
-      "score": 4.369,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.456 (mag=2.02) \u00d7 novelty=1.0 = 4.37",
-      "timestamp": "2026-11-12T21:00:20.869Z",
-      "attribution": "https://api.kraken.com/0/public/Ticker?pair=XRPUSD"
-    },
-    {
-      "sector": "kraken-dot-usd",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "dot_usd 0.82665 (-20.1% vs 18d ago)",
-      "delta": {
-        "metric": "dot_usd",
-        "current": 0.82665,
-        "previous": 1.034,
-        "pct_change": -20.053191489361705,
-        "window": "24h",
-        "actual_window_days": 18
-      },
-      "score": 4.353,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.451 (mag=2.01) \u00d7 novelty=1.0 = 4.35",
-      "timestamp": "2026-11-12T21:00:25.783Z",
-      "attribution": "https://api.kraken.com/0/public/Ticker?pair=DOTUSD"
     },
     {
       "sector": "kraken-sol-usd",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "sol_usd 81.29 (-19.9% vs 18d ago)",
+      "summary": "sol_usd 75.8 (-25.3% vs 19.6d ago)",
       "delta": {
         "metric": "sol_usd",
-        "current": 81.29,
+        "current": 75.8,
         "previous": 101.54,
-        "pct_change": -19.942879653338586,
+        "pct_change": -25.34961591491039,
         "window": "24h",
-        "actual_window_days": 18
+        "actual_window_days": 19.6
       },
-      "score": 4.341,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.447 (mag=1.99) \u00d7 novelty=1.0 = 4.34",
-      "timestamp": "2026-11-12T21:00:20.878Z",
+      "score": 4.87,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.623 (mag=2.53) \u00d7 novelty=1.0 = 4.87",
+      "timestamp": "2026-11-14T10:43:26.675Z",
       "attribution": "https://api.kraken.com/0/public/Ticker?pair=SOLUSD"
     },
     {
-      "sector": "ossf-scorecard-linux",
+      "sector": "kraken-dot-usd",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "score 3.5 (+16.7% vs 19.1d ago)",
+      "summary": "dot_usd 0.7858 (-24.0% vs 19.6d ago)",
       "delta": {
-        "metric": "score",
-        "current": 3.5,
-        "previous": 3,
-        "pct_change": 16.666666666666664,
-        "window": "7d",
-        "actual_window_days": 19.1
+        "metric": "dot_usd",
+        "current": 0.7858,
+        "previous": 1.034,
+        "pct_change": -24.003868471953577,
+        "window": "24h",
+        "actual_window_days": 19.6
       },
-      "score": 3.987,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.329 (mag=1.67) \u00d7 novelty=1.0 = 3.99",
-      "timestamp": "2026-11-12T21:00:25.751Z",
-      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
+      "score": 4.744,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.581 (mag=2.4) \u00d7 novelty=1.0 = 4.74",
+      "timestamp": "2026-11-14T10:43:48.885Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=DOTUSD"
+    },
+    {
+      "sector": "kraken-xrp-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "xrp_usd 0.9917 (-23.6% vs 19.6d ago)",
+      "delta": {
+        "metric": "xrp_usd",
+        "current": 0.9917,
+        "previous": 1.29744,
+        "pct_change": -23.56486619805154,
+        "window": "24h",
+        "actual_window_days": 19.6
+      },
+      "score": 4.702,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.567 (mag=2.36) \u00d7 novelty=1.0 = 4.7",
+      "timestamp": "2026-11-14T10:43:26.812Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=XRPUSD"
     },
     {
       "sector": "kraken-ada-usd",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "ada_usd 0.17241849999999997 (-15.9% vs 18d ago)",
+      "summary": "ada_usd 0.163681 (-20.2% vs 19.6d ago)",
       "delta": {
         "metric": "ada_usd",
-        "current": 0.17241849999999997,
+        "current": 0.163681,
         "previous": 0.20513,
-        "pct_change": -15.946716716228748,
+        "pct_change": -20.206210695656416,
         "window": "24h",
-        "actual_window_days": 18
+        "actual_window_days": 19.6
       },
-      "score": 3.905,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.302 (mag=1.59) \u00d7 novelty=1.0 = 3.91",
-      "timestamp": "2026-11-12T21:00:21.154Z",
+      "score": 4.369,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.456 (mag=2.02) \u00d7 novelty=1.0 = 4.37",
+      "timestamp": "2026-11-14T10:43:26.813Z",
       "attribution": "https://api.kraken.com/0/public/Ticker?pair=ADAUSD"
-    },
-    {
-      "sector": "whiskyhunter-lot-count",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "all_auctions_lots_count 54342 (-15.7% vs 18.2d ago)",
-      "delta": {
-        "metric": "all_auctions_lots_count",
-        "current": 54342,
-        "previous": 64476,
-        "pct_change": -15.717476270240088,
-        "window": "7d",
-        "actual_window_days": 18.2
-      },
-      "score": 3.879,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.293 (mag=1.57) \u00d7 novelty=1.0 = 3.88",
-      "timestamp": "2026-11-12T21:00:30.275Z",
-      "attribution": "https://whiskyhunter.net/api/auctions_data/?format=json"
-    },
-    {
-      "sector": "kraken-doge-usd",
-      "severity": "alert",
-      "magnitude": null,
-      "confidence": 1,
-      "summary": "doge_usd 0.0658168 (-14.7% vs 18d ago)",
-      "delta": {
-        "metric": "doge_usd",
-        "current": 0.0658168,
-        "previous": 0.0771517,
-        "pct_change": -14.691704784210858,
-        "window": "1d",
-        "actual_window_days": 18
-      },
-      "score": 3.758,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.253 (mag=1.47) \u00d7 novelty=1.0 = 3.76",
-      "timestamp": "2026-11-12T21:00:25.852Z",
-      "attribution": "https://api.kraken.com/0/public/Ticker?pair=DOGEUSD"
     },
     {
       "sector": "kraken-eth-usd",
       "severity": "alert",
       "magnitude": null,
       "confidence": 1,
-      "summary": "eth_usd 2014.79 (-14.1% vs 18d ago)",
+      "summary": "eth_usd 1910.43 (-18.6% vs 19.6d ago)",
       "delta": {
         "metric": "eth_usd",
-        "current": 2014.79,
+        "current": 1910.43,
         "previous": 2345.82,
-        "pct_change": -14.111483404523797,
+        "pct_change": -18.56024758932911,
         "window": "1d",
-        "actual_window_days": 18
+        "actual_window_days": 19.6
       },
-      "score": 3.688,
-      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.229 (mag=1.41) \u00d7 novelty=1.0 = 3.69",
-      "timestamp": "2026-11-12T21:00:25.757Z",
+      "score": 4.196,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.399 (mag=1.86) \u00d7 novelty=1.0 = 4.2",
+      "timestamp": "2026-11-14T10:43:48.730Z",
       "attribution": "https://api.kraken.com/0/public/Ticker?pair=ETHUSD"
+    },
+    {
+      "sector": "kraken-doge-usd",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "doge_usd 0.0630109 (-18.3% vs 19.6d ago)",
+      "delta": {
+        "metric": "doge_usd",
+        "current": 0.0630109,
+        "previous": 0.0771517,
+        "pct_change": -18.328565669972285,
+        "window": "1d",
+        "actual_window_days": 19.6
+      },
+      "score": 4.171,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.39 (mag=1.83) \u00d7 novelty=1.0 = 4.17",
+      "timestamp": "2026-11-14T10:43:48.704Z",
+      "attribution": "https://api.kraken.com/0/public/Ticker?pair=DOGEUSD"
+    },
+    {
+      "sector": "defi-total-tvl",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "tvl_usd 73594551664 (-16.9% vs 20.6d ago)",
+      "delta": {
+        "metric": "tvl_usd",
+        "current": 73594551664,
+        "previous": 88508539703,
+        "pct_change": -16.850337932413645,
+        "window": "1d",
+        "actual_window_days": 20.6
+      },
+      "score": 4.008,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.336 (mag=1.69) \u00d7 novelty=1.0 = 4.01",
+      "timestamp": "2026-11-14T10:43:48.874Z",
+      "attribution": "https://api.llama.fi/protocols"
+    },
+    {
+      "sector": "ossf-scorecard-linux",
+      "severity": "alert",
+      "magnitude": null,
+      "confidence": 1,
+      "summary": "score 3.5 (+16.7% vs 20.7d ago)",
+      "delta": {
+        "metric": "score",
+        "current": 3.5,
+        "previous": 3,
+        "pct_change": 16.666666666666664,
+        "window": "7d",
+        "actual_window_days": 20.7
+      },
+      "score": 3.987,
+      "why_ranked": "severity=alert(3.0) \u00d7 confidence=1 \u00d7 sqrt(mag+0.1)=1.329 (mag=1.67) \u00d7 novelty=1.0 = 3.99",
+      "timestamp": "2026-11-14T10:43:48.879Z",
+      "attribution": "https://christianscode1994.github.io/VolatiAI/attribution.json"
     }
   ]
 }
