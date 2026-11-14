@@ -75,13 +75,19 @@ jobs:
       - name: Push changes
         run: |
           for i in 1 2 3 4 5; do
-            if git push; then
+            if git push origin main; then
               echo "pushed on attempt $i"
               exit 0
             fi
-            echo "push rejected (attempt $i), rebasing and retrying..."
-            git pull --rebase -X ours origin main
-            sleep 3
+            echo "push rejected on attempt $i; syncing and retrying"
+            git rebase --abort 2>/dev/null || true
+            if ! git pull --rebase --autostash origin main; then
+              echo "rebase failed on attempt $i; aborting"
+              git rebase --abort 2>/dev/null || true
+            fi
+            sleep $((i * 2))
           done
           echo "push failed after 5 attempts"
+          git status
+          git log --oneline -5
           exit 1
