@@ -307,7 +307,25 @@ async function toolPurchase(args, env) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       x402Version: 1,
-      paymentPayload: { x402Version: 1, scheme: "exact", network: "eip155:8453", payload: decoded.payload },
+      paymentPayload: {
+        x402Version: 2,
+        payload: decoded.payload,
+        accepted: {
+          scheme: "exact",
+          network: "eip155:8453",
+          maxAmountRequired: "5000",
+          amount: "5000",
+          resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
+          description: "VolatiAI premium signals — $0.005 per request, USDC on Base",
+          mimeType: "application/json",
+          payTo: "0x3EE508f75342315164301B2282f302DF3d3beD47",
+          maxTimeoutSeconds: 60,
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          extra: { name: "USD Coin", version: "2" },
+          extensions: { bazaar: BAZAAR_EXT },
+        },
+        extensions: { bazaar: BAZAAR_EXT },
+      },
       paymentRequirements: {
         scheme: "exact", network: "eip155:8453", maxAmountRequired: "5000",
         resource: "https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp",
@@ -1668,7 +1686,9 @@ async function signalsEvaluate(args = {}) {
 
 async function signalsRank(args = {}) {
   const mode = args.mode === "momentum" ? "momentum" : "risk_adjusted";
-  const { assets } = await fetchUpstreamAssets();
+  const assets = Array.isArray(args.assets) && args.assets.length
+    ? args.assets
+    : (await fetchUpstreamAssets()).assets;
   const scoreFn = mode === "risk_adjusted"
     ? a => Math.abs(a.price_change_7d) / Math.max(a.volatility, 0.01)
     : a => 0.5 * a.price_change_1h + 0.3 * a.price_change_24h + 0.2 * a.price_change_7d;
@@ -1683,6 +1703,97 @@ async function signalsRank(args = {}) {
     ranked,
   };
 }
+
+// ─── Formula Registry v1 ────────────────────────────────────────
+const FORMULA_REGISTRY = {
+  registry_version: "1.0.0",
+  published_at: "2026-11-14T00:00:00Z",
+  formulas: [
+    {
+      id: "rank-v1-risk_adjusted",
+      name: "Risk-Adjusted Ranking",
+      formula: "abs(price_change_7d) / max(volatility, 0.01)",
+      inputs: ["price_change_7d", "volatility"],
+      output: "sorted array of {symbol, name, score} descending",
+      endpoint: "POST /premium/signals/rank",
+      input_example: { mode: "risk_adjusted", assets: "<optional; fetched upstream if absent>" },
+      golden_vectors: [
+        {
+          id: "rank-ra-1",
+          input: { mode: "risk_adjusted", assets: [
+            { symbol: "xrp", name: "XRP", price_change_7d: -15.773, volatility: 7.2182 },
+            { symbol: "eth", name: "Ethereum", price_change_7d: -14.2626, volatility: 5.5968 }
+          ]},
+          expected_order: ["eth", "xrp"],
+          computation: "eth: 14.2626/5.5968=2.5486; xrp: 15.773/7.2182=2.1854"
+        }
+      ]
+    },
+    {
+      id: "rank-v1-momentum",
+      name: "Momentum Composite",
+      formula: "0.5*price_change_1h + 0.3*price_change_24h + 0.2*price_change_7d",
+      inputs: ["price_change_1h", "price_change_24h", "price_change_7d"],
+      output: "sorted array of {symbol, name, score} descending",
+      endpoint: "POST /premium/signals/rank",
+      input_example: { mode: "momentum", assets: "<optional>" },
+      golden_vectors: [
+        {
+          id: "rank-mom-1",
+          input: { mode: "momentum", assets: [
+            { symbol: "xrp", name: "XRP", price_change_1h: 0.843, price_change_24h: -2.23139, price_change_7d: -15.773 },
+            { symbol: "eth", name: "Ethereum", price_change_1h: -0.6328, price_change_24h: -6.17071, price_change_7d: -14.2626 }
+          ]},
+          expected_order: ["xrp", "eth"],
+          computation: "xrp: 0.5*0.843+0.3*(-2.231)+0.2*(-15.773)=-3.4025; eth: 0.5*(-0.633)+0.3*(-6.171)+0.2*(-14.263)=-5.0201"
+        }
+      ]
+    },
+    {
+      id: "evaluate-v1",
+      name: "Threshold Evaluator",
+      formula: "volatility > min_volatility AND price_change_24h < max_change_24h",
+      inputs: ["assets", "min_volatility (default 5)", "max_change_24h (default -3)"],
+      output: "{alert, matched, reason, policy_version}",
+      endpoint: "POST /premium/signals/evaluate",
+      input_example: { assets: [{symbol:"btc", volatility:6, price_change_24h:-4}], min_volatility: 5, max_change_24h: -3 },
+      golden_vectors: [
+        {
+          id: "eval-1",
+          input: { assets: [
+            { symbol: "btc", volatility: 6, price_change_24h: -4 },
+            { symbol: "eth", volatility: 2, price_change_24h: 1 }
+          ], min_volatility: 5, max_change_24h: -3 },
+          expected: { alert: true, matched: ["btc"], policy_version: "evaluate-v1" }
+        },
+        {
+          id: "eval-2",
+          input: { assets: [
+            { symbol: "btc", volatility: 4, price_change_24h: -4 },
+            { symbol: "eth", volatility: 2, price_change_24h: 1 }
+          ], min_volatility: 5, max_change_24h: -3 },
+          expected: { alert: false, matched: [], policy_version: "evaluate-v1" }
+        }
+      ]
+    },
+    {
+      id: "delta-v1",
+      name: "Cursor Delta Feed",
+      formula: "return assets if since < upstream_timestamp; else empty",
+      inputs: ["since (unix seconds)"],
+      output: "{since, next_cursor, generated_at, changed_count, changed}",
+      endpoint: "POST /premium/signals/delta",
+      input_example: { since: 0 },
+      golden_vectors: [
+        {
+          id: "delta-structural",
+          type: "structural",
+          note: "structural only — deltas depend on live upstream timestamp. Test asserts response shape and next_cursor > 0."
+        }
+      ]
+    }
+  ]
+};
 
 export default {
   async fetch(req, env, ctx) {
@@ -1702,6 +1813,14 @@ export default {
       "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Accept",
     };
+
+    // ─── Formula Registry ─────────────────────────────────────────
+    if (url.pathname === "/premium/formulas" && (req.method === "GET" || req.method === "POST")) {
+      return new Response(JSON.stringify(FORMULA_REGISTRY, null, 2), {
+        headers: { "Content-Type": "application/json", ...cors },
+      });
+    }
+
 
     // ─── VolatiAI Primitives v1 (HTTP) ─────────────────────────────
     if (url.pathname === "/premium/signals/delta" && req.method === "POST") {
