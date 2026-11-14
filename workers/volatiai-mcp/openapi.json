@@ -73,7 +73,7 @@
     "/premium/mcp": {
       "post": {
         "summary": "Call a VolatiAI MCP tool (premium, x402)",
-        "description": "PREMIUM TIER \u2014 PLANNED, not yet available. Same tools as /mcp, priced per request via x402. Endpoint under construction; will return 402 when live.",
+        "description": "Same 13 tools as /mcp, priced at $0.005 USDC per call via x402. Returns 402 with payment requirements; retry with X-PAYMENT header (base64-encoded EIP-712 TransferWithAuthorization).",
         "x-payment-info": {
           "price": {
             "mode": "fixed",
@@ -178,6 +178,500 @@
             "x402": []
           }
         ]
+      }
+    },
+    "/premium/list_active_signals": {
+      "post": {
+        "summary": "Top-volatility crypto assets ranked by 1h/24h/7d change. Returns up to 10 assets.",
+        "description": "Top-volatility crypto assets ranked by 1h/24h/7d change. Returns up to 10 assets.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 25
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "info",
+                      "notice",
+                      "warning",
+                      "alert",
+                      "critical"
+                    ]
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Security, Crypto, Environment, Tech, Markets, Health, Governance, or Other"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/purchase": {
+      "post": {
+        "summary": "Execute a paid tool by providing a valid x402 payment header. Returns the tool result and a signed receipt with transact",
+        "description": "Execute a paid tool by providing a valid x402 payment header. Returns the tool result and a signed receipt with transaction hash. Use this to purchase any paid tool in one atomic call.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tool_name": {
+                    "type": "string",
+                    "description": "Name of the paid tool to execute"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "description": "Arguments for the tool"
+                  },
+                  "x_payment": {
+                    "type": "string",
+                    "description": "Base64-encoded x402 payment header (X-PAYMENT)"
+                  }
+                },
+                "required": [
+                  "tool_name",
+                  "arguments",
+                  "x_payment"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/explain_pricing": {
+      "post": {
+        "summary": "Free. Returns full tool catalog with prices, network details (asset, payTo), and how to pay. Use before making any payme",
+        "description": "Free. Returns full tool catalog with prices, network details (asset, payTo), and how to pay. Use before making any payment.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/get_eth_balance": {
+      "post": {
+        "summary": "Get ETH balance for a Base mainnet address. Returns balance_wei (string) and balance_eth (formatted).",
+        "description": "Get ETH balance for a Base mainnet address. Returns balance_wei (string) and balance_eth (formatted).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "0x-prefixed 40-char hex address"
+                  }
+                },
+                "required": [
+                  "address"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/get_token_balance": {
+      "post": {
+        "summary": "Get ERC-20 token balance on Base. decimals_assumed=6 (USDC-style). Use balance_raw for exact integer.",
+        "description": "Get ERC-20 token balance on Base. decimals_assumed=6 (USDC-style). Use balance_raw for exact integer.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "Wallet address"
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "Token contract (USDC: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)"
+                  }
+                },
+                "required": [
+                  "address",
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/get_block_number": {
+      "post": {
+        "summary": "Latest Base mainnet block number.",
+        "description": "Latest Base mainnet block number.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/get_gas_price": {
+      "post": {
+        "summary": "Current Base mainnet gas price in Gwei.",
+        "description": "Current Base mainnet gas price in Gwei.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/get_wallet_nonce": {
+      "post": {
+        "summary": "Transaction count (nonce) for a wallet address on Base mainnet.",
+        "description": "Transaction count (nonce) for a wallet address on Base mainnet.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "0x-prefixed 40-char hex address"
+                  }
+                },
+                "required": [
+                  "address"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/get_wallet_summary": {
+      "post": {
+        "summary": "Composite read: returns ETH balance, USDC balance, nonce, latest block, and gas price for any wallet in ONE call (5 RPC ",
+        "description": "Composite read: returns ETH balance, USDC balance, nonce, latest block, and gas price for any wallet in ONE call (5 RPC reads executed in parallel). Replaces 5 separate tool calls \u2014 5x faster, 5x cheaper than calling individual tools.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "0x-prefixed 40-char hex wallet address"
+                  }
+                },
+                "required": [
+                  "address"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/page_to_markdown": {
+      "post": {
+        "summary": "Fetch any URL and return clean Markdown. Strips scripts, styles, and HTML tags; preserves headings, links, bold/italic, ",
+        "description": "Fetch any URL and return clean Markdown. Strips scripts, styles, and HTML tags; preserves headings, links, bold/italic, lists. Useful for reading docs, news, or competitor pages into an LLM context. Deterministic and stateless \u2014 no LLM, no API key. 15s timeout, 50KB default output cap.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "http:// or https:// URL to fetch"
+                  },
+                  "max_length": {
+                    "type": "integer",
+                    "minimum": 1000,
+                    "maximum": 200000,
+                    "default": 50000,
+                    "description": "Max characters to return (content truncated beyond this)"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/signals_delta": {
+      "post": {
+        "summary": "Delta feed: returns assets changed after a caller-supplied Unix timestamp. Caller holds the cursor; server is stateless.",
+        "description": "Delta feed: returns assets changed after a caller-supplied Unix timestamp. Caller holds the cursor; server is stateless. Advance `since` from `next_cursor`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "since": {
+                    "type": "integer",
+                    "description": "Unix seconds; 0 for initial call"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/signals_evaluate": {
+      "post": {
+        "summary": "Pure-function alert evaluator. Caller passes snapshot + thresholds; returns {alert, matched, reason}. Same inputs -> sam",
+        "description": "Pure-function alert evaluator. Caller passes snapshot + thresholds; returns {alert, matched, reason}. Same inputs -> same outputs. policy_version=evaluate-v1.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "assets": {
+                    "type": "array",
+                    "description": "Array of asset objects (from signals_delta)"
+                  },
+                  "min_volatility": {
+                    "type": "number",
+                    "description": "Default 5"
+                  },
+                  "max_change_24h": {
+                    "type": "number",
+                    "description": "Default -3 (percent)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
+      }
+    },
+    "/premium/signals_rank": {
+      "post": {
+        "summary": "Deterministic ranking with published formula. risk_adjusted: abs(7d)/max(volatility,0.01). momentum: 0.5*1h+0.3*24h+0.2*",
+        "description": "Deterministic ranking with published formula. risk_adjusted: abs(7d)/max(volatility,0.01). momentum: 0.5*1h+0.3*24h+0.2*7d. formula_version=rank-v1.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "risk_adjusted",
+                      "momentum"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result + Ed25519 receipt"
+          },
+          "402": {
+            "description": "Payment required \u2014 USDC on Base"
+          }
+        },
+        "x-price": "5000",
+        "x-network": "eip155:8453",
+        "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
       }
     }
   },

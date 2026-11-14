@@ -1801,10 +1801,14 @@ function logEvent(env, request, response, extra = {}) {
     const url = new URL(request.url);
     console.log("ANALYTICS", JSON.stringify({
       path: url.pathname,
-      ua: request.headers.get("user-agent") || "unknown",
+      ua: request.headers.get("user-agent") || "<absent>",
       country: request.headers.get("cf-ipcountry") || "unknown",
       tool: extra.tool || "",
       status: response?.status || 0,
+      accept: (request.headers.get("accept") || "").slice(0, 40),
+      accept_json_402: request.headers.get("accept-payment") || "",
+      x402_v: request.headers.get("x-402-version") || "",
+      auth_prefix: (request.headers.get("authorization") || "").slice(0, 16),
     }));
   } catch (_) { /* analytics must never break the request */ }
 }
@@ -2111,7 +2115,7 @@ export default {
 
 ## MCP Endpoint
 - Free tier: https://volatiai-mcp.fourieranalys.workers.dev/mcp
-- Paid tier: https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp (21 tools, $0.005 USDC per call)
+- Paid tier: https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp (13 tools, $0.005 USDC per call)
 
 ## Discovery
 - x402 manifest: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402
