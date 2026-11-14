@@ -1,5 +1,7 @@
 # VolatiAI
 
+[![Conformance](https://github.com/christianscode1994/VolatiAI/actions/workflows/conformance.yml/badge.svg)](https://github.com/christianscode1994/VolatiAI/actions/workflows/conformance.yml)
+
 Stateless primitives for autonomous agents.
 
 > **Verify any implementation:** `npx @volatiai/conformance <url>`
