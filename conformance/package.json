@@ -4,7 +4,7 @@
   "description": "Conformance test runner for VolatiAI primitives. Runs every golden vector against a live endpoint.",
   "type": "module",
   "main": "conformance.js",
-  "bin": { "volatiai-conformance": "./conformance.js" },
+  "bin": { "volatiai-conformance": "conformance.js" },
   "files": ["conformance.js"],
   "keywords": ["x402", "agent", "conformance", "primitives", "volatiai"],
   "license": "MIT",

@@ -1,9 +1,30 @@
 {
-  "name": "@volatiai/primitives",
+  "name": "volatiai-primitives",
   "version": "0.1.0",
   "description": "Stateless primitives for autonomous agents: delta, evaluate, rank.",
   "type": "module",
   "main": "src/index.js",
-  "exports": { ".": "./src/index.js" },
-  "license": "MIT"
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "x402",
+    "agent",
+    "primitives",
+    "stateless",
+    "volatiai"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christianscode1994/VolatiAI.git",
+    "directory": "sdk"
+  },
+  "dependencies": {
+    "@volatiai/primitives": "github:christianscode1994/VolatiAI#path:/sdk"
+  }
 }
