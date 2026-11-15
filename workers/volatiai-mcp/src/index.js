@@ -1849,6 +1849,7 @@ function logEvent(env, request, response, extra = {}) {
   try {
     const url = new URL(request.url);
     console.log("ANALYTICS", JSON.stringify({
+      has_payment: !!request.headers.get("x-payment"),
       path: url.pathname,
       ua: request.headers.get("user-agent") || "<absent>",
       country: request.headers.get("cf-ipcountry") || "unknown",
@@ -1862,11 +1863,41 @@ function logEvent(env, request, response, extra = {}) {
   } catch (_) { /* analytics must never break the request */ }
 }
 
+async function withPriceSummary(resp) {
+  if (!resp || resp.status !== 402) return resp;
+  try {
+    const body = await resp.json();
+    const accepts = (body && Array.isArray(body.accepts))
+      ? body.accepts
+      : (body && body.paymentRequirements && Array.isArray(body.paymentRequirements.accepts))
+        ? body.paymentRequirements.accepts
+        : null;
+    if (accepts && accepts[0]) {
+      const a = accepts[0];
+      const units = parseInt(a.amount || a.maxAmountRequired || "0", 10);
+      body.summary = {
+        http_status: 402,
+        price_usd: isFinite(units) ? units / 1e6 : null,
+        network: a.network,
+        asset: a.asset,
+        payTo: a.payTo,
+        how_to_pay: "POST again with X-PAYMENT header containing base64-encoded EIP-712 TransferWithAuthorization",
+        discovery: "Full payment options in .accepts[]. See /.well-known/x402 for all rails.",
+      };
+    }
+    const headers = new Headers(resp.headers);
+    headers.delete("content-length");
+    return new Response(JSON.stringify(body), { status: 402, headers });
+  } catch {
+    return resp;
+  }
+}
+
 export default {
   async fetch(req, env, ctx) {
     const resp = await this.handle(req, env, ctx);
     logEvent(env, req, resp);
-    return resp;
+    return withPriceSummary(resp);
   },
   async handle(req, env, ctx) {
     const url = new URL(req.url);
