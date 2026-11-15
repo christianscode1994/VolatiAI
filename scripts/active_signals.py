@@ -209,6 +209,52 @@ METRIC_LABELS = {
     "crime_incidents": "reported incidents",
 }
 
+# ─── Signal quality filters ─────────────────────────────────────────
+# Cumulative counters always rise; showing % change is an artifact of
+# when we last read them, not a signal.
+CUMULATIVE_METRICS = {
+    "total_blocks", "certified_products",
+    "total_cves", "total_dois", "total_works", "total_records",
+    "tracked_packages", "all_auctions_lots_count",
+}
+
+# Price and rate levels aren't signals — they're feeds.
+PRICE_FEEDS = {
+    "sol_usd", "dot_usd", "ada_usd", "xrp_usd", "eth_usd", "btc_usd",
+    "eurusd", "eursek", "dgs10", "fedfunds",
+}
+
+# Below this absolute % change, don't emit unless the sector is rare.
+MIN_PCT_NOISE = 0.5
+
+
+def _is_filtered_signal(d: dict) -> bool:
+    """Return True if this signal is noise and should not appear."""
+    metric = d.get("metric") or ""
+    if metric in CUMULATIVE_METRICS or metric in PRICE_FEEDS:
+        return True
+    cur = d.get("current")
+    prev = d.get("previous")
+    cur_v = cur if isinstance(cur, (int, float)) else 0
+    prev_v = prev if isinstance(prev, (int, float)) else 0
+    if cur_v == 0 and prev_v == 0:
+        return True
+    pct = d.get("pct_change")
+    if isinstance(pct, (int, float)) and abs(pct) < MIN_PCT_NOISE:
+        return True
+    return False
+
+
+def _window_label(d: dict) -> str:
+    """Prefer actual_window_days when present (it's honest about lag)."""
+    actual = d.get("actual_window_days")
+    if isinstance(actual, (int, float)):
+        return f"{actual:.1f}d"
+    w = d.get("window")
+    if w:
+        return str(w)
+    return ""
+
 
 def fmt_number(v) -> str:
     if v is None:
@@ -227,13 +273,18 @@ def fmt_number(v) -> str:
 
 
 def format_line(s: dict, is_top: bool = False) -> str:
+    """Format one signal line. Returns "" if the signal is filtered as noise."""
     marker = "★ " if is_top else "  "
     d = s.get("delta") or {}
-    metric = d.get("metric", "")
-    label = METRIC_LABELS.get(metric, metric.replace("_", " "))
 
-    if not label and not d.get("current") is not None:
-        # Fall back to summary if delta is missing
+    # Filter noise: cumulative counters, price feeds, zero-as-signal, tiny deltas.
+    if _is_filtered_signal(d):
+        return ""
+
+    metric = d.get("metric", "")
+    label = METRIC_LABELS.get(metric, metric.replace("_", " ") if metric else "")
+
+    if not label and d.get("current") is None:
         return marker + (s.get("summary") or "(no data)")
 
     cur = fmt_number(d.get("current"))
@@ -242,34 +293,65 @@ def format_line(s: dict, is_top: bool = False) -> str:
     if pct is None or pct == 0:
         return f"{marker}{label}: {cur}"
 
+    window = _window_label(d)
+    window_suffix = f" vs {window}" if window else ""
+
     direction = "↑" if pct > 0 else "↓"
     pct_str = f"{abs(pct):.0f}%" if abs(pct) >= 100 else f"{abs(pct):.1f}%"
-    return f"{marker}{label}: {cur} ({direction}{pct_str})"
+    return f"{marker}{label}: {cur} ({direction}{pct_str}{window_suffix})"
 
 
 def format_bot_message(payload: dict, max_per_category: int = 5) -> str:
+    """Format the digest. Filters noise, re-scores for ★, adds windows."""
     signals = payload.get("signals", [])
     if not signals:
         return "VolatiAI — no active signals this window\n\n— automated · info only"
 
+    # ── Filter out noise up front ──
+    filtered = []
+    for s in signals:
+        d = s.get("delta") or {}
+        if not _is_filtered_signal(d):
+            filtered.append(s)
+
+    if not filtered:
+        return "VolatiAI — no active signals this window\n\n— automated · info only"
+
+    # ── Re-score filtered signals: magnitude × trust ──
+    # Cap pct at 500 so one insane number can't dominate the ranking.
+    def top_score(s):
+        d = s.get("delta") or {}
+        pct = d.get("pct_change")
+        pct = abs(pct) if isinstance(pct, (int, float)) else 0
+        trust = (s.get("trust") or {}).get("score", 0.5)
+        return min(pct, 500) * (0.5 + trust)
+
+    filtered.sort(key=top_score, reverse=True)
+    top_sector = filtered[0].get("sector") if filtered else None
+
+    # ── Group by category ──
     ts = (payload.get("generated_at") or "")[:19].replace("T", " ")
     groups: dict = {}
-    for i, s in enumerate(signals):
+    for s in filtered:
         cat = categorize(s.get("sector", ""))
-        groups.setdefault(cat, []).append((i, s))
+        groups.setdefault(cat, []).append(s)
 
-    lines = [f"VolatiAI — {len(signals)} signals · {ts} UTC", ""]
-    top_sector = signals[0].get("sector") if signals else None
+    lines = [f"VolatiAI — {len(filtered)} signals · {ts} UTC", ""]
 
     for label, _ in CATEGORIES:
         if label not in groups:
             continue
         items = groups[label][:max_per_category]
-        lines.append(label)
-        for _, s in items:
+        rendered = []
+        for s in items:
             is_top = s.get("sector") == top_sector
-            lines.append(format_line(s, is_top))
-        lines.append("")
+            line = format_line(s, is_top)
+            if line:
+                rendered.append(line)
+        if rendered:
+            lines.append(label)
+            lines.extend(rendered)
+            lines.append("")
 
     lines.append("— automated · info only · attribution at volati.ai")
     return "\n".join(lines)
