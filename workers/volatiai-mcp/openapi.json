@@ -601,7 +601,7 @@
     "/agentic-economy": {
       "get": {
         "summary": "Public read-only data on the x402 agent economy",
-        "description": "Publishes aggregate public data about the agentic payment economy: Agent402's full stats endpoint plus the live USDC balance at Agent402's payTo wallet on Base. Read-only publisher of on-chain statistics. No auth, no accounts, no payments. Free.",
+        "description": "Publishes aggregate raw counters about the x402 agent economy: Agent402's public tool-call counters and the live USDC balance at Agent402's payTo wallet on Base. Read-only publisher of public facts. Does not republish Agent402's derived estimates, top-tool rankings, or recent-calls selection. No auth, no accounts, no payments, no state. Not a benchmark. Not affiliated with Agent402.",
         "responses": {
           "200": {
             "description": "Aggregate public data about the agentic payment economy"

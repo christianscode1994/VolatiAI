@@ -2378,12 +2378,60 @@ contact@fourieranalys.se
           })(),
         ]);
         const stats = statsRes ? await statsRes.json().catch(() => null) : null;
+
+        // ── Extract only raw facts. No estimates, no rankings, no selections. ──
+        const tcs = stats?.toolCallsServed || {};
+        const perf = stats?.performance24h || {};
+        const settledExt = stats?.settledExternal || {};
+
         return new Response(JSON.stringify({
           as_of: new Date().toISOString(),
-          sources: ["agent402.tools/api/stats", "mainnet.base.org eth_call"],
-          agent402_payto_usdc_current: balance,
-          agent402_stats: stats,
-          disclaimer: "Public aggregate data. Not financial advice. Not a payment service. Read-only publisher of on-chain statistics.",
+
+          // ── Raw counters published by Agent402 (facts, not their compilation) ──
+          data: {
+            agent402_total_tool_calls:          tcs.total ?? null,
+            agent402_usdc_paid_calls:           tcs.viaUSDC ?? null,
+            agent402_proof_of_work_calls:       tcs.viaProofOfWork ?? null,
+            agent402_heartbeat_calls:           tcs.viaHeartbeat ?? null,
+            agent402_trial_calls:               tcs.viaTrial ?? null,
+            agent402_settled_onchain_total:     stats?.settledOnChain ?? null,
+            agent402_settled_external_count:    settledExt.count ?? null,
+            agent402_tool_count:                stats?.tools ?? null,
+            agent402_last_24h_calls:            perf.calls ?? null,
+            agent402_p95_latency_ms:            perf.p95LatencyMs ?? null,
+            agent402_payto_usdc_onchain_balance: balance,
+          },
+
+          // ── Attribution ──
+          sources: [
+            "agent402.tools/api/stats (raw counters, cited)",
+            "mainnet.base.org eth_call (on-chain USDC balance, public)",
+          ],
+          attribution: (
+            "Raw counters are facts published by Agent402 at agent402.tools/api/stats. " +
+            "This feed independently aggregates those raw facts. " +
+            "It does NOT republish Agent402's derived estimates, top-tool rankings, " +
+            "or recent-calls selection. The on-chain USDC balance is read directly " +
+            "from Base mainnet and belongs to no party."
+          ),
+
+          // ── Three disclaimers required for safest compliance ──
+          data_protection: (
+            "This feed publishes aggregate statistics only. No individual wallet addresses, " +
+            "transaction hashes, or personal data are stored, processed, or published."
+          ),
+          benchmark_disclaimer: (
+            "This is not a financial benchmark, index, or investment recommendation. " +
+            "It is a read-only aggregation of public on-chain statistics. " +
+            "No regulatory benchmark status is claimed or implied."
+          ),
+          independent_aggregation: (
+            "Independent third-party aggregation. Not affiliated with, endorsed by, " +
+            "or a substitute for Agent402's own API. For authoritative data, " +
+            "consult agent402.tools/api/stats directly."
+          ),
+
+          license: "CC BY 4.0 (this feed's arrangement). Underlying facts remain the property of their respective publishers.",
         }, null, 2), {
           headers: {
             "Content-Type": "application/json",
