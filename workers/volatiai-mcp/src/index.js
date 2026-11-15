@@ -2545,7 +2545,7 @@ contact@fourieranalys.se
         "@context": "https://schema.org/",
         "@type": "SoftwareApplication",
         name: "VolatiAI",
-        description: "Signed, verifiable monitoring of 421 public data sources. Change detection + summaries; NOT predictive signals. Every response carries an Ed25519 attestation verifiable offline.",
+        description: "Verified public-data synthesis for multi-agent systems. Deterministic statistical transforms (rank, delta, evaluate) over 421 public data sources — signed with Ed25519 so a downstream agent can verify the upstream agent's data. No LLM in the paid path. Zero marginal cost. Use when data provenance must be provable.",
         url: url.origin,
         provider: {
           "@type": "Organization",
