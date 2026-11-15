@@ -216,6 +216,11 @@ CUMULATIVE_METRICS = {
     "total_blocks", "certified_products",
     "total_cves", "total_dois", "total_works", "total_records",
     "tracked_packages", "all_auctions_lots_count",
+    # Added: cumulative counters that always rise
+    "new_cves", "nvd_cve_count", "cisa_kev_total",
+    # Added: source-feed artifacts where % change reflects upstream
+    # availability, not market signal
+    "weekly_c2_ips", "active_phishings", "tweetfeed_c2",
 }
 
 # Price and rate levels aren't signals — they're feeds.
@@ -253,6 +258,9 @@ def _is_filtered_signal(d: dict) -> bool:
     if cur_v == 0 and prev_v == 0:
         return True
 
+    # Zero current value on a "count" metric = no events, not a signal
+    if cur_v == 0 and metric in {"quakes", "m45_count", "event_count"}:
+        return True
     pct = d.get("pct_change")
     if isinstance(pct, (int, float)) and abs(pct) < MIN_PCT_NOISE:
         return True
