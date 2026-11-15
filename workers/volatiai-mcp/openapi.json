@@ -611,6 +611,20 @@
           }
         }
       }
+    },
+    "/agentic-economy/tron": {
+      "get": {
+        "summary": "Public read-only data on the Tron x402 ecosystem",
+        "description": "Publishes aggregate public data about Tron's role in the x402 agent economy: latest Tron block, TRC-20 USDT contract stats (aggregate only), and MERX facilitator's x402-supported Tron networks. Read-only publisher of public facts. No auth, no accounts, no payments. Not a benchmark. Not affiliated with MERX, Tron, TronScan, or TronGrid.",
+        "responses": {
+          "200": {
+            "description": "Aggregate public data about Tron in the x402 ecosystem"
+          },
+          "502": {
+            "description": "Upstream fetch error"
+          }
+        }
+      }
     }
   },
   "components": {

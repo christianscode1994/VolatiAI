@@ -2360,9 +2360,6 @@ contact@fourieranalys.se
         const [merx, usdt, block] = await Promise.all([
           fetch("https://x402.merx.exchange/supported", { signal: AbortSignal.timeout(8000) })
             .then(r => r.ok ? r.json() : null).catch(() => null),
-          fetch("https://apilist.tronscanapi.com/api/token_trc20?contract=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-            { signal: AbortSignal.timeout(8000) })
-            .then(r => r.ok ? r.json() : null).catch(() => null),
           fetch("https://api.trongrid.io/wallet/getnowblock", {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -2378,15 +2375,6 @@ contact@fourieranalys.se
         const merxTronSigners = Array.isArray(merx?.signers?.["tron:*"])
           ? merx.signers["tron:*"] : [];
 
-        // TronScan shape: bare array [{...}], {data: [...]}, {trc20_tokens: [...]}, or direct object
-        let t = null;
-        if (usdt) {
-          if (Array.isArray(usdt)) t = usdt[0];
-          else if (Array.isArray(usdt.data)) t = usdt.data[0];
-          else if (Array.isArray(usdt.trc20_tokens)) t = usdt.trc20_tokens[0];
-          else if (usdt.trc20_tokens && typeof usdt.trc20_tokens === "object") t = usdt.trc20_tokens;
-          else t = usdt;
-        }
         const totalSupply = t?.totalSupply ?? t?.total_supply ?? t?.supply ?? null;
         const holders = t?.holders_count ?? t?.holdersCount ?? t?.holders ?? null;
 
@@ -2395,8 +2383,6 @@ contact@fourieranalys.se
           data: {
             tron_latest_block: block?.block_header?.raw_data?.number ?? null,
             tron_usdt_contract: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-            tron_usdt_total_supply: totalSupply,
-            tron_usdt_holders: holders,
             tron_usdt_payTo: "TBQuo7qiruZr2Xj9NEma6DpheVADjbS1Rq",
             merx_facilitator: "https://x402.merx.exchange",
             merx_tron_x402_networks: merxTronKinds,
@@ -2405,13 +2391,12 @@ contact@fourieranalys.se
           },
           sources: [
             "x402.merx.exchange/supported (public x402 facilitator list, cited as-is)",
-            "apilist.tronscanapi.com (public Tron network stats)",
             "api.trongrid.io (public Tron RPC)",
           ],
-          attribution: "MERX /supported cited as-is. TronScan token stats are aggregate public facts. TronGrid block number is a public blockchain fact.",
+          attribution: "MERX /supported cited as-is. TronGrid block number is a public blockchain fact.",
           data_protection: "This feed publishes aggregate network statistics only. No wallet balances, no transaction hashes, no personal data are stored, processed, or published. The tron_usdt_payTo is this service's own receiving address, disclosed by design for x402 payments.",
           benchmark_disclaimer: "This is not a financial benchmark, index, or investment recommendation. Read-only aggregation of public network statistics.",
-          independent_aggregation: "Independent third-party aggregation. Not affiliated with MERX, Tron, TronScan, or TronGrid.",
+          independent_aggregation: "Independent third-party aggregation. Not affiliated with MERX, Tron, or TronGrid.",
           license: "CC BY 4.0 (this feed's arrangement). Underlying facts remain the property of their respective publishers.",
         }, null, 2), {
           headers: {
