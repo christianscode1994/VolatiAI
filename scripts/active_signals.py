@@ -229,16 +229,30 @@ MIN_PCT_NOISE = 0.5
 
 
 def _is_filtered_signal(d: dict) -> bool:
-    """Return True if this signal is noise and should not appear."""
+    """Return True if this signal is noise and should not appear.
+
+    Only filters signals that carry numeric delta data. Summary-only
+    signals (no current/previous) pass through so event-style signals
+    aren't silently dropped.
+    """
+    if not d:
+        return False
+    cur = d.get("current")
+    prev = d.get("previous")
+    has_numeric = isinstance(cur, (int, float)) or isinstance(prev, (int, float))
+    if not has_numeric:
+        # No numeric delta — this is a summary. Let it through.
+        return False
+
     metric = d.get("metric") or ""
     if metric in CUMULATIVE_METRICS or metric in PRICE_FEEDS:
         return True
-    cur = d.get("current")
-    prev = d.get("previous")
+
     cur_v = cur if isinstance(cur, (int, float)) else 0
     prev_v = prev if isinstance(prev, (int, float)) else 0
     if cur_v == 0 and prev_v == 0:
         return True
+
     pct = d.get("pct_change")
     if isinstance(pct, (int, float)) and abs(pct) < MIN_PCT_NOISE:
         return True
