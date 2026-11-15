@@ -2199,6 +2199,7 @@ export default {
 
 ## Discovery
 - Agentic economy (free, public): https://volatiai-mcp.fourieranalys.workers.dev/agentic-economy
+- Agentic economy (free, public): https://volatiai-mcp.fourieranalys.workers.dev/agentic-economy
 - x402 manifest: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402
 - Sign-in-with-x: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/sign-in-with-x
 - OAuth discovery: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/oauth-protected-resource
