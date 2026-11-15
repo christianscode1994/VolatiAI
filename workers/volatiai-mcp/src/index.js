@@ -2198,6 +2198,7 @@ export default {
 - Paid tier: https://volatiai-mcp.fourieranalys.workers.dev/premium/mcp (13 tools, $0.005 USDC per call)
 
 ## Discovery
+- Agentic economy (free, public): https://volatiai-mcp.fourieranalys.workers.dev/agentic-economy
 - x402 manifest: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/x402
 - Sign-in-with-x: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/sign-in-with-x
 - OAuth discovery: https://volatiai-mcp.fourieranalys.workers.dev/.well-known/oauth-protected-resource
@@ -2348,6 +2349,52 @@ contact@fourieranalys.se
       } catch (e) {
         return new Response(JSON.stringify({ error: "track record unavailable", detail: e.message }),
           { status: 503, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
+      }
+    }
+
+    // ─── /agentic-economy — public read-only data feed ────────────────
+    if (url.pathname === "/agentic-economy" && req.method === "GET") {
+      try {
+        const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+        const PAYTO = "0xaBF4FAbd7c416fB67202E5f9002389Fc75e2a9D0";
+        const [statsRes, balance] = await Promise.all([
+          fetch("https://agent402.tools/api/stats", { signal: AbortSignal.timeout(10000) }).catch(() => null),
+          (async () => {
+            const data = "0x70a08231" + PAYTO.toLowerCase().slice(2).padStart(64, "0");
+            try {
+              const r = await fetch("https://mainnet.base.org", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  jsonrpc: "2.0", method: "eth_call",
+                  params: [{ to: USDC, data }, "latest"], id: 1,
+                }),
+                signal: AbortSignal.timeout(10000),
+              });
+              const j = await r.json();
+              return j?.result && j.result !== "0x" ? parseInt(j.result, 16) / 1e6 : 0;
+            } catch { return 0; }
+          })(),
+        ]);
+        const stats = statsRes ? await statsRes.json().catch(() => null) : null;
+        return new Response(JSON.stringify({
+          as_of: new Date().toISOString(),
+          sources: ["agent402.tools/api/stats", "mainnet.base.org eth_call"],
+          agent402_payto_usdc_current: balance,
+          agent402_stats: stats,
+          disclaimer: "Public aggregate data. Not financial advice. Not a payment service. Read-only publisher of on-chain statistics.",
+        }, null, 2), {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=1800",
+          },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), {
+          status: 502,
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        });
       }
     }
 

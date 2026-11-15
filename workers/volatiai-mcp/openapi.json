@@ -597,6 +597,20 @@
         "x-asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         "x-payTo": "0x3EE508f75342315164301B2282f302DF3d3beD47"
       }
+    },
+    "/agentic-economy": {
+      "get": {
+        "summary": "Public read-only data on the x402 agent economy",
+        "description": "Publishes aggregate public data about the agentic payment economy: Agent402's full stats endpoint plus the live USDC balance at Agent402's payTo wallet on Base. Read-only publisher of on-chain statistics. No auth, no accounts, no payments. Free.",
+        "responses": {
+          "200": {
+            "description": "Aggregate public data about the agentic payment economy"
+          },
+          "502": {
+            "description": "Upstream fetch error"
+          }
+        }
+      }
     }
   },
   "components": {
