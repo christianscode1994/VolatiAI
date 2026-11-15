@@ -2209,6 +2209,9 @@ Chain reads: get_eth_balance, get_token_balance, get_block_number, get_gas_price
 Signals: list_active_signals, get_sector, list_categories, verify_snapshot, get_diff, get_anchor, get_trust_manifest, resolve_entity, list_entities, find_corroborations, get_current_revision, get_snapshot
 Utility: page_to_markdown, purchase, explain_pricing (FREE)
 
+## Track Record
+- Backtested signals: https://volatiai-mcp.fourieranalys.workers.dev/track-record
+
 ## Payment
 Protocol: x402 (HTTP 402 Payment Required)
 Networks: Base mainnet, Arc (eip155:5042), Solana (in discovery)
@@ -2322,6 +2325,30 @@ contact@fourieranalys.se
           "Cache-Control": "public, max-age=300"
         }
       });
+    }
+
+    if (url.pathname === "/signals/track-record" || url.pathname === "/track-record") {
+      try {
+        const tr = await fetch(
+          "https://raw.githubusercontent.com/christianscode1994/VolatiAI/main/docs/track_record.json",
+          { signal: AbortSignal.timeout(5000) }
+        );
+        if (tr.ok) {
+          const body = await tr.text();
+          return new Response(body, {
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=300",
+            },
+          });
+        }
+        return new Response(JSON.stringify({ error: "track record not available", status: tr.status }),
+          { status: 503, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "track record unavailable", detail: e.message }),
+          { status: 503, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
+      }
     }
 
     if (url.pathname === "/openapi.json") {

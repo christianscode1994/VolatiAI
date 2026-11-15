@@ -1,0 +1,50 @@
+{
+  "as_of": "2026-11-15T08:52:27.862596Z",
+  "snapshots_total": 94,
+  "snapshots_from": "2026-10-17T09:16:00+00:00",
+  "snapshots_to": "2026-11-14T22:16:00+00:00",
+  "windows": {
+    "24h": {
+      "top_by_volatility": {
+        "samples": 44,
+        "mean_return_pct": -4.472,
+        "median_return_pct": -4.407,
+        "hit_rate_positive": 0.091,
+        "worst_pct": -14.026,
+        "best_pct": 0.752
+      },
+      "signals_rank_risk_adjusted": {
+        "samples": 45,
+        "mean_return_pct": -3.428,
+        "median_return_pct": -3.686,
+        "hit_rate_positive": 0.156,
+        "worst_pct": -11.552,
+        "best_pct": 4.496
+      },
+      "benchmark": {
+        "samples": 148,
+        "mean_return_pct": -1.971,
+        "median_return_pct": -0.799,
+        "hit_rate_positive": 0.324,
+        "worst_pct": -14.094,
+        "best_pct": 4.496
+      },
+      "edge_top_vol_over_benchmark_pct": -2.501,
+      "edge_rank_v1_over_benchmark_pct": -1.457
+    },
+    "7d": {
+      "top_by_volatility": {
+        "samples": 0
+      },
+      "signals_rank_risk_adjusted": {
+        "samples": 0
+      },
+      "benchmark": {
+        "samples": 0
+      }
+    }
+  },
+  "methodology": "At each snapshot time T, rank the tracked universe two ways (raw volatility; rank-v1 risk_adjusted = abs(price_change_7d)/max(volatility,0.01)). Take top 3. Look up current_price at next snapshot T+window. Simple % return. Aggregate across snapshots. Benchmark = equal-weight all assets present in both.",
+  "note": "Simple % price change. Slippage, fees, funding NOT modeled. Small sample.",
+  "disclaimer": "Past performance does not predict future results."
+}
