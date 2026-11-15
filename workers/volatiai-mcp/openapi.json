@@ -182,8 +182,8 @@
     },
     "/premium/list_active_signals": {
       "post": {
-        "summary": "Top-volatility crypto assets ranked by 1h/24h/7d change. Returns up to 10 assets.",
-        "description": "Top-volatility crypto assets ranked by 1h/24h/7d change. Returns up to 10 assets.",
+        "summary": "Monitor crypto volatility changes and active sector signals",
+        "description": "Monitor ongoing signals across 421 public data sources: crypto, security, markets, health, governance. Use when an agent needs to monitor changes, watch for crypto volatility shifts, detect sector events, or list recent monitored changes. Returns signed signal objects with sector, severity, magnitude, delta, window, and Ed25519 attestation. Deterministic, no LLM.",
         "requestBody": {
           "required": true,
           "content": {
@@ -487,8 +487,8 @@
     },
     "/premium/signals_delta": {
       "post": {
-        "summary": "Delta feed: returns assets changed after a caller-supplied Unix timestamp. Caller holds the cursor; server is stateless.",
-        "description": "Delta feed: returns assets changed after a caller-supplied Unix timestamp. Caller holds the cursor; server is stateless. Advance `since` from `next_cursor`.",
+        "summary": "Monitor crypto signal changes since a timestamp",
+        "description": "Monitor crypto signal changes since a caller-provided timestamp. Use when an agent needs to monitor volatility updates, watch for change in crypto assets, or poll for new sector events. Server is stateless; caller holds the cursor. Pass since=0 for initial call. Returns changed assets + next_cursor. Deterministic, no LLM.",
         "requestBody": {
           "required": true,
           "content": {
@@ -563,8 +563,8 @@
     },
     "/premium/signals_rank": {
       "post": {
-        "summary": "Deterministic ranking with published formula. risk_adjusted: abs(7d)/max(volatility,0.01). momentum: 0.5*1h+0.3*24h+0.2*",
-        "description": "Deterministic ranking with published formula. risk_adjusted: abs(7d)/max(volatility,0.01). momentum: 0.5*1h+0.3*24h+0.2*7d. formula_version=rank-v1.",
+        "summary": "Rank crypto assets by volatility or momentum score",
+        "description": "Rank a list of crypto assets by risk-adjusted or momentum score. Use when an agent needs to sort crypto assets, pick the most volatile crypto assets right now, or find high-volatility crypto assets with negative 7-day change. Pass mode='risk_adjusted' or mode='momentum'. Returns sorted array of {symbol, name, score}. Deterministic, no LLM. Published formula in /openapi.json.",
         "requestBody": {
           "required": true,
           "content": {
