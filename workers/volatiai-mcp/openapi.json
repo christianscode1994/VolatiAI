@@ -625,6 +625,28 @@
           }
         }
       }
+    },
+    "/.well-known/ai-catalog.json": {
+      "get": {
+        "summary": "Machine-readable capability manifest for AI agents",
+        "description": "Lists every tool, input schema, price, payment rails, and verification method. Designed for agent runtime discovery, not human browsing.",
+        "responses": {
+          "200": {
+            "description": "Capability manifest"
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "summary": "Live upstream health and latency probe",
+        "description": "Read-only, stateless check of upstream data sources. Reports current reachability and latency, not historical aggregates.",
+        "responses": {
+          "200": {
+            "description": "Current upstream status"
+          }
+        }
+      }
     }
   },
   "components": {

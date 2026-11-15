@@ -2503,6 +2503,117 @@ contact@fourieranalys.se
       }
     }
 
+    // ─── /.well-known/ai-catalog.json — agent capability manifest ──
+    if (url.pathname === "/.well-known/ai-catalog.json" || url.pathname === "/ai-catalog.json") {
+      const PAID = new Set(["/premium/mcp"]);
+      const catalog = {
+        "@context": "https://schema.org/",
+        "@type": "SoftwareApplication",
+        name: "VolatiAI",
+        description: "Signed, verifiable monitoring of 421 public data sources. Change detection + summaries; NOT predictive signals. Every response carries an Ed25519 attestation verifiable offline.",
+        url: url.origin,
+        provider: {
+          "@type": "Organization",
+          name: "VolatiAI",
+          url: "https://christianscode1994.github.io/VolatiAI/"
+        },
+        verification: {
+          algorithm: "Ed25519",
+          pubkey_url: `${url.origin}/.well-known/volatiai-pubkey.pem`,
+          how_to_verify: "Fetch pubkey, canonicalize payload (sorted keys, no whitespace), verify signature."
+        },
+        payment: {
+          protocol: "x402",
+          price_per_call_usd: 0.005,
+          networks: ["eip155:8453", "eip155:5042", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
+          payTo_by_network: {
+            "eip155:8453": "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            "eip155:5042": "0x3EE508f75342315164301B2282f302DF3d3beD47",
+            "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "4v9eSdcjJoy5JDLmUzorZR7ezZ32aJucQUA6KQP8jvy8"
+          },
+          asset_by_network: {
+            "eip155:8453": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "eip155:5042": "0x3600000000000000000000000000000000000000",
+            "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+          }
+        },
+        tools: Object.entries(openapiSpec.paths || {}).map(([path, spec]) => {
+          const post = spec.post || {};
+          const get = spec.get || {};
+          return {
+            name: String(post.summary || get.summary || path).slice(0, 140),
+            method: spec.post ? "POST" : "GET",
+            path,
+            paid: PAID.has(path),
+            price_usd: PAID.has(path) ? 0.005 : 0,
+            description: post.description || get.description || "",
+            input_schema: (post.requestBody && post.requestBody.content &&
+                           post.requestBody.content["application/json"] &&
+                           post.requestBody.content["application/json"].schema) || null
+          };
+        }),
+        track_record_url: `${url.origin}/track-record`,
+        discovery: {
+          llms_txt: `${url.origin}/llms.txt`,
+          openapi: `${url.origin}/openapi.json`,
+          x402_manifest: `${url.origin}/.well-known/x402`,
+          health: `${url.origin}/status`
+        },
+        compliance: {
+          data_protection: "Aggregate data only. No PII stored or processed.",
+          not_a_benchmark: "Read-only aggregation. Not a financial benchmark or investment advice.",
+          not_affiliated: "Independent publisher. Not affiliated with the data sources cited."
+        }
+      };
+      return new Response(JSON.stringify(catalog, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=3600"
+        }
+      });
+    }
+
+    // ─── /status — live upstream health probe (read-only, stateless) ──
+    if (url.pathname === "/status" && req.method === "GET") {
+      const upstreams = [
+        { name: "agent402", url: "https://agent402.tools/api/stats", method: "GET" },
+        { name: "merx", url: "https://x402.merx.exchange/supported", method: "GET" },
+        { name: "trongrid", url: "https://api.trongrid.io/wallet/getnowblock", method: "POST", body: {} }
+      ];
+      const checks = await Promise.all(upstreams.map(async (u) => {
+        const t0 = Date.now();
+        try {
+          const r = await fetch(u.url, {
+            method: u.method,
+            headers: { "content-type": "application/json" },
+            body: u.body ? JSON.stringify(u.body) : undefined,
+            signal: AbortSignal.timeout(5000)
+          });
+          return { name: u.name, ok: r.ok, status: r.status, ms: Date.now() - t0 };
+        } catch (e) {
+          return { name: u.name, ok: false, status: 0, ms: Date.now() - t0, error: String((e && e.message) || e) };
+        }
+      }));
+      const okLat = checks.filter(c => c.ok).map(c => c.ms).sort((a, b) => a - b);
+      const p50 = okLat.length ? okLat[Math.floor(okLat.length * 0.5)] : null;
+      const p95 = okLat.length ? okLat[Math.min(okLat.length - 1, Math.floor(okLat.length * 0.95))] : null;
+      return new Response(JSON.stringify({
+        as_of: new Date().toISOString(),
+        status: checks.every(c => c.ok) ? "ok" : "degraded",
+        upstreams: checks,
+        p50_ms: p50,
+        p95_ms: p95,
+        note: "Live upstream reachability probe. Read-only, stateless, no history stored."
+      }, null, 2), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store"
+        }
+      });
+    }
+
     if (url.pathname === "/openapi.json") {
       return new Response(JSON.stringify(openapiSpec, null, 2), {
         headers: {
