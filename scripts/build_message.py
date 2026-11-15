@@ -69,12 +69,28 @@ _CYCLICAL = {
     "open-meteo-pm25", "7timer-berlin-temp", "wttr-dhaka-temp",
     "sunrise-berlin-daylength",
 }
+
+_NOISE_SECTORS = {
+    # Cumulative counters — % is timing artifact, not signal
+    "total-blocks", "certified-products", "tracked-packages",
+    "total-cves", "total-dois", "total-works", "total-records",
+    "all-auctions-lots-count",
+    # Source-feed artifacts — % reflects upstream availability
+    "tweetfeed-c2", "tweetfeed_c2",
+    "phishunt-domains", "active-phishings", "weekly-c2-ips",
+    # Price/rate feeds — level readings, not change signals
+    "sol-usd", "eth-usd", "ada-usd", "xrp-usd", "dot-usd", "btc-usd",
+    "frankfurter-eurusd", "frankfurter-eursek", "fred-dgs10", "fred-fedfunds",
+    # Broken comparison window — CVEs don't drop 77% in real life
+    "nvd-new-cves-count", "nvd-new-cves",
+}
 signals = [
     r for r in _RAW_SIGNALS
     if r.get("severity") == "critical"
     and not r.get("from_persisted_signal")
     and (r.get("pts") or 0) >= 3
     and (r.get("sector") or "") not in _CYCLICAL
+    and (r.get("sector") or "") not in _NOISE_SECTORS
     and not (r.get("sector") or "").startswith("cluster_")
     and not (abs(r.get("current") or 0) < 0.5 and abs(r.get("pct_change") or 0) > 100)
 ]
