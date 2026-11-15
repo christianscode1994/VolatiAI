@@ -3,7 +3,7 @@
   "info": {
     "title": "VolatiAI MCP",
     "version": "1.0.0",
-    "description": "Signed, verifiable signals from 421 sectors. Every response carries an Ed25519 attestation verifiable offline.",
+    "description": "Signed, verifiable monitoring of 421 public data sources. Every response carries an Ed25519 attestation verifiable offline. This service provides descriptive change detection and summaries, not predictive signals. See /track-record for backtest evidence.",
     "x-guidance": "VolatiAI returns signals about 421 sectors (crypto, finance, weather, science, security) with an Ed25519 signature. Each result includes the payload, the signature, and the pubkey ID needed to verify it. To verify offline: fetch the pubkey at /.well-known/volatiai-pubkey.pem, canonicalize the payload (sorted keys, no whitespace), and check the signature with Ed25519. Do not trust the data without verification. Free tier is unauthenticated.",
     "contact": {
       "email": "contact@fourieranalys.se",

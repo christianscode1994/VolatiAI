@@ -2191,7 +2191,7 @@ export default {
     if (url.pathname === "/llms.txt") {
       const llmsContent = `# VolatiAI MCP
 
-> Signed, verifiable signals from 421 sectors. Every response carries an Ed25519 attestation verifiable offline. Paid via x402 (USDC on Base, Arc, and Solana).
+> Signed, verifiable monitoring of 421 public data sources. Every response carries an Ed25519 attestation verifiable offline. Change detection + summaries; NOT predictive signals. See /track-record for a backtest of the ranking formulas we tried. Paid via x402 (USDC on Base, Arc, and Solana).
 
 ## MCP Endpoint
 - Free tier: https://volatiai-mcp.fourieranalys.workers.dev/mcp
