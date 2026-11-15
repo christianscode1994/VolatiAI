@@ -2357,7 +2357,7 @@ contact@fourieranalys.se
     // ─── /agentic-economy/tron — Tron x402 ecosystem public data ────
     if (url.pathname === "/agentic-economy/tron" && req.method === "GET") {
       try {
-        const [merx, usdt, block] = await Promise.all([
+        const [merx, block] = await Promise.all([
           fetch("https://x402.merx.exchange/supported", { signal: AbortSignal.timeout(8000) })
             .then(r => r.ok ? r.json() : null).catch(() => null),
           fetch("https://api.trongrid.io/wallet/getnowblock", {
@@ -2374,9 +2374,6 @@ contact@fourieranalys.se
           .map(k => k.network);
         const merxTronSigners = Array.isArray(merx?.signers?.["tron:*"])
           ? merx.signers["tron:*"] : [];
-
-        const totalSupply = t?.totalSupply ?? t?.total_supply ?? t?.supply ?? null;
-        const holders = t?.holders_count ?? t?.holdersCount ?? t?.holders ?? null;
 
         return new Response(JSON.stringify({
           as_of: new Date().toISOString(),
