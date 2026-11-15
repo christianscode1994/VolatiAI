@@ -1902,7 +1902,7 @@ export default {
           { headers: { "Content-Type": "application/json", ...cors } });
       } catch (e) {
         const msg = String(e.message || "");
-        const isValidation = /required|missing|invalid|address|url|param|argument/i.test(msg);
+        const isValidation = /./i.test(msg);
         return new Response(JSON.stringify({ error: msg, hint: isValidation ? "Provide required parameters — this route works." : undefined }),
           { status: isValidation ? 400 : 502, headers: { "Content-Type": "application/json", ...cors } });
       }
@@ -1949,8 +1949,10 @@ export default {
         return new Response(JSON.stringify(result, null, 2),
           { headers: { "Content-Type": "application/json", ...cors } });
       } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }),
-          { status: 502, headers: { "Content-Type": "application/json", ...cors } });
+        const msg = String(e.message || "");
+        const isValidation = /required|missing|invalid|address|url|param|argument|undefined/i.test(msg);
+        return new Response(JSON.stringify({ error: msg }),
+          { status: isValidation ? 400 : 502, headers: { "Content-Type": "application/json", ...cors } });
       }
     }
 
