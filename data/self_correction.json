@@ -2,11 +2,6 @@
   "raise_thresholds": [],
   "remove_sector": [
     {
-      "sector": "13f-holdings",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "agent-census",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -52,11 +47,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -74,6 +64,11 @@
     {
       "sector": "chainsights-daos",
       "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "cheapshark-deal-count",
+      "reason": "conf=0 in 9/24 runs (38%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -213,11 +208,6 @@
     },
     {
       "sector": "filecoin-network",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "finance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -387,6 +377,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "science-news",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "snapshot-proposals",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -467,11 +462,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "weather",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "web-apps",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -483,7 +473,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 17/24 runs (71%)",
+      "reason": "conf=0 in 16/24 runs (67%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -492,20 +482,34 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 9/24 runs (38%)",
+      "sector": "finance",
+      "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "science-news",
+      "sector": "weather",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "13f-holdings",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "bgp-prefixes",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
+      "sector": "carbon-intensity",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "cve-feed",
-      "reason": "spam (73%) but no config found in workers"
+      "reason": "spam (77%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -524,12 +528,8 @@
       "reason": "spam (79%) but no config found in workers"
     },
     {
-      "sector": "dex-total-volume-24h",
-      "reason": "spam (50%) but no config found in workers"
-    },
-    {
       "sector": "dex-uniswap-volume",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
@@ -557,19 +557,19 @@
     },
     {
       "sector": "ietf-datatracker",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "kraken-ada-usd",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "kraken-btc-usd",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "kraken-doge-usd",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "kraken-dot-usd",
@@ -577,11 +577,11 @@
     },
     {
       "sector": "kraken-eth-usd",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "kraken-link-usd",
-      "reason": "spam (92%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "kraken-sol-usd",
@@ -589,7 +589,7 @@
     },
     {
       "sector": "kraken-xrp-usd",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "nbp-gold-spot",
@@ -600,12 +600,16 @@
       "reason": "spam (83%) but no config found in workers"
     },
     {
+      "sector": "nvd-new-cves-count",
+      "reason": "spam (88%) but no config found in workers"
+    },
+    {
       "sector": "open-digger-openrank-vscode",
       "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "ossf-scorecard-linux",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -613,11 +617,11 @@
     },
     {
       "sector": "pocketworld-space-weather",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "pypi-downloads-requests",
@@ -629,7 +633,7 @@
     },
     {
       "sector": "stablecoin-usdc-supply",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "stablecoin-usdt-supply",
@@ -658,10 +662,6 @@
     {
       "sector": "whiskyhunter-lot-count",
       "reason": "spam (100%) but no config found in workers"
-    },
-    {
-      "sector": "nvd-new-cves-count",
-      "reason": "spam (83%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -677,11 +677,6 @@
     },
     {
       "sector": "ballotwatch-bills",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "books",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -751,11 +746,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "develop",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "doaj-articles",
       "runs": 24,
       "avg_conf": 1.0
@@ -772,6 +762,11 @@
     },
     {
       "sector": "epss-log4shell",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "espn-nba-score-count",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -888,7 +883,7 @@
     {
       "sector": "sec-filings",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "spaceflight-news-count",
@@ -906,11 +901,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "vehicles",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "wikidata-triples",
       "runs": 24,
       "avg_conf": 1.0
@@ -918,7 +908,7 @@
     {
       "sector": "worldbank-se-gdp",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "worldbank-us-gdp",
@@ -932,6 +922,21 @@
     },
     {
       "sector": "zenodo-records",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "books",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "develop",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "vehicles",
       "runs": 24,
       "avg_conf": 1.0
     }
