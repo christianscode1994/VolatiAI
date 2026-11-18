@@ -47,11 +47,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -73,7 +68,7 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 12/24 runs (50%)",
+      "reason": "conf=0 in 13/24 runs (54%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -422,11 +417,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "theoretical-cs",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -500,6 +490,16 @@
       "sector": "13f-holdings",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "bgp-prefixes",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
@@ -524,16 +524,20 @@
       "reason": "spam (100%) but no config found in workers"
     },
     {
+      "sector": "depin-network",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "fred-fedfunds",
@@ -553,7 +557,7 @@
     },
     {
       "sector": "ietf-datatracker",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "kraken-ada-usd",
@@ -593,7 +597,7 @@
     },
     {
       "sector": "noaa-spaceweather-alerts",
-      "reason": "spam (92%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -621,7 +625,7 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
@@ -637,7 +641,7 @@
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -684,7 +688,7 @@
     {
       "sector": "cern-opendata",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "cisa-kev-count",
@@ -732,11 +736,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "dev-metaverse",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
       "sector": "dev-vr-ar",
       "runs": 24,
       "avg_conf": 1.0
@@ -758,11 +757,6 @@
     },
     {
       "sector": "epss-log4shell",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "espn-nba-score-count",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -874,7 +868,7 @@
     {
       "sector": "sec-filings",
       "runs": 24,
-      "avg_conf": 0.83
+      "avg_conf": 0.79
     },
     {
       "sector": "spaceflight-news-count",
@@ -914,7 +908,7 @@
     {
       "sector": "zenodo-records",
       "runs": 24,
-      "avg_conf": 0.96
+      "avg_conf": 0.92
     },
     {
       "sector": "books",
