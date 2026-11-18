@@ -47,11 +47,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -73,7 +68,7 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 10/24 runs (42%)",
+      "reason": "conf=0 in 11/24 runs (46%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -307,6 +302,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nasa-neo",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -442,16 +442,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "usgs-streamflow",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "usgs-water",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "volcano-alerts",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -468,7 +458,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 17/24 runs (71%)",
+      "reason": "conf=0 in 18/24 runs (75%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -492,12 +482,22 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-neo",
+      "sector": "bgp-prefixes",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
       "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "usgs-streamflow",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "usgs-water",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -529,11 +529,11 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "fred-fedfunds",
@@ -553,7 +553,7 @@
     },
     {
       "sector": "ietf-datatracker",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "kraken-ada-usd",
@@ -573,7 +573,7 @@
     },
     {
       "sector": "kraken-eth-usd",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "kraken-link-usd",
@@ -593,7 +593,7 @@
     },
     {
       "sector": "noaa-spaceweather-alerts",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -605,7 +605,7 @@
     },
     {
       "sector": "ossf-scorecard-linux",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -613,7 +613,7 @@
     },
     {
       "sector": "pocketworld-space-weather",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
@@ -625,7 +625,7 @@
     },
     {
       "sector": "stablecoin-usdc-supply",
-      "reason": "spam (100%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "stablecoin-usdt-supply",
@@ -875,7 +875,7 @@
     {
       "sector": "sec-filings",
       "runs": 24,
-      "avg_conf": 0.92
+      "avg_conf": 0.88
     },
     {
       "sector": "spaceflight-news-count",
