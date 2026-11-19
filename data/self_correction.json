@@ -2,6 +2,11 @@
   "raise_thresholds": [],
   "remove_sector": [
     {
+      "sector": "13f-holdings",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "agent-census",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -47,6 +52,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "bgp-prefixes",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -68,7 +78,7 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 13/24 runs (54%)",
+      "reason": "conf=0 in 14/24 runs (58%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -178,7 +188,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 19/24 runs (79%)",
+      "reason": "conf=0 in 20/24 runs (83%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -208,6 +218,11 @@
     },
     {
       "sector": "filecoin-network",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "finance",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -298,11 +313,6 @@
     },
     {
       "sector": "nasa-eonet",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -417,6 +427,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "tobacco-reports",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -457,6 +472,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "weather",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "web-apps",
       "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -477,27 +497,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "finance",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "weather",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "13f-holdings",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
+      "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -529,15 +529,15 @@
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "fred-fedfunds",
@@ -577,7 +577,7 @@
     },
     {
       "sector": "kraken-eth-usd",
-      "reason": "spam (92%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "kraken-link-usd",
@@ -597,7 +597,7 @@
     },
     {
       "sector": "noaa-spaceweather-alerts",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "nvd-new-cves-count",
@@ -621,7 +621,7 @@
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "pypi-downloads-requests",
@@ -677,6 +677,11 @@
     },
     {
       "sector": "ballotwatch-bills",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "books",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -737,6 +742,11 @@
     },
     {
       "sector": "dev-vr-ar",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "develop",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -868,7 +878,7 @@
     {
       "sector": "sec-filings",
       "runs": 24,
-      "avg_conf": 0.79
+      "avg_conf": 0.75
     },
     {
       "sector": "spaceflight-news-count",
@@ -882,6 +892,11 @@
     },
     {
       "sector": "usgs-earthquakes-emsc",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
+      "sector": "vehicles",
       "runs": 24,
       "avg_conf": 1.0
     },
@@ -909,21 +924,6 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 0.92
-    },
-    {
-      "sector": "books",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "develop",
-      "runs": 24,
-      "avg_conf": 1.0
-    },
-    {
-      "sector": "vehicles",
-      "runs": 24,
-      "avg_conf": 1.0
     }
   ]
 }
