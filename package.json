@@ -20,10 +20,10 @@
   },
   "devDependencies": {
     "@x402/extensions": "^2.30.0",
-    "wrangler": "^4.151.1"
+    "wrangler": "^4.164.0"
   },
   "scripts": {
-    "deploy": "npx hugo && wrangler deploy",
-    "preview": "npx hugo && wrangler dev"
+    "deploy": "hugo && npx wrangler deploy",
+    "preview": "hugo && npx wrangler dev"
   }
 }
