@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import List
 from core.signals.valuation import ValuatedSignal
 
-@dataclass:
+@dataclass
 class FusedView:
     chains: List[str]
     view_type: str          # e.g. "market_overview", "chain_health"

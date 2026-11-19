@@ -74,4 +74,3 @@ def depth_score(
 
     except Exception:
         return 0.0
-``
