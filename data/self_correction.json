@@ -52,11 +52,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -78,7 +73,7 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 15/24 runs (62%)",
+      "reason": "conf=0 in 16/24 runs (67%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -337,11 +332,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nvd-new-cves",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "openfda-recalls",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -387,6 +377,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "sec-filings",
+      "reason": "conf=0 in 8/24 runs (33%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "snapshot-proposals",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -418,11 +413,6 @@
     },
     {
       "sector": "ted-tenders",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -492,6 +482,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "bgp-prefixes",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -500,16 +495,22 @@
       "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nvd-new-cves",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "carbon-intensity",
       "reason": "spam (54%) but no config found in workers"
-    },
-    {
-      "sector": "cve-feed",
-      "reason": "spam (71%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -529,11 +530,11 @@
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
-      "reason": "spam (79%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "fred-fedfunds",
@@ -541,7 +542,7 @@
     },
     {
       "sector": "github-recent-commits",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "hackernews-top-scores",
@@ -617,7 +618,7 @@
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "pypi-downloads-requests",
@@ -658,6 +659,10 @@
     {
       "sector": "whiskyhunter-lot-count",
       "reason": "spam (100%) but no config found in workers"
+    },
+    {
+      "sector": "cve-feed",
+      "reason": "spam (71%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -700,11 +705,6 @@
       "sector": "cisa-kev-total",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "clearlydefined-react-license",
-      "runs": 24,
-      "avg_conf": 0.96
     },
     {
       "sector": "cleveland-artworks",
@@ -837,11 +837,6 @@
       "avg_conf": 0.96
     },
     {
-      "sector": "nvd-cve-count",
-      "runs": 24,
-      "avg_conf": 0.83
-    },
-    {
       "sector": "open-source",
       "runs": 24,
       "avg_conf": 1.0
@@ -870,11 +865,6 @@
       "sector": "osv-vulnerabilities",
       "runs": 24,
       "avg_conf": 1.0
-    },
-    {
-      "sector": "sec-filings",
-      "runs": 24,
-      "avg_conf": 0.71
     },
     {
       "sector": "spaceflight-news-count",
@@ -920,6 +910,16 @@
       "sector": "zenodo-records",
       "runs": 24,
       "avg_conf": 0.92
+    },
+    {
+      "sector": "clearlydefined-react-license",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
+      "sector": "nvd-cve-count",
+      "runs": 24,
+      "avg_conf": 0.83
     }
   ]
 }
