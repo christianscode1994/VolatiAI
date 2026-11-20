@@ -1,6 +1,6 @@
 {
   "name": "volatiai-broadcaster",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "VolatiAI multi-network broadcaster",
   "main": "broadcaster.js",
   "type": "module",
@@ -25,5 +25,6 @@
   "scripts": {
     "deploy": "hugo && npx wrangler deploy",
     "preview": "hugo && npx wrangler dev"
-  }
+  },
+  "private": true
 }
