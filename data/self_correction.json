@@ -78,7 +78,7 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 14/24 runs (58%)",
+      "reason": "conf=0 in 15/24 runs (62%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -322,11 +322,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "noaa-ndbc",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -500,12 +495,17 @@
       "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
       "sector": "carbon-intensity",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "cve-feed",
@@ -525,19 +525,15 @@
     },
     {
       "sector": "depin-network",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (75%) but no config found in workers"
-    },
-    {
-      "sector": "frankfurter-eursek",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
-      "reason": "spam (75%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "fred-fedfunds",
@@ -577,7 +573,7 @@
     },
     {
       "sector": "kraken-eth-usd",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "kraken-link-usd",
@@ -621,11 +617,11 @@
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
@@ -641,7 +637,7 @@
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (75%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -878,7 +874,7 @@
     {
       "sector": "sec-filings",
       "runs": 24,
-      "avg_conf": 0.75
+      "avg_conf": 0.71
     },
     {
       "sector": "spaceflight-news-count",
