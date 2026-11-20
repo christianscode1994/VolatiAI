@@ -35,6 +35,18 @@ const TOOLS = [
     },
   },
   {
+    name: "search_sectors",
+    description: "Keyword search over sector IDs. Deterministic, no embeddings, no LLM. Use when you know the topic but not the exact sector ID.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Keywords to match" },
+        limit: { type: "integer", minimum: 1, maximum: 50, default: 10 },
+      },
+      required: ["query"],
+    },
+  },
+  {
     name: "purchase",
     description: "Execute a paid tool by providing a valid x402 payment header. Returns the tool result and a signed receipt with transaction hash. Use this to purchase any paid tool in one atomic call.",
     inputSchema: {
@@ -1235,7 +1247,7 @@ async function toolExplainPricing(env = {}) {
     price_usdc_flat: 0.01,
     maxTimeoutSeconds: 60,
     how_to_pay: "Sign EIP-712 TransferWithAuthorization; send base64 JSON as X-PAYMENT header",
-    free_tools: ["explain_pricing", "tools/list"],
+    free_tools: ["explain_pricing", "tools/list", "search_sectors"],
     paid_tools: [
       { name: "get_eth_balance",     args: ["address"],               what: "ETH balance on Base" },
       { name: "get_token_balance",   args: ["address", "token"],      what: "ERC-20 balance (decimals 6)" },
@@ -1256,6 +1268,27 @@ async function toolExplainPricing(env = {}) {
     ],
     note: "All paid tools are 0.01 USDC flat. Chain reads will be repriced to 0.001 in a future release.",
   };
+}
+
+async function toolSearchSectors(args, env) {
+  const query = (args && args.query) || "";
+  const limit = (args && args.limit) || 10;
+  if (!query) return { content: [{ type: "text", text: "Missing query" }], isError: true };
+  const tokens = String(query).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  if (!tokens.length) return { content: [{ type: "text", text: "Empty query" }], isError: true };
+  const cap = Math.min(Math.max(Number(limit), 1), 50);
+  const lists = await Promise.all([
+    env.SECTOR_DENSE.fetch("https://sector-dense.fourieranalys.workers.dev/").then(r=>r.json()).catch(()=>({sectors:[]})),
+    env.SECTOR_SPARSE.fetch("https://sector-sparse.fourieranalys.workers.dev/").then(r=>r.json()).catch(()=>({sectors:[]})),
+    env.SECTOR_SLOW.fetch("https://sector-slow.fourieranalys.workers.dev/").then(r=>r.json()).catch(()=>({sectors:[]}))
+  ]);
+  const all = lists.flatMap(r => r.sectors || []);
+  const ranked = all.map(s => {
+    const lo = s.toLowerCase(); const parts = lo.split(/[^a-z0-9]+/); let sc = 0;
+    for (const t of tokens) { if (lo.includes(t)) sc += 3; if (parts.some(x=>x.startsWith(t))) sc += 2; if (parts.some(x=>x.includes(t))) sc += 1; }
+    return { sector: s, score: sc };
+  }).filter(x => x.score > 0).sort((a,b) => b.score - a.score).slice(0, cap);
+  return { content: [{ type: "text", text: JSON.stringify(ranked, null, 2) }] };
 }
 
 async function toolGetEthBalance(args) {
@@ -1401,6 +1434,7 @@ async function handleToolsCall(params = {}, env = {}) {
   const args = params.arguments || {};
   switch (name) {
     case "list_active_signals":  return await toolListActiveSignals(args);
+    case "search_sectors":       return await toolSearchSectors(args, env);
     case "get_sector":       return await toolGetSector(args, env);
     case "list_categories":       return await toolListCategories();
     case "verify_snapshot":       return await toolVerifySnapshot(args);
@@ -3376,7 +3410,7 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
         const isFreeMethod = freeMethods.includes(gateRpc.method);
         const isFreeTool = gateRpc.method === "tools/call"
           && gateRpc.params
-          && gateRpc.params.name === "explain_pricing";
+          && (gateRpc.params.name === "explain_pricing" || gateRpc.params.name === "search_sectors");
         if (!isFreeMethod && !isFreeTool) {
           return new Response(JSON.stringify({
             x402Version: 1,
