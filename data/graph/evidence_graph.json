@@ -1,0 +1,21 @@
+{
+  "nodes": {
+    "copper": 91,
+    "shipping": 87,
+    "manufacturing": 94
+  },
+  "edges": [
+    {
+      "source": "copper",
+      "target": "manufacturing",
+      "relation": "supports",
+      "weight": 0.82
+    },
+    {
+      "source": "shipping",
+      "target": "manufacturing",
+      "relation": "supports",
+      "weight": 0.77
+    }
+  ]
+}
