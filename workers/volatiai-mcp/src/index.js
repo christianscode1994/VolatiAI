@@ -9,6 +9,20 @@ import {
   validateSIWxMessage,
   verifySIWxSignature,
 } from '@x402/extensions/sign-in-with-x';
+import { signalsExplain } from "./signals_explain.js";
+
+import { signalsTrace } from "./reasoning/signals_trace.js";
+import { signalsBelief } from "./reasoning/signals_belief.js";
+import { signalsClaimGraph } from "./reasoning/signals_claim_graph.js";
+import { signalsRankV2 } from "./reasoning/signals_rank_v2.js";
+
+import { signalsContradictions } from "./reasoning/signals_contradictions.js";
+import { signalsArbitrate } from "./reasoning/signals_arbitrate.js";
+import { signalsMultihop } from "./reasoning/signals_multihop.js";
+import { signalsNarrative } from "./reasoning/signals_narrative.js";
+
+
+
 
 
 const ACTIVE_JSON_URL = "https://christianscode1994.github.io/VolatiAI/active.json";
@@ -159,9 +173,73 @@ TOOLS.push(
     } },
   },
   {
+    
     name: "signals_rank",
     description: "Deterministic ranking with published formula. risk_adjusted: abs(7d)/max(volatility,0.01). momentum: 0.5*1h+0.3*24h+0.2*7d. formula_version=rank-v1.",
-    inputSchema: { type: "object", properties: { mode: { type: "string", enum: ["risk_adjusted", "momentum"] } } },
+    inputSchema: {
+      type: "object",
+      properties: {
+        mode: {
+          type: "string",
+          enum: ["risk_adjusted", "momentum"]
+        }
+      }
+    },
+  },
+  {
+    name: "signals_trace",
+    description: "Trace evidence paths for a signal.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        signal: { type: "string" }
+      },
+      required: ["signal"]
+    }
+  },
+  {
+    name: "signals_belief",
+    description: "Return belief and confidence score.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        signal: { type: "string" }
+      },
+      required: ["signal"]
+    }
+  },
+  {
+    name: "signals_claim_graph",
+    description: "Return graph neighborhood around a signal.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        signal: { type: "string" }
+      },
+      required: ["signal"]
+    }
+  },
+  {
+    name: "signals_rank_v2",
+    description: "Graph-aware ranking.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        assets: { type: "array" }
+      }
+    }
+  },
+
+  {
+    name: "signals_explain",
+    description: "Explain evidence relationships for a signal.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        signal: { type: "string" }
+      },
+      required: ["signal"]
+    }
   }
 );
 
@@ -1456,6 +1534,11 @@ async function handleToolsCall(params = {}, env = {}) {
     case "signals_delta":     return await signalsDelta(args);
     case "signals_evaluate":  return await signalsEvaluate(args);
     case "signals_rank":      return await signalsRank(args);
+    case "signals_trace":     return await signalsTrace(args);
+    case "signals_belief":    return await signalsBelief(args);
+    case "signals_claim_graph": return await signalsClaimGraph(args);
+    case "signals_rank_v2":   return await signalsRankV2(args);
+    case "signals_explain":   return await signalsExplain(args);
     case "get_snapshot":        return await toolGetSnapshot(args);
     case "purchase":            return await toolPurchase(args, env);
 default: throw new Error(`Unknown tool: ${name}`);
@@ -2005,6 +2088,11 @@ export default {
       "signals_delta":       (b) => signalsDelta(b),
       "signals_evaluate":    (b) => signalsEvaluate(b),
       "signals_rank":        (b) => signalsRank(b),
+      "signals_trace":       (b) => signalsTrace(b),
+      "signals_belief":      (b) => signalsBelief(b),
+      "signals_claim_graph": (b) => signalsClaimGraph(b),
+      "signals_rank_v2":     (b) => signalsRankV2(b),
+      "signals_explain":     (b) => signalsExplain(b),
     };
     const _m = url.pathname.match(/^\/premium\/([a-z_]+)$/);
     if (_m && PREMIUM_TOOLS[_m[1]] && req.method === "POST") {
@@ -3410,7 +3498,7 @@ const settleResp = await fetchWithRetry(FACILITATOR_URL, {
         const isFreeMethod = freeMethods.includes(gateRpc.method);
         const isFreeTool = gateRpc.method === "tools/call"
           && gateRpc.params
-          && (gateRpc.params.name === "explain_pricing" || gateRpc.params.name === "search_sectors");
+          && (gateRpc.params.name === "explain_pricing" || gateRpc.params.name === "search_sectors" || gateRpc.params.name.startsWith("signals_"));
         if (!isFreeMethod && !isFreeTool) {
           return new Response(JSON.stringify({
             x402Version: 1,
