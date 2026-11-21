@@ -1,0 +1,25 @@
+# Development artifacts
+llama.cpp/
+node_modules/
+.venv/
+.git/
+.wrangler/
+.hermes/
+__pycache__/
+
+# Repo-only files
+scripts/
+src/
+data/
+docs/
+public/
+reports/
+history/
+
+# Build/test
+*.test.js
+*.spec.js
+*.log
+.DS_Store
+
+# Anything else not explicitly whitelisted in package.json's files array

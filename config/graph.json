@@ -1,5 +1,5 @@
 {
-  "computed_at": "2026-11-20T03:00:14.514015Z",
+  "computed_at": "2026-11-21T03:00:14.272050Z",
   "threshold": 0.8,
   "min_points": 10,
   "nodes": [
@@ -151,22 +151,22 @@
   ],
   "edges": [
     {
-      "a": "baltic-wave-height",
-      "b": "datafirst-african-surveys",
-      "corr": 0.805,
-      "n": 25
+      "a": "bts-us-canada-truck-crossings",
+      "b": "fdic-insured-banks",
+      "corr": -1.0,
+      "n": 26
     },
     {
       "a": "cisa-kev-count",
       "b": "cisa-kev-total",
       "corr": 1.0,
-      "n": 28
+      "n": 29
     },
     {
       "a": "clinicaltrials-total-studies",
       "b": "spaceflight-news-count",
-      "corr": 0.825,
-      "n": 26
+      "corr": 0.826,
+      "n": 27
     },
     {
       "a": "coinbase-btc-usd",
@@ -183,50 +183,50 @@
     {
       "a": "crossref-deep-learning",
       "b": "crossref-works",
-      "corr": 0.925,
-      "n": 26
+      "corr": 0.923,
+      "n": 27
     },
     {
       "a": "crossref-deep-learning",
       "b": "usgs-earthquakes",
-      "corr": 0.868,
-      "n": 26
+      "corr": 0.854,
+      "n": 27
     },
     {
-      "a": "defi-open-interest-total",
-      "b": "kraken-eth-usd",
-      "corr": 0.82,
-      "n": 27
+      "a": "crossref-works",
+      "b": "usgs-earthquakes",
+      "corr": 0.801,
+      "n": 30
     },
     {
       "a": "defi-total-tvl",
       "b": "kraken-btc-usd",
-      "corr": 0.836,
-      "n": 27
+      "corr": 0.802,
+      "n": 28
     },
     {
       "a": "defi-total-tvl",
       "b": "kraken-eth-usd",
-      "corr": 0.835,
-      "n": 27
+      "corr": 0.805,
+      "n": 28
     },
     {
       "a": "dex-ethereum-volume",
       "b": "dex-total-volume-24h",
-      "corr": 0.926,
-      "n": 28
+      "corr": 0.927,
+      "n": 29
     },
     {
       "a": "dex-ethereum-volume",
       "b": "dex-uniswap-volume",
-      "corr": 0.959,
-      "n": 28
+      "corr": 0.958,
+      "n": 29
     },
     {
       "a": "dex-total-volume-24h",
       "b": "dex-uniswap-volume",
       "corr": 0.96,
-      "n": 28
+      "n": 29
     },
     {
       "a": "eth-exchange-spread",
@@ -238,163 +238,181 @@
       "a": "frankfurter-eur-usd",
       "b": "frankfurter-eurusd",
       "corr": -1.0,
-      "n": 26
+      "n": 27
     },
     {
       "a": "fred-dgs10",
       "b": "treasuries",
       "corr": 1.0,
-      "n": 28
+      "n": 29
     },
     {
       "a": "fred-fedfunds",
       "b": "open-digger-openrank-vscode",
       "corr": 1.0,
-      "n": 28
+      "n": 29
     },
     {
       "a": "fred-fedfunds",
       "b": "openfda-food-recalls",
       "corr": 0.974,
-      "n": 28
+      "n": 29
     },
     {
       "a": "fred-fedfunds",
       "b": "usgs-elevated-volcanoes",
       "corr": -1.0,
-      "n": 28
+      "n": 29
     },
     {
       "a": "gleif-leis",
       "b": "gleif-total-leis",
       "corr": 0.984,
-      "n": 25
+      "n": 26
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-btc-usd",
-      "corr": 0.815,
-      "n": 27
+      "corr": 0.841,
+      "n": 28
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-doge-usd",
-      "corr": 0.918,
-      "n": 27
+      "corr": 0.937,
+      "n": 28
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-dot-usd",
-      "corr": 0.862,
-      "n": 27
+      "corr": 0.9,
+      "n": 28
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-eth-usd",
-      "corr": 0.832,
-      "n": 27
+      "corr": 0.851,
+      "n": 28
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-link-usd",
-      "corr": 0.874,
-      "n": 27
+      "corr": 0.905,
+      "n": 28
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.873,
-      "n": 27
+      "corr": 0.897,
+      "n": 28
     },
     {
       "a": "kraken-ada-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.8,
-      "n": 27
-    },
-    {
-      "a": "kraken-btc-usd",
-      "b": "kraken-doge-usd",
       "corr": 0.831,
-      "n": 27
+      "n": 28
+    },
+    {
+      "a": "kraken-btc-usd",
+      "b": "kraken-doge-usd",
+      "corr": 0.858,
+      "n": 28
     },
     {
       "a": "kraken-btc-usd",
       "b": "kraken-eth-usd",
-      "corr": 0.917,
-      "n": 27
+      "corr": 0.932,
+      "n": 28
     },
     {
       "a": "kraken-btc-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.848,
-      "n": 27
+      "corr": 0.875,
+      "n": 28
+    },
+    {
+      "a": "kraken-btc-usd",
+      "b": "kraken-xrp-usd",
+      "corr": 0.815,
+      "n": 28
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-dot-usd",
-      "corr": 0.854,
-      "n": 27
+      "corr": 0.898,
+      "n": 28
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-eth-usd",
-      "corr": 0.858,
-      "n": 27
+      "corr": 0.877,
+      "n": 28
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-link-usd",
-      "corr": 0.827,
-      "n": 27
+      "corr": 0.871,
+      "n": 28
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.904,
-      "n": 27
+      "corr": 0.923,
+      "n": 28
     },
     {
       "a": "kraken-doge-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.826,
-      "n": 27
+      "corr": 0.852,
+      "n": 28
     },
     {
       "a": "kraken-dot-usd",
       "b": "kraken-link-usd",
-      "corr": 0.828,
-      "n": 27
+      "corr": 0.88,
+      "n": 28
+    },
+    {
+      "a": "kraken-dot-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.835,
+      "n": 28
     },
     {
       "a": "kraken-eth-usd",
       "b": "kraken-sol-usd",
-      "corr": 0.837,
-      "n": 27
+      "corr": 0.866,
+      "n": 28
     },
     {
       "a": "kraken-eth-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.886,
-      "n": 27
+      "corr": 0.901,
+      "n": 28
+    },
+    {
+      "a": "kraken-link-usd",
+      "b": "kraken-sol-usd",
+      "corr": 0.824,
+      "n": 28
     },
     {
       "a": "kraken-sol-usd",
       "b": "kraken-xrp-usd",
-      "corr": 0.838,
-      "n": 27
+      "corr": 0.865,
+      "n": 28
     },
     {
       "a": "open-digger-openrank-vscode",
       "b": "openfda-food-recalls",
       "corr": 0.974,
-      "n": 28
+      "n": 29
     },
     {
       "a": "open-digger-openrank-vscode",
       "b": "usgs-elevated-volcanoes",
       "corr": -1.0,
-      "n": 28
+      "n": 29
     },
     {
       "a": "openfda-device-recalls",
@@ -406,27 +424,27 @@
       "a": "openfda-food-recalls",
       "b": "usgs-elevated-volcanoes",
       "corr": -0.974,
-      "n": 28
+      "n": 29
     },
     {
       "a": "pypi-daily-requests",
       "b": "pypi-downloads-requests",
       "corr": 1.0,
-      "n": 27
+      "n": 28
     },
     {
       "a": "steam-csgo-players",
       "b": "steam-dota2-players",
       "corr": 0.969,
-      "n": 27
+      "n": 28
     }
   ],
   "clusters": [
     {
       "id": "cluster_0",
       "members": [
-        "baltic-wave-height",
-        "datafirst-african-surveys"
+        "bts-us-canada-truck-crossings",
+        "fdic-insured-banks"
       ]
     },
     {
@@ -464,7 +482,6 @@
     {
       "id": "cluster_5",
       "members": [
-        "defi-open-interest-total",
         "defi-total-tvl",
         "kraken-ada-usd",
         "kraken-btc-usd",
@@ -530,8 +547,8 @@
     }
   ],
   "sector_to_cluster": {
-    "baltic-wave-height": "cluster_0",
-    "datafirst-african-surveys": "cluster_0",
+    "bts-us-canada-truck-crossings": "cluster_0",
+    "fdic-insured-banks": "cluster_0",
     "cisa-kev-count": "cluster_1",
     "cisa-kev-total": "cluster_1",
     "clinicaltrials-total-studies": "cluster_2",
@@ -544,7 +561,6 @@
     "crossref-deep-learning": "cluster_4",
     "crossref-works": "cluster_4",
     "usgs-earthquakes": "cluster_4",
-    "defi-open-interest-total": "cluster_5",
     "defi-total-tvl": "cluster_5",
     "kraken-ada-usd": "cluster_5",
     "kraken-btc-usd": "cluster_5",

@@ -1,0 +1,72 @@
+{
+  "nodes": {
+    "copper": 91,
+    "shipping": 87,
+    "manufacturing": 94,
+    "industrial_activity": 88,
+    "gdp_growth": 82,
+    "electricity": 85,
+    "credit_stress": 40,
+    "employment": 79,
+    "freight": 84
+  },
+
+  "edges": [
+
+    {
+      "source": "copper",
+      "target": "manufacturing",
+      "relation": "supports",
+      "weight": 0.82
+    },
+
+    {
+      "source": "shipping",
+      "target": "manufacturing",
+      "relation": "supports",
+      "weight": 0.77
+    },
+
+    {
+      "source": "electricity",
+      "target": "industrial_activity",
+      "relation": "supports",
+      "weight": 0.73
+    },
+
+    {
+      "source": "manufacturing",
+      "target": "industrial_activity",
+      "relation": "supports",
+      "weight": 0.85
+    },
+
+    {
+      "source": "industrial_activity",
+      "target": "employment",
+      "relation": "supports",
+      "weight": 0.74
+    },
+
+    {
+      "source": "employment",
+      "target": "gdp_growth",
+      "relation": "supports",
+      "weight": 0.68
+    },
+
+    {
+      "source": "freight",
+      "target": "shipping",
+      "relation": "supports",
+      "weight": 0.81
+    },
+
+    {
+      "source": "credit_stress",
+      "target": "manufacturing",
+      "relation": "contradicts",
+      "weight": 0.65
+    }
+  ]
+}

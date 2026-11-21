@@ -1,0 +1,20 @@
+{
+  "manufacturing": {
+    "supports": [
+      {"signal":"copper","weight":0.82},
+      {"signal":"shipping","weight":0.77},
+      {"signal":"electricity","weight":0.69}
+    ],
+    "contradicts": [
+      {"signal":"credit_stress","weight":0.65}
+    ]
+  },
+
+  "ai": {
+    "supports": [
+      {"signal":"semiconductors","weight":0.90},
+      {"signal":"datacenter_power","weight":0.88},
+      {"signal":"cloud_capex","weight":0.79}
+    ]
+  }
+}
