@@ -10,6 +10,7 @@ import {
   verifySIWxSignature,
 } from '@x402/extensions/sign-in-with-x';
 import { signalsExplain } from "./signals_explain.js";
+import { signalsSimulate } from "./reasoning/signals_simulate.js";
 
 import { signalsTrace } from "./reasoning/signals_trace.js";
 import { signalsBelief } from "./reasoning/signals_belief.js";
@@ -230,6 +231,31 @@ TOOLS.push(
     }
   },
 
+  {
+    name: "signals_contradictions",
+    description: "All contradicting relationships for a signal. Returns source, target, weight for each contradiction. Deterministic.",
+    inputSchema: { type: "object", properties: { signal: { type: "string" } }, required: ["signal"] },
+  },
+  {
+    name: "signals_arbitrate",
+    description: "Weighted arbitration between supporting and contradicting evidence. Returns verdict (supported|contested|rejected), belief score, and evidence list. Deterministic.",
+    inputSchema: { type: "object", properties: { signal: { type: "string" } }, required: ["signal"] },
+  },
+  {
+    name: "signals_multihop",
+    description: "All causal paths from a source signal to a target signal up to max_depth hops. Returns each path with cumulative weight. Deterministic graph traversal.",
+    inputSchema: { type: "object", properties: { from: { type: "string" }, to: { type: "string" }, max_depth: { type: "integer", default: 5 } }, required: ["from", "to"] },
+  },
+  {
+    name: "signals_narrative",
+    description: "Natural-language explanation of a signal's evidence graph. Templated, not generated — deterministic. No LLM.",
+    inputSchema: { type: "object", properties: { signal: { type: "string" } }, required: ["signal"] },
+  },
+  {
+    name: "signals_simulate",
+    description: "Counterfactual shock propagation. Given a source node and a shock magnitude (e.g. -0.10 = -10%), returns every downstream node affected, the cumulative impact, and the path taken. Multiplicative compounding along supports edges. Deterministic — no model, same input same output.",
+    inputSchema: { type: "object", properties: { source: { type: "string" }, shock: { type: "number", minimum: -1, maximum: 1 }, max_depth: { type: "integer", default: 5 } }, required: ["source", "shock"] },
+  },
   {
     name: "signals_explain",
     description: "Explain evidence relationships for a signal.",
@@ -1538,6 +1564,11 @@ async function handleToolsCall(params = {}, env = {}) {
     case "signals_belief":    return await signalsBelief(args);
     case "signals_claim_graph": return await signalsClaimGraph(args);
     case "signals_rank_v2":   return await signalsRankV2(args);
+    case "signals_contradictions": return await signalsContradictions(args);
+    case "signals_arbitrate":      return await signalsArbitrate(args);
+    case "signals_multihop":       return await signalsMultihop(args);
+    case "signals_narrative":      return await signalsNarrative(args);
+    case "signals_simulate":       return await signalsSimulate(args);
     case "signals_explain":   return await signalsExplain(args);
     case "get_snapshot":        return await toolGetSnapshot(args);
     case "purchase":            return await toolPurchase(args, env);
