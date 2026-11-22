@@ -7,17 +7,30 @@ export async function signalsBeliefPropagate(args = {}) {
   if (!signal) return { error: "Missing signal" };
 
   const g = loadGraph();
-  if (!g.nodes[signal]) return { error: `Unknown node: ${signal}` };
+  if (!g.nodes || !g.nodes[signal]) return { error: `Unknown node: ${signal}` };
 
   const nodes = Object.keys(g.nodes);
-  let beliefs = {};
+  const nodeSet = new Set(nodes);
+
+  const cleanEdges = [];
+  let dropped = 0;
+  for (const e of g.edges) {
+    if (!nodeSet.has(e.source) || !nodeSet.has(e.target)) { dropped++; continue; }
+    if (typeof e.weight !== "number" || !isFinite(e.weight)) { dropped++; continue; }
+    cleanEdges.push(e);
+  }
+
+  const beliefs = {};
   for (const n of nodes) beliefs[n] = 0.5;
 
   const incoming = {};
   for (const n of nodes) incoming[n] = [];
-  for (const e of g.edges) {
-    if (!incoming[e.target]) incoming[e.target] = [];
-    incoming[e.target].push({ source: e.source, weight: e.weight || 0, relation: e.relation });
+  for (const e of cleanEdges) {
+    incoming[e.target].push({
+      source: e.source,
+      weight: e.weight,
+      sign: e.relation === "contradicts" ? -1 : 1,
+    });
   }
 
   let iterations = 0;
@@ -27,33 +40,38 @@ export async function signalsBeliefPropagate(args = {}) {
     for (const n of nodes) {
       const edges = incoming[n] || [];
       if (edges.length === 0) { next[n] = beliefs[n]; continue; }
-      let weightSum = 0;
-      let weightedBelief = 0;
+      let posSum = 0, negSum = 0;
       for (const e of edges) {
-        const sign = e.relation === "contradicts" ? -1 : 1;
-        weightedBelief += sign * e.weight * beliefs[e.source];
-        weightSum += e.weight;
+        const contribution = e.weight * beliefs[e.source];
+        if (e.sign > 0) posSum += contribution;
+        else negSum += contribution;
       }
-      next[n] = weightSum > 0
-        ? Math.max(0, Math.min(1, (weightedBelief + weightSum) / (2 * weightSum)))
-        : beliefs[n];
+      const total = posSum + negSum;
+      const raw = total > 0 ? posSum / total : 0.5;
+      next[n] = Math.max(0, Math.min(1, raw));
     }
     delta = 0;
     for (const n of nodes) {
       const d = Math.abs(next[n] - beliefs[n]);
       if (d > delta) delta = d;
     }
-    beliefs = next;
+    for (const n of nodes) beliefs[n] = next[n];
     iterations++;
   }
 
+  const value = beliefs[signal];
+  const finalBelief = typeof value === "number" && isFinite(value)
+    ? Number(value.toFixed(4))
+    : null;
+
   return {
     signal,
-    belief: Number(beliefs[signal].toFixed(4)),
+    belief: finalBelief,
     iterations,
-    converged: delta <= epsilon,
-    final_delta: Number(delta.toFixed(6)),
+    converged: delta <= epsilon && isFinite(delta),
+    final_delta: Number((isFinite(delta) ? delta : 0).toFixed(6)),
+    dropped_edges: dropped,
     method: "belief_propagation_v1",
-    note: "Iterative belief flow along all edges. Contradicting edges subtract weight. Converges when max node delta < epsilon."
+    note: "belief = posSum / (posSum + negSum), where each is weighted by the source's belief. Contradicting edges subtract. Converges when max node delta < epsilon."
   };
 }
