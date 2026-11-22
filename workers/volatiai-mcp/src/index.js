@@ -11,6 +11,7 @@ import {
 } from '@x402/extensions/sign-in-with-x';
 import { signalsExplain } from "./signals_explain.js";
 import { signalsSimulate } from "./reasoning/signals_simulate.js";
+import { signalsBeliefPropagate } from "./reasoning/signals_belief_propagate.js";
 
 import { signalsTrace } from "./reasoning/signals_trace.js";
 import { signalsBelief } from "./reasoning/signals_belief.js";
@@ -255,6 +256,11 @@ TOOLS.push(
     name: "signals_simulate",
     description: "Counterfactual shock propagation. Given a source node and a shock magnitude (e.g. -0.10 = -10%), returns every downstream node affected, the cumulative impact, and the path taken. Multiplicative compounding along supports edges. Deterministic — no model, same input same output.",
     inputSchema: { type: "object", properties: { source: { type: "string" }, shock: { type: "number", minimum: -1, maximum: 1 }, max_depth: { type: "integer", default: 5 } }, required: ["source", "shock"] },
+  },
+  {
+    name: "signals_belief_propagate",
+    description: "Iterative belief propagation over the full graph. Unlike signals_belief (one-hop), this iterates until convergence so a node's belief reflects its neighbors' neighbors. Contradicting edges subtract weight. Deterministic — same graph, same result every call.",
+    inputSchema: { type: "object", properties: { signal: { type: "string" }, max_iterations: { type: "integer", default: 30 }, epsilon: { type: "number", default: 0.001 } }, required: ["signal"] },
   },
   {
     name: "signals_explain",
@@ -1569,6 +1575,7 @@ async function handleToolsCall(params = {}, env = {}) {
     case "signals_multihop":       return await signalsMultihop(args);
     case "signals_narrative":      return await signalsNarrative(args);
     case "signals_simulate":       return await signalsSimulate(args);
+    case "signals_belief_propagate": return await signalsBeliefPropagate(args);
     case "signals_explain":   return await signalsExplain(args);
     case "get_snapshot":        return await toolGetSnapshot(args);
     case "purchase":            return await toolPurchase(args, env);
