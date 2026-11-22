@@ -52,11 +52,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -78,7 +73,7 @@
     },
     {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 21/24 runs (88%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -188,7 +183,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 19/24 runs (79%)",
+      "reason": "conf=0 in 20/24 runs (83%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -317,6 +312,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nasa-neo",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -393,7 +393,7 @@
     },
     {
       "sector": "sec-filings",
-      "reason": "conf=0 in 12/24 runs (50%)",
+      "reason": "conf=0 in 13/24 runs (54%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -423,16 +423,6 @@
     },
     {
       "sector": "swiss-federal-laws",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "ted-tenders",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -502,7 +492,17 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-neo",
+      "sector": "bgp-prefixes",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "ted-tenders",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -594,7 +594,7 @@
     },
     {
       "sector": "nbp-gold-spot",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "noaa-spaceweather-alerts",
@@ -610,7 +610,7 @@
     },
     {
       "sector": "ossf-scorecard-linux",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "phishunt-domains",
@@ -618,11 +618,15 @@
     },
     {
       "sector": "pocketworld-space-weather",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "pypi-downloads-requests",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
