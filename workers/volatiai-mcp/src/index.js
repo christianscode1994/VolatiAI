@@ -2203,6 +2203,141 @@ export default {
       return new Response(null, { status: 204, headers: cors });
     }
 
+    if (url.pathname === "/demo") {
+      const demoHtml = `<!doctype html>
+<html><head><meta charset="utf-8"><title>VolatiAI — causal propagation</title>
+<style>
+body { font: 16px/1.5 ui-monospace, Menlo, monospace; max-width: 720px; margin: 40px auto; padding: 20px; color: #222; background: #fafafa; }
+h1 { font-size: 22px; margin: 0 0 8px; }
+.note { color: #666; font-size: 14px; margin: 0 0 20px; }
+form { background: #fff; padding: 16px; border: 1px solid #ddd; border-radius: 8px; margin: 20px 0; }
+label { display: inline-block; min-width: 70px; }
+input, select { font: inherit; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; }
+button { font: inherit; padding: 8px 20px; background: #222; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #000; }
+#out { background: #fff; padding: 12px; border: 1px solid #ddd; border-radius: 8px; min-height: 60px; }
+.line { padding: 6px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+.line:last-child { border-bottom: none; }
+.impact-neg { color: #cc0000; font-weight: 600; }
+.impact-pos { color: #008800; font-weight: 600; }
+.err { color: #cc0000; }
+.row { padding: 6px 0; }
+</style></head><body>
+<h1>VolatiAI — causal propagation</h1>
+<p class="note">Ask: &ldquo;What happens to GDP if copper drops 10%?&rdquo; &mdash; deterministic, no LLM in the loop.</p>
+<form id="f">
+  <div class="row"><label>Source:</label>
+    <select name="source">
+      <option>copper</option><option>shipping</option><option>electricity</option>
+      <option>credit_stress</option><option>employment</option><option>oil_price</option>
+      <option>housing_starts</option><option>consumer_demand</option>
+      <option>manufacturing</option><option>industrial_activity</option>
+    </select>
+  </div>
+  <div class="row"><label>Shock:</label>
+    <input name="shock" value="-0.10" type="number" step="0.01" min="-1" max="1" style="width:100px">
+    <span class="note">(-0.10 = &minus;10%)</span>
+  </div>
+  <div class="row"><button type="submit">Simulate</button></div>
+</form>
+<div id="out"><em>Click Simulate.</em></div>
+<script>
+(function() {
+  var form = document.getElementById('f');
+  var out = document.getElementById('out');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var source = form.elements.source.value;
+    var shock = form.elements.shock.value;
+    out.innerHTML = '<em>Loading...</em>';
+    try {
+      var url = '/api/simulate?source=' + encodeURIComponent(source) + '&shock=' + encodeURIComponent(shock);
+      var r = await fetch(url);
+      var j = await r.json();
+      if (j.error) {
+        out.innerHTML = '<span class="err">Error: ' + j.error + '</span>';
+        return;
+      }
+      out.innerHTML = '';
+      var head = document.createElement('div');
+      head.style.fontWeight = '600';
+      head.style.paddingBottom = '8px';
+      head.textContent = source + ' ' + (j.shock * 100).toFixed(0) + '% shock -> ' + j.impacted_count + ' nodes affected';
+      out.appendChild(head);
+      for (var i = 0; i < j.impacts.length; i++) {
+        var row = j.impacts[i];
+        var line = document.createElement('div');
+        line.className = 'line';
+        var path = document.createElement('div');
+        path.textContent = row.path.join(' -> ');
+        var impact = document.createElement('div');
+        var cls = row.impact < 0 ? 'impact-neg' : 'impact-pos';
+        impact.innerHTML = row.node + ': <span class="' + cls + '">' + (row.impact * 100).toFixed(2) + '%</span>';
+        line.appendChild(path);
+        line.appendChild(impact);
+        out.appendChild(line);
+      }
+    } catch (err) {
+      out.innerHTML = '<span class="err">Fetch failed: ' + err.message + '</span>';
+    }
+  });
+})();
+</script>
+</body></html>`;
+      return new Response(demoHtml, { headers: { "Content-Type": "text/html; charset=utf-8", ...cors } });
+    }
+
+    // ─── REST convenience endpoints (no JSON-RPC required) ──────────
+    if (url.pathname === "/api/simulate" && req.method === "GET") {
+      const source = url.searchParams.get("source");
+      const shock = Number(url.searchParams.get("shock") || "-0.1");
+      if (!source || !isFinite(shock)) {
+        return new Response(JSON.stringify({ error: "params: source (string), shock (number in [-1,1])" }), { status: 400, headers: { "Content-Type": "application/json", ...cors } });
+      }
+      try {
+        const r = await signalsSimulate({ source, shock });
+        return new Response(JSON.stringify(r, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e.message || e) }), { status: 500, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+
+    if (url.pathname === "/api/trace" && req.method === "GET") {
+      const signal = url.searchParams.get("signal");
+      if (!signal) return new Response(JSON.stringify({ error: "params: signal (string)" }), { status: 400, headers: { "Content-Type": "application/json", ...cors } });
+      try {
+        const r = await signalsTrace({ signal });
+        return new Response(JSON.stringify(r, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e.message || e) }), { status: 500, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+
+    if (url.pathname === "/api/belief" && req.method === "GET") {
+      const signal = url.searchParams.get("signal");
+      const propagate = url.searchParams.get("propagate") === "1";
+      if (!signal) return new Response(JSON.stringify({ error: "params: signal (string), propagate=0|1" }), { status: 400, headers: { "Content-Type": "application/json", ...cors } });
+      try {
+        const r = propagate ? await signalsBeliefPropagate({ signal }) : await signalsBelief({ signal });
+        return new Response(JSON.stringify(r, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e.message || e) }), { status: 500, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+
+    if (url.pathname === "/api/multihop" && req.method === "GET") {
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const depth = Number(url.searchParams.get("depth") || "6");
+      if (!from || !to) return new Response(JSON.stringify({ error: "params: from, to, depth?" }), { status: 400, headers: { "Content-Type": "application/json", ...cors } });
+      try {
+        const r = await signalsMultihop({ from, to, max_depth: depth });
+        return new Response(JSON.stringify(r, null, 2), { headers: { "Content-Type": "application/json", ...cors } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: String(e.message || e) }), { status: 500, headers: { "Content-Type": "application/json", ...cors } });
+      }
+    }
+
     if (url.pathname === "/" || url.pathname === "/health") {
       return new Response(JSON.stringify({
         name: "volatiai-mcp", status: "ok",
