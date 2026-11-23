@@ -1,3 +1,4 @@
+import { isTraversable } from "./relations.js";
 import { loadGraph } from "./graph_store.js";
 
 export async function signalsTrace(args={}) {

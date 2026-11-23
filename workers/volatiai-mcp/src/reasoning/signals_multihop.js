@@ -1,45 +1,36 @@
+import { isTraversable } from "./relations.js";
 import { loadGraph } from "./graph_store.js";
 
-export async function signalsMultihop(args={}) {
-
-  const graph=loadGraph();
-
-  const signal=args.signal;
-  const depth=args.depth || 5;
-
-  const paths=[];
-
-  function dfs(node,path,d){
-
-    if(d<=0){
-      paths.push(path);
+export async function signalsMultihop(args = {}) {
+  const { from, to, max_depth = 5 } = args;
+  if (!from || !to) return { error: "Missing from or to" };
+  const g = loadGraph();
+  const adj = {};
+  for (const e of g.edges) {
+    if (!isTraversable(e.relation)) continue;
+    if (!adj[e.source]) adj[e.source] = [];
+    adj[e.source].push({ target: e.target, weight: e.weight || 0 });
+  }
+  const paths = [];
+  function dfs(node, path, cumWeight) {
+    if (path.length > max_depth + 1) return;
+    if (node === to) {
+      paths.push({ nodes: [...path], weight: Number(cumWeight.toFixed(4)) });
       return;
     }
-
-    const edges=
-      graph.edges.filter(
-        e=>e.source===node
-      );
-
-    if(edges.length===0){
-      paths.push(path);
-      return;
-    }
-
-    for(const e of edges){
-      dfs(
-        e.target,
-        [...path,e.target],
-        d-1
-      );
+    for (const next of (adj[node] || [])) {
+      if (path.includes(next.target)) continue;
+      path.push(next.target);
+      dfs(next.target, path, cumWeight + next.weight);
+      path.pop();
     }
   }
-
-  dfs(signal,[signal],depth);
-
+  dfs(from, [from], 0);
   return {
-    signal,
-    depth,
-    paths
+    from,
+    to,
+    max_depth,
+    path_count: paths.length,
+    paths: paths.sort((a, b) => b.weight - a.weight),
   };
 }

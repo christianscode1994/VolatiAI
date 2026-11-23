@@ -1,3 +1,4 @@
+import { isTraversable, sign } from "./relations.js";
 import { loadGraph } from "./graph_store.js";
 
 export async function signalsSimulate(args = {}) {
@@ -11,7 +12,7 @@ export async function signalsSimulate(args = {}) {
 
   const adj = {};
   for (const e of g.edges) {
-    if (e.relation !== "supports") continue;
+    if (!isTraversable(e.relation)) continue;
     if (!adj[e.source]) adj[e.source] = [];
     adj[e.source].push({ target: e.target, weight: e.weight || 0 });
   }
@@ -32,7 +33,7 @@ export async function signalsSimulate(args = {}) {
 
     for (const edge of (adj[node] || [])) {
       if (path.includes(edge.target)) continue;
-      const newImpact = impact * edge.weight;
+      const newImpact = impact * edge.weight * sign(edge.relation);
       if (Math.abs(newImpact) < 0.001) continue;
       queue.push({
         node: edge.target,

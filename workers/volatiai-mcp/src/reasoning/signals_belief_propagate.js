@@ -1,3 +1,4 @@
+import { sign as relationSign } from "./relations.js";
 import { loadGraph } from "./graph_store.js";
 
 export async function signalsBeliefPropagate(args = {}) {
@@ -29,7 +30,7 @@ export async function signalsBeliefPropagate(args = {}) {
     incoming[e.target].push({
       source: e.source,
       weight: e.weight,
-      sign: e.relation === "contradicts" ? -1 : 1,
+      sign: relationSign(e.relation) || 1,  // neutral treated as positive for legacy compat
     });
   }
 
