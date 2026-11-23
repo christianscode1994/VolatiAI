@@ -1,3 +1,18 @@
+import { signalsHypothesisV2 } from "./reasoning/signals_hypothesis_v2.js";
+import { signalsFragility } from "./reasoning/signals_fragility.js";
+import { signalsBridgeNodes } from "./reasoning/signals_bridge_nodes.js";
+import { signalsMetaRank } from "./reasoning/signals_meta_rank.js";
+import { signalsCommunities } from "./reasoning/signals_communities.js";
+import { signalsGraphEvolution } from "./reasoning/signals_graph_evolution.js";
+import { signalsThesisRank } from "./reasoning/signals_thesis_rank.js";
+import { signalsDiscover } from "./reasoning/signals_discover.js";
+import { signalsHypothesis } from "./reasoning/signals_hypothesis.js";
+import { signalsSimilarity } from "./reasoning/signals_similarity.js";
+import { signalsCycleDetect } from "./reasoning/signals_cycle_detect.js";
+import { signalsHubRisk } from "./reasoning/signals_hub_risk.js";
+import { signalsGraphHealth } from "./reasoning/signals_graph_health.js";
+import { signalsSystemicImpact } from "./reasoning/signals_systemic_impact.js";
+import { signalsCentrality } from "./reasoning/signals_centrality.js";
 import { generateJwt } from '@coinbase/cdp-sdk/auth';
 // VolatiAI MCP server — read-only, stateless, $0 forever.
 // Reads active.json from GitHub Pages. No KV, no R2, no auth, no card.
@@ -262,6 +277,151 @@ TOOLS.push(
     description: "Iterative belief propagation over the full graph. Unlike signals_belief (one-hop), this iterates until convergence so a node's belief reflects its neighbors' neighbors. Contradicting edges subtract weight. Deterministic — same graph, same result every call.",
     inputSchema: { type: "object", properties: { signal: { type: "string" }, max_iterations: { type: "integer", default: 30 }, epsilon: { type: "number", default: 0.001 } }, required: ["signal"] },
   },
+
+  {
+    name: "signals_centrality",
+    description: "Graph centrality ranking. Returns in-degree, out-degree and total centrality for every node.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+
+  {
+    name: "signals_systemic_impact",
+    description: "System-wide impact ranking. Simulates propagation from every node and ranks by total downstream impact.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "signals_hub_risk",
+    description: "Ranks graph hubs by structural risk.",
+    inputSchema: { type:"object", properties:{} }
+  },
+
+  {
+    name: "signals_cycle_detect",
+    description: "Detect graph cycles.",
+    inputSchema: { type:"object", properties:{} }
+  },
+
+  {
+    name: "signals_similarity",
+    description: "Neighbourhood similarity search.",
+    inputSchema: {
+      type:"object",
+      properties:{
+        node:{ type:"string" }
+      },
+      required:["node"]
+    }
+  },
+
+  {
+    name: "signals_hypothesis",
+    description: "Hypothesis graph explorer.",
+    inputSchema: {
+      type:"object",
+      properties:{
+        query:{ type:"string" }
+      }
+    }
+  },
+
+
+
+  {
+    name: "signals_discover",
+    description: "Suggest missing graph edges.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+
+  {
+    name: "signals_thesis_rank",
+    description: "Rank graph thesis.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        nodes: { type: "array" }
+      }
+    }
+  },
+
+  {
+    name: "signals_graph_evolution",
+    description: "Graph evolution audit.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+
+  {
+    name: "signals_communities",
+    description: "Community detection.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+
+  {
+    name: "signals_embedding_similarity",
+    description: "Embedding similarity.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        node: { type: "string" }
+      },
+      required:["node"]
+    }
+  },
+
+
+  {
+    name: "signals_meta_rank",
+    description: "Graph meta ranking.",
+    inputSchema:{
+      type:"object",
+      properties:{}
+    }
+  },
+
+  {
+    name: "signals_bridge_nodes",
+    description: "Graph bridge nodes.",
+    inputSchema:{
+      type:"object",
+      properties:{}
+    }
+  },
+
+  {
+    name: "signals_fragility",
+    description: "Graph fragility.",
+    inputSchema:{
+      type:"object",
+      properties:{}
+    }
+  },
+
+  {
+    name: "signals_hypothesis_v2",
+    description: "Enhanced hypothesis engine.",
+    inputSchema:{
+      type:"object",
+      properties:{
+        query:{type:"string"}
+      }
+    }
+  },
+
+
   {
     name: "signals_explain",
     description: "Explain evidence relationships for a signal.",
@@ -1575,7 +1735,42 @@ async function handleToolsCall(params = {}, env = {}) {
     case "signals_multihop":       return await signalsMultihop(args);
     case "signals_narrative":      return await signalsNarrative(args);
     case "signals_simulate":       return await signalsSimulate(args);
+    case "signals_centrality":     return await signalsCentrality();
+    case "signals_systemic_impact": return await signalsSystemicImpact();
+    case "signals_graph_health": return await signalsGraphHealth();
+
+    case "signals_hub_risk":
+      return await signalsHubRisk();
+
+    case "signals_cycle_detect":
+      return await signalsCycleDetect();
+
+    case "signals_similarity":
+      return await signalsSimilarity(args);
+
+    case "signals_hypothesis":
+      return await signalsHypothesis(args);
     case "signals_belief_propagate": return await signalsBeliefPropagate(args);
+    case "signals_discover":
+      return await signalsDiscover();
+
+    case "signals_thesis_rank":
+      return await signalsThesisRank(args);
+
+    case "signals_graph_evolution":
+      return await signalsGraphEvolution();
+
+    case "signals_communities":
+      return await signalsCommunities();
+
+    case "signals_embedding_similarity":
+      return await signalsEmbeddingSimilarity(args);
+
+
+    case "signals_meta_rank":       return await signalsMetaRank();
+    case "signals_bridge_nodes":    return await signalsBridgeNodes();
+    case "signals_fragility":       return await signalsFragility();
+    case "signals_hypothesis_v2":   return await signalsHypothesisV2(args);
     case "signals_explain":   return await signalsExplain(args);
     case "get_snapshot":        return await toolGetSnapshot(args);
     case "purchase":            return await toolPurchase(args, env);
