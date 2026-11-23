@@ -2,7 +2,7 @@ import { isTraversable } from "./relations.js";
 import { loadGraph } from "./graph_store.js";
 
 export async function signalsMultihop(args = {}) {
-  const { from, to, max_depth = 5 } = args;
+  const { from, to, max_depth = 5, limit = 20 } = args;
   if (!from || !to) return { error: "Missing from or to" };
   const g = loadGraph();
   const adj = {};
@@ -31,6 +31,8 @@ export async function signalsMultihop(args = {}) {
     to,
     max_depth,
     path_count: paths.length,
-    paths: paths.sort((a, b) => b.weight - a.weight),
+    returned: Math.min(paths.length, limit),
+    truncated: paths.length > limit,
+    paths: paths.sort((a, b) => b.weight - a.weight).slice(0, limit),
   };
 }

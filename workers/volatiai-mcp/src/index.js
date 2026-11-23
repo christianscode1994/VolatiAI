@@ -1,4 +1,6 @@
 import { signalsHypothesisV2 } from "./reasoning/signals_hypothesis_v2.js";
+import { signalsMereology } from "./reasoning/signals_mereology.js";
+import { signalsNeighbors } from "./reasoning/signals_neighbors.js";
 import { signalsFragility } from "./reasoning/signals_fragility.js";
 import { signalsBridgeNodes } from "./reasoning/signals_bridge_nodes.js";
 import { signalsMetaRank } from "./reasoning/signals_meta_rank.js";
@@ -422,6 +424,16 @@ TOOLS.push(
   },
 
 
+  {
+    name: "signals_mereology",
+    description: "Mereological structure for a node. Returns parts_of, has_parts, seen_by, sees — structural part-of relationships, distinct from causality. Use when the question is 'what is X made of?' or 'what is X part of?', not 'what causes X?'",
+    inputSchema: { type: "object", properties: { node: { type: "string" } }, required: ["node"] },
+  },
+  {
+    name: "signals_neighbors",
+    description: "BFS neighbors from a node up to N hops. Returns every reachable node with shortest distance, cumulative edge weight, the path taken, and the relation type on the final hop. direction=out (default), in, or both. Deterministic.",
+    inputSchema: { type: "object", properties: { node: { type: "string" }, hops: { type: "integer", default: 2 }, direction: { type: "string", enum: ["out", "in", "both"], default: "out" } }, required: ["node"] },
+  },
   {
     name: "signals_explain",
     description: "Explain evidence relationships for a signal.",
@@ -1771,6 +1783,8 @@ async function handleToolsCall(params = {}, env = {}) {
     case "signals_bridge_nodes":    return await signalsBridgeNodes();
     case "signals_fragility":       return await signalsFragility();
     case "signals_hypothesis_v2":   return await signalsHypothesisV2(args);
+    case "signals_mereology":  return await signalsMereology(args);
+    case "signals_neighbors":  return await signalsNeighbors(args);
     case "signals_explain":   return await signalsExplain(args);
     case "get_snapshot":        return await toolGetSnapshot(args);
     case "purchase":            return await toolPurchase(args, env);

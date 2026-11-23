@@ -30,3 +30,21 @@ export function sign(relation) {
   if (c === "negative") return -1;
   return 0;
 }
+
+// Mereological relations describe structural composition, not causality.
+// "wheel part_of car" is true; "wheel causes car" is not. Keep separate.
+export const MEREOLOGICAL = new Set([
+  "part_of", "contains", "composed_of", "includes",
+  "member_of", "has_part", "belongs_to", "constituent_of",
+]);
+
+export function isMereological(relation) {
+  if (!relation) return false;
+  return MEREOLOGICAL.has(String(relation).toLowerCase());
+}
+
+// True if the relation should be traversed for causal propagation.
+// Positive and negative are causal; mereological is not.
+export function isCausal(relation) {
+  return classify(relation) !== "neutral" && !isMereological(relation);
+}
