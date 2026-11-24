@@ -52,11 +52,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -77,11 +72,6 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 23/24 runs (96%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "cisa-kev",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -93,11 +83,6 @@
     },
     {
       "sector": "cloud-components",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "cloud-outages",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -233,7 +218,7 @@
     },
     {
       "sector": "form-d-filings",
-      "reason": "conf=0 in 24/24 runs (100%)",
+      "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -312,17 +297,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-eonet",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "nasa-neo",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -338,6 +313,11 @@
     },
     {
       "sector": "npm-search",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nport-filings",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -388,7 +368,7 @@
     },
     {
       "sector": "sec-filings",
-      "reason": "conf=0 in 15/24 runs (62%)",
+      "reason": "conf=0 in 16/24 runs (67%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -423,6 +403,11 @@
     },
     {
       "sector": "ted-tenders",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -483,7 +468,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 21/24 runs (88%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -492,7 +477,27 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nport-filings",
+      "sector": "bgp-prefixes",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "cheapshark-deal-count",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "cloud-outages",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nasa-eonet",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -500,25 +505,16 @@
       "sector": "nvd-new-cves",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
-      "sector": "art-design",
-      "reason": "spam (50%) but no config found in workers"
-    },
-    {
       "sector": "carbon-intensity",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "cve-feed",
-      "reason": "spam (73%) but no config found in workers"
+      "reason": "spam (68%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -534,7 +530,7 @@
     },
     {
       "sector": "depin-network",
-      "reason": "spam (54%) but no config found in workers"
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
@@ -554,7 +550,7 @@
     },
     {
       "sector": "hackernews-top-scores",
-      "reason": "spam (100%) but no config found in workers"
+      "reason": "spam (96%) but no config found in workers"
     },
     {
       "sector": "home-assistant",
@@ -598,7 +594,7 @@
     },
     {
       "sector": "nbp-gold-spot",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "noaa-spaceweather-alerts",
@@ -609,24 +605,12 @@
       "reason": "spam (83%) but no config found in workers"
     },
     {
-      "sector": "open-digger-openrank-vscode",
-      "reason": "spam (88%) but no config found in workers"
-    },
-    {
-      "sector": "open-source-packages",
-      "reason": "spam (50%) but no config found in workers"
-    },
-    {
-      "sector": "ossf-scorecard-linux",
-      "reason": "spam (50%) but no config found in workers"
-    },
-    {
       "sector": "phishunt-domains",
       "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "pocketworld-space-weather",
-      "reason": "spam (71%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
@@ -634,11 +618,7 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (58%) but no config found in workers"
-    },
-    {
-      "sector": "pypi-packages",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
@@ -654,7 +634,7 @@
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (88%) but no config found in workers"
+      "reason": "spam (83%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -674,7 +654,11 @@
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
+    },
+    {
+      "sector": "open-digger-openrank-vscode",
+      "reason": "spam (83%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -731,7 +715,7 @@
     {
       "sector": "dbnomics-us-debt",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "deps-dev-react-versions",
@@ -839,11 +823,6 @@
       "avg_conf": 1.0
     },
     {
-      "sector": "nvd-cve-count",
-      "runs": 24,
-      "avg_conf": 0.92
-    },
-    {
       "sector": "open-source",
       "runs": 24,
       "avg_conf": 1.0
@@ -894,6 +873,11 @@
       "avg_conf": 1.0
     },
     {
+      "sector": "usgs-streamflow-mississippi",
+      "runs": 24,
+      "avg_conf": 1.0
+    },
+    {
       "sector": "vehicles",
       "runs": 24,
       "avg_conf": 1.0
@@ -920,6 +904,11 @@
     },
     {
       "sector": "zenodo-records",
+      "runs": 24,
+      "avg_conf": 0.92
+    },
+    {
+      "sector": "nvd-cve-count",
       "runs": 24,
       "avg_conf": 0.92
     }
