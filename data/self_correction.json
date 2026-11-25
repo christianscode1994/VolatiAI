@@ -87,6 +87,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "cloud-outages",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "cloud-status",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -297,7 +302,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-neo",
+      "sector": "nasa-eonet",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -318,6 +328,11 @@
     },
     {
       "sector": "nport-filings",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "nvd-new-cves",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -368,7 +383,7 @@
     },
     {
       "sector": "sec-filings",
-      "reason": "conf=0 in 16/24 runs (67%)",
+      "reason": "conf=0 in 17/24 runs (71%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -487,34 +502,23 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "cloud-outages",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nasa-eonet",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "natural-disasters",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nvd-new-cves",
+      "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
   ],
   "investigate": [
     {
+      "sector": "art-design",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "carbon-intensity",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "cve-feed",
-      "reason": "spam (68%) but no config found in workers"
+      "reason": "spam (73%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -530,7 +534,7 @@
     },
     {
       "sector": "depin-network",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "dex-ethereum-volume",
@@ -550,7 +554,7 @@
     },
     {
       "sector": "hackernews-top-scores",
-      "reason": "spam (96%) but no config found in workers"
+      "reason": "spam (92%) but no config found in workers"
     },
     {
       "sector": "home-assistant",
@@ -605,12 +609,20 @@
       "reason": "spam (83%) but no config found in workers"
     },
     {
+      "sector": "open-digger-openrank-vscode",
+      "reason": "spam (88%) but no config found in workers"
+    },
+    {
+      "sector": "open-source-packages",
+      "reason": "spam (50%) but no config found in workers"
+    },
+    {
       "sector": "phishunt-domains",
       "reason": "spam (100%) but no config found in workers"
     },
     {
       "sector": "pocketworld-space-weather",
-      "reason": "spam (67%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "pypi-daily-requests",
@@ -618,7 +630,11 @@
     },
     {
       "sector": "pypi-downloads-requests",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "pypi-packages",
+      "reason": "spam (50%) but no config found in workers"
     },
     {
       "sector": "stablecoin-total-supply",
@@ -634,7 +650,7 @@
     },
     {
       "sector": "steam-csgo-players",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     },
     {
       "sector": "steam-dota2-players",
@@ -654,11 +670,7 @@
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (92%) but no config found in workers"
-    },
-    {
-      "sector": "open-digger-openrank-vscode",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (88%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -823,6 +835,11 @@
       "avg_conf": 1.0
     },
     {
+      "sector": "nvd-cve-count",
+      "runs": 24,
+      "avg_conf": 0.96
+    },
+    {
       "sector": "open-source",
       "runs": 24,
       "avg_conf": 1.0
@@ -904,11 +921,6 @@
     },
     {
       "sector": "zenodo-records",
-      "runs": 24,
-      "avg_conf": 0.92
-    },
-    {
-      "sector": "nvd-cve-count",
       "runs": 24,
       "avg_conf": 0.92
     }
