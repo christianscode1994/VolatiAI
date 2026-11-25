@@ -1,14 +1,13 @@
 {
   "sector": "volati-ai",
-  "ts": "2026-11-25T01:46:33Z",
+  "ts": "2026-11-25T16:37:14Z",
   "run_number": 24,
   "briefing": {
-    "headline": "5 of 46 signals \u00b7 211 sectors evaluated",
+    "headline": "5 of 39 signals \u00b7 211 sectors evaluated",
     "by_domain": {
       "other": {
-        "count": 42,
+        "count": 39,
         "sectors": [
-          "art-design",
           "cisa-kev-count",
           "cisa-kev-total",
           "dc-crime",
@@ -22,6 +21,7 @@
           "frankfurter-eurusd",
           "fred-fedfunds",
           "github-recent-commits",
+          "hackernews-top-scores",
           "home-assistant",
           "ietf-datatracker",
           "kraken-ada-usd",
@@ -36,44 +36,17 @@
           "noaa-spaceweather-alerts",
           "nvd-new-cves-count",
           "open-digger-openrank-vscode",
-          "open-source-packages",
           "phishunt-domains",
           "pypi-daily-requests",
           "pypi-downloads-requests",
-          "pypi-packages",
-          "ripe-atlas-public",
+          "science-news",
           "stablecoin-total-supply",
           "stablecoin-usdc-supply",
           "stablecoin-usdt-supply",
-          "steam-csgo-players",
           "steam-dota2-players",
           "tweetfeed-c2",
           "usgs-earthquake-count",
           "usgs-elevated-volcanoes"
-        ]
-      },
-      "energy": {
-        "count": 1,
-        "sectors": [
-          "carbon-intensity"
-        ]
-      },
-      "security": {
-        "count": 1,
-        "sectors": [
-          "cve-feed"
-        ]
-      },
-      "crypto": {
-        "count": 1,
-        "sectors": [
-          "depin-network"
-        ]
-      },
-      "information": {
-        "count": 1,
-        "sectors": [
-          "npm-packages"
         ]
       }
     }
@@ -82,77 +55,77 @@
     {
       "sector": "tweetfeed-c2",
       "severity": "alert",
-      "summary": "weekly_c2_ips 228 (-85.0% vs 30.2d ago)",
+      "summary": "weekly_c2_ips 324 (-78.6% vs 29.1d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -84.96042216358839,
-      "log_rate": 0.0627,
-      "days": 30.2,
+      "pct_change": -78.5572468563865,
+      "log_rate": 0.0529,
+      "days": 29.1,
       "fires_24": 24
     },
     {
-      "sector": "nvd-new-cves-count",
+      "sector": "espn-nba-score-count",
       "severity": "alert",
-      "summary": "new_cves 874 (+562.1% vs 30.2d ago)",
+      "summary": "game_count 9 (+125.0% vs 29d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": 562.1212121212121,
-      "log_rate": 0.0626,
-      "days": 30.2,
-      "fires_24": 20
+      "pct_change": 125,
+      "log_rate": 0.028,
+      "days": 29.0,
+      "fires_24": 5
     },
     {
-      "sector": "steam-dota2-players",
+      "sector": "dex-ethereum-volume",
       "severity": "alert",
-      "summary": "player_count 334845 (-63.4% vs 30.2d ago)",
+      "summary": "eth_24h 1379020524.44 (+89.9% vs 30.3d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -63.40127815990443,
-      "log_rate": 0.0333,
-      "days": 30.2,
+      "pct_change": 89.85993298329716,
+      "log_rate": 0.0212,
+      "days": 30.3,
+      "fires_24": 21
+    },
+    {
+      "sector": "hackernews-top-scores",
+      "severity": "alert",
+      "summary": "top10_score_sum 2574 (+83.7% vs 29d ago)",
+      "confidence": 1,
+      "magnitude": null,
+      "pct_change": 83.72591006423983,
+      "log_rate": 0.021,
+      "days": 29.0,
       "fires_24": 22
     },
     {
-      "sector": "usgs-earthquake-count",
+      "sector": "pypi-daily-requests",
       "severity": "alert",
-      "summary": "m45_count 9 (-62.5% vs 30.4d ago)",
+      "summary": "downloads 56027430 (+61.8% vs 30.6d ago)",
       "confidence": 1,
       "magnitude": null,
-      "pct_change": -62.5,
-      "log_rate": 0.0323,
-      "days": 30.4,
-      "fires_24": 24
-    },
-    {
-      "sector": "steam-csgo-players",
-      "severity": "alert",
-      "summary": "player_count 387235 (-62.0% vs 30.2d ago)",
-      "confidence": 1,
-      "magnitude": null,
-      "pct_change": -62.04452895656393,
-      "log_rate": 0.0321,
-      "days": 30.2,
-      "fires_24": 21
+      "pct_change": 61.84253832967026,
+      "log_rate": 0.0157,
+      "days": 30.6,
+      "fires_24": 15
     }
   ],
   "delta": {
-    "previous_ts": "2026-11-24 16:52",
-    "signals_before": 39,
-    "signals_after": 46,
+    "previous_ts": "2026-11-25 01:46",
+    "signals_before": 46,
+    "signals_after": 39,
     "new": [
+      "hackernews-top-scores",
+      "science-news"
+    ],
+    "dropped": [
       "art-design",
       "carbon-intensity",
       "cve-feed",
       "depin-network",
       "npm-packages",
-      "open-digger-openrank-vscode",
       "open-source-packages",
       "pypi-packages",
+      "ripe-atlas-public",
       "steam-csgo-players"
-    ],
-    "dropped": [
-      "dex-uniswap-volume",
-      "form-d-filings"
     ],
     "persistent": [
       "cisa-kev-count",
@@ -181,10 +154,10 @@
       "nbp-gold-spot",
       "noaa-spaceweather-alerts",
       "nvd-new-cves-count",
+      "open-digger-openrank-vscode",
       "phishunt-domains",
       "pypi-daily-requests",
       "pypi-downloads-requests",
-      "ripe-atlas-public",
       "stablecoin-total-supply",
       "stablecoin-usdc-supply",
       "stablecoin-usdt-supply",
@@ -196,203 +169,197 @@
     "movements": [
       {
         "sector": "cisa-kev-count",
-        "previous": "known_exploited 1792 (+2.1% vs 30.6d ago)",
-        "current": "known_exploited 1795 (+2.2% vs 31d ago)"
+        "previous": "known_exploited 1795 (+2.2% vs 31d ago)",
+        "current": "known_exploited 1796 (+2.3% vs 30.6d ago)"
       },
       {
         "sector": "cisa-kev-total",
-        "previous": "kev_count 1792 (+2.1% vs 30.6d ago)",
-        "current": "kev_count 1795 (+2.2% vs 31d ago)"
+        "previous": "kev_count 1795 (+2.2% vs 31d ago)",
+        "current": "kev_count 1796 (+2.3% vs 30.6d ago)"
       },
       {
         "sector": "dc-crime",
-        "previous": "crime_incidents 19913 (+10.9% vs 30.3d ago)",
-        "current": "crime_incidents 19913 (+10.9% vs 30.6d ago)"
+        "previous": "crime_incidents 19913 (+10.9% vs 30.6d ago)",
+        "current": "crime_incidents 19971 (+10.8% vs 30.3d ago)"
       },
       {
         "sector": "defi-open-interest-total",
-        "previous": "oi_24h_usd 17441084956.08 (-22.7% vs 29.9d ago)",
-        "current": "oi_24h_usd 17572528484.08 (-22.1% vs 30.2d ago)"
+        "previous": "oi_24h_usd 17572528484.08 (-22.1% vs 30.2d ago)",
+        "current": "oi_24h_usd 17317630008.08 (-22.3% vs 30.3d ago)"
       },
       {
         "sector": "defi-total-tvl",
-        "previous": "tvl_usd 68460287307 (-23.2% vs 29.9d ago)",
-        "current": "tvl_usd 68446970118 (-23.3% vs 30.2d ago)"
+        "previous": "tvl_usd 68446970118 (-23.3% vs 30.2d ago)",
+        "current": "tvl_usd 67211540739 (-24.0% vs 30.3d ago)"
       },
       {
         "sector": "defillama-protocol-count",
-        "previous": "protocol_count 9100 (+3.2% vs 30.6d ago)",
-        "current": "protocol_count 9107 (+3.3% vs 31d ago)"
+        "previous": "protocol_count 9107 (+3.3% vs 31d ago)",
+        "current": "protocol_count 9110 (+3.3% vs 30.6d ago)"
       },
       {
         "sector": "dex-ethereum-volume",
-        "previous": "eth_24h 1758414653.2 (+93.6% vs 30.1d ago)",
-        "current": "eth_24h 1353624025.13 (+49.0% vs 30.4d ago)"
+        "previous": "eth_24h 1353624025.13 (+49.0% vs 30.4d ago)",
+        "current": "eth_24h 1379020524.44 (+89.9% vs 30.3d ago)"
       },
       {
         "sector": "dex-total-volume-24h",
-        "previous": "total24h 9856886751.81 (+56.9% vs 30.1d ago)",
-        "current": "total24h 8553659194.789998 (+36.1% vs 30.4d ago)"
+        "previous": "total24h 8553659194.789998 (+36.1% vs 30.4d ago)",
+        "current": "total24h 7878752037.219996 (+36.1% vs 30.2d ago)"
       },
       {
         "sector": "espn-nba-score-count",
-        "previous": "game_count 3 (-57.1% vs 29.6d ago)",
-        "current": "game_count 3 (-57.1% vs 30d ago)"
+        "previous": "game_count 3 (-57.1% vs 30d ago)",
+        "current": "game_count 9 (+125.0% vs 29d ago)"
       },
       {
         "sector": "frankfurter-eursek",
-        "previous": "eur_sek 11.221 (+0.8% vs 30.3d ago)",
-        "current": "eur_sek 11.221 (+0.8% vs 30.7d ago)"
+        "previous": "eur_sek 11.221 (+0.8% vs 30.7d ago)",
+        "current": "eur_sek 11.2385 (+1.0% vs 30.6d ago)"
       },
       {
         "sector": "frankfurter-eurusd",
-        "previous": "eur_usd 1.0963 (-2.1% vs 30.3d ago)",
-        "current": "eur_usd 1.0963 (-2.1% vs 30.7d ago)"
+        "previous": "eur_usd 1.0963 (-2.1% vs 30.7d ago)",
+        "current": "eur_usd 1.0935 (-2.3% vs 30.6d ago)"
       },
       {
         "sector": "fred-fedfunds",
-        "previous": "fedfunds 3.88 (+3.5% vs 30.6d ago)",
-        "current": "fedfunds 3.88 (+3.5% vs 31d ago)"
+        "previous": "fedfunds 3.88 (+3.5% vs 31d ago)",
+        "current": "fedfunds 3.88 (+3.5% vs 30.6d ago)"
       },
       {
         "sector": "github-recent-commits",
-        "previous": "commit_count 39841973 (+38.6% vs 29.9d ago)",
-        "current": "commit_count 24803331 (-13.7% vs 30.2d ago)"
+        "previous": "commit_count 24803331 (-13.7% vs 30.2d ago)",
+        "current": "commit_count 35951072 (+28.3% vs 29d ago)"
       },
       {
         "sector": "home-assistant",
-        "previous": "installations 741286 (+4.2% vs 29.9d ago)",
-        "current": "installations 741936 (+4.3% vs 30.2d ago)"
+        "previous": "installations 741936 (+4.3% vs 30.2d ago)",
+        "current": "installations 742254 (+4.3% vs 30.3d ago)"
       },
       {
         "sector": "ietf-datatracker",
-        "previous": "rfc_count 9869 (+0.2% vs 30.6d ago)",
-        "current": "rfc_count 9869 (+0.2% vs 31d ago)"
+        "previous": "rfc_count 9869 (+0.2% vs 31d ago)",
+        "current": "rfc_count 9869 (+0.2% vs 30.6d ago)"
       },
       {
         "sector": "kraken-ada-usd",
-        "previous": "ada_usd 0.1437475 (-29.9% vs 29.9d ago)",
-        "current": "ada_usd 0.142725 (-30.4% vs 30.2d ago)"
+        "previous": "ada_usd 0.142725 (-30.4% vs 30.2d ago)",
+        "current": "ada_usd 0.13935 (-31.9% vs 30.2d ago)"
       },
       {
         "sector": "kraken-btc-usd",
-        "previous": "btc_usd 59524.9 (-26.0% vs 29.9d ago)",
-        "current": "btc_usd 59215.1 (-26.4% vs 30.2d ago)"
+        "previous": "btc_usd 59215.1 (-26.4% vs 30.2d ago)",
+        "current": "btc_usd 58511 (-27.2% vs 30.2d ago)"
       },
       {
         "sector": "kraken-doge-usd",
-        "previous": "doge_usd 0.0549009 (-28.8% vs 29.9d ago)",
-        "current": "doge_usd 0.054678 (-29.1% vs 30.2d ago)"
+        "previous": "doge_usd 0.054678 (-29.1% vs 30.2d ago)",
+        "current": "doge_usd 0.0533674 (-30.8% vs 30.2d ago)"
       },
       {
         "sector": "kraken-dot-usd",
-        "previous": "dot_usd 0.6493 (-37.2% vs 29.9d ago)",
-        "current": "dot_usd 0.64885 (-37.2% vs 30.2d ago)"
+        "previous": "dot_usd 0.64885 (-37.2% vs 30.2d ago)",
+        "current": "dot_usd 0.63165 (-36.4% vs 29d ago)"
       },
       {
         "sector": "kraken-eth-usd",
-        "previous": "eth_usd 1671.33 (-28.8% vs 29.9d ago)",
-        "current": "eth_usd 1658.22 (-29.3% vs 30.2d ago)"
+        "previous": "eth_usd 1658.22 (-29.3% vs 30.2d ago)",
+        "current": "eth_usd 1641.29 (-29.5% vs 30.2d ago)"
       },
       {
         "sector": "kraken-link-usd",
-        "previous": "link_usd 8.80809 (-23.2% vs 29.9d ago)",
-        "current": "link_usd 8.74583 (-23.7% vs 30.2d ago)"
+        "previous": "link_usd 8.74583 (-23.7% vs 30.2d ago)",
+        "current": "link_usd 8.64868 (-24.5% vs 30.2d ago)"
       },
       {
         "sector": "kraken-sol-usd",
-        "previous": "sol_usd 69.095 (-32.0% vs 29.9d ago)",
-        "current": "sol_usd 69.11 (-31.9% vs 30.2d ago)"
+        "previous": "sol_usd 69.11 (-31.9% vs 30.2d ago)",
+        "current": "sol_usd 67.655 (-33.4% vs 30.2d ago)"
       },
       {
         "sector": "kraken-xrp-usd",
-        "previous": "xrp_usd 0.9126 (-29.7% vs 29.9d ago)",
-        "current": "xrp_usd 0.9146 (-29.5% vs 30.2d ago)"
+        "previous": "xrp_usd 0.9146 (-29.5% vs 30.2d ago)",
+        "current": "xrp_usd 0.9035 (-29.9% vs 30.2d ago)"
       },
       {
         "sector": "nbp-gold-spot",
-        "previous": "pln_per_gram 471.74 (-7.6% vs 30.3d ago)",
-        "current": "pln_per_gram 471.74 (-7.6% vs 30.7d ago)"
+        "previous": "pln_per_gram 471.74 (-7.6% vs 30.7d ago)",
+        "current": "pln_per_gram 475.34 (-6.3% vs 30.3d ago)"
       },
       {
         "sector": "noaa-spaceweather-alerts",
-        "previous": "active_alerts 61 (-33.0% vs 29.3d ago)",
-        "current": "active_alerts 61 (-33.0% vs 29.7d ago)"
+        "previous": "active_alerts 61 (-33.0% vs 29.7d ago)",
+        "current": "active_alerts 61 (-33.0% vs 30.3d ago)"
       },
       {
         "sector": "nvd-new-cves-count",
-        "previous": "new_cves 679 (+414.4% vs 29.9d ago)",
-        "current": "new_cves 874 (+562.1% vs 30.2d ago)"
+        "previous": "new_cves 874 (+562.1% vs 30.2d ago)",
+        "current": "new_cves 825 (-11.9% vs 29d ago)"
+      },
+      {
+        "sector": "open-digger-openrank-vscode",
+        "previous": "openrank 611.02 (+43.8% vs 31d ago)",
+        "current": "openrank 611.02 (+43.8% vs 30.6d ago)"
       },
       {
         "sector": "phishunt-domains",
-        "previous": "active_phishings 769 (-35.4% vs 29.9d ago)",
-        "current": "active_phishings 785 (-34.0% vs 30.2d ago)"
+        "previous": "active_phishings 785 (-34.0% vs 30.2d ago)",
+        "current": "active_phishings 797 (-33.3% vs 29d ago)"
       },
       {
         "sector": "pypi-daily-requests",
-        "previous": "downloads 55591420 (+62.1% vs 30.6d ago)",
-        "current": "downloads 56027430 (+63.3% vs 31d ago)"
+        "previous": "downloads 56027430 (+63.3% vs 31d ago)",
+        "current": "downloads 56027430 (+61.8% vs 30.6d ago)"
       },
       {
         "sector": "pypi-downloads-requests",
-        "previous": "last_day 55591420 (+60.6% vs 29.6d ago)",
-        "current": "last_day 56027430 (+61.8% vs 30d ago)"
-      },
-      {
-        "sector": "ripe-atlas-public",
-        "previous": "public_measurements 45974 (+13.4% vs 29.9d ago)",
-        "current": "public_measurements 43891 (+8.3% vs 30.2d ago)"
+        "previous": "last_day 56027430 (+61.8% vs 30d ago)",
+        "current": "last_day 56027430 (+61.8% vs 30.6d ago)"
       },
       {
         "sector": "stablecoin-total-supply",
-        "previous": "total_usd 284603649831.17975 (-6.2% vs 29.9d ago)",
-        "current": "total_usd 284257163750.58246 (-6.3% vs 30.2d ago)"
+        "previous": "total_usd 284257163750.58246 (-6.3% vs 30.2d ago)",
+        "current": "total_usd 283629102738.0433 (-6.5% vs 30.3d ago)"
       },
       {
         "sector": "stablecoin-usdc-supply",
-        "previous": "usdc_usd 69195476940.80188 (-3.5% vs 29.9d ago)",
-        "current": "usdc_usd 69034821182.62535 (-3.8% vs 30.2d ago)"
+        "previous": "usdc_usd 69034821182.62535 (-3.8% vs 30.2d ago)",
+        "current": "usdc_usd 68874650780.75856 (-3.8% vs 30.3d ago)"
       },
       {
         "sector": "stablecoin-usdt-supply",
-        "previous": "usdt_usd 174464606802.81702 (-4.4% vs 29.9d ago)",
-        "current": "usdt_usd 174179001756.53375 (-4.5% vs 30.2d ago)"
+        "previous": "usdt_usd 174179001756.53375 (-4.5% vs 30.2d ago)",
+        "current": "usdt_usd 174190478763.30084 (-4.5% vs 30.3d ago)"
       },
       {
         "sector": "steam-dota2-players",
-        "previous": "player_count 729184 (-20.3% vs 29.9d ago)",
-        "current": "player_count 334845 (-63.4% vs 30.2d ago)"
+        "previous": "player_count 334845 (-63.4% vs 30.2d ago)",
+        "current": "player_count 727639 (-31.6% vs 29d ago)"
       },
       {
         "sector": "tweetfeed-c2",
-        "previous": "weekly_c2_ips 241 (-84.1% vs 29.9d ago)",
-        "current": "weekly_c2_ips 228 (-85.0% vs 30.2d ago)"
+        "previous": "weekly_c2_ips 228 (-85.0% vs 30.2d ago)",
+        "current": "weekly_c2_ips 324 (-78.6% vs 29.1d ago)"
       },
       {
         "sector": "usgs-earthquake-count",
-        "previous": "m45_count 8 (-66.7% vs 30d ago)",
-        "current": "m45_count 9 (-62.5% vs 30.4d ago)"
+        "previous": "m45_count 9 (-62.5% vs 30.4d ago)",
+        "current": "m45_count 9 (-52.6% vs 29d ago)"
       },
       {
         "sector": "usgs-elevated-volcanoes",
-        "previous": "elevated_count 3 (-25.0% vs 30.6d ago)",
-        "current": "elevated_count 3 (-25.0% vs 31d ago)"
+        "previous": "elevated_count 3 (-25.0% vs 31d ago)",
+        "current": "elevated_count 3 (-25.0% vs 30.6d ago)"
       }
     ]
   },
   "watchlist": [
     {
       "sector": "pocketworld-space-weather",
-      "avg_volatility": 440,
+      "avg_volatility": 450,
       "max_volatility": 800,
-      "fires_in_window": 15
-    },
-    {
-      "sector": "hackernews-top-scores",
-      "avg_volatility": 301.81,
-      "max_volatility": 768.45,
-      "fires_in_window": 22
+      "fires_in_window": 14
     },
     {
       "sector": "web-apps",
@@ -402,19 +369,25 @@
     },
     {
       "sector": "defi-fees-aave",
-      "avg_volatility": 48.92,
+      "avg_volatility": 48.59,
       "max_volatility": 127.03,
       "fires_in_window": 11
     },
     {
+      "sector": "steam-csgo-players",
+      "avg_volatility": 38.11,
+      "max_volatility": 64.6,
+      "fires_in_window": 20
+    },
+    {
       "sector": "dex-uniswap-volume",
-      "avg_volatility": 29.18,
+      "avg_volatility": 29.46,
       "max_volatility": 193.43,
       "fires_in_window": 10
     },
     {
       "sector": "npm-downloads-react",
-      "avg_volatility": 16.82,
+      "avg_volatility": 17.41,
       "max_volatility": 41.11,
       "fires_in_window": 9
     },
@@ -422,31 +395,31 @@
       "sector": "ossf-scorecard-linux",
       "avg_volatility": 16.67,
       "max_volatility": 16.67,
-      "fires_in_window": 10
+      "fires_in_window": 9
+    },
+    {
+      "sector": "13f-holdings",
+      "avg_volatility": 15.79,
+      "max_volatility": 21.05,
+      "fires_in_window": 0
     },
     {
       "sector": "whiskyhunter-lot-count",
       "avg_volatility": 15.72,
       "max_volatility": 15.72,
-      "fires_in_window": 21
+      "fires_in_window": 20
     },
     {
       "sector": "usgs-streamflow-mississippi",
-      "avg_volatility": 14.57,
+      "avg_volatility": 14.06,
       "max_volatility": 24.55,
-      "fires_in_window": 0
-    },
-    {
-      "sector": "13f-holdings",
-      "avg_volatility": 10.53,
-      "max_volatility": 10.53,
       "fires_in_window": 0
     }
   ],
   "stats": {
     "total_sectors": 211,
-    "firing_sectors": 46,
-    "fire_rate_pct": 21.8,
+    "firing_sectors": 39,
+    "fire_rate_pct": 18.48,
     "runs_in_history": 24
   }
 }
