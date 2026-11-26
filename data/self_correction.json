@@ -62,6 +62,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "bluesky-posts",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "box-status",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -317,6 +322,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "nature-observations",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "noaa-ndbc",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -383,7 +393,7 @@
     },
     {
       "sector": "sec-filings",
-      "reason": "conf=0 in 18/24 runs (75%)",
+      "reason": "conf=0 in 19/24 runs (79%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -483,7 +493,7 @@
     },
     {
       "sector": "xbrl-frames",
-      "reason": "conf=0 in 22/24 runs (92%)",
+      "reason": "conf=0 in 23/24 runs (96%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -492,17 +502,7 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bluesky-posts",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "cheapshark-deal-count",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -515,10 +515,6 @@
     {
       "sector": "carbon-intensity",
       "reason": "spam (62%) but no config found in workers"
-    },
-    {
-      "sector": "cve-feed",
-      "reason": "spam (68%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -546,7 +542,7 @@
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (50%) but no config found in workers"
+      "reason": "spam (54%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -613,6 +609,10 @@
       "reason": "spam (100%) but no config found in workers"
     },
     {
+      "sector": "nvd-new-cves-count",
+      "reason": "spam (88%) but no config found in workers"
+    },
+    {
       "sector": "open-digger-openrank-vscode",
       "reason": "spam (88%) but no config found in workers"
     },
@@ -630,7 +630,7 @@
     },
     {
       "sector": "pypi-daily-requests",
-      "reason": "spam (62%) but no config found in workers"
+      "reason": "spam (58%) but no config found in workers"
     },
     {
       "sector": "pypi-downloads-requests",
@@ -674,11 +674,11 @@
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
-      "sector": "nvd-new-cves-count",
-      "reason": "spam (83%) but no config found in workers"
+      "sector": "cve-feed",
+      "reason": "spam (68%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -865,7 +865,7 @@
     {
       "sector": "openfda-food-recalls",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "osv-lodash-vuln-count",
