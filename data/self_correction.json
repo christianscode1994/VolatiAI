@@ -52,6 +52,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "bgp-prefixes",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "bike-share",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -83,11 +88,6 @@
     },
     {
       "sector": "cloud-components",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "cloud-outages",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -147,6 +147,11 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
+      "sector": "disease-outbreaks",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
       "sector": "dropbox-status",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
@@ -173,7 +178,7 @@
     },
     {
       "sector": "eu-open-data",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 21/24 runs (88%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -297,12 +302,12 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-eonet",
+      "sector": "nasa-neo",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "natural-disasters",
+      "sector": "nature-observations",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -373,7 +378,7 @@
     },
     {
       "sector": "sec-filings",
-      "reason": "conf=0 in 20/24 runs (83%)",
+      "reason": "conf=0 in 21/24 runs (88%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
@@ -408,6 +413,11 @@
     },
     {
       "sector": "ted-tenders",
+      "reason": "conf=0 in 24/24 runs (100%)",
+      "action": "Remove from active_sectors.json or fix source"
+    },
+    {
+      "sector": "theoretical-cs",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
@@ -477,32 +487,22 @@
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "bgp-prefixes",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
       "sector": "cheapshark-deal-count",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "disease-outbreaks",
+      "sector": "cloud-outages",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nasa-neo",
+      "sector": "nasa-eonet",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     },
     {
-      "sector": "nature-observations",
-      "reason": "conf=0 in 24/24 runs (100%)",
-      "action": "Remove from active_sectors.json or fix source"
-    },
-    {
-      "sector": "theoretical-cs",
+      "sector": "natural-disasters",
       "reason": "conf=0 in 24/24 runs (100%)",
       "action": "Remove from active_sectors.json or fix source"
     }
@@ -515,6 +515,10 @@
     {
       "sector": "carbon-intensity",
       "reason": "spam (67%) but no config found in workers"
+    },
+    {
+      "sector": "cve-feed",
+      "reason": "spam (74%) but no config found in workers"
     },
     {
       "sector": "dc-crime",
@@ -534,11 +538,11 @@
     },
     {
       "sector": "dex-ethereum-volume",
-      "reason": "spam (83%) but no config found in workers"
+      "reason": "spam (79%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eursek",
-      "reason": "spam (58%) but no config found in workers"
+      "reason": "spam (62%) but no config found in workers"
     },
     {
       "sector": "frankfurter-eurusd",
@@ -670,11 +674,7 @@
     },
     {
       "sector": "whiskyhunter-lot-count",
-      "reason": "spam (75%) but no config found in workers"
-    },
-    {
-      "sector": "cve-feed",
-      "reason": "spam (73%) but no config found in workers"
+      "reason": "spam (71%) but no config found in workers"
     }
   ],
   "monitor_quiet": [
@@ -711,7 +711,7 @@
     {
       "sector": "clearlydefined-react-license",
       "runs": 24,
-      "avg_conf": 1.0
+      "avg_conf": 0.96
     },
     {
       "sector": "cleveland-artworks",
